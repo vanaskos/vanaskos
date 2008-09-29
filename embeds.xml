@@ -1,0 +1,20 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+	<Script file="Libs\AceLibrary\AceLibrary.lua"/>
+	<Script file="Libs\AceOO-2.0\AceOO-2.0.lua"/>
+	<Script file="Libs\AceEvent-2.0\AceEvent-2.0.lua"/>
+	<Script file="Libs\AceComm-2.0\AceComm-2.0.lua"/>
+	<Script file="Libs\AceDB-2.0\AceDB-2.0.lua"/>
+	<Script file="Libs\AceConsole-2.0\AceConsole-2.0.lua"/>
+	<Script file="Libs\AceAddon-2.0\AceAddon-2.0.lua"/>
+	<Script file="Libs\AceLocale-2.2\AceLocale-2.2.lua"/>
+	<Script file="Libs\AceModuleCore-2.0\AceModuleCore-2.0.lua"/>
+	<Script file="Libs\AceHook-2.1\AceHook-2.1.lua"/>
+	
+	<Script file="Libs\Parser-3.0\Parser-3.0.lua"/>
+	<Script file="Libs\Babble-Zone-2.2\Babble-Zone-2.2.lua"/>
+	<Script file="Libs\Tourist-2.0\Tourist-2.0.lua"/>
+	<Script file="Libs\Dewdrop-2.0\Dewdrop-2.0.lua"/>
+	<Script file="Libs\Tablet-2.0\Tablet-2.0.lua"/>
+	<Script file="Libs\Graph-1.0\Graph-1.0.lua"/>
+	<Script file="Libs\SharedMedia-1.0\SharedMedia-1.0.lua"/>
+</Ui>

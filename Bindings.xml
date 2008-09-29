@@ -1,0 +1,9 @@
+<Bindings>
+	<Binding name="VANASKOS_TEXT_TOGGLE_MENU" header="VANASKOS_HEADER">
+		VanasKoS:ToggleMenu();
+	</Binding>
+	<!-- buggy, key gets displayed by staticpopupdialog
+	<Binding name="VANASKOS_TEXT_ADD_PLAYER" header="VANASKOS_HEADER">
+		VanasKoS:AddKoSPlayerNew();
+	</Binding> -->
+</Bindings>

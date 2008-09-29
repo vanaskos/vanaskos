@@ -1,0 +1,42 @@
+﻿## Interface: 20400
+## Title: VanasKoS |cff7fff7f -Ace2-|r
+## Author: Vane of EU-Aegwynn et al.
+## Name: Vanas KoS
+## Version: 3.06-$Rev$
+## Notes: KoS-Management Tool
+## Notes-esES: Herramienta de gestión de KoS (Matar al Ver)
+## Notes-zhCN: 仇敌管理工具，中文官方版本由Taburiss汉化
+## DefaultState: Enabled
+## SavedVariables: VanasKoSDB
+## SavedVariablesPerCharacter: VanasKoSDBPC
+## OptionalDeps: Ace2, DewdropLib, Cartographer, TouristLib, Babble-Zone-2.2, GraphLib, TabletLib, SharedMediaLib, Waterfall-1.0
+## X-Embeds: Ace2, DewdropLib, TouristLib, Babble-Zone-2.2, GraphLib, TabletLib, SharedMediaLib
+## X-eMail: boredvana@gmail.com
+## X-Date: 2008-05-18
+## X-Category: Battlegrounds/PvP
+## X-AceForum: http://www.wowace.com/forums/index.php?topic=3938.0
+## X-License: CreativeCommons-Attribution-NonCommercial-ShareAlike-2.5
+## X-Donate: PayPal:boredvana AT gmail DOT com
+embeds.xml
+
+VanasKoSLocals.lua
+VanasKoS.lua
+
+GUICreate.lua
+VanasKoSGUI.lua
+
+modules\DefaultLists.lua
+modules\PvPDataGatherer.lua
+modules\DataGatherer.lua
+modules\Importer.lua
+modules\ChatNotifier.lua
+modules\Notifier.lua
+modules\WarnFrame.lua
+modules\DistributedTracker.lua
+modules\MinimapButton.lua
+modules\CommandLineHandler.lua
+modules\FriendsFrameDocker.lua
+modules\Synchronizer.lua
+modules\PortraitContextMenu.lua
+modules\LastSeenList.lua
+modules\PvPStats.lua

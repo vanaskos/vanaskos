@@ -1,0 +1,33 @@
+﻿Bugfixes:
+- fix friendsframe when mainframe is showing and vice versa - doesn't work even if everything should.. i blame it on blizzard
+- heal spells in raid appear to be always in hostile channels
+
+New Features:
+defaultlists:
++ right-click contextmenu to move entries between lists
++ add a last attacker list with possibility to add from there
+/ last seen list (like opium)
+
+tooltip:
++ add pvp stats
+
+notifier:
+- more structured configuration options, esp. when pvp stats are displayed and more can be displayed, it's needed
+
+sync:
++ allow guild sync - option to accept guild broadcasts depending on rank of broadcasting member and option to
+  broadcast lists to guild channel every 30min,1h,2h
+
+distributed tracking:
++ allow selection of which channels to listen on (guild/zone)
++ join zone/guild comm channel after 1minute (to prevent being comm channel on /1 on some computers) (done in 2.87)
+
+pvp:
+- always gather all player data (optional, default off)
++ pvp log, record each pvp win/loss with zone, posX, posY, time, yourlevel, enemylevel - maybe showing these 
+  with cartographer (except cartographer done)
+- optional chooser on death/win
+
+Other:
+- documentation for all the functions (esp. auto sync, distributed tracking)
+- maybe a mob watchlist for detecting searched mobs

@@ -1,0 +1,238 @@
+Release Changelog for VanasKoS
+
+3.06:
+- removed parser-3.0 dependency
+
+3.05 beta:
+- added detailed mouseover frame for the "pvp stats" list, fixed a bug in the mouseover displaying
+- fixed a bad memory leak
+- added class icons in the warnframe
+- some minor performance optimizations
+- internally changed the way tooltip additions are made
+- changed the chatnotifier to only color the name
+- use sharedmedialib for kos-detection sound configuration
+- added a context menu entry for names in the chat (configurable)
+
+3.02 BETA:
+- switched completly to parser-3.0
+- started work on a last seen list
+- started work on pvp stats
+- added a context menu to the last seen list
+- added a show only my entries option for the default lists (player kos, guild kos, hatelist, nicelist)
+- use waterfall for configuration if installed
+- changed pvp data gathering a bit.
+- (partly) rewrote warnframe to be awesome.
+
+3.01:
+- library updates
+- minimap button now moveable freely while shift is pressed, added locking option
+
+3.0:
+- fixed localizations
+
+3.0beta6:
+- added a option to show the mouseover display in the warnframe (default: on)
+- changed the mouseover display in the defaultlists to use tabletlib (which is now a external)
+
+3.0beta5:
+- fixed capitalization for umlaut and other chars
+- esES localization added by shiftos (thanks)
+- some additions to the warnframe by frrjak
+
+3.0beta4:
+- fixed VanasKoS showing up as "CommandLineHandler" in Ace2's slash command handling - tnx gnarfoz
+- performance tweaks
+- remove "wanted" list if distributed tracker is being disabled
+- internal changes to the sorting options
+- added owner search
+- added filtering/searching in pvpstat list
+
+3.0beta3:
+- compatibility with 2.1.0 (updated dewdrop and acecomm)
+- fix for distributed tracking when cartographer_notes is enabled
+
+3.0beta2:
+- changed sorting of "last seen", so never seen entries are at the end
+- fixed a bug in distributed tracking, that caused a error frame when a position from a guild mate that wasn't in the same zone was received
+- changed the fubar plugin to be a extra plugin in it's own folder
+
+3.0beta1:
+- fixed wanted
+
+3.0alpha: (new features aren't tested much, so use with care!)
+- BACKUP your WTF\Account\<AccountName>\SavedVariables\VanasKoS.lua
+- big internal changes to configuration options, old settings will be lost, sorry
+- internal changes to lists, should be converted flawlessly, BACKUP WTF\Account\<AccountName>\SavedVariables\VanasKoS.lua anyway
+- The Distributed Tracker now checks if people are still online, instead of assuming it.
+- added a worldwide-wanted list (right-click in player kos list to set entries to 'wanted')
+- added a guild sync option
+- added a context menu for default lists
+- decreased memory growth slightly
+
+2.91:
+- added a notify in shattrath option
+
+2.90:
+- added a search box, searches in name, reason and owner
+- added flashing border notification
+- fixed a bug that caused that outdated synced entries didn't got deleted
+- added a additional (optional) window with reason and listname
+- added ContextMenu Options for the Player Portrait
+
+2.89:
+- added a "locked" option for the mainframe, it's movable if disabled
+- added a fubar plugin
+- added a last attacker function in the fubar plugin
+- rewrote the parser-code to work in all localizations
+- small changes to the warnframe to make the code a bit cpu-time friendlier
+- added configuration options to the chat modifying, changed the way of modification
+- small changes to the additional pvp display in default lists
+
+2.88:
+- added additional information for player kos, guild kos, nicelist, hatelist
+- bugfix for synchronization of newer entries
+- don't notify if in shattrah, it's annoying
+
+2.87:
+- fixes a problem not notifying audiovisually on newly added kos-targets
+- delay before joining the guild/zone channel, check if you're in guild before joining the guild channel
+
+2.86:
+- fixed minimap button showing even if disabled
+- fixed a bug that prevented distributed tracking in the outlands
+- fixed display of too long texts in the lists showing outside of the frame
+- fixed opium data import
+- added synchronizing handling for alternative characters on the same realm
+- added a reset position option to the kos/enemy/friendly warning window
+
+2.85:
+- some bugfixes
+- shows pvp stats in tooltip (can be disabled via configuration option)
+- shows in tooltips all lists on whom someone is, not just the one with the highest priority
+- major rework on decentralising list-functions
+
+2.82:
+- bugfix
+- converted xml gui to lua generated
+- added french translations (thanks scrapy)
+
+2.81:
+- bugfix
+
+2.80:
+- added automatic synchronization support - detection if autosync partner is online only works if he's on friendlist or in same guild
+- fixed sending entries via party - unfortunately incompatible to older versions, but now you can send entries from every list
+
+2.71:
+- fixed elite mobs showing as normal mobs
+
+2.70:
+- bugfixes to FriendsFrameDocker, PvP Data Gathering, Data Gathering
+- changed FriendsFrameDocker to be useable with CTRaid
+- koKR localization by fenlis (thanks!)
+
+2.65:
+- simple pvpstats (more to come) (probably buggy, report bugs!)
+- removed configuration frame and replaced it by a button with menus
+- (optional) docking as additional tab into the friendsframe (WARNING: may cause problems with other mods changing the friendsframe) default: disabled
+
+2.60:
+- added opium data import
+- added a sound file
+- fixed alot of bugs
+
+2.55:
+- renamed allied hate to hatelist (also usable as a less priority kos-list for enemies) and hostile nice to nicelist, so 
+  you can use it to add allied
+- added french localization (thanks to Scrapy)
+- several bugfixes
+
+2.50:
+- added hatelist/goodlist with tooltip modify and red/green dragon around playerportrait
+- added notifier for chatmessages if player is on allied hatelist
+- added "add guild/allied hate and hostile nice" options to the minimap-menu
+
+2.41:
+- more code cleanup
+- replaced the player and guild kos tabs with a dropdown
+
+2.4b:
+- Distributed Tracking
+- started to modularize code
+- started to clean up the code
+
+2.30:
+- added options for warnframe coloring/alpha
+- added options for content in warnframe and hiding if inactive
+- expect more options to come
+
+2.23:
+- fixed a bug in /kadd
+- clearified message in upper area to player or guild kos
+
+2.22:
+- prohibited sorting guildlist after lastseen or level
+
+2.21:
+- probably made a working workaround to the party-member-displayed-as-enemy issue
+
+2.20:
+- added minimap button
+- added kos-sound configuration
+
+2.10:
+- added sorting of koslist
+- added sending of koslist to party
+- added /kadd
+
+2.00:
+- rewrote it to use ace2 - no ace dependency anmore
+- a few small fixes/enhancements
+
+1.54:
+- Updated for 2.0.0 patch.
+
+1.53:
+- you can now add targetted friendly players via gui
+- toc update
+
+1.52:
+- small bugs fixed
+- german localisation
+- keybinding for toggling menu
+
+1.51:
+- small but annoying bug fixed
+
+1.5:
+- if 'add player'/'add guild' is clicked while having an enemy player target, the player/guild name is taken and you only have to type reason
+- added a database which automatically gathers and updates the level, race, class and guild of KoS players and also saves the last time you've seen the KoS target.
+
+1.4beta:
+- added a graphical user interface, probably there are still bugs, please comment on bugs/not buggyness
+you can access the menu by typing '/kos menu'
+
+1.3alpha:
+- added a graphical Warning Frame (you can disable it), which shows KoS Targets, Enemys and Friendly People that are nearby
+
+1.2:
+- Import 'Ultimate Book of the Dead' KoS Data function
+- Configuration
+
+1.1:
+- included /kos list functionality, forgot it in last release
+
+1.0:
+- complete rewrite
+- ace is now a dependency
+- notifies only once every 60 seconds
+- sound for notify
+- chatmessage for notify
+- many more little features
+still alot of things to do to make it perfect, but its a start
+
+0.1-nodebug:
+removed debug output
+
+0.1:
+Early Prerelease, can be considered as an alpha - still includes some debug-output data etc.

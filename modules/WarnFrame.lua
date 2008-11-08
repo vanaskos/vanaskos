@@ -415,8 +415,7 @@ local function CreateTooltipFrame()
 	});
 	local r, g, b, a = GetColor("DefaultBGColor");
 	tooltipFrame:SetBackdropColor(r, g, b, a);
-	tooltipFrame:SetTextFontObject(GameFontNormal);
-	tooltipFrame:SetTextColor(1.0, 1.0, 1.0);
+	tooltipFrame:SetNormalFontObject("GameFontWhite");
 
 	tooltipFrame:Hide();
 end
@@ -496,7 +495,7 @@ local function CreateOOCButtons()
 		warnButton:RegisterForClicks("LeftButtonUp");
 		warnButton:SetAttribute("type1", "macro");
 		warnButton:SetAttribute("macrotext", "/wave");
-		warnButton:SetTextFontObject(GameFontNormal);
+		warnButton:SetNormalFontObject("GameFontNormal");
 
 		warnButton:SetScript("OnEnter", function()
 											ShowTooltip(i);
@@ -522,7 +521,7 @@ local function CreateCombatButtons()
 		-- same size as OOC buttons
 		warnButton:SetAllPoints(warnButtonsOOC[i]);
 		warnButton:EnableMouse(true);
-		warnButton:SetTextFontObject(GameFontNormalSmall);
+		warnButton:SetNormalFontObject("GameFontWhiteSmall");
 		warnButton:RegisterForClicks("LeftButtonUp");
 		warnButton:SetFrameStrata("HIGH");
 
@@ -918,16 +917,16 @@ local function GetButtonText(name, data)
 	return result;
 end
 
-local function GetFactionColor(faction)
+local function GetFactionFont(faction)
 	if(faction == "kos") then
-		return 1, 0, 1, 1;
+		return "GameFontNormalSmall";
 	elseif(faction == "enemy") then
-		return 1, 0, 0, 1;
+		return "GameFontRedSmall";
 	elseif(faction == "friendly") then
-		return 0, 1, 0, 1;
+		return "GameFontGreenSmall";
 	end
 
-	return 1, 1, 1, 1;
+	return "GameFontWhiteSmall";
 end
 
 local function SetButton(buttonNr, name, data, faction)
@@ -940,8 +939,7 @@ local function SetButton(buttonNr, name, data, faction)
 				warnButtonsOOC[buttonNr]:SetAlpha(0);
 			end
 
-			local r,g,b,a = GetFactionColor(faction);
-			warnButtonsCombat[buttonNr]:SetTextColor(r, g, b, a);
+			warnButtonsCombat[buttonNr]:SetNormalFontObject(GetFactionFont(faction));
 			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name, data));
 			warnButtonsCombat[buttonNr]:Show();
 		else
@@ -953,8 +951,7 @@ local function SetButton(buttonNr, name, data, faction)
 		if(buttonData[buttonNr] ~= name or warnButtonsOOC[buttonNr]:GetAlpha() == 0) then
 			warnButtonsOOC[buttonNr]:SetAlpha(1);
 			warnButtonsCombat[buttonNr]:Hide();
-			local r,g,b,a = GetFactionColor(faction);
-			warnButtonsOOC[buttonNr]:SetTextColor(r, g, b, a);
+			warnButtonsOOC[buttonNr]:SetNormalFontObject(GetFactionFont(faction));
 			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));
 			warnButtonsOOC[buttonNr]:EnableMouse(true);
 			warnButtonsOOC[buttonNr]:SetAttribute("macrotext", "/target " .. name);
@@ -992,19 +989,16 @@ local function HideWarnFrame()
 end
 
 function VanasKoSWarnFrame:Update()
-	-- +1, because it doesn't count you
 	-- more hostile
-	if( (nearbyKoSCount+nearbyEnemyCount) > (nearbyFriendlyCount+1)) then
+	if( (nearbyKoSCount+nearbyEnemyCount) > (nearbyFriendlyCount)) then
 		local r, g, b, a = GetColor("MoreHostileBGColor");
 		warnFrame:SetBackdropColor(r, g, b, a);
-	end
 	-- more allied
-	if( (nearbyKoSCount+nearbyEnemyCount) < (nearbyFriendlyCount+1)) then
+	elseif( (nearbyKoSCount+nearbyEnemyCount) < (nearbyFriendlyCount)) then
 		local r, g, b, a = GetColor("MoreAlliedBGColor");
 		warnFrame:SetBackdropColor(r, g, b, a);
-	end
 	-- default
-	if( ((nearbyKoSCount+nearbyEnemyCount) == 0) or ((nearbyKoSCount+nearbyEnemyCount) == (nearbyFriendlyCount+1)) ) then
+	else
 		local r, g, b, a = GetColor("DefaultBGColor");
 		warnFrame:SetBackdropColor(r, g, b, a);
 	end

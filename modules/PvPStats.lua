@@ -114,7 +114,7 @@ function VanasKoSPvPStats:OnEnable()
 
 		local characterDropdown = CreateFrame("Frame", "VanasKoSPvPStatsCharacterDropDown", frame, "UIDropDownMenuTemplate");
 		characterDropdown:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, -12);
-		UIDropDownMenu_SetWidth(150, characterDropdown);
+		UIDropDownMenu_SetWidth(characterDropdown, 150);
 
 		local CharacterChoices = {
 			[0] = { L["All Characters (Realm)"], "ALLCHARS" },

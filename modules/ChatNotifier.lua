@@ -304,10 +304,11 @@ local channelWatchList = {
 local HATELISTCOLOR = "ff0000";
 local NICELISTCOLOR = "00ff00";
 
-function VanasKoSChatNotifier:ChatFrame_OnEvent(event)
+function VanasKoSChatNotifier:ChatFrame_OnEvent(frame, event, ...)
+
 	-- if switched to disabled, remove hook on first intercept
 	if(not self.db.profile.Enabled) then
-		local ret = self.hooks["ChatFrame_OnEvent"](event);
+		local ret = self.hooks["ChatFrame_OnEvent"](frame, event, ...);
 		self:Unhook("ChatFrame_OnEvent");
 		return ret;
 	end
@@ -325,7 +326,7 @@ function VanasKoSChatNotifier:ChatFrame_OnEvent(event)
 					(data2 and data2.owner and not data1) or -- nicelist entry from someone else, no hatelist entry
 					(data1 and data1.owner and data2 and data2.owner) -- hatelist and nicelist entry from someone else
 					) then
-					return self.hooks["ChatFrame_OnEvent"](event);
+					return self.hooks["ChatFrame_OnEvent"](frame, event, ...);
 				end
 
 				if(data1 and not data1.owner) then
@@ -338,7 +339,7 @@ function VanasKoSChatNotifier:ChatFrame_OnEvent(event)
 			local originalText = getglobal(channelWatchList[event]);
 			setglobal(channelWatchList[event], gsub(originalText, "%%s", "|cff" .. listColor .. "%%s|r"));
 
-			local ret = self.hooks["ChatFrame_OnEvent"](event);
+			local ret = self.hooks["ChatFrame_OnEvent"](frame, event, ...);
 
 			setglobal(channelWatchList[event], originalText);
 
@@ -346,7 +347,7 @@ function VanasKoSChatNotifier:ChatFrame_OnEvent(event)
 		end
 	end
 
-	return self.hooks["ChatFrame_OnEvent"](event);
+	return self.hooks["ChatFrame_OnEvent"](frame, event, ...);
 end
 
 function VanasKoSChatNotifier:Update()

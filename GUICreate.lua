@@ -28,8 +28,8 @@ function VanasKoSGUICreate:CreateTabButtons()
 	tabButton1:SetPoint("BOTTOMLEFT", VanasKoSFrame, "BOTTOMLEFT", 11, 45);
 	tabButton1:SetText(L["Lists"]);
 	tabButton1:SetScript("OnClick",
-			function()
-				PanelTemplates_Tab_OnClick(VanasKoSFrame);
+			function(frame)
+				PanelTemplates_Tab_OnClick(frame, VanasKoSFrame);
 				VanasKoSGUI:Update();
 			end);
 
@@ -39,8 +39,8 @@ function VanasKoSGUICreate:CreateTabButtons()
 	tabButton2:SetPoint("LEFT", tabButton1, "RIGHT", -14, 0);
 	tabButton2:SetText(L["About"]);
 	tabButton2:SetScript("OnClick",
-			function()
-				PanelTemplates_Tab_OnClick(VanasKoSFrame);
+			function(frame)
+				PanelTemplates_Tab_OnClick(frame, VanasKoSFrame);
 				VanasKoSGUI:Update();
 			end);
 			
@@ -220,8 +220,8 @@ function VanasKoSGUICreate:CreateListFrame()
 	scrollBarTexture2:SetTexCoord(0.515625, 1.0, 0, 0.4140625);
 	
 	scrollFrame:SetScript("OnVerticalScroll", 
-							function()
-								FauxScrollFrame_OnVerticalScroll(34, VanasKoSGUI.ScrollUpdate);
+							function(frame, offset)
+								FauxScrollFrame_OnVerticalScroll(frame, offset, 34, VanasKoSGUI.ScrollUpdate);
 							end);
 	scrollFrame:SetScript("OnShow", 
 							function() 

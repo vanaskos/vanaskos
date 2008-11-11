@@ -290,7 +290,6 @@ function VanasKoSPvPDataGatherer:CombatEvent(...)
 		if (eventType == "UNIT_DIED") then
 			self:Death(lastDamageFrom, "loss");
 		else
-			VanasKoS:Print("Mine " .. srcName .. " -> " .. dstName);
 			self:DamageDoneFrom(srcName);
 		end
 	end

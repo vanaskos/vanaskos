@@ -222,35 +222,80 @@ function VanasKoSPvPDataGatherer:IsOnList(list, name)
 end
 
 function VanasKoSPvPDataGatherer:OnDisable()
-	self:UnregisterAllParserEvents();
+	self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 end
 
 function VanasKoSPvPDataGatherer:OnEnable()
 	if(not self.db.profile.Enabled) then
 		return;
 	end
-	--[[self:RegisterParserEvent({
-		eventType_in = {"Damage", "Drain"},
-		sourceID = "player",
-		recipientPvP = true,
-	}, "DamageDoneTo");
 
-	self:RegisterParserEvent({
-		eventType_in = {"Damage", "Drain"},
-		recipientID = "player",
-		sourcePvP = true,
-	}, "DamageDoneFrom");
-
-	self:RegisterParserEvent({
-		eventType = "Death",
-	}, "Death"); ]]
---	self:RegisterEvent("PLAYER_DEAD");
+	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "CombatEvent");
 end
 
 local lastDamageFrom = nil;
 local lastDamageFromTime = nil;
 
 local zone = nil;
+
+function VanasKoSPvPDataGatherer:CombatEvent(...)
+	local timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags = select(1, ...);
+
+	-- Ignore if there was no destination
+	if (dstFlags == nil) then
+		return;
+	end
+	-- Ignore if the destination is not a player
+	if (bit.band(dstFlags, COMBATLOG_OBJECT_TYPE_PLAYER) == 0) then
+		return;
+	end
+	-- Ignore if there was no source and the event is not UNIT_DIED
+	if (srcFlags == nil) then
+		if (eventType ~= "UNIT_DIED") then
+			return;
+		end
+	elseif (eventType ~= "UNIT_DIED") then
+		-- Ignore unless both the source and destination are player controlled
+		if (bit.band(srcFlags, dstFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) == 0) then
+			return;
+		end
+		-- Ignore if neither the source nor the target is self
+		if (bit.band(bit.bor(srcFlags, dstFlags), COMBATLOG_OBJECT_AFFILIATION_MINE) == 0) then
+			return;
+		end
+		-- Ignore if neither the source nor the target is hostile
+		if (bit.band(bit.bor(srcFlags, dstFlags), COMBATLOG_OBJECT_REACTION_HOSTILE) == 0) then
+			return;
+		end
+		-- Ignore non-damage spells
+		if (eventType ~= "PARTY_KILL" and not string.match(eventType, ".*_DAMAGE")) then
+			return;
+		end
+	end
+
+	if (bit.band(dstFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) ~= 0) then
+		if (eventType == "PARTY_KILL") then
+			-- Record all PARTY_KILLs as "wins"? or should we match
+			-- up the source to the player?
+			self:Death(dstName, "win");
+ 		--Without this we may not catch killing blows by pet 
+--[[		elseif (eventType == "UNIT_DIED") then
+			self:Death(lastDamageTo, "win");
+		else
+			self:DamageDoneTo(dstName);
+]]
+		end
+	end
+	if (bit.band(dstFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) ~= 0) then
+		if (eventType == "UNIT_DIED") then
+			self:Death(lastDamageFrom, "loss");
+		else
+			VanasKoS:Print("Mine " .. srcName .. " -> " .. dstName);
+			self:DamageDoneFrom(srcName);
+		end
+	end
+end
+
 
 function VanasKoSPvPDataGatherer:Death(name, winOrLoss)
 	if(winOrLoss == "win") then

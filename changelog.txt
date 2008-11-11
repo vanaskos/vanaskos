@@ -1,5 +1,11 @@
 Release Changelog for VanasKoS
 
+3.11 beta:
+- Updated the pvp data gatherer for 2.4+ style combat logs
+
+3.1:
+- Updated for WoW 3.0
+
 3.06:
 - removed parser-3.0 dependency
 

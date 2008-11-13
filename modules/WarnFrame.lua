@@ -1015,13 +1015,17 @@ function VanasKoSWarnFrame:Player_Detected(data)
 		return;
 	end
 
-	if(data.level and not dataCache[name]) then
+	if (not dataCache[name]) then
 		dataCache[name] = { };
+	end
+	dataCache[name]['name'] = data.name:trim();
+	dataCache[name]['faction'] = faction;
+
+	if(data.level) then
 		dataCache[name]['level'] = data.level;
 		dataCache[name]['class'] = data.class;
 		dataCache[name]['classEnglish'] = data.classEnglish;
 		dataCache[name]['race'] = data.race;
-		dataCache[name]['faction'] = faction;
 	end
 
 --	self:CancelScheduledEvent("VanasKoSWarnFrameRemovePlayer_" .. name, RemovePlayer, faction, name);
@@ -1036,6 +1040,11 @@ end
 
 local function GetButtonText(name, data)
 	local result = name;
+
+	if (data ~= nil and data.name ~= nil) then
+		result = data.name
+	end
+
 	-- Create a cache entry.
 	if(VanasKoSWarnFrame.db.profile.ShowTargetLevel) then
 		local level = nil;

@@ -46,6 +46,11 @@ L:RegisterTranslations("enUS", function() return {
 
 	["Show class icons"] = true,
 	["Toggles the display of Class icons in the Warnframe"] = true,
+	
+	["Number of lines"] = true,
+	["Sets the number of entries to display in the Warnframe"] = true,
+
+	["Show border"] = true,
 } end );
 
 L:RegisterTranslations("deDE", function() return {
@@ -85,6 +90,11 @@ L:RegisterTranslations("deDE", function() return {
 	["No Information Available"] = "No Information Available",
 	["Show class icons"] = "Zeige Klassen Symbole",
 	["Toggles the display of Class icons in the Warnframe"] = "Schaltet die Anzeige ob Klassensymbole in dem Warnframe angezeigt werden an/aus",
+
+	["Number of lines"] = "Zeilenzahl",
+	["Sets the number of entries to display in the Warnframe"] = "Justiert die Zahl die Einträge im Warnframe",
+
+	["Show border"] = "Zeige den Rand",
 } end );
 
 L:RegisterTranslations("frFR", function() return {
@@ -122,9 +132,14 @@ L:RegisterTranslations("frFR", function() return {
 
 	["Level"] = "Level",
 	["No Information Available"] = "No Information Available",
+
 --	["Show class icons"] = true,
 --	["Toggles the display of Class icons in the Warnframe"] = true,
 
+	["Number of lines"] = "Nombre de lignes",
+	["Sets the number of entries to display in the Warnframe"] = "Ajustez le nombre de lignes dans WarnFrame",
+
+	["Show border"] = "Montrez le cadre",
 } end );
 
 L:RegisterTranslations("koKR", function() return {
@@ -166,6 +181,10 @@ L:RegisterTranslations("koKR", function() return {
 	["Show class icons"] = "직업 아이콘 표시",
 	["Toggles the display of Class icons in the Warnframe"] = "경고창에 직업 아이콘을 표시합니다.",
 
+--	["Number of lines"] = true,
+--	["Sets the number of entries to display in the Warnframe"] = true,
+
+--	["Show border"] = true,
 } end );
 
 L:RegisterTranslations("esES", function() return {
@@ -202,6 +221,10 @@ L:RegisterTranslations("esES", function() return {
 --	["Show class icons"] = true,
 --	["Toggles the display of Class icons in the Warnframe"] = true,
 
+	["Number of lines"] = "Número de líneas",
+	["Sets the number of entries to display in the Warnframe"] = "Fije la cantidad de líneas en el WarnFrame",
+
+	["Show border"] = "Muestre la frontera",
 } end );
 
 L:RegisterTranslations("ruRU", function() return {
@@ -241,6 +264,11 @@ L:RegisterTranslations("ruRU", function() return {
 
 	["Show class icons"] = "Показывать иконки класса",
 	["Toggles the display of Class icons in the Warnframe"] = "Показывать или нет классовые иконки в окне предупреждений",
+
+--	["Number of lines"] = "количецтво линий",
+--	["Sets the number of entries to display in the Warnframe"] = true,
+--
+	["Show border"] = "Покажите границу",
 } end );
 
 local dewdrop = AceLibrary("Dewdrop-2.0");
@@ -365,7 +393,8 @@ local function CreateWarnFrame()
 	-- Create the Main Window
 	warnFrame = CreateFrame("Button", "VanasKoS_WarnFrame", UIParent);
 	warnFrame:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
-	warnFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_FRAME_HEIGHT);
+	warnFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTONS * VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT +
+			    VanasKoSWarnFrame.db.profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
 	warnFrame:SetPoint("CENTER");
 	warnFrame:SetToplevel(true);
 	warnFrame:SetMovable(true);
@@ -431,6 +460,7 @@ local classIconNameToCoords = {
 	["PRIEST"] = {0.49609375, 0.7421875, 0.25, 0.5},
 	["WARLOCK"] = {0.7421875, 0.98828125, 0.25, 0.5},
 	["PALADIN"] = {0, 0.25, 0.5, 0.75},
+	["DEATHKNIGHT"] = {0.25, 0.49609375, 0.5, 0.75},
 }
 
 local function CreateClassIcons()
@@ -440,7 +470,7 @@ local function CreateClassIcons()
 
 	classIcons = { };
 	local i = 1;
-	for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS do
+	for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
 		local classIcon = CreateFrame("Button", nil, warnFrame);
 		classIcon:SetPoint("LEFT", warnButtonsCombat[i], "LEFT", 5, 0);
 		classIcon:SetWidth(15);
@@ -480,7 +510,7 @@ local function CreateOOCButtons()
 	end
 	warnButtonsOOC = { };
 	local i=1;
-	for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS do
+	for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
 		local warnButton = CreateFrame("Button", nil, warnFrame, "SecureActionButtonTemplate");
 		if(i == 1) then
 			warnButton:SetPoint("TOP", warnFrame, 0, -5);
@@ -503,7 +533,11 @@ local function CreateOOCButtons()
 		warnButton:SetScript("OnLeave", function()
 											tooltipFrame:Hide();
 										end);
-		warnButton:Show();
+		if (i <= VanasKoSWarnFrame.db.profile.WARN_BUTTONS) then
+			warnButton:Show();
+		else
+			warnButton:Hide();
+		end
 
 		warnButtonsOOC[i] = warnButton;
 	end
@@ -516,7 +550,7 @@ local function CreateCombatButtons()
 	warnButtonsCombat = { };
 
 	local i = 0;
-	for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS do
+	for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
 		local warnButton = CreateFrame("Button", nil, warnFrame);
 		-- same size as OOC buttons
 		warnButton:SetAllPoints(warnButtonsOOC[i]);
@@ -538,6 +572,29 @@ local function CreateCombatButtons()
 	end
 end
 
+local function HideButton(buttonNr)
+	if(InCombatLockdown()) then
+		warnButtonsOOC[buttonNr]:SetText("");
+		warnButtonsOOC[buttonNr]:SetAlpha(0);
+		warnButtonsCombat[buttonNr]:SetText("");
+		warnButtonsCombat[buttonNr]:EnableMouse(false);
+		warnButtonsCombat[buttonNr]:Hide();
+	else
+		warnButtonsOOC[buttonNr]:SetText("");
+		warnButtonsOOC[buttonNr]:EnableMouse(false);
+		warnButtonsOOC[buttonNr]:SetAlpha(0);
+		warnButtonsOOC[buttonNr]:Hide();
+		warnButtonsCombat[buttonNr]:SetText("");
+		warnButtonsCombat[buttonNr]:EnableMouse(false);
+		warnButtonsCombat[buttonNr]:Hide();
+	end
+
+	buttonData[buttonNr] = nil;
+end
+
+local function HideWarnFrame()
+	warnFrame:Hide();
+end
 
 local dewdrop = AceLibrary("Dewdrop-2.0");
 
@@ -612,6 +669,27 @@ local function RegisterConfiguration()
 								end
 							end
 					},
+					setLines = {
+						type = 'range',
+						name = L["Number of lines"],
+						desc = L["Sets the number of entries to display in the Warnframe"],
+						order = 7,
+						get = function() return VanasKoSWarnFrame.db.profile.WARN_BUTTONS; end,
+						set = function(v)
+								VanasKoSWarnFrame.db.profile.WARN_BUTTONS = v;
+								VanasKoS_WarnFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTONS *
+											VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT +
+											VanasKoSWarnFrame.db.profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
+								for i=VanasKoSWarnFrame.db.profile.WARN_BUTTONS, VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
+									HideButton(i);
+								end
+								VanasKoSWarnFrame:Update();
+							end,
+						min = 1,
+						max = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX,
+						step = 1,
+						isPercent = false,
+					},
 				}
 			},
 			design = {
@@ -684,11 +762,31 @@ local function RegisterConfiguration()
 				set = function(v) VanasKoSWarnFrame.db.profile.HideIfInactive = v; VanasKoSWarnFrame:Update(); end,
 				get = function() return VanasKoSWarnFrame.db.profile.HideIfInactive; end,
 			},
+			showBorder = {
+				type = 'toggle',
+				name = L["Show border"],
+				desc = L["Show border"],
+				order = 7,
+				set = function(v) 
+						VanasKoSWarnFrame.db.profile.WarnFrameBorder = v;
+						if (v == true) then
+							VanasKoS_WarnFrame:SetBackdrop( {
+								bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+								edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
+								insets = { left = 5, right = 4, top = 5, bottom = 5 },
+							});
+						else
+							VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
+						end
+						VanasKoSWarnFrame:Update();
+					end,
+				get = function() return VanasKoSWarnFrame.db.profile.WarnFrameBorder; end,
+			},
 			reset = {
 				type = 'execute',
 				name = L["Reset Position"],
 				desc= L["Reset Position"],
-				order = 7,
+				order = 8,
 				func = function() VanasKoS_WarnFrame:ClearAllPoints(); VanasKoS_WarnFrame:SetPoint("CENTER"); end,
 			}
 
@@ -727,6 +825,47 @@ local function RegisterConfiguration()
 				set = function(v) VanasKoSWarnFrame.db.profile.HideIfInactive = v; VanasKoSWarnFrame:Update(); end,
 				get = function() return VanasKoSWarnFrame.db.profile.HideIfInactive; end,
 			},
+			setLines = {
+				type = 'range',
+				name = L["Number of lines"],
+				desc = L["Sets the number of entries to display in the Warnframe"],
+				order = 4,
+				get = function() return VanasKoSWarnFrame.db.profile.WARN_BUTTONS; end,
+				set = function(v)
+						VanasKoSWarnFrame.db.profile.WARN_BUTTONS = v;
+						VanasKoS_WarnFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTONS *
+									VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT +
+									VanasKoSWarnFrame.db.profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
+						for i=VanasKoSWarnFrame.db.profile.WARN_BUTTONS, VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
+							HideButton(i);
+						end
+						VanasKoSWarnFrame:Update();
+					end,
+				min = 1,
+				max = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX,
+				step = 1,
+				isPercent = false,
+			},
+			showBorder = {
+				type = 'toggle',
+				name = L["Show border"],
+				desc = L["Show border"],
+				order = 5,
+				set = function(v) 
+						VanasKoSWarnFrame.db.profile.WarnFrameBorder = v;
+						if (v == true) then
+							VanasKoS_WarnFrame:SetBackdrop( {
+								bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+								edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
+								insets = { left = 5, right = 4, top = 5, bottom = 5 },
+							});
+						else
+							VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
+						end
+						VanasKoSWarnFrame:Update();
+					end,
+				get = function() return VanasKoSWarnFrame.db.profile.WarnFrameBorder; end,
+			},
 			reset = {
 				type = 'execute',
 				name = L["Reset Position"],
@@ -743,6 +882,7 @@ function VanasKoSWarnFrame:OnInitialize()
 		Enabled = true,
 		HideIfInactive = false,
 		Locked = false,
+		WarnFrameBorder = true,
 
 		ShowTargetLevel = true,
 		ShowKoS = true,
@@ -767,12 +907,14 @@ function VanasKoSWarnFrame:OnInitialize()
 		MoreAlliedBGColorA = 0.5,
 
 		WARN_FRAME_WIDTH = 130;
-		WARN_FRAME_HEIGHT = 91;
+		WARN_FRAME_HEIGHT_PADDING = 5;
 
 		WARN_TOOLTIP_HEIGHT = 24;
 
 		WARN_BUTTON_HEIGHT = 16;
 		WARN_BUTTONS = 5;
+
+		WARN_BUTTONS_MAX = 20;
 	});
 
 	self.db = VanasKoS:AcquireDBNamespace("WarnFrame");
@@ -964,30 +1106,6 @@ local function SetButton(buttonNr, name, data, faction)
 	buttonData[buttonNr] = name;
 end
 
-local function HideButton(buttonNr)
-	if(InCombatLockdown()) then
-		warnButtonsOOC[buttonNr]:SetText("");
-		warnButtonsOOC[buttonNr]:SetAlpha(0);
-		warnButtonsCombat[buttonNr]:SetText("");
-		warnButtonsCombat[buttonNr]:EnableMouse(false);
-		warnButtonsCombat[buttonNr]:Hide();
-	else
-		warnButtonsOOC[buttonNr]:SetText("");
-		warnButtonsOOC[buttonNr]:EnableMouse(false);
-		warnButtonsOOC[buttonNr]:SetAlpha(0);
-		warnButtonsOOC[buttonNr]:Hide();
-		warnButtonsCombat[buttonNr]:SetText("");
-		warnButtonsCombat[buttonNr]:EnableMouse(false);
-		warnButtonsCombat[buttonNr]:Hide();
-	end
-
-	buttonData[buttonNr] = nil;
-end
-
-local function HideWarnFrame()
-	warnFrame:Hide();
-end
-
 function VanasKoSWarnFrame:Update()
 	-- more hostile
 	if( (nearbyKoSCount+nearbyEnemyCount) > (nearbyFriendlyCount)) then
@@ -1007,7 +1125,7 @@ function VanasKoSWarnFrame:Update()
 
 	if(self.db.profile.ShowKoS) then
 		for k,v in pairs(nearbyKoS) do
-			if(counter < 5) then
+			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS) then
 				SetButton(counter+1, k, dataCache and dataCache[k] or nil, "kos");
 				if(self.db.profile.ShowClassIcons) then
 					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
@@ -1020,7 +1138,7 @@ function VanasKoSWarnFrame:Update()
 
 	if(self.db.profile.ShowHostile) then
 		for k,v in pairs(nearbyEnemy) do
-			if(counter < 5) then
+			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS) then
 				SetButton(counter+1, k, dataCache and dataCache[k] or nil, "enemy");
 				if(self.db.profile.ShowClassIcons) then
 					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
@@ -1033,7 +1151,7 @@ function VanasKoSWarnFrame:Update()
 
 	if(self.db.profile.ShowFriendly) then
 		for k,v in pairs(nearbyFriendly) do
-			if(counter < 5) then
+			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS) then
 				SetButton(counter+1, k, dataCache and dataCache[k] or nil, "friendly");
 				if(self.db.profile.ShowClassIcons) then
 					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);

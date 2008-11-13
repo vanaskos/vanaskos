@@ -1,5 +1,11 @@
 Release Changelog for VanasKoS
 
+3.12 beta:
+- Added proper capitalization of names in the warning frame
+- Added new option to control number of lines in the warning frame
+- Added option to disable the warning frame border
+- Added Deathnight icon to warning frame
+
 3.11 beta:
 - Updated the pvp data gatherer for 2.4+ style combat logs
 

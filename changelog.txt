@@ -1,5 +1,9 @@
 Release Changelog for VanasKoS
 
+3.14:
+- Added option to sort kos lists by creation date
+- Added ability to resize fonts in warning frame
+
 3.13:
 - Removed Parser from the embeds.xml
 - Added workaround to unregister combat log events when the PvPDataGatherer is disabled

@@ -508,7 +508,7 @@ local function CreateWarnFrameFonts(size)
 	warnFont:SetFont("Fonts\\FRIZQT__.TTF", size);
 	warnFont:SetTextColor(1.0, 1.0, 1.0);
 
-	testFontFrame:SetNormalFontObject("VanasKoS_FontKoS");
+	testFontFrame:SetNormalFontObject("VanasKoS_FontNormal");
 	local h = math.floor(testFontFrame:GetTextHeight() + 5);
 	local w = math.floor(testFontFrame:GetTextWidth() + 5) + h;
 	VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT = h;
@@ -1168,7 +1168,7 @@ end
 
 local function GetFactionFont(faction)
 	if(faction == "kos") then
-		return "VanasKoS_FontKoS";
+		return "VanasKoS_FontKos";
 	elseif(faction == "enemy") then
 		return "VanasKoS_FontEnemy";
 	elseif(faction == "friendly") then

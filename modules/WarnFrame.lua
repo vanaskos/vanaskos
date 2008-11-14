@@ -50,6 +50,9 @@ L:RegisterTranslations("enUS", function() return {
 	["Number of lines"] = true,
 	["Sets the number of entries to display in the Warnframe"] = true,
 
+	["Font Size"] = true,
+	["Sets the size of the font in the Warnframe"] = true,
+
 	["Show border"] = true,
 } end );
 
@@ -93,6 +96,9 @@ L:RegisterTranslations("deDE", function() return {
 
 	["Number of lines"] = "Zeilenzahl",
 	["Sets the number of entries to display in the Warnframe"] = "Justiert die Zahl die Einträge im Warnframe",
+
+	["Font Size"] = "Schrifttypgrőße",
+	["Sets the size of the font in the Warnframe"] = "Stellt Schrifttygrőße in dem Warnframe",
 
 	["Show border"] = "Zeige den Rand",
 } end );
@@ -139,6 +145,9 @@ L:RegisterTranslations("frFR", function() return {
 	["Number of lines"] = "Nombre de lignes",
 	["Sets the number of entries to display in the Warnframe"] = "Ajustez le nombre de lignes dans WarnFrame",
 
+	["Font Size"] = "Taille de fonte",
+	["Sets the size of the font in the Warnframe"] = "Ajustez la taille de fonte dans le WarnFrame",
+
 	["Show border"] = "Montrez le cadre",
 } end );
 
@@ -184,6 +193,9 @@ L:RegisterTranslations("koKR", function() return {
 --	["Number of lines"] = true,
 --	["Sets the number of entries to display in the Warnframe"] = true,
 
+--	["Font Size"] = true,
+--	["Sets the size of the font in the Warnframe"] = true,
+
 --	["Show border"] = true,
 } end );
 
@@ -223,6 +235,9 @@ L:RegisterTranslations("esES", function() return {
 
 	["Number of lines"] = "Número de líneas",
 	["Sets the number of entries to display in the Warnframe"] = "Fije la cantidad de líneas en el WarnFrame",
+
+	["Font Size"] = "Talla de fuente",
+	["Sets the size of the font in the Warnframe"] = "Ajuste la talla de fuente en el Warnframe",
 
 	["Show border"] = "Muestre la frontera",
 } end );
@@ -265,9 +280,12 @@ L:RegisterTranslations("ruRU", function() return {
 	["Show class icons"] = "Показывать иконки класса",
 	["Toggles the display of Class icons in the Warnframe"] = "Показывать или нет классовые иконки в окне предупреждений",
 
---	["Number of lines"] = "количецтво линий",
---	["Sets the number of entries to display in the Warnframe"] = true,
---
+	["Number of lines"] = "количецтво линий",
+	["Sets the number of entries to display in the Warnframe"] = "Отрегулирыйте количество линий в окне предупреждений",
+
+	["Font Size"] = "размер шрифта",
+	["Sets the size of the font in the Warnframe"] = "Отрегулируйте размер шрифта в окно предупреждений",
+
 	["Show border"] = "Покажите границу",
 } end );
 
@@ -278,6 +296,8 @@ local warnButtonsOOC = nil;
 local warnButtonsCombat = nil;
 local classIcons = nil;
 local tooltipFrame = nil;
+local testFontFrame = nil;
+local testFontString = nil;
 
 local nearbyKoS = nil;
 local nearbyEnemy = nil;
@@ -463,6 +483,39 @@ local classIconNameToCoords = {
 	["DEATHKNIGHT"] = {0.25, 0.49609375, 0.5, 0.75},
 }
 
+local function CreateWarnFrameFonts(size)
+	local warnFont;
+
+	if (testFontFrame == nil) then
+		testFontFrame = CreateFrame("Button", nil, UIParent);
+		testFontFrame:SetText("XXXXXXXXXXXX [00]");
+		testFontFrame:Hide();
+	end
+
+	warnFont = CreateFont("VanasKoS_FontKos");
+	warnFont:SetFont("Fonts\\FRIZQT__.TTF", size);
+	warnFont:SetTextColor(1.0, 0.82, 0.0);
+
+	warnFont = CreateFont("Fonts\\VanasKoS_FontEnemy");
+	warnFont:SetFont("Fonts\\FRIZQT__.TTF", size);
+	warnFont:SetTextColor(0.9, 0.0, 0.0);
+
+	warnFont = CreateFont("VanasKoS_FontFriendly");
+	warnFont:SetFont("Fonts\\FRIZQT__.TTF", size);
+	warnFont:SetTextColor(0.0, 1.0, 0.0);
+
+	warnFont = CreateFont("VanasKoS_FontNormal");
+	warnFont:SetFont("Fonts\\FRIZQT__.TTF", size);
+	warnFont:SetTextColor(1.0, 1.0, 1.0);
+
+	testFontFrame:SetNormalFontObject("VanasKoS_FontKoS");
+	local h = math.floor(testFontFrame:GetTextHeight() + 5);
+	local w = math.floor(testFontFrame:GetTextWidth() + 5) + h;
+	VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT = h;
+	VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH = w;
+end
+
+
 local function CreateClassIcons()
 	if(classIcons) then
 		return;
@@ -471,47 +524,47 @@ local function CreateClassIcons()
 	classIcons = { };
 	local i = 1;
 	for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
-		local classIcon = CreateFrame("Button", nil, warnFrame);
-		classIcon:SetPoint("LEFT", warnButtonsCombat[i], "LEFT", 5, 0);
-		classIcon:SetWidth(15);
-		classIcon:SetHeight(15);
+			local classIcon = CreateFrame("Button", nil, warnFrame);
+			classIcon:SetPoint("LEFT", warnButtonsCombat[i], "LEFT", 5, 0);
+			classIcon:SetWidth(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
+			classIcon:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
 
-		local texture = classIcon:CreateTexture(nil, "ARTWORK");
-		texture:SetAllPoints(classIcon);
-		texture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes");
+			local texture = classIcon:CreateTexture(nil, "ARTWORK");
+			texture:SetAllPoints(classIcon);
+			texture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes");
 
-		classIcon:Hide();
+			classIcon:Hide();
 
-		classIcons[i] = { classIcon, texture };
-	end
-end
-
-local function setButtonClassIcon(iconNr, class)
-	if(class == nil) then
-		classIcons[iconNr][1]:Hide();
---		classIcons[iconNr][2]:Hide();
-		return;
+			classIcons[i] = { classIcon, texture };
+		end
 	end
 
-	local coords = classIconNameToCoords[class];
-	if(not coords) then
-		VanasKoS:Print("Unknown class " .. class);
-		return;
-	end
---	classIcons[iconNr][2]:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes");
-	classIcons[iconNr][2]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-	classIcons[iconNr][1]:Show();
---	classIcons[iconNr][2]:Show();
-end
+	local function setButtonClassIcon(iconNr, class)
+		if(class == nil) then
+			classIcons[iconNr][1]:Hide();
+	--		classIcons[iconNr][2]:Hide();
+			return;
+		end
 
-local function CreateOOCButtons()
-	if(warnButtonsOOC) then
-		return;
+		local coords = classIconNameToCoords[class];
+		if(not coords) then
+			VanasKoS:Print("Unknown class " .. class);
+			return;
+		end
+	--	classIcons[iconNr][2]:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes");
+		classIcons[iconNr][2]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+		classIcons[iconNr][1]:Show();
+	--	classIcons[iconNr][2]:Show();
 	end
-	warnButtonsOOC = { };
-	local i=1;
-	for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
-		local warnButton = CreateFrame("Button", nil, warnFrame, "SecureActionButtonTemplate");
+
+	local function CreateOOCButtons()
+		if(warnButtonsOOC) then
+			return;
+		end
+		warnButtonsOOC = { };
+		local i=1;
+		for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
+			local warnButton = CreateFrame("Button", nil, warnFrame, "SecureActionButtonTemplate");
 		if(i == 1) then
 			warnButton:SetPoint("TOP", warnFrame, 0, -5);
 		else
@@ -525,7 +578,6 @@ local function CreateOOCButtons()
 		warnButton:RegisterForClicks("LeftButtonUp");
 		warnButton:SetAttribute("type1", "macro");
 		warnButton:SetAttribute("macrotext", "/wave");
-		warnButton:SetNormalFontObject("GameFontNormal");
 
 		warnButton:SetScript("OnEnter", function()
 											ShowTooltip(i);
@@ -594,6 +646,23 @@ end
 
 local function HideWarnFrame()
 	warnFrame:Hide();
+end
+
+local function UpdateWarnSize()
+	warnFrame:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
+	warnFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTONS * VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT +
+				VanasKoSWarnFrame.db.profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
+	for i=1, VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
+		warnButtonsCombat[i]:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
+		warnButtonsCombat[i]:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
+		warnButtonsOOC[i]:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
+		warnButtonsOOC[i]:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
+		classIcons[i][1]:SetWidth(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
+		classIcons[i][1]:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
+		if (i > VanasKoSWarnFrame.db.profile.WARN_BUTTONS) then
+			HideButton(i);
+		end
+	end
 end
 
 local dewdrop = AceLibrary("Dewdrop-2.0");
@@ -677,16 +746,28 @@ local function RegisterConfiguration()
 						get = function() return VanasKoSWarnFrame.db.profile.WARN_BUTTONS; end,
 						set = function(v)
 								VanasKoSWarnFrame.db.profile.WARN_BUTTONS = v;
-								VanasKoS_WarnFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTONS *
-											VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT +
-											VanasKoSWarnFrame.db.profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
-								for i=VanasKoSWarnFrame.db.profile.WARN_BUTTONS, VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
-									HideButton(i);
-								end
+								UpdateWarnSize();
 								VanasKoSWarnFrame:Update();
 							end,
 						min = 1,
 						max = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX,
+						step = 1,
+						isPercent = false,
+					},
+					fontSize = {
+						type = 'range',
+						name = L["Font Size"],
+						desc = L["Sets the size of the font in the Warnframe"],
+						order = 8,
+						get = function() return VanasKoSWarnFrame.db.profile.FontSize; end,
+						set = function(v)
+								VanasKoSWarnFrame.db.profile.FontSize = v;
+								CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize);
+								UpdateWarnSize();
+								VanasKoSWarnFrame:Update();
+							end,
+						min = 6,
+						max = 20,
 						step = 1,
 						isPercent = false,
 					},
@@ -833,16 +914,28 @@ local function RegisterConfiguration()
 				get = function() return VanasKoSWarnFrame.db.profile.WARN_BUTTONS; end,
 				set = function(v)
 						VanasKoSWarnFrame.db.profile.WARN_BUTTONS = v;
-						VanasKoS_WarnFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTONS *
-									VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT +
-									VanasKoSWarnFrame.db.profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
-						for i=VanasKoSWarnFrame.db.profile.WARN_BUTTONS, VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
-							HideButton(i);
-						end
+						UpdateWarnSize();
 						VanasKoSWarnFrame:Update();
 					end,
 				min = 1,
 				max = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX,
+				step = 1,
+				isPercent = false,
+			},
+			fontSize = {
+				type = 'range',
+				name = L["Font Size"],
+				desc = L["Sets the size of the font in the Warnframe"],
+				order = 8,
+				get = function() return VanasKoSWarnFrame.db.profile.FontSize; end,
+				set = function(v)
+						VanasKoSWarnFrame.db.profile.FontSize = v;
+						CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize);
+						UpdateWarnSize();
+						VanasKoSWarnFrame:Update();
+					end,
+				min = 6,
+				max = 20,
 				step = 1,
 				isPercent = false,
 			},
@@ -906,8 +999,12 @@ function VanasKoSWarnFrame:OnInitialize()
 		MoreAlliedBGColorB = 0.0,
 		MoreAlliedBGColorA = 0.5,
 
+		FontSize = 10;
 		WARN_FRAME_WIDTH = 130;
+		WARN_FRAME_WIDTH_PADDING = 5;
+		WARN_FRAME_WIDTH_EMPTY = 130;
 		WARN_FRAME_HEIGHT_PADDING = 5;
+		WARN_FRAME_HEIGHT_EMPTY = 5;
 
 		WARN_TOOLTIP_HEIGHT = 24;
 
@@ -928,6 +1025,7 @@ function VanasKoSWarnFrame:OnEnable()
 	CreateCombatButtons();
 	CreateTooltipFrame();
 	CreateClassIcons();
+	CreateWarnFrameFonts(self.db.profile.FontSize);
 
 	RegisterConfiguration();
 
@@ -1070,14 +1168,14 @@ end
 
 local function GetFactionFont(faction)
 	if(faction == "kos") then
-		return "GameFontNormalSmall";
+		return "VanasKoS_FontKoS";
 	elseif(faction == "enemy") then
-		return "GameFontRedSmall";
+		return "VanasKoS_FontEnemy";
 	elseif(faction == "friendly") then
-		return "GameFontGreenSmall";
+		return "VanasKoS_FontFriendly";
 	end
 
-	return "GameFontWhiteSmall";
+	return "VanasKoS_FontNormal";
 end
 
 local function SetButton(buttonNr, name, data, faction)

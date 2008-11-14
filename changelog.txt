@@ -1,5 +1,10 @@
 Release Changelog for VanasKoS
 
+3.13:
+- Removed Parser from the embeds.xml
+- Added workaround to unregister combat log events when the PvPDataGatherer is disabled
+- Added DRAIN events to the PvPDataGatherer watch list
+
 3.12 beta:
 - Added proper capitalization of names in the warning frame
 - Added new option to control number of lines in the warning frame

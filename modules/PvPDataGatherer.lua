@@ -222,7 +222,9 @@ function VanasKoSPvPDataGatherer:IsOnList(list, name)
 end
 
 function VanasKoSPvPDataGatherer:OnDisable()
-	self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+--FIXME(xilcoy): Cannot unregister for some reason
+--	VanasKoSPvPDataGatherer:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+	self:UnregisterAllEvents();
 end
 
 function VanasKoSPvPDataGatherer:OnEnable()
@@ -268,7 +270,8 @@ function VanasKoSPvPDataGatherer:CombatEvent(...)
 			return;
 		end
 		-- Ignore non-damage spells
-		if (eventType ~= "PARTY_KILL" and not string.match(eventType, ".*_DAMAGE")) then
+		if (eventType ~= "PARTY_KILL" and not (string.match(eventType, ".*_DAMAGE") or (string.match(eventType, ".*_DRAIN")))) then
+
 			return;
 		end
 	end

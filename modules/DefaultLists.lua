@@ -52,7 +52,7 @@ L:RegisterTranslations("enUS", function() return {
 	["sort by level"] = true,
 	["sort by reason"] = true,
 	["sort by last seen"] = true,
-	["sort by create date"] = true,
+	["sort by date created"] = true,
 	["sort by creator"] = true,
 	["sort by owner"] = true,
 
@@ -106,7 +106,7 @@ L:RegisterTranslations("deDE", function() return {
 	["sort by level"] = "Sortieren nach Level",
 	["sort by reason"] = "Sortieren nach Grund",
 	["sort by last seen"] = "Sortieren nach letzter Sichtung",
-	["sort by create date"] = "Sortieren nach erstellen Datum",
+	["sort by date created"] = "Sortieren nach erstellen Datum",
 	["sort by creator"] = "Sortieren nach Ersteller",
 	["sort by owner"] = "Sortieren nach Eigentümer",
 
@@ -151,7 +151,7 @@ L:RegisterTranslations("frFR", function() return {
 	["sort by level"] = "tri par niveau",
 	["sort by reason"] = "tri par raison",
 	["sort by last seen"] = "tri par dernier vu",
-	["sort by create date"] = "tri par créez la date",
+	["sort by date created"] = "tri par créez la date",
 	["sort by creator"] = "tri par auteur",
 	["sort by owner"] = "tri par propriétaire",
 
@@ -209,7 +209,7 @@ L:RegisterTranslations("koKR", function() return {
 	["sort by level"] = "레벨로 정렬",
 	["sort by reason"] = "이유로 정렬",
 	["sort by last seen"] = "최종 발견으로 정렬",
---	["sort by create date"] = true,
+--	["sort by date created"] = true,
 	["sort by creator"] = "제작자순으로 정렬",
 	["sort by owner"] = "소유자순으로 정렬",
 
@@ -262,7 +262,7 @@ L:RegisterTranslations("esES", function() return {
 	["sort by level"] = "ordenar por nivel",
 	["sort by reason"] = "ordenar por razón",
 	["sort by last seen"] = "ordenar por visto por última vez",
-	["sort by create date"] = "ordenar por cree la fecha",
+	["sort by date created"] = "ordenar por cree la fecha",
 	["sort by creator"] = "ordenar por creador",
 	["sort by owner"] = "ordenar por propietario",
 
@@ -316,7 +316,7 @@ L:RegisterTranslations("ruRU", function() return {
 	["sort by level"] = "сортировать по уровню",
 	["sort by reason"] = "сортировать по причине",
 	["sort by last seen"] = "сортировать по последней встрече",
-	["sort by create date"] = "сортировать по создайте дату",
+	["sort by date created"] = "сортировать по создайте дату",
 	["sort by creator"] = "сортировать по создателю",
 	["sort by owner"] = "сортировать по владельцу",
 

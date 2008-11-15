@@ -595,6 +595,23 @@ function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, grea
 		end
 	elseif(greason ~= nil) then
 		msg = format(L["KoS (Guild): %s"], name .. " <" .. guild .. "> (" ..  greason .. ")");
+	else
+		if(creator ~= nil and owner ~= nil) then
+			if(name == nil) then
+				msg = format(L["%sKoS: %s"], creator, "");
+			else
+				msg = format(L["%sKoS: %s"], creator, name);
+			end
+		else
+			if(name == nil) then
+				msg = format(L["KoS: %s"], "");
+			else
+				msg = format(L["KoS: %s"], name);
+			end
+		end
+		if(guild) then
+			msg = msg .. " <" .. guild .. ">";
+		end
 	end
 
 	return msg;

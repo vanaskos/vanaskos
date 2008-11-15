@@ -255,8 +255,10 @@ function VanasKoSGUI:GUIShowChangeDialog()
 		local list = self:GetCurrentList();
 		if(VANASKOS.showList == "PLAYERKOS" or VANASKOS.showList == "GUILDKOS" or VANASKOS.showList == "HATELIST" or VANASKOS.showList == "NICELIST") then
 			reason = list[string.lower(name)].reason;
+			if (reason ~= nil and reason ~= "") then
+				getglobal(dialog:GetName() .. "EditBox"):SetText(reason);
+			end
 		end
-		getglobal(dialog:GetName() .. "EditBox"):SetText(reason);
 	end
 end
 

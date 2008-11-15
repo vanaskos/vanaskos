@@ -1,5 +1,11 @@
 Release Changelog for VanasKoS
 
+3.15:
+- fixed bug in locale for "sort by date created"
+- fixed reason edit box when no previous reason was given
+- added better chat notifications for targets with no reason given
+- fixed typo in Kos font causing errors anytime a kos player was found
+
 3.14:
 - Added option to sort kos lists by creation date
 - Added ability to resize fonts in warning frame

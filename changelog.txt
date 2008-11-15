@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+trunk:
+- Added ability to grow kos list from the bottom of the warning frame
+
 3.16:
 - fixed another font problem
 

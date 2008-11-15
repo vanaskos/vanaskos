@@ -29,6 +29,9 @@ L:RegisterTranslations("enUS", function() return {
 	["More Allied than Hostiles Background Color"] = true,
 	["Sets the more Allied than Hostiles Background Color and Opacity"] = true,
 
+	["Grow list upwards"] = true,
+	["Grow list from the bottom of the WarnFrame"] = true,
+
 	["Reset Background Colors"] = true,
 	["Resets all Background Colors to default Settings"] = true,
 	["Show additional Information on Mouse Over"] = true,
@@ -75,6 +78,9 @@ L:RegisterTranslations("deDE", function() return {
 
 	["More Allied than Hostiles Background Color"] = "Mehr Verbuendete als Feinde Hintergrundfarbe",
 	["Sets the more Allied than Hostiles Background Color and Opacity"] = "Setzt die Hintergrundfarbe und Transparenz wenn mehr Verbuendete als Feinde da sind",
+
+	["Grow list upwards"] = "Wachst die aufwärts Liste",
+	["Grow list from the bottom of the WarnFrame"] = "Wachst Liste der Unterseite des WarnFrame",
 
 	["Reset Background Colors"] = "Hintergrundfarben zuruecksetzen",
 	["Resets all Background Colors to default Settings"] = "Alle Hintergrundfarben auf ihre Standardwerte zuruecksetzen",
@@ -123,6 +129,9 @@ L:RegisterTranslations("frFR", function() return {
 	["More Allied than Hostiles Background Color"] = "Couleur de fond pour cible amical",
 	["Sets the more Allied than Hostiles Background Color and Opacity"] = "Choisir la couleur de fond pour cible amical",
 
+	["Grow list upwards"] = "Accroissez la liste ascendante",
+	["Grow list from the bottom of the WarnFrame"] = "Accroissez la liste du bas du WarnFrame",
+
 	["Reset Background Colors"] = "Remettre par d\195\169faut",
 	["Resets all Background Colors to default Settings"] = "Remet par d\195\169faut la couleur de fond et l'opacit\195\169",
 
@@ -138,9 +147,8 @@ L:RegisterTranslations("frFR", function() return {
 
 	["Level"] = "Level",
 	["No Information Available"] = "No Information Available",
-
---	["Show class icons"] = true,
---	["Toggles the display of Class icons in the Warnframe"] = true,
+	["Show class icons"] = "Montrez les graphismes de classe",
+	["Toggles the display of Class icons in the Warnframe"] = "Afficher/cacher les graphismes de classe dans WarnFrame",
 
 	["Number of lines"] = "Nombre de lignes",
 	["Sets the number of entries to display in the Warnframe"] = "Ajustez le nombre de lignes dans WarnFrame",
@@ -171,6 +179,9 @@ L:RegisterTranslations("koKR", function() return {
 	["More Allied than Hostiles Background Color"] = "우호적 배경 색상",
 	["Sets the more Allied than Hostiles Background Color and Opacity"] = "우호적 배경 색상과 투명도를 설정합니다.",
 
+	["Grow list upwards"] = "상승 명부를 성장하십시오",
+	["Grow list from the bottom of the WarnFrame"] = "경고 창의 바닥에서 명부를 위로 성장하십시오",
+
 	["Reset Background Colors"] = "배경 색상 초기화",
 	["Resets all Background Colors to default Settings"] = "모든 배경 색상을 기본 설정으로 초기화합니다.",
 
@@ -186,17 +197,16 @@ L:RegisterTranslations("koKR", function() return {
 
 	["Level"] = "레벨",
 	["No Information Available"] = "이용가능한 정보가 없습니다.",
-
 	["Show class icons"] = "직업 아이콘 표시",
 	["Toggles the display of Class icons in the Warnframe"] = "경고창에 직업 아이콘을 표시합니다.",
 
---	["Number of lines"] = true,
---	["Sets the number of entries to display in the Warnframe"] = true,
+	["Number of lines"] = "행수",
+	["Sets the number of entries to display in the Warnframe"] = "경고 창에 있는 전시에 입장의 수를 놓는다",
 
---	["Font Size"] = true,
---	["Sets the size of the font in the Warnframe"] = true,
+	["Font Size"] = "폰트 사이즈",
+	["Sets the size of the font in the Warnframe"] = "경고 창에 있는 글꼴의 크기를 놓는다",
 
---	["Show border"] = true,
+	["Show border"] = "쇼 국경",
 } end );
 
 L:RegisterTranslations("esES", function() return {
@@ -219,8 +229,14 @@ L:RegisterTranslations("esES", function() return {
 	["More Allied than Hostiles Background Color"] = "Color de fondo de más aliados que hostiles",
 	["Sets the more Allied than Hostiles Background Color and Opacity"] = "Establece el color de fondo y la opacidad de más aliados que hostiles",
 
+	["Grow list upwards"] = "Crezca la lista ascendente",
+	["Grow list from the bottom of the WarnFrame"] = "Crezca la lista de la parte inferior del WarnFrame",
+
 	["Reset Background Colors"] = "Reestablecer Colores de Fondo",
 	["Resets all Background Colors to default Settings"] = "Reestablece todos los colores de fondo a los ajustes por defecto",
+
+	["Show additional Information on Mouse Over"] = "Demuestre la información adicional encendido mouse-sobre",
+	["Toggles the display of additional Information on Mouse Over"] = "Acciona la palanca de la exhibición de la información adicional encendido mouse-sobre",
 
 	["Configuration"] = "Configuración",
 	["KoS/Enemy/Friendly Warning Window"] = "Ventana de Aviso de KoS/Enemigo/Amistoso",
@@ -230,8 +246,9 @@ L:RegisterTranslations("esES", function() return {
 	["Reset Position"] = "Reestablecer Posición",
 
 	["Level"] = "Nivel",
---	["Show class icons"] = true,
---	["Toggles the display of Class icons in the Warnframe"] = true,
+	["No Information Available"] = "Ninguna información disponible",
+	["Show class icons"] = "Demuestre los iconos de la clase",
+	["Toggles the display of Class icons in the Warnframe"] = "Acciona la palanca de la exhibición de los iconos de la clase en el Warnframe",
 
 	["Number of lines"] = "Número de líneas",
 	["Sets the number of entries to display in the Warnframe"] = "Fije la cantidad de líneas en el WarnFrame",
@@ -261,6 +278,9 @@ L:RegisterTranslations("ruRU", function() return {
 
 	["More Allied than Hostiles Background Color"] = "Цвет фона для \"Больше дружественных, чем враждебных\"",
 	["Sets the more Allied than Hostiles Background Color and Opacity"] = "Задает цвет и прозрачность фона для \"Больше дружественных, чем враждебных\"",
+
+	["Grow list upwards"] = "Вырастите список верхний",
+	["Grow list from the bottom of the WarnFrame"] = "Вырастите список от дна WarnFrame",
 
 	["Reset Background Colors"] = "Сбросить Цвета Фона",
 	["Resets all Background Colors to default Settings"] = "Сбросить все цвета к значениям по умолчанию",
@@ -542,7 +562,6 @@ local function CreateClassIcons()
 	local function setButtonClassIcon(iconNr, class)
 		if(class == nil) then
 			classIcons[iconNr][1]:Hide();
-	--		classIcons[iconNr][2]:Hide();
 			return;
 		end
 
@@ -551,10 +570,8 @@ local function CreateClassIcons()
 			VanasKoS:Print("Unknown class " .. class);
 			return;
 		end
-	--	classIcons[iconNr][2]:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes");
 		classIcons[iconNr][2]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
 		classIcons[iconNr][1]:Show();
-	--	classIcons[iconNr][2]:Show();
 	end
 
 	local function CreateOOCButtons()
@@ -611,12 +628,8 @@ local function CreateCombatButtons()
 		warnButton:RegisterForClicks("LeftButtonUp");
 		warnButton:SetFrameStrata("HIGH");
 
-		warnButton:SetScript("OnEnter", function()
-											ShowTooltip(i);
-										end);
-		warnButton:SetScript("OnLeave", function()
-											tooltipFrame:Hide();
-										end);
+		warnButton:SetScript("OnEnter", function() ShowTooltip(i); end);
+		warnButton:SetScript("OnLeave", function() tooltipFrame:Hide(); end);
 
 		warnButton:Hide();
 
@@ -641,6 +654,9 @@ local function HideButton(buttonNr)
 		warnButtonsCombat[buttonNr]:Hide();
 	end
 
+	if (VanasKoSWarnFrame.db.profile.ShowClassIcons) then
+		setButtonClassIcon(buttonNr, nil);
+	end
 	buttonData[buttonNr] = nil;
 end
 
@@ -806,11 +822,22 @@ local function RegisterConfiguration()
 						set = function(r, g, b, a) SetColor("MoreAlliedBGColor", r, g, b, a); end,
 						hasAlpha = true
 					},
+					growUp = {
+						type = 'toggle',
+						name = L["Grow list upwards"],
+						desc = L["Grow list from the bottom of the WarnFrame"],
+						order = 4,
+						get = function () return VanasKoSWarnFrame.db.profile.GrowUp; end,
+						set = function (v)
+							VanasKoSWarnFrame.db.profile.GrowUp = v;
+							VanasKoSWarnFrame:Update();
+						end,
+					},
 					resetBackgroundColors = {
 						type = 'execute',
 						name = L["Reset Background Colors"],
 						desc = L["Resets all Background Colors to default Settings"],
-						order = 4,
+						order = 5,
 						func = function()
 									SetColor("MoreHostileBGColor", 1.0, 0.0, 0.0, 0.5);
 									SetColor("MoreAlliedBGColor", 0.0, 1.0, 0.0, 0.5);
@@ -959,6 +986,17 @@ local function RegisterConfiguration()
 					end,
 				get = function() return VanasKoSWarnFrame.db.profile.WarnFrameBorder; end,
 			},
+			growUp = {
+				type = 'toggle',
+				name = L["Grow list upwards"],
+				desc = L["Grow list from the bottom of the WarnFrame"],
+				order = 6,
+				get = function () return VanasKoSWarnFrame.db.profile.GrowUp; end,
+				set = function (v)
+					VanasKoSWarnFrame.db.profile.GrowUp = v;
+					VanasKoSWarnFrame:Update();
+				end,
+			},
 			reset = {
 				type = 'execute',
 				name = L["Reset Position"],
@@ -983,6 +1021,7 @@ function VanasKoSWarnFrame:OnInitialize()
 		ShowFriendly = true,
 		ShowMouseOverInfos = true,
 		ShowClassIcons = true,
+		GrowUp = false,
 
 		DefaultBGColorR = 0.5,
 		DefaultBGColorG = 0.5,
@@ -1054,7 +1093,7 @@ function VanasKoSWarnFrame:OnDisable()
 	warnFrame:Hide();
 end
 
-local function RemovePlayer(faction, name)
+local function RemovePlayer(name)
 	if(nearbyKoS[name]) then
 		nearbyKoS[name] = nil;
 		nearbyKoSCount = nearbyKoSCount - 1;
@@ -1081,6 +1120,7 @@ end
 
 -- /Script VanasKoSWarnFrame:Player_Detected("xxx", nil, "enemy"); VanasKoSWarnFrame:Player_Detected("xxx2", nil, "enemy");
 -- /script local x = {  ['name'] = 'x', ['faction'] = 'enemy', ['class'] = 'Poser',  ['race'] = 'GM', ['level'] = "31336"} ; for i=1,10000 do x.name = "xxx" .. math.random(1, 1000); VanasKoSWarnFrame:Player_Detected(x); end
+local UNKNOWNLOWERCASE = UNKNOWN:lower();
 local UNKNOWNLOWERCASE = UNKNOWN:lower();
 
 function VanasKoSWarnFrame:Player_Detected(data)
@@ -1126,11 +1166,10 @@ function VanasKoSWarnFrame:Player_Detected(data)
 		dataCache[name]['race'] = data.race;
 	end
 
---	self:CancelScheduledEvent("VanasKoSWarnFrameRemovePlayer_" .. name, RemovePlayer, faction, name);
 	if(faction == "kos") then
-		self:ScheduleEvent("VanasKoSWarnFrameRemovePlayer_" .. name, RemovePlayer, 60, faction, name);
+		self:ScheduleEvent("VanasKoSWarnFrameRemovePlayer_" .. name, RemovePlayer, 60, name);
 	else
-		self:ScheduleEvent("VanasKoSWarnFrameRemovePlayer_" .. name, RemovePlayer, 10, faction, name);
+		self:ScheduleEvent("VanasKoSWarnFrameRemovePlayer_" .. name, RemovePlayer, 10, name);
 	end
 
 	self:Update();
@@ -1229,58 +1268,73 @@ function VanasKoSWarnFrame:Update()
 	end
 
 	local counter = 0;
+	if (self.db.profile.GrowUp == true) then
+		counter = self.db.profile.WARN_BUTTONS - 1;
+	end
 
 	if(self.db.profile.ShowKoS) then
 		for k,v in pairs(nearbyKoS) do
-			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS) then
+			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS and counter >= 0) then
 				SetButton(counter+1, k, dataCache and dataCache[k] or nil, "kos");
 				if(self.db.profile.ShowClassIcons) then
 					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
 				end
 			end
 
-			counter = counter + 1;
+			if (self.db.profile.GrowUp == true) then
+				counter = counter - 1;
+			else
+				counter = counter + 1;
+			end
 		end
 	end
 
 	if(self.db.profile.ShowHostile) then
 		for k,v in pairs(nearbyEnemy) do
-			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS) then
+			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS and counter >= 0) then
 				SetButton(counter+1, k, dataCache and dataCache[k] or nil, "enemy");
 				if(self.db.profile.ShowClassIcons) then
 					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
 				end
 			end
 
-			counter = counter + 1;
+			if (self.db.profile.GrowUp == true) then
+				counter = counter - 1;
+			else
+				counter = counter + 1;
+			end
 		end
 	end
 
 	if(self.db.profile.ShowFriendly) then
 		for k,v in pairs(nearbyFriendly) do
-			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS) then
+			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS and counter >= 0) then
 				SetButton(counter+1, k, dataCache and dataCache[k] or nil, "friendly");
 				if(self.db.profile.ShowClassIcons) then
 					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
 				end
 			end
 
-			counter = counter + 1;
+			if (self.db.profile.GrowUp == true) then
+				counter = counter - 1;
+			else
+				counter = counter + 1;
+			end
 		end
 	end
 
-	local i=counter;
-	for i=counter,self.db.profile.WARN_BUTTONS-1 do
-		HideButton(i+1);
-		if(self.db.profile.ShowClassIcons) then
-			setButtonClassIcon(i + 1, nil);
+	for i=0,self.db.profile.WARN_BUTTONS-1 do
+		if ((i <= counter and self.db.profile.GrowUp == true) or
+			(i >= counter and self.db.profile.GrowUp == false)) then
+			HideButton(i+1);
 		end
 	end
 
 	-- show or hide/fade frame according to settings
 	if(self.db.profile.Enabled) then
 		if(self.db.profile.HideIfInactive) then
-			if(counter > 0) then
+			if((counter > 0 and self.db.profile.GrowUp == false) or
+				(counter < self.db.profile.WARN_BUTTONS and self.db.profile.GrowUp == true)) then
 				if(not warnFrame:IsVisible()) then
 					UIFrameFadeIn(warnFrame, 0.1, 0.0, 1.0);
 					warnFrame:Show();

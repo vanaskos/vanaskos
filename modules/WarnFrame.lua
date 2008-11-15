@@ -496,7 +496,7 @@ local function CreateWarnFrameFonts(size)
 	warnFont:SetFont("Fonts\\FRIZQT__.TTF", size);
 	warnFont:SetTextColor(1.0, 0.82, 0.0);
 
-	warnFont = CreateFont("Fonts\\VanasKoS_FontEnemy");
+	warnFont = CreateFont("VanasKoS_FontEnemy");
 	warnFont:SetFont("Fonts\\FRIZQT__.TTF", size);
 	warnFont:SetTextColor(0.9, 0.0, 0.0);
 

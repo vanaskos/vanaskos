@@ -163,7 +163,7 @@ L:RegisterTranslations("frFR", function() return {
 
 	["%s (%s) - Reason: %s"] = "%s (%s) - Raison: %s",
 	["[%s] %s (%s) - Reason: %s"] = "[%s] %s (%s) - Raison: %s",
---	["Show only my entries"] = true,
+	["Show only my entries"] = "Montrez seulement mes entrées",
 	["_Reason Unknown_"] = "inconnu",
 } end);
 
@@ -201,7 +201,7 @@ L:RegisterTranslations("koKR", function() return {
 	["by level"] = "레벨순",
 	["by reason"] = "이유순",
 	["by last seen"] = "최종 발견순",
---	["by create date"] = true,
+	["by create date"] = "에 의하여 날짜를 창조하십시오",
 	["by creator"] = "제작자순",
 	["by owner"] = "소유자순",
 
@@ -209,7 +209,7 @@ L:RegisterTranslations("koKR", function() return {
 	["sort by level"] = "레벨로 정렬",
 	["sort by reason"] = "이유로 정렬",
 	["sort by last seen"] = "최종 발견으로 정렬",
---	["sort by date created"] = true,
+	["sort by date created"] = "날짜까지 종류는 창조했다",
 	["sort by creator"] = "제작자순으로 정렬",
 	["sort by owner"] = "소유자순으로 정렬",
 
@@ -268,9 +268,9 @@ L:RegisterTranslations("esES", function() return {
 
 	["_Reason Unknown_"] = "desconocida",
 
---	["%s (%s) - Reason: %s"] = true,
---	["[%s] %s (%s) - Reason: %s"] = true,
---	["Show only my entries"] = true,
+	["%s (%s) - Reason: %s"] = "%s (%s) - Razón: %s",
+	["[%s] %s (%s) - Reason: %s"] = "[%s] %s (%s) - Razón: %s",
+	["Show only my entries"] = "Muestre solamente mis entradas",
 } end);
 
 L:RegisterTranslations("ruRU", function() return {

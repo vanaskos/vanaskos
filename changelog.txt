@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+3.16:
+- fixed another font problem
+
 3.15:
 - fixed bug in locale for "sort by date created"
 - fixed reason edit box when no previous reason was given

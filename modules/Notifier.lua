@@ -17,6 +17,7 @@ SML:Register("sound", "VanasKoS: String fading", "Interface\\AddOns\\VanasKoS\\A
 SML:Register("sound", "VanasKoS: Zoidbergs whooping", "Interface\\AddOns\\VanasKoS\\Artwork\\Zoidberg-Whoopwhoopwhoop.mp3");
 
 L:RegisterTranslations("enUS", function() return {
+	["Enemy Detected: %s%s"] = "|cffffff00Enemy Detected:|r |cffff0000%s%s|r",
 	["KoS: %s"] = "KoS: %s",
 	["KoS (Guild): %s"] = "KoS (Guild): %s",
 	["Nicelist: %s"] = "Nicelist: %s",
@@ -34,11 +35,13 @@ L:RegisterTranslations("enUS", function() return {
 	["Notification through Target Portrait"] = true,
 	["Notification through flashing Border"] = true,
 	["Notify only on my KoS-Targets"] = true,
+	["Notify of any enemy target"] = true,
 	["Notify in Shattrath"] = true,
 	["Additional Reason Window"] = true,
 	["Locked"] = true,
 
 	["Sound on KoS detection"] = true,
+	["Sound on enemy detection"] = true,
 	["Notification Interval (seconds)"] = true,
 	["Enabled"]  = true,
 	["None"] = true,
@@ -272,13 +275,22 @@ function VanasKoSNotifier:UpdateAndCreateReasonFrame()
 	end
 end
 
-local function SetSound(value)
-	VanasKoSNotifier.db.profile.playName = value;
+local function SetSound(faction, value)
+	if (faction == "enemy") then
+		VanasKoSNotifier.db.profile.enemyPlayName = value;
+	else
+		VanasKoSNotifier.db.profile.playName = value;
+	end
+	
 	VanasKoSNotifier:PlaySound(value);
 end
 
-local function GetSound()
-	return VanasKoSNotifier.db.profile.playName;
+local function GetSound(faction)
+	if (faction == "enemy") then
+		return VanasKoSNotifier.db.profile.enemyPlayName;
+	else
+		return VanasKoSNotifier.db.profile.playName;
+	end
 end
 
 function VanasKoSNotifier:OnInitialize()
@@ -288,6 +300,7 @@ function VanasKoSNotifier:OnInitialize()
 		notifyChatframe = true,
 		notifyTargetFrame = true,
 		notifyOnlyMyTargets = true,
+		notifyEnemyTargets = false,
 		notifyFlashingBorder = true,
 		notifyInShattrathEnabled = false,
 		notifyExtraReasonFrameEnabled = false,
@@ -297,6 +310,7 @@ function VanasKoSNotifier:OnInitialize()
 		NotifyTimerInterval = 60,
 
 		playName = "VanasKoS: String fading",
+		enemyPlayName = "None",
 	});
 
 	self.db = VanasKoS:AcquireDBNamespace("Notifier");
@@ -364,15 +378,23 @@ function VanasKoSNotifier:OnInitialize()
 				type = 'toggle',
 				name = L["Notify only on my KoS-Targets"],
 				desc = L["Notify only on my KoS-Targets"],
-				order = 6,
+				order = 7,
 				set = function(v) VanasKoSNotifier.db.profile.notifyOnlyMyTargets = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyOnlyMyTargets; end,
+			},
+			notifyenemy = {
+				type = 'toggle',
+				name = L["Notify of any enemy target"],
+				desc = L["Notify of any enemy target"],
+				order = 7,
+				set = function(v) VanasKoSNotifier.db.profile.notifyEnemyTargets = v; end,
+				get = function() return VanasKoSNotifier.db.profile.notifyEnemyTargets; end,
 			},
 			inshattrath = {
 				type = 'toggle',
 				name = L["Notify in Shattrath"],
 				desc = L["Notify in Shattrath"],
-				order = 7,
+				order = 8,
 				set = function(v) VanasKoSNotifier.db.profile.notifyInShattrathEnabled = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyInShattrathEnabled; end,
 			},
@@ -380,7 +402,7 @@ function VanasKoSNotifier:OnInitialize()
 				type = 'toggle',
 				name = L["Show PvP-Stats in Tooltip"],
 				desc = L["Show PvP-Stats in Tooltip"],
-				order = 8,
+				order = 9,
 				set = function(v) VanasKoSNotifier.db.profile.notifyShowPvPStats = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyShowPvPStats; end,
 			},
@@ -388,7 +410,7 @@ function VanasKoSNotifier:OnInitialize()
 				type = 'group',
 				name = L["Additional Reason Window"],
 				desc = L["Additional Reason Window"],
-				order = 9,
+				order = 10,
 				args = {
 					enabled = {
 						type = 'toggle',
@@ -415,17 +437,26 @@ function VanasKoSNotifier:OnInitialize()
 				min = 0,
 				max = 600,
 				step = 5,
-				order = 10,
+				order = 11,
 				set = function(value) VanasKoSNotifier.db.profile.NotifyTimerInterval = value; end,
 				get = function() return VanasKoSNotifier.db.profile.NotifyTimerInterval; end,
 			},
-			sound = {
+			kosSound = {
 				type = 'text',
 				name = L["Sound on KoS detection"],
 				desc = L["Sound on KoS detection"],
-				order = 11,
-				get = GetSound,
-				set = SetSound,
+				order = 12,
+				get = function() return GetSound("kos"); end,
+				set = function(value) SetSound("kos", value); end,
+				validate = SML:List("sound");
+			},
+			enemySound = {
+				type = 'text',
+				name = L["Sound on enemy detection"],
+				desc = L["Sound on enemy detection"],
+				order = 13,
+				get = function() return GetSound("enemy"); end,
+				set = function(value) SetSound("enemy", value); end,
 				validate = SML:List("sound");
 			},
 		},
@@ -622,33 +653,70 @@ local function ReenableNotifications()
 end
 
 function VanasKoSNotifier:Player_Detected(data)
-	assert(data.name ~= nil);
+	assert(data.faction ~= nil);
 
 	if (notifyAllowed ~= true) then
-		return nil;
-	end
-
-	if(not VanasKoS:BooleanIsOnList("PLAYERKOS", data.name) and not VanasKoS:BooleanIsOnList("GUILDKOS", data.guild)) then
 		return;
 	end
+
+	-- don't notify if we're in shattrah
+	if(VanasKoSDataGatherer:IsInShattrath() and not self.db.profile.notifyInShattrathEnabled) then
+		return;
+	end
+
+	if (data.faction == "kos") then
+		VanasKoSNotifier:KosPlayer_Detected(data);
+	elseif (data.faction == "enemy") then
+		VanasKoSNotifier:EnemyPlayer_Detected(data);
+	end
+end
+
+function VanasKoSNotifier:EnemyPlayer_Detected(data)
+	assert(data.name ~= nil);
+
+	if(self.db.profile.notifyEnemyTargets == false) then
+		return;
+	end
+	notifyAllowed = false;
+	-- Reallow Notifies in NotifyTimeInterval Time
+	self:ScheduleEvent("VanasKoS_Notifications_Reenable", ReenableNotifications, self.db.profile.NotifyTimerInterval);
+
+	local level = "";
+	if (data.level ~= nil) then
+		if (data.level == -1) then
+			level = "[??] ";
+		else
+			level = "[" .. data.level .. "] ";
+		end
+	end
+
+	local msg = format(L["Enemy Detected: %s%s"], level, data.name);
+	if (data.guild) then
+		msg = msg .. " <" .. data.guild .. ">";
+	end
+	if(self.db.profile.notifyVisual) then
+		UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME);
+	end
+	if(self.db.profile.notifyChatframe) then
+		VanasKoS:Print(msg);
+	end
+	if(self.db.profile.notifyFlashingBorder) then
+		self:FlashNotify();
+	end
+	self:PlaySound(self.db.profile.enemyPlayName);
+end
+
+function VanasKoSNotifier:KosPlayer_Detected(data)
+	assert(data.name ~= nil);
 
 	-- get reasons for kos (if any)
 	local pdata = VanasKoS:IsOnList("PLAYERKOS", data.name);
 	local gdata = VanasKoS:IsOnList("GUILDKOS", data.guild);
 
-	-- don't notify if we're in shattrah
-	if((pdata and pdata.reason ~= nil or gdata and gdata.reason ~= nil) and VanasKoSDataGatherer:IsInShattrath()) then
-		if(not self.db.profile.notifyInShattrathEnabled) then
-			return;
-		end
-	end
-
 	local msg = self:GetKoSString(data.name, data and data.guild, pdata and pdata.reason, pdata and pdata.creator, pdata and pdata.owner, gdata and gdata.reason, gdata and gdata.creator, gdata and gdata.owner);
 
-	if(self.db.profile.notifyOnlyMyTargets) then
-		if( (pdata and pdata.owner ~= nil) or (gdata and gdata.owner ~= nil)) then
-			return;
-		end
+	if(self.db.profile.notifyOnlyMyTargets and ((pdata and pdata.owner ~= nil) or (gdata and gdata.owner ~= nil))) then
+		return;
 	end
 
 	notifyAllowed = false;

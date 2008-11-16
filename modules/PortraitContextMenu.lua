@@ -51,6 +51,10 @@ function VanasKoSPortraitContextMenu:OnInitialize()
 	});
 	self.db = VanasKoS:AcquireDBNamespace("PortraitContextMenu");
 
+	-- FIXME(xilcoy): Modifying the UnitPopupButtons taints the player
+	-- context menu, this is a "known issue" according to the blizzard
+	-- forums. Which may mean this will work again someday...
+	--[[
 	VanasKoSGUI:AddConfigOption("PortraitContextMenu",
 		{
 			type = 'group',
@@ -66,12 +70,14 @@ function VanasKoSPortraitContextMenu:OnInitialize()
 				}
 			}
 		});
+	]]
 end
 
 local listsToAdd = { "PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST" };
 
 function VanasKoSPortraitContextMenu:OnEnable()
-	if(not self.db.profile.Enabled) then
+	-- FIXME(xilcoy)
+	if(true or not self.db.profile.Enabled) then
 		return;
 	end
 	for k,v in pairs(listsToAdd) do

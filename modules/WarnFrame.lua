@@ -1333,8 +1333,7 @@ function VanasKoSWarnFrame:Update()
 	-- show or hide/fade frame according to settings
 	if(self.db.profile.Enabled) then
 		if(self.db.profile.HideIfInactive) then
-			if((counter > 0 and self.db.profile.GrowUp == false) or
-				(counter < self.db.profile.WARN_BUTTONS and self.db.profile.GrowUp == true)) then
+			if((counter > 0 and self.db.profile.GrowUp == false) or (counter < (self.db.profile.WARN_BUTTONS - 1) and self.db.profile.GrowUp == true)) then
 				if(not warnFrame:IsVisible()) then
 					UIFrameFadeIn(warnFrame, 0.1, 0.0, 1.0);
 					warnFrame:Show();

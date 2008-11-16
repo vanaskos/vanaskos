@@ -404,7 +404,7 @@ local function SortByCreateDate(val1, val2)
 			cmp2 = list[val2].created;
 		end
 
-		if(cmp1 < cmp2) then
+		if(cmp1 > cmp2) then
 			return true;
 		else
 			return false;

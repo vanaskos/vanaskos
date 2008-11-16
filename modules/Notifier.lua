@@ -17,7 +17,7 @@ SML:Register("sound", "VanasKoS: String fading", "Interface\\AddOns\\VanasKoS\\A
 SML:Register("sound", "VanasKoS: Zoidbergs whooping", "Interface\\AddOns\\VanasKoS\\Artwork\\Zoidberg-Whoopwhoopwhoop.mp3");
 
 L:RegisterTranslations("enUS", function() return {
-	["Enemy Detected: %s%s"] = "|cffffff00Enemy Detected:|r |cffff0000%s%s|r",
+	["Enemy Detected:|cffff0000"] = true,
 	["KoS: %s"] = "KoS: %s",
 	["KoS (Guild): %s"] = "KoS (Guild): %s",
 	["Nicelist: %s"] = "Nicelist: %s",
@@ -681,19 +681,23 @@ function VanasKoSNotifier:EnemyPlayer_Detected(data)
 	-- Reallow Notifies in NotifyTimeInterval Time
 	self:ScheduleEvent("VanasKoS_Notifications_Reenable", ReenableNotifications, self.db.profile.NotifyTimerInterval);
 
-	local level = "";
+	local msg = format(L["Enemy Detected:|cffff0000"]);
 	if (data.level ~= nil) then
-		if (data.level == -1) then
-			level = "[??] ";
+		if (data.level < 1) then
+			msg = msg .. " [??]";
 		else
-			level = "[" .. data.level .. "] ";
+			msg = msg .. " [" .. data.level .. "]";
 		end
 	end
 
-	local msg = format(L["Enemy Detected: %s%s"], level, data.name);
-	if (data.guild) then
+	msg = msg .. " " .. data.name;
+
+	if (data.guild ~= nil) then
 		msg = msg .. " <" .. data.guild .. ">";
 	end
+
+	msg = msg .. "|r";
+
 	if(self.db.profile.notifyVisual) then
 		UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME);
 	end

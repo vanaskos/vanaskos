@@ -99,6 +99,7 @@ function VanasKoSGUICreate:UpdateAboutText()
 		.. "<h2><br />|cFF00FF00Authors:|r</h2><br />"
 		.. "<h2>|cFFFFFFFFFRRjak |r</h2><br />"
 		.. "<h2>|cFFFFFFFFVane (|cFF0000FFEU-Aegwynn|r)|r</h2><br />"
+		.. "<h2>|cFFFFFFFFXilcoy (|cFF0000FFUS-Lightning's Blade|r)|r</h2><br />"
 		.. "<h2><br />|cFF00FF00Localization:|r</h2><br />"
 		.. "<h2>French: |cFFFFFFFFScrapy (|cFF0000FFEU-Archimonde|r)|r</h2><br />"
 		.. "<h2>Korean: |cFFFFFFFFFenlis|r</h2><br />"

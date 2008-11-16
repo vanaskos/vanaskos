@@ -2,7 +2,7 @@
 ## Title: VanasKoS |cff7fff7f -Ace2-|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS
-## Version: 3.17-$Rev$
+## Version: 3.18-$Rev$
 ## Notes: KoS-Management Tool
 ## Notes-esES: Herramienta de gestión de KoS (Matar al Ver)
 ## Notes-zhCN: 仇敌管理工具，中文官方版本由Taburiss汉化
@@ -12,7 +12,7 @@
 ## OptionalDeps: Ace2, DewdropLib, Cartographer, TouristLib, Babble-Zone-2.2, GraphLib, TabletLib, SharedMediaLib, Waterfall-1.0
 ## X-Embeds: Ace2, DewdropLib, TouristLib, Babble-Zone-2.2, GraphLib, TabletLib, SharedMediaLib
 ## X-eMail: boredvana@gmail.com
-## X-Date: 2008-11-14
+## X-Date: 2008-11-16
 ## X-Category: Battlegrounds/PvP
 ## X-AceForum: http://www.wowace.com/forums/index.php?topic=3938.0
 ## X-License: CreativeCommons-Attribution-NonCommercial-ShareAlike-2.5

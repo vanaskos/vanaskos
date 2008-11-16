@@ -1,5 +1,11 @@
 Release Changelog for VanasKoS
 
+3.18 beta:
+- Uncomment sync button code.
+- Added option to notify when any enemy player is detected.
+- Fixed bug in warn frame not hiding when list grows upwards
+- Changed "sort by date" order so newest is on top
+
 3.17 beta:
 - Added ability to grow kos list from the bottom of the warning frame
 - Commented out code allowing kos addition from player portrait menu

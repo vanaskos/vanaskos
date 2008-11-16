@@ -268,13 +268,13 @@ function VanasKoSPvPDataGatherer:RenderButton(list, buttonIndex, button, key, va
 end
 
 function VanasKoSPvPDataGatherer:ShowList(list)
---	VanasKoSListFrameSyncButton:Disable();
+	VanasKoSListFrameSyncButton:Disable();
 	VanasKoSListFrameChangeButton:Disable();
 	VanasKoSListFrameAddButton:Disable();
 end
 
 function VanasKoSPvPDataGatherer:HideList(list)
---	VanasKoSListFrameSyncButton:Enable();
+	VanasKoSListFrameSyncButton:Enable();
 	VanasKoSListFrameChangeButton:Enable();
 	VanasKoSListFrameAddButton:Enable();
 end

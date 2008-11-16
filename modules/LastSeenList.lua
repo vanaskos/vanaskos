@@ -219,7 +219,7 @@ end
 
 function VanasKoSLastSeenList:ShowList(list)
 	if(list == "LASTSEEN") then
---		VanasKoSListFrameSyncButton:Disable();
+		VanasKoSListFrameSyncButton:Disable();
 		VanasKoSListFrameChangeButton:Disable();
 		VanasKoSListFrameAddButton:Disable();
 		VanasKoSListFrameRemoveButton:Disable();
@@ -228,7 +228,7 @@ end
 
 function VanasKoSLastSeenList:HideList(list)
 	if(list == "LASTSEEN") then
---		VanasKoSListFrameSyncButton:Enable();
+		VanasKoSListFrameSyncButton:Enable();
 		VanasKoSListFrameChangeButton:Enable();
 		VanasKoSListFrameAddButton:Enable();
 		VanasKoSListFrameRemoveButton:Enable();

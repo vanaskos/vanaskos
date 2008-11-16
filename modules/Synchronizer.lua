@@ -25,6 +25,8 @@ L:RegisterTranslations("enUS", function() return {
 	["No Autosync partner named %s"] = true,
 	["Synchronize with"] = true,
 	["Initiates a manual Synchronize Request to..."] = true,
+	["Sent entry to party"] = true,
+	["Sent list to party"] = true,
 	["Auto Synchronization"] = true,
 	["Options for automatic Synchronization with other people"] = true,
 	["Enabled"] = true,
@@ -390,6 +392,7 @@ function VanasKoSSynchronizer:UpdateSyncOptions()
 					local listToSend = { [VANASKOS.showList] = { [name] = { ["name"] = name, ["reason"] = reason, ["creator"] = creator } }};
 
 					VanasKoSSynchronizer:SendCommMessage("PARTY", "addplayer", listToSend);
+					VanasKoS:Print(L["Sent entry to party"]);
 				end
 			},
 			alltoplayer = {
@@ -415,6 +418,7 @@ function VanasKoSSynchronizer:UpdateSyncOptions()
 
 					local listToSend = { [VANASKOS.showList] = list };
 					VanasKoSSynchronizer:SendCommMessage("PARTY", "addplayer", listToSend);
+					VanasKoS:Print(L["Sent list to party"]);
 				end
 			},
 			syncwith = {
@@ -436,7 +440,9 @@ function VanasKoSSynchronizer:UpdateSyncOptions()
 			type = "execute",
 			name = string.Capitalize(k),
 			desc = string.Capitalize(k),
-			func = function() VanasKoSSynchronizer:StartSyncRequest(k); end,
+			func = function()
+				VanasKoSSynchronizer:StartSyncRequest(k);
+			end,
 		}
 	end
 end
@@ -543,7 +549,6 @@ function VanasKoSSynchronizer:OnEnable()
 
 	self:UpdateSyncOptions();
 
---[[
 	VanasKoSListFrameSyncButton:SetScript("OnClick", function()
 			dewdrop:Register(this,
 				'children', syncOptions,
@@ -560,7 +565,6 @@ function VanasKoSSynchronizer:OnEnable()
 			end);
 			this:GetScript("OnClick")();
 	end);
-	]]
 	self:RegisterComm(self.commPrefix, "WHISPER", "MessageReceived");
 	self:RegisterComm(self.commPrefix, "GUILD", "MessageReceived");
 	self.PeopleThatNeedSync = { };
@@ -587,7 +591,7 @@ end
 
 function VanasKoSSynchronizer:OnDisable()
 	VanasKoSSynchronizer:CancelAllScheduledEvents();
---[[	VanasKoSListFrameSyncButton:SetScript("OnClick", function() VanasKoS:Print(L["No Synchronization Options - Enable Auto Sync"]); end); ]]--
+	VanasKoSListFrameSyncButton:SetScript("OnClick", function() VanasKoS:Print(L["No Synchronization Options - Enable Auto Sync"]); end);
 end
 
 function VanasKoSSynchronizer:BroadcastToGuild()
@@ -658,12 +662,12 @@ function VanasKoSSynchronizer:ShowList(list)
 			end
 		end
 	);
---[[	VanasKoSListFrameSyncButton:Disable(); ]]--
+	VanasKoSListFrameSyncButton:Disable();
 end
 
 function VanasKoSSynchronizer:HideList(list)
 	VanasKoSListFrameChangeButton:SetScript("OnClick", oldChangeButtonScript);
---	VanasKoSListFrameSyncButton:Enable();
+	VanasKoSListFrameSyncButton:Enable();
 end
 
 function VanasKoSSynchronizer:AddEntry(listname, name, data)
@@ -1005,6 +1009,7 @@ function VanasKoSSynchronizer:ProcessList(sender, requestList)
 	-- delete lists that aren't allowed to be received
 	for listname, list in pairs(requestList) do
 		if(allowedSyncs[listname] == nil) then
+			clear(requestList[listname]);
 			requestList[listname] = nil;
 		end
 	end

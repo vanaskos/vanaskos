@@ -289,7 +289,7 @@ end
 
 function VanasKoSTracker:ShowList(list)
 	if(list == "WANTED") then
---		VanasKoSListFrameSyncButton:Disable();
+		VanasKoSListFrameSyncButton:Disable();
 		VanasKoSListFrameChangeButton:Disable();
 		VanasKoSListFrameAddButton:Disable();
 		VanasKoSListFrameRemoveButton:Disable();
@@ -298,7 +298,7 @@ end
 
 function VanasKoSTracker:HideList(list)
 	if(list == "WANTED") then
---		VanasKoSListFrameSyncButton:Enable();
+		VanasKoSListFrameSyncButton:Enable();
 		VanasKoSListFrameChangeButton:Enable();
 		VanasKoSListFrameAddButton:Enable();
 		VanasKoSListFrameRemoveButton:Enable();

@@ -21,6 +21,16 @@ L:RegisterTranslations("enUS", function() return {
 	["PvP Win versus %s registered."] = true,
 	["PvP Loss versus %s registered."] = true,
 	["Show Messages when a PvP Win/Loss is registered"] = true,
+	["by name"] = true,
+	["sort by name"] = true,
+	["by encounters"] = true,
+	["sort by most PVP encounters"] = true,
+	["by wins"] = true, 
+	["sort by most wins"] = true,
+	["by losses"] = true, 
+	["sort by most losses"] = true,
+	["by score"] = true, 
+	["sort by most wins to losses"] = true,
 } end);
 
 L:RegisterTranslations("deDE", function() return {
@@ -66,6 +76,111 @@ L:RegisterTranslations("ruRU", function() return {
 	["Show Messages when a PvP Win/Loss is registered"] = "Сообщать о зарегистрированной PvP победе/поражении",
 } end);
 
+
+-- sort functions
+
+-- sorts by index
+local SortByName = nil;
+
+-- sorts by most pvp encounters
+local function SortByScore(val1, val2)
+	local list = VanasKoS:GetList("PVPSTATS");
+	if (list ~= nil) then
+		local cmp1 = 0;
+		local cmp2 = 0;
+		if (list[val1] ~= nil) then 
+			if (list[val1].wins ~= nil) then
+				cmp1 = cmp1 + list[val1].wins;
+			end
+			if (list[val1].losses ~= nil) then
+				cmp1 = cmp1 - list[val1].losses;
+			end
+		end
+		if (list[val2] ~= nil) then 
+			if (list[val2].wins ~= nil) then
+				cmp2 = cmp2 + list[val2].wins;
+			end
+			if (list[val2].losses ~= nil) then
+				cmp2 = cmp2 - list[val2].losses;
+			end
+		end
+		if (cmp1 > cmp2) then
+			return true;
+		else
+			return false;
+		end
+	end
+end
+
+-- sorts by most pvp encounters
+local function SortByEncounters(val1, val2)
+	local list = VanasKoS:GetList("PVPSTATS");
+	if (list ~= nil) then
+		local cmp1 = 0;
+		local cmp2 = 0;
+		if (list[val1] ~= nil) then 
+			if (list[val1].losses ~= nil) then
+				cmp1 = cmp1 + list[val1].losses;
+			end
+			if (list[val1].wins ~= nil) then
+				cmp1 = cmp1 + list[val1].wins;
+			end
+		end
+		if (list[val2] ~= nil) then 
+			if (list[val2].losses ~= nil) then
+				cmp2 = cmp2 + list[val2].losses;
+			end
+			if (list[val2].wins ~= nil) then
+				cmp2 = cmp2 + list[val2].wins;
+			end
+		end
+		if (cmp1 > cmp2) then
+			return true;
+		else
+			return false;
+		end
+	end
+end
+
+-- sort by most wins
+local function SortByWins(val1, val2)
+	local list = VanasKoS:GetList("PVPSTATS");
+	if (list ~= nil) then
+		local cmp1 = 0;
+		local cmp2 = 0;
+		if (list[val1] ~= nil and list[val1].wins ~= nil) then
+			cmp1 = list[val1].wins;
+		end
+		if (list[val2] ~= nil and list[val2].wins ~= nil) then
+			cmp2 = list[val2].wins;
+		end
+		if (cmp1 > cmp2) then
+			return true;
+		else
+			return false;
+		end
+	end
+end
+
+-- sort by most losses
+local function SortByLosses(val1, val2)
+	local list = VanasKoS:GetList("PVPSTATS");
+	if (list ~= nil) then
+		local cmp1 = 0;
+		local cmp2 = 0;
+		if (list[val1] ~= nil and list[val1].losses ~= nil) then
+			cmp1 = list[val1].losses;
+		end
+		if (list[val2] ~= nil and list[val2].losses ~= nil) then
+			cmp2 = list[val2].losses;
+		end
+		if (cmp1 > cmp2) then
+			return true;
+		else
+			return false;
+		end
+	end
+end
 
 function VanasKoSPvPDataGatherer:OnInitialize()
 	VanasKoS:RegisterDefaults("PvPDataGatherer", "profile", {
@@ -118,6 +233,15 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 	VanasKoS:RegisterList(nil, "PVPLOG", nil, self);
 
 	VanasKoSGUI:RegisterList("PVPSTATS", self);
+
+	-- register sort options for the lists this module provides
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, 1, "byname", L["by name"], L["sort by name"], SortByName);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, 2, "byscore", L["by score"], L["sort by most wins to losses"], SortByScore);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, 2, "byencounters", L["by encounters"], L["sort by most PVP encounters"], SortByEncounters);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, 3, "bywins", L["by wins"], L["sort by most wins"], SortByWins);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, 4, "bylosses", L["by losses"], L["sort by most losses"], SortByLosses);
+
+	VanasKoSGUI:SetDefaultSortFunction({"PVPSTATS"}, SortByName);
 end
 
 function VanasKoSPvPDataGatherer:FilterFunction(key, value, searchBoxText)

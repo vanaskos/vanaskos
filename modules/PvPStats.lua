@@ -131,7 +131,7 @@ function VanasKoSPvPStats:OnEnable()
 			end
 		end
 		for k,v in pairs(twinks) do
-			tinsert(CharacterChoices, 2, { k, k });
+			tinsert(CharacterChoices, { k, k });
 		end
 
 		UIDropDownMenu_Initialize(characterDropdown,

@@ -1,7 +1,10 @@
 Release Changelog for VanasKoS
 
-trunk:
+3.17 beta:
 - Added ability to grow kos list from the bottom of the warning frame
+- Commented out code allowing kos addition from player portrait menu
+- Added some interesting sorts to the pvp stats list
+- Fixed bug only showing one character in the pie graph stats chart
 
 3.16:
 - fixed another font problem

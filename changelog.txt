@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+3.19 beta:
+- Fixed error when clicking on party member. (injected in 3.18)
+
 3.18 beta:
 - Uncomment sync button code.
 - Added option to notify when any enemy player is detected.

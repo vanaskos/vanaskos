@@ -445,6 +445,24 @@ function VanasKoSSynchronizer:UpdateSyncOptions()
 			end,
 		}
 	end
+
+	dewdrop:Unregister(this);
+	VanasKoSListFrameSyncButton:SetScript("OnClick", function()
+			dewdrop:Register(this,
+				'children', syncOptions,
+				'point', "TOPLEFT",
+				'dontHook', true,
+				'relativePoint', "TOPRIGHT"
+			);
+			this:SetScript("OnClick", function()
+				if(dewdrop:IsOpen(this)) then
+					dewdrop:Close();
+				else
+					dewdrop:Open(this);
+				end
+			end);
+			this:GetScript("OnClick")();
+	end);
 end
 
 function VanasKoSSynchronizer:SetList(listname, send, enabled)

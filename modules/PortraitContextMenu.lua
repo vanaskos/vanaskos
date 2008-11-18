@@ -10,36 +10,48 @@ L:RegisterTranslations("enUS", function() return {
 	["Add Context Menu to Player Portrait"] = true,
 	["Enabled"] = true,
 	["Warning! Enabling this will cause errors setting the focus from target menue. Continue?"] = true,
+	["Accept"] = true,
+	["Cancel"] = true,
 } end);
 
 L:RegisterTranslations("deDE", function() return {
 	["Add to %s"] = "Zu %s hinzufügen",
 	["Add Context Menu to Player Portrait"] = "Kontext Menu zum Spieler Portrait hinzufügen",
 	["Enabled"] = "Aktiviert",
+	["Accept"] = "Ok",
+	["Cancel"] = "Abbrechen",
 } end);
 
 L:RegisterTranslations("frFR", function() return {
 	["Add to %s"] = "Ajouter - %s",
 	["Add Context Menu to Player Portrait"] = "Ajouter un menu de contexte au portrait du joueur",
 	["Enabled"] = "Actif",
+--	["Accept"] = true,
+--	["Cancel"] = true,
 } end);
 
 L:RegisterTranslations("koKR", function() return {
 	["Add to %s"] = "%s에 추가",
 	["Add Context Menu to Player Portrait"] = "플레이어 초상화에 메뉴 추가",
 	["Enabled"] = "사용",
+--	["Accept"] = true,
+--	["Cancel"] = true,
 } end);
 
 L:RegisterTranslations("esES", function() return {
 	["Add to %s"] = "Añadir a %s",
 	["Add Context Menu to Player Portrait"] = "Añadir menú contextual a retrato del jugador",
 	["Enabled"] = "Activado",
+--	["Accept"] = true,
+--	["Cancel"] = true,
 } end);
 
 L:RegisterTranslations("ruRU", function() return {
 	["Add to %s"] = "Добавить в %s",
 	["Add Context Menu to Player Portrait"] = "Контекстное меню на портрете игрока",
 	["Enabled"] = "Добавлять",
+--	["Accept"] = true,
+--	["Cancel"] = true,
 } end);
 
 VanasKoSPortraitContextMenu = VanasKoS:NewModule("PortraitContextMenu");

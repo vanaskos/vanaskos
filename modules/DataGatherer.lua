@@ -422,7 +422,7 @@ function VanasKoSDataGatherer:Data_Gathered(list, data)
 	end
 end
 
-local tourist = AceLibrary("Tourist-2.0")
+local tourist = AceLibrary("LibTourist-3.0")
 
 function VanasKoSDataGatherer:GetZoneName(continent, zoneid)
 	local zone = zoneContinentZoneID[continent] and zoneContinentZoneID[continent][zoneid] or nil;

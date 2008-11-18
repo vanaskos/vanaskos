@@ -9,6 +9,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Add to %s"] = true,
 	["Add Context Menu to Player Portrait"] = true,
 	["Enabled"] = true,
+	["Warning! Enabling this will cause errors setting the focus from target menue. Continue?"] = true,
 } end);
 
 L:RegisterTranslations("deDE", function() return {
@@ -44,17 +45,19 @@ L:RegisterTranslations("ruRU", function() return {
 VanasKoSPortraitContextMenu = VanasKoS:NewModule("PortraitContextMenu");
 local VanasKoSPortraitContextMenu = VanasKoSPortraitContextMenu;
 local VanasKoS = VanasKoS;
+local VanasKoSTaintOK = false;
 
 function VanasKoSPortraitContextMenu:OnInitialize()
 	VanasKoS:RegisterDefaults("PortraitContextMenu", "profile", {
 		Enabled = true,
+		EnabledWithTaint = false,
 	});
 	self.db = VanasKoS:AcquireDBNamespace("PortraitContextMenu");
 
 	-- FIXME(xilcoy): Modifying the UnitPopupButtons taints the player
 	-- context menu, this is a "known issue" according to the blizzard
-	-- forums. Which may mean this will work again someday...
-	--[[
+	-- forums. Which may mean this will work without causing taint again
+	-- someday...
 	VanasKoSGUI:AddConfigOption("PortraitContextMenu",
 		{
 			type = 'group',
@@ -65,19 +68,29 @@ function VanasKoSPortraitContextMenu:OnInitialize()
 					type = 'toggle',
 					name = L["Enabled"],
 					desc = L["Enabled"],
-					set = function(v) VanasKoSPortraitContextMenu.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("PortraitContextMenu", v); end,
-					get = function() return VanasKoSPortraitContextMenu.db.profile.Enabled; end,
+--					set = function(v) VanasKoSPortraitContextMenu.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("PortraitContextMenu", v); end,
+--					get = function() return VanasKoSPortraitContextMenu.db.profile.Enabled; end,
+					set = function(v)
+						if (VanasKoSTaintOK == false and v == true) then
+							local dialog = StaticPopup_Show("VANASKOS_TAINT_WARNING");
+							if(dialog) then
+								dialog.sender = sender;
+								getglobal(dialog:GetName() .. "Text"):SetText(format(L["Warning! Enabling this will cause errors setting the focus from target menue. Continue?"], count, VanasKoSGUI:GetListName(nameOfList), sender));
+							end
+						else
+							VanasKoSPortraitContextMenu.db.profile.EnabledWithTaint = v; VanasKoS:ToggleModuleActive("PortraitContextMenu", v);
+						end
+					end,
+					get = function() return VanasKoSPortraitContextMenu.db.profile.EnabledWithTaint; end,
 				}
 			}
 		});
-	]]
 end
 
 local listsToAdd = { "PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST" };
 
 function VanasKoSPortraitContextMenu:OnEnable()
-	-- FIXME(xilcoy)
-	if(true or not self.db.profile.Enabled) then
+	if(not self.db.profile.EnabledWithTaint) then
 		return;
 	end
 	for k,v in pairs(listsToAdd) do
@@ -129,3 +142,25 @@ function VanasKoSPortraitContextMenu:UnitPopup_OnClick()
 		VanasKoS:AddEntryFromTarget("NICELIST");
 	end
 end
+
+
+StaticPopupDialogs["VANASKOS_TAINT_WARNING"] = {
+	text = "TEMPLATE",
+	button1 = L["Accept"],
+	button2 = L["Cancel"],
+	OnAccept = function()
+		local dialog = this:GetParent();
+		VanasKoSPortraitContextMenu.db.profile.EnabledWithTaint = true;
+		VanasKoSTaintOK = true;
+		VanasKoS:ToggleModuleActive("PortraitContextMenu", true);
+	end,
+	OnHide = function()
+		if(ChatFrameEditBox:IsVisible() ) then
+			ChatFrameEditBox:SetFocus();
+		end
+	end,
+	timeout = 10,
+	exclusive = 0,
+	whileDead = 1,
+	hideOnEscape = 1
+}

@@ -86,12 +86,12 @@ L:RegisterTranslations("ruRU", function() return {
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s в %s по %d, %d (%s) - Создать метку в Картографе?",
 	["Ok"] = "Ok",
 	["Cancel"] = "Отмена",
-	["Distributed Tracking"] = "Распределенное Слежение",
+	["Distributed Tracking"] = "Распределенное слежение",
 	["Enabled"] = "Включено",
-	["Wanted List"] = "Список Розыска",
+	["Wanted List"] = "Список розыска",
 	["Wanted"] = "Розыск",
-	["Tracking via Guild"] = "Следить по Гильдии",
-	["Tracking via Zone"] = "Следить по Локации",
+	["Tracking via Guild"] = "Следить по гильдии",
+	["Tracking via Zone"] = "Следить по локации",
 	["%s  %s"] = "%s  |cffff00ff%s|r",
 } end);
 

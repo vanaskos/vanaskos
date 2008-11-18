@@ -278,8 +278,8 @@ L:RegisterTranslations("ruRU", function() return {
 	["Guild KoS"] = "KoS-гильдии",
 	["Nicelist"] = "Хорошие",
 	["Hatelist"] = "Ненавистные",
-	["Entry %s is already on Hatelist"] = "Запись %s уже есть в Списке ненавистных",
-	["Entry %s is already on Nicelist"] = "Запись %s уже есть в Списке хороших",
+	["Entry %s is already on Hatelist"] = "Запись %s уже есть в списке ненавистных",
+	["Entry %s is already on Nicelist"] = "Запись %s уже есть в списке хороших",
 	["%s  Level %s %s %s %s"] = "%s  |cffffffffУровень %s %s %s |r|cffff00ff%s|r",
 	["%s (last seen: %s ago)"] = "%s (замечен: %s назад)",
 	["%s (never seen)"] = "%s (никогда не видели)",
@@ -299,8 +299,8 @@ L:RegisterTranslations("ruRU", function() return {
 	["%s: Loss in %s (%s)"] = "%s: |cffff0000Проиграл|r |cffffffffв|r |cffffffff%s (|r|cffff00ff%s|r|cffffffff)|r",
 
 	["Move to Player KoS"] = "Переместить к KoS-игрокам",
-	["Move to Hatelist"] = "Переместить в Список ненавистных",
-	["Move to Nicelist"] = "Переместить в Список хороших",
+	["Move to Hatelist"] = "Переместить в список ненавистных",
+	["Move to Nicelist"] = "Переместить в список хороших",
 	["Wanted"] = "Розыск",
 	["Remove Entry"] = "Удалить запись",
 

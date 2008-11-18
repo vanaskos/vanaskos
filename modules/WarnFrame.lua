@@ -261,9 +261,9 @@ L:RegisterTranslations("esES", function() return {
 
 L:RegisterTranslations("ruRU", function() return {
 	["Content"] = "Содержимое",
-	["What to show in it"] = "Что в нем показывать",
+	["What to show in it"] = "Что показывать",
 	["Design"] = "Дизайн",
-	["How the content is shown"] = "Как отображается содержимое",
+	["How the content is shown"] = "Как показывать",
 
 	["Show Target Level When Possible"] = "Показывать уровень цели когда это возможно",
 	["Show KoS Targets"] = "Показывать цели KoS",
@@ -271,7 +271,7 @@ L:RegisterTranslations("ruRU", function() return {
 	["Show Friendly Targets"] = "Показывать дружественные цели",
 
 	["Default Background Color"] = "Цвет фона по умолчанию",
-	["Sets the default Background Color and Opacity"] = "Задаетцвет фона и прозрачность",
+	["Sets the default Background Color and Opacity"] = "Задает цвет фона и прозрачность",
 
 	["More Hostiles than Allied Background Color"] = "Цвет фона для \"Больше враждебных, чем дружественных\"",
 	["Sets the more Hostiles than Allied Background Color and Opacity"] = "Задает цвет и прозрачность фона для \"Больше враждебных, чем дружественных\"",
@@ -300,13 +300,13 @@ L:RegisterTranslations("ruRU", function() return {
 	["Show class icons"] = "Показывать иконки класса",
 	["Toggles the display of Class icons in the Warnframe"] = "Показывать или нет классовые иконки в окне предупреждений",
 
-	["Number of lines"] = "количецтво линий",
-	["Sets the number of entries to display in the Warnframe"] = "Отрегулирыйте количество линий в окне предупреждений",
+	["Number of lines"] = "Количество линий",
+	["Sets the number of entries to display in the Warnframe"] = "Отрегулируйте количество линий в окне предупреждений",
 
-	["Font Size"] = "размер шрифта",
+	["Font Size"] = "Размер шрифта",
 	["Sets the size of the font in the Warnframe"] = "Отрегулируйте размер шрифта в окно предупреждений",
 
-	["Show border"] = "Покажите границу",
+	["Show border"] = "Показывать границу",
 } end );
 
 local dewdrop = AceLibrary("Dewdrop-2.0");

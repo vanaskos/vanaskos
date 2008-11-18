@@ -102,6 +102,29 @@ L:RegisterTranslations("esES", function() return {
 	["Changes the logging range of the Party Pets Log (in yards)"] = "Cambia el rango de registro del registro de mascotas del grupo (en yardas)",
 } end);
 
+L:RegisterTranslations("ruRU", function() return {
+	["Data Gathering"] = "Сбор данных",
+	["Combat Log Range"] = "Диапазон лога боя",
+	["Adjust Combat Log Ranges"] = "Настройка диапазона лога боя",
+
+	["Death Log Range"] = "Диапазон лога смертей",
+	["Changes the logging range of the Death Log (in yards)"] = "Изменение диапазон лога смертей (в метрах)",
+	["Creature Log Range"] = "Диапазон лога существ",
+	["Changes the logging range of the Creature Log (in yards)"] = "Изменение диапазона лога существ (в метрах)",
+	["Friendly Players Log Range"] = "Диапазон лога дружественных игроков",
+	["Changes the logging range of the Friendly Players Log (in yards)"] = "Изменяет диапозон лога дружественных игроков (в метрах)",
+	["Friendly Players Pets Log Range"] = "Диапазон лога питомцев дружественных игроков",
+	["Changes the logging range of the Friendly Players Pets Log (in yards)"] = "Изменяет диапазон лога питомцев дружественных игроков (в метрах)",
+	["Hostile Players Log Range"] = "Диапазон лога враждебных игроков",
+	["Changes the logging range of the Hostile Players Log (in yards)"] = "Изменяет диапозон лога враждебных игроков (в метрах)",
+	["Hostile Players Pets Log Range"] = "Диапазон лога питомцев враждебных игроков",
+	["Changes the logging range of the Hostile Players Pets Log (in yards)"] = "Изменяет диапозон лога питомцев враждебных игроков (в метрах)",
+	["Party Log Range"] = "Дипазон лога группы",
+	["Changes the logging range of the Party Log (in yards)"] = "Изменяет диапазон лога группы (в метрах)",
+	["Party Pets Log Range"] = "Настройка диапозона лога питомца в группе",
+	["Changes the logging range of the Party Pets Log (in yards)"] = "Изменяет диапазон лога питомцев в группе (в метрах)",
+} end);
+
 local continent = -1;
 local zoneID = -1;
 local zone = nil;

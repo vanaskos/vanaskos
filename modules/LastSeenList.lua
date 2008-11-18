@@ -62,12 +62,12 @@ L:RegisterTranslations("ruRU", function() return {
 	["Last seen"] = "Последние встречи",
 	["by last seen"] = "по последней встрече",
 	["sort by last seen"] = "сортировать по последней встрече",
-	["0 Secs ago"] = "0 Сек. назад",
+	["0 Secs ago"] = "0 сек. назад",
 	["%s ago"] = "%s назад",
 
 	["Add to Player KoS"]  = "Добавить к KoS-игрокам",
-	["Add to Hatelist"]  = "Добавить к Списку ненавистных",
-	["Add to Nicelist"]  = "Добавить к Списку хороших",
+	["Add to Hatelist"]  = "Добавить к списку ненавистных",
+	["Add to Nicelist"]  = "Добавить к списку хороших",
 
 	["Last Seen List"] = "Последние встречи",
 	["Enabled"] = "Включено",

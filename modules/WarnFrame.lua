@@ -440,15 +440,18 @@ local function CreateWarnFrame()
 	warnFrame:SetMovable(true);
 	warnFrame:SetFrameStrata("LOW");
 	warnFrame:EnableMouse(true);
-	warnFrame:SetBackdrop( {
+	if (VanasKoSWarnFrame.db.profile.WarnFrameBorder == true) then
+		VanasKoS_WarnFrame:SetBackdrop( {
 			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
-			insets = { left = 5, right = 4, top = 5, bottom = 5 }
+					insets = { left = 5, right = 4, top = 5, bottom = 5 },
 		});
-
-	-- set the default backdrop color
-	local r, g, b, a = GetColor("DefaultBGColor");
-	warnFrame:SetBackdropColor(r, g, b, a);
+		-- set the default backdrop color
+		local r, g, b, a = GetColor("DefaultBGColor");
+		warnFrame:SetBackdropColor(r, g, b, a);
+	else
+		VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
+	end
 
 	-- allow dragging or the window
 	warnFrame:RegisterForDrag("LeftButton");

@@ -1,5 +1,5 @@
 ﻿## Interface: 30000
-## Title: VanasKoS |cff7fff7f -Ace2-|r
+## Title: VanasKoS |cff7fff7f -Ace3-|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS
 ## Version: 3.19-$Rev$
@@ -9,8 +9,8 @@
 ## DefaultState: Enabled
 ## SavedVariables: VanasKoSDB
 ## SavedVariablesPerCharacter: VanasKoSDBPC
-## OptionalDeps: Ace2, DewdropLib, Cartographer, TouristLib, Babble-Zone-2.2, GraphLib, TabletLib, SharedMediaLib, Waterfall-1.0
-## X-Embeds: Ace2, DewdropLib, TouristLib, Babble-Zone-2.2, GraphLib, TabletLib, SharedMediaLib
+## OptionalDeps: Ace3, Cartographer, TouristLib, Babble-Zone-3.0, GraphLib, SharedMediaLib
+## X-Embeds: Ace3, TouristLib, Babble-Zone-3.0, GraphLib, SharedMediaLib
 ## X-eMail: boredvana@gmail.com
 ## X-Date: 2008-11-17
 ## X-Category: Battlegrounds/PvP
@@ -31,12 +31,13 @@ modules\DataGatherer.lua
 modules\Importer.lua
 modules\ChatNotifier.lua
 modules\Notifier.lua
+modules\WarnFrame_localization.lua
 modules\WarnFrame.lua
-modules\DistributedTracker.lua
+#modules\DistributedTracker.lua
 modules\MinimapButton.lua
 modules\CommandLineHandler.lua
 modules\FriendsFrameDocker.lua
-modules\Synchronizer.lua
+#modules\Synchronizer.lua
 modules\PortraitContextMenu.lua
 modules\LastSeenList.lua
 modules\PvPStats.lua

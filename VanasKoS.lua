@@ -3,35 +3,42 @@
 Main Object with database and basic list functionality, handles also Configuration
 ------------------------------------------------------------------------]]
 
-local DEFAULT_OPTIONS = {
-	};
-
-
 local initialized = nil;
 
-VanasKoS = AceLibrary("AceAddon-2.0"):new("AceConsole-2.0", "AceEvent-2.0", "AceDB-2.0", "AceComm-2.0", "AceModuleCore-2.0", "AceHook-2.1");
-VanasKoS:SetModuleMixins("AceComm-2.0", "AceEvent-2.0", "AceComm-2.0", "AceConsole-2.0", "AceHook-2.1");
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoS");
+VanasKoS = LibStub("AceAddon-3.0"):NewAddon("VanasKoS", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0");
+
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS", false);
 local VanasKoS = VanasKoS;
 
-VanasKoS:RegisterDB("VanasKoSDB", "VanasKoSDBPC");
-VanasKoS:RegisterDefaults("profile", DEFAULT_OPTIONS);
-VanasKoS:RegisterDefaults("realm", { });
+function VanasKoS:ToggleModuleActive(module)
+	local module = self:GetModule(module, false);
+	if(module:IsEnabled()) then
+		module.db.profile.Enabled = false;
+		module:Disable();
+	else
+		module.db.profile.Enabled = true;
+		module:Enable();
+	end
+end
 
 --[[----------------------------------------------------------------------
   ACE Functions
 ------------------------------------------------------------------------]]
 function VanasKoS:OnInitialize()
-	VANASKOS.VERSION = "" .. self.version;
+	local versionString = GetAddOnMetadata("VanasKoS", "Version")
+	local minusPos = strfind(versionString, "-") - 1;
+	VANASKOS.VERSION = strsub(versionString, 0, minusPos);
+	self.db = LibStub("AceDB-3.0"):New("VanasKoSDB");
 end
 
 function VanasKoS:OnEnable()
-	self:RegisterEvent("VanasKoS_List_Entry_Added", "List_Entry_Added");
-	self:RegisterEvent("VanasKoS_List_Entry_Removed", "List_Entry_Removed");
+	self:RegisterMessage("VanasKoS_List_Entry_Added", "List_Entry_Added");
+	self:RegisterMessage("VanasKoS_List_Entry_Removed", "List_Entry_Removed");
 end
 
 function VanasKoS:OnDisable()
 	VanasKoS_WarnFrame:Hide();
+	self:UnregisterAllMessages();
 end
 
 function VanasKoS:GetOpt(var)
@@ -105,7 +112,7 @@ function VanasKoS:RegisterList(position, listNameInternal, listNameHuman, listHa
 	-- only put it in the VANASKOS.Lists if the listname is human readable => not internal(VANASKOS.Lists is only used for vanaskosgui to choose a list to display)
 	if(listNameHuman ~= nil) then
 		tinsert(VANASKOS.Lists, position, { listNameInternal, listNameHuman });
-		self:TriggerEvent("VanasKoS_List_Added");
+		self:SendMessage("VanasKoS_List_Added");
 	end
 	
 	-- fix until all list registrations are moved outside of this object (otherwise this object gets called recursive => deadlock)
@@ -287,14 +294,14 @@ function VanasKoS:AddKoSPlayer(playername, reason)
 	self:AddEntry("PLAYERKOS", playername,  { ['reason'] = reason });
 end
 
-function VanasKoS:List_Entry_Added(list, name, data)
+function VanasKoS:List_Entry_Added(message, list, name, data)
 	-- TODO: make this nicer
 	if(list ~= nil and list ~= "SYNCPLAYER" and list ~= "WANTED" and list~= "LASTSEEN") then
 		self:Print(format(L["Entry %s (Reason: %s) added."], name, data and data['reason'] or ""));
 	end
 end
 
-function VanasKoS:List_Entry_Removed(list, name)
+function VanasKoS:List_Entry_Removed(message, list, name)
 	self:Print(format(L["Entry \"%s\" removed from list"], name));
 end
 
@@ -331,7 +338,7 @@ function VanasKoS:ResetKoSList(silent)
 	if(not silent) then
 		self:Print(format(L["KoS List for Realm \"%s\" now purged."], GetRealmName()));
 	end
-	self:TriggerEvent("VanasKoS_KoS_Database_Purged", GetRealmName());
+	self:SendMessage("VanasKoS_KoS_Database_Purged", GetRealmName());
 end
 
 --[[----------------------------------------------------------------------

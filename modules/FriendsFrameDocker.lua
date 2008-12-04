@@ -1,45 +1,59 @@
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSFriendsFrameDocker");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_FriendsFrameDocker", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
 
-local VanasKoSFriendsFrameDocker = VanasKoS:NewModule("FriendsFrameDocker");
+local VanasKoSFriendsFrameDocker = VanasKoS:NewModule("FriendsFrameDocker", "AceHook-3.0");
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["Dock into Friends Frame"] = true,
 	["Enabled"] = true,
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["Dock into Friends Frame"] = "In das Freunde Fenster einbinden",
 	["Enabled"] = "Aktiviert",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 	["Dock into Friends Frame"] = "Onglet dans la liste d'amis",
 	["Enabled"] = "Actif",
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["Dock into Friends Frame"] = "친구목록에 적용",
 	["Enabled"] = "사용",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 	["Dock into Friends Frame"] = "Acoplar a la ventana de Amigos",
 	["Enabled"] = "Activado",
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["Dock into Friends Frame"] = "Прикрепить к окну Друзей",
 	["Enabled"] = "Включено",
 } end);
 
 local TabID = 5;
 
-function VanasKoSFriendsFrameDocker:OnInitialize()
-	VanasKoS:RegisterDefaults("FriendsFrameDocker", "profile", {
-		Enabled = true,
-	});
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_FriendsFrameDocker", false);
 
-	self.db = VanasKoS:AcquireDBNamespace("FriendsFrameDocker");
+function VanasKoSFriendsFrameDocker:OnInitialize()
+	self.db = VanasKoS.db:RegisterNamespace("FriendsFrameDocker", {
+		profile = {
+			Enabled = true,
+		}
+	});
 
 	VanasKoSGUI:AddConfigOption("FriendsFrameDocker",
 		{
@@ -51,7 +65,7 @@ function VanasKoSFriendsFrameDocker:OnInitialize()
 					type = 'toggle',
 					name = L["Enabled"],
 					desc = L["Enabled"],
-					set = function() VanasKoSFriendsFrameDocker.db.profile.Enabled = not VanasKoSFriendsFrameDocker.db.profile.Enabled; VanasKoS:ToggleModuleActive("FriendsFrameDocker", VanasKoSFriendsFrameDocker.db.profile.Enabled); end,
+					set = function(frame, v) VanasKoSFriendsFrameDocker.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("FriendsFrameDocker"); end,
 					get = function() return VanasKoSFriendsFrameDocker.db.profile.Enabled end,
 				}
 			}
@@ -61,6 +75,7 @@ end
 
 function VanasKoSFriendsFrameDocker:OnEnable()
 	if(not self.db.profile.Enabled) then
+		self:SetEnabledState(false);
 		return;
 	end
 

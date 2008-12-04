@@ -3,9 +3,21 @@
 modifies the ChatMessage if a player speaks whom is on your hatelist
 ------------------------------------------------------------------------]]
 
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSChatNotifier");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_ChatNotifier", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 --	["[HateList: %s] %s"] = true,
 
 	["Chat Modifications"] = true,
@@ -25,7 +37,7 @@ L:RegisterTranslations("enUS", function() return {
 	["No entry for %s"] = "No entry for |cff00ff00%s|r",
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 --	["[HateList: %s] %s"] = "[Hassliste: %s] %s",
 
 	["Chat Modifications"] = "Chat Modifikationen",
@@ -44,7 +56,7 @@ L:RegisterTranslations("deDE", function() return {
 	["No entry for %s"] = "Kein Eintrag für |cff00ff00%s|r",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 --	["[HateList: %s] %s"] = "[Liste noire: %s] %s",
 
 	["Chat Modifications"] = "Modifications du chat",
@@ -64,7 +76,7 @@ L:RegisterTranslations("frFR", function() return {
 --	["No entry for %s"] = "No entry for |cff00ff00%s|r",
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 --	["[HateList: %s] %s"] = "[악인명부: %s] %s",
 
 	["Chat Modifications"] = "대화창 변경",
@@ -84,7 +96,7 @@ L:RegisterTranslations("koKR", function() return {
 --	["No entry for %s"] = "No entry for |cff00ff00%s|r",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 --	["[HateList: %s] %s"] = "[Odiados: %s] %s",
 
 	["Chat Modifications"] = "Modificaciones de Chat",
@@ -104,7 +116,7 @@ L:RegisterTranslations("esES", function() return {
 --	["No entry for %s"] = "No entry for |cff00ff00%s|r",
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 --	["[HateList: %s] %s"] = "[Список ненавистных: %s] %s",
 
 	["Chat Modifications"] = "Модификации чата",
@@ -124,7 +136,9 @@ L:RegisterTranslations("ruRU", function() return {
 	["No entry for %s"] = "Записей с |cff00ff00%s|r не найдено",
 } end);
 
-VanasKoSChatNotifier = VanasKoS:NewModule("ChatNotifier");
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_ChatNotifier", false);
+
+VanasKoSChatNotifier = VanasKoS:NewModule("ChatNotifier", "AceHook-3.0");
 
 local VanasKoSChatNotifier = VanasKoSChatNotifier;
 local VanasKoS = VanasKoS;
@@ -177,20 +191,21 @@ local function GetColorHex(which)
 end
 
 function VanasKoSChatNotifier:OnInitialize()
-	VanasKoS:RegisterDefaults("ChatNotifier", "profile", {
-		Enabled = true,
-		OnlyMyEntries = false,
-		AddLookupEntry = true,
+	self.db = VanasKoS.db:RegisterNamespace("ChatNotifier", {
+		profile = {
+			Enabled = true,
+			OnlyMyEntries = false,
+			AddLookupEntry = true,
 
-		HateListColorR = 1.0,
-		HateListColorG = 0.0,
-		HateListColorB = 0.0,
+			HateListColorR = 1.0,
+			HateListColorG = 0.0,
+			HateListColorB = 0.0,
 
-		NiceListColorR = 0.0,
-		NiceListColorG = 1.0,
-		NiceListColorB = 0.0,
+			NiceListColorR = 0.0,
+			NiceListColorG = 1.0,
+			NiceListColorB = 0.0,
+		}
 	});
-	self.db = VanasKoS:AcquireDBNamespace("ChatNotifier");
 
 	VanasKoSGUI:AddConfigOption("ChatNotifier", {
 		type = 'group',
@@ -202,8 +217,8 @@ function VanasKoSChatNotifier:OnInitialize()
 				name = L["Enabled"],
 				desc = L["Enabled"],
 				order = 1,
-				set = function(v) VanasKoSChatNotifier.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("ChatNotifier", v); end,
-				get = function() return VanasKoSChatNotifier.db.profile.Enabled end,
+				set = function(frame, v) VanasKoSChatNotifier.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("ChatNotifier"); end,
+				get = function() return VanasKoS:GetModule("ChatNotifier").enabledState; end,
 			},
 			hateListColor = {
 				type = 'color',
@@ -211,7 +226,7 @@ function VanasKoSChatNotifier:OnInitialize()
 				desc = L["Sets the Foreground Color for Hatelist Entries"],
 				order = 2,
 				get = function() return GetColor("HateListColor") end,
-				set = function(r, g, b, a) SetColor("HateListColor", r, g, b); VanasKoSChatNotifier:Update(); end,
+				set = function(frame, r, g, b, a) SetColor("HateListColor", r, g, b); VanasKoSChatNotifier:Update(); end,
 				hasAlpha = false,
 			},
 			niceListColor = {
@@ -220,7 +235,7 @@ function VanasKoSChatNotifier:OnInitialize()
 				desc = L["Sets the Foreground Color for Nicelist Entries"],
 				order = 3,
 				get = function() return GetColor("NiceListColor") end,
-				set = function(r, g, b, a) SetColor("NiceListColor", r, g, b); VanasKoSChatNotifier:Update(); end,
+				set = function(frame, r, g, b, a) SetColor("NiceListColor", r, g, b); VanasKoSChatNotifier:Update(); end,
 				hasAlpha = false,
 			},
 			modifyOnlyMyEntries = {
@@ -228,7 +243,7 @@ function VanasKoSChatNotifier:OnInitialize()
 				name = L["Modify only my Entries"],
 				desc = L["Modifies the Chat only for your Entries"],
 				order = 4,
-				set = function(v) VanasKoSChatNotifier.db.profile.OnlyMyEntries = v; end,
+				set = function(frame, v) VanasKoSChatNotifier.db.profile.OnlyMyEntries = v; end,
 				get = function() return VanasKoSChatNotifier.db.profile.OnlyMyEntries; end,
 			},
 			addLookupEntry = {
@@ -236,7 +251,7 @@ function VanasKoSChatNotifier:OnInitialize()
 				name = L["Add Lookup in VanasKoS"],
 				desc = L["Modifies the Chat Context Menu to add a \"Lookup in VanasKoS\" option."],
 				order = 4,
-				set = function(v) VanasKoSChatNotifier.db.profile.AddLookupEntry = v; SetLookup(v); end,
+				set = function(frame, v) VanasKoSChatNotifier.db.profile.AddLookupEntry = v; SetLookup(v); end,
 				get = function() return VanasKoSChatNotifier.db.profile.AddLookupEntry; end,
 			},
 		}
@@ -245,11 +260,12 @@ end
 
 function VanasKoSChatNotifier:OnEnable()
 	if(not self.db.profile.Enabled) then
-		return nil;
+		self:SetEnabledState(false);
+		return;
 	end
-
+	
 	self:Update();
-	self:Hook("ChatFrame_OnEvent", true);
+	self:RawHook("ChatFrame_OnEvent", true);
 	SetLookup(self.db.profile.AddLookupEntry);
 end
 
@@ -307,12 +323,11 @@ local NICELISTCOLOR = "00ff00";
 function VanasKoSChatNotifier:ChatFrame_OnEvent(frame, event, ...)
 
 	-- if switched to disabled, remove hook on first intercept
-	if(not self.db.profile.Enabled) then
+	if(not VanasKoSChatNotifier.enabledState) then
 		local ret = self.hooks["ChatFrame_OnEvent"](frame, event, ...);
 		self:Unhook("ChatFrame_OnEvent");
 		return ret;
 	end
-
 	if(channelWatchList[event]) then
 		local listColor = (VanasKoS:BooleanIsOnList("HATELIST", arg2) and HATELISTCOLOR) or
 							(VanasKoS:BooleanIsOnList("NICELIST", arg2) and NICELISTCOLOR);

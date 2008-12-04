@@ -3,9 +3,21 @@
 Synchronizes a list with other players
 ------------------------------------------------------------------------]]
 
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSSynchronizer");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Synchronizer", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
 
-VanasKoSSynchronizer = VanasKoS:NewModule("Synchronizer");
+VanasKoSSynchronizer = VanasKoS:NewModule("Synchronizer", "AceComm-3.0", "AceEvent-3.0", "AceSerializer-3.0", "AceTimer-3.0");
 local VanasKoSSynchronizer = VanasKoSSynchronizer;
 local VanasKoS = VanasKoS;
 local VanasKoSGUI = VanasKoSGUI;
@@ -13,7 +25,7 @@ local VanasKoSGUI = VanasKoSGUI;
 -- sync every 6 hours
 local SYNCTIME = 3600*6;
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["Accept %d entries for list %s from %s?"] = true,
 	["KoS-List was received but couldn't be processed due to previous received list."] = true,
 	["Accept"] = true,
@@ -47,7 +59,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Select the Lists you want to share with your Guild"] = true,
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["Accept %d entries for list %s from %s?"] = "%d Einträge fuer Liste %s von %s akzeptieren?",
 	["KoS-List was received but couldn't be processed due to previous received list."] = "Eine KoS-List wurde empfangen, konnte aber aufgrund einer vorher empfangenen und unbestaetigten KoS-Liste nicht bearbeitet werden",
 	["Accept"] = "Annehmen",
@@ -79,7 +91,7 @@ L:RegisterTranslations("deDE", function() return {
 	["Select the Lists you want to share with your Guild"] = "Auswahl aus Listen, die mit der Gilde geteilt werden können",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 	["Accept %d entries for list %s from %s?"] = "Accepter les entrées de %d pour la liste %s de %s?",
 	["KoS-List was received but couldn't be processed due to previous received list."] = "La liste KoS a \195\169t\195\169 re�ue mais n'a pas pu \195\170tre trait\195\169e avec la pr\195\169c\195\169dente liste.",
 	["Accept"] = "Accepter",
@@ -111,7 +123,7 @@ L:RegisterTranslations("frFR", function() return {
 	["Select the Lists you want to share with your Guild"] = "Sélectionner les listes que vous voulez partager avec votre guilde",
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["Accept %d entries for list %s from %s?"] = "%3$s로 부터 받은 %2$s 목록에 대해 %1$d개를 허용합니다.",
 	["KoS-List was received but couldn't be processed due to previous received list."] = "KoS-List was received but couldn't be processed due to previous received list.",
 
@@ -145,7 +157,7 @@ L:RegisterTranslations("koKR", function() return {
 	["Select the Lists you want to share with your Guild"] = "길드에 공유할 명부를 선택하세요.",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 	["Accept %d entries for list %s from %s?"] = "¿Aceptar %d entradas para la lista %s desde %s?",
 	["KoS-List was received but couldn't be processed due to previous received list."] = "Se ha recibido una lista de KoS pero no ha podido ser procesada debido a la lista recibida previamente.",
 	["Accept"] = "Aceptar",
@@ -177,7 +189,7 @@ L:RegisterTranslations("esES", function() return {
 	["Select the Lists you want to share with your Guild"] = "Elige qué listas quieres compartir con tu hermandad",
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["Accept %d entries for list %s from %s?"] = "Принять %d записей для списка %s от %s?",
 	["KoS-List was received but couldn't be processed due to previous received list."] = "Был получен KoS-список но не обработан из за предыдущего полученного списка.",
 	["Accept"] = "Принять",
@@ -208,6 +220,8 @@ L:RegisterTranslations("ruRU", function() return {
 	["Lists to Share"] = "Списки для раздачи",
 	["Select the Lists you want to share with your Guild"] = "Выбор списков, которыми вы хотите делиться с гильдией",
 } end);
+
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Synchronizer", false);
 
 local dewdrop = AceLibrary("Dewdrop-2.0");
 local contextMenu = {};
@@ -391,7 +405,11 @@ function VanasKoSSynchronizer:UpdateSyncOptions()
 
 					local listToSend = { [VANASKOS.showList] = { [name] = { ["name"] = name, ["reason"] = reason, ["creator"] = creator } }};
 
-					VanasKoSSynchronizer:SendCommMessage("PARTY", "addplayer", listToSend);
+					VanasKoSSynchronizer:SendCommMessage(
+						VanasKoSSynchronizer.commPrefix, 
+						VanasKoSSynchronizer:Serialize("addplayer", listToSend), 
+						"PARTY"
+					);
 					VanasKoS:Print(L["Sent entry to party"]);
 				end
 			},
@@ -417,7 +435,11 @@ function VanasKoSSynchronizer:UpdateSyncOptions()
 					end
 
 					local listToSend = { [VANASKOS.showList] = list };
-					VanasKoSSynchronizer:SendCommMessage("PARTY", "addplayer", listToSend);
+					VanasKoSSynchronizer:SendCommMessage(
+						VanasKoSSynchronizer.commPrefix, 
+						VanasKoSSynchronizer:Serialize("addplayer", listToSend), 
+						"PARTY"
+					);
 					VanasKoS:Print(L["Sent list to party"]);
 				end
 			},
@@ -513,29 +535,30 @@ function VanasKoSSynchronizer:IsListEnabled(listname, send)
 end
 
 function VanasKoSSynchronizer:OnInitialize()
-	VanasKoS:RegisterDefaults("Synchronizer", "profile", {
-		Enabled = true,
-		GuildShareInterval = 1.0,
-		GuildListsToShare = {
-			['*'] = false,
+	self.commPrefix = "VanasKoSSynchronizer";
+	
+	self.db = VanasKoS.db:RegisterNamespace("Synchronizer", {
+		profile = {
+			Enabled = true,
+			GuildShareInterval = 1.0,
+			GuildListsToShare = {
+				['*'] = false,
+			},
+			GuildAcceptList = {
+				['*'] = {				-- PLAYERKOS, GUILDKOS, HATELIST, NICELIST
+					['*'] = false,		-- playernames
+				},
+			}
 		},
-		GuildAcceptList = {
-			['*'] = {				-- PLAYERKOS, GUILDKOS, HATELIST, NICELIST
-				['*'] = false,		-- playernames
-			},
+		realm = {
+			autosync = {
+				players = {
+				},
+				twinks = {
+				},
+			}
 		}
 	});
-	VanasKoS:RegisterDefaults("Synchronizer", "realm", {
-		autosync = {
-			players = {
-			},
-			twinks = {
-			},
-		}
-	});
-
-	self:SetCommPrefix("VanasKoS");
-	self.db = VanasKoS:AcquireDBNamespace("Synchronizer");
 
 	-- import of old data, will be removed in some version in the future
 	if(VanasKoS.db.realm.autosync) then
@@ -563,7 +586,7 @@ function VanasKoSSynchronizer:OnEnable()
 
 	self:InitContextMenu();
 
-	self:RegisterComm(self.commPrefix, "PARTY", "MessageReceived");
+	self:RegisterComm(self.commPrefix, "MessageReceived");
 
 	self:UpdateSyncOptions();
 
@@ -583,14 +606,13 @@ function VanasKoSSynchronizer:OnEnable()
 			end);
 			this:GetScript("OnClick")();
 	end);
-	self:RegisterComm(self.commPrefix, "WHISPER", "MessageReceived");
-	self:RegisterComm(self.commPrefix, "GUILD", "MessageReceived");
+
 	self.PeopleThatNeedSync = { };
 
 	self:UpdateSyncNeedList();
 	-- update need to sync with list every hour (number must be > than TryToSyncWithSomeOne number)
-	VanasKoSSynchronizer:ScheduleRepeatingEvent("UpdateSyncNeedListID", self.UpdateSyncNeedList, 3600);
-	VanasKoSSynchronizer:ScheduleRepeatingEvent("BroadcastListsToGuild", self.BroadcastToGuild, self.db.profile.GuildShareInterval * 3600);
+	VanasKoSSynchronizer:ScheduleRepeatingTimer("UpdateSyncNeedList", 3600);
+	VanasKoSSynchronizer:ScheduleRepeatingTimer("BroadcastToGuild", self.db.profile.GuildShareInterval * 3600);
 
 	self:RegisterEvent("FRIENDLIST_UPDATE");
 	if(IsInGuild()) then
@@ -608,7 +630,7 @@ function VanasKoSSynchronizer:RegisterThisChar()
 end
 
 function VanasKoSSynchronizer:OnDisable()
-	VanasKoSSynchronizer:CancelAllScheduledEvents();
+	VanasKoSSynchronizer:UnregisterAllEvents();
 	VanasKoSListFrameSyncButton:SetScript("OnClick", function() VanasKoS:Print(L["No Synchronization Options - Enable Auto Sync"]); end);
 end
 
@@ -633,7 +655,11 @@ function VanasKoSSynchronizer:BroadcastToGuild()
 		--VanasKoSSynchronizer:MessageReceived("VanasKoS", "Fake", "GUILD", "guildbroad", list)
 	end
 	if(entries > 0) then
-		VanasKoSSynchronizer:SendCommMessage("GUILD", "guildbroad", list);
+		VanasKoSSynchronizer:SendCommMessage(
+			VanasKoSSynchronizer.commPrefix, 
+			VanasKoSSynchronizer:Serialize("guildbroad", list), 
+			"GUILD"
+		);
 	end
 	--VanasKoS:PrintLiteral(list);
 end
@@ -802,9 +828,9 @@ function VanasKoSSynchronizer:UpdateSyncNeedList()
 
 	if(count > 0) then
 		-- try a sync every 2 minutes
-		VanasKoSSynchronizer:ScheduleRepeatingEvent("SyncTry", VanasKoSSynchronizer.TryToSyncWithSomeOne, 120)
+		VanasKoSSynchronizer:ScheduleRepeatingTimer("SyncTry", VanasKoSSynchronizer.TryToSyncWithSomeOne, 120)
 	else
-		VanasKoSSynchronizer:CancelScheduledEvent("SyncTry");
+		VanasKoSSynchronizer:CancelTimer("SyncTry", true);
 	end
 end
 
@@ -832,15 +858,16 @@ function VanasKoSSynchronizer:TryToSyncWithSomeOne()
 	-- only offline entries
 end
 
-function VanasKoSSynchronizer:MessageReceived(prefix, sender, distribution, command, list)
+function VanasKoSSynchronizer:MessageReceived(prefix, message, distribution, sender)
 	if(VANASKOS.DEBUG == 1) then
 		self:PrintLiteral("Command", command, "received from", sender, list);
 	end
-	if(command == nil or sender == nil or list == nil) then
-		return;
-	end
-	if(type(command) ~= "string" or
-		type(list) ~= "table") then
+
+	local result, command, list = self:Deserialize(message);
+	if(not result) then
+		if(VANASKOS.DEBUG == 1) then
+			self:Print("Receive failed: %s", command);
+		end
 		return;
 	end
 
@@ -937,7 +964,14 @@ function VanasKoSSynchronizer:StartSyncRequest(receiver)
 	if(VANASKOS.DEBUG == 1) then
 		self:Print("Initiating Sync Request to", receiver);
 	end
-	self:SendCommMessage("WHISPER", receiver, "SYNCREQUESTDATA", list);
+
+	self:SendCommMessage(
+		self.commPrefix, 
+		self:Serialize("SYNCREQUESTDATA", list), 
+		"WHISPER",
+		receiver
+	);
+	
 end
 
 function VanasKoSSynchronizer:StartSyncResponse(receiver)
@@ -951,7 +985,12 @@ function VanasKoSSynchronizer:StartSyncResponse(receiver)
 		self:Print("Sync Response to", receiver);
 	end
 
-	self:SendCommMessage("WHISPER", receiver, "SYNCRESPONSEDATA", list);
+	self:SendCommMessage(
+		self.commPrefix, 
+		self:Serialize("SYNCRESPONSEDATA", list), 
+		"WHISPER", 
+		receiver
+	);
 end
 
 -- TODO: fix memory leak if the received for that list isn't available - list doesnt get deleted

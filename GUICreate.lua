@@ -1,4 +1,4 @@
-﻿local L = AceLibrary("AceLocale-2.2"):new("VanasKoS");
+﻿local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS");
 
 VanasKoSGUICreate = VanasKoS:NewModule("GUICreate");
 
@@ -69,7 +69,7 @@ function VanasKoSGUICreate:CreateAboutFrame()
 	donateButton:SetHeight(21);
 	donateButton:SetWidth(120);
 	donateButton:SetText(L["Donate"]);
-	donateButton:SetScript("OnClick", function() VanasKoS:OpenDonationFrame(); end);
+	donateButton:SetScript("OnClick", function() VanasKoS:Print("Donate via PayPal to boredvana@gmail.com") end);
 	self:UpdateAboutText()
 end
 
@@ -79,11 +79,13 @@ function VanasKoSGUICreate:UpdateAboutText()
 	local i = 1;
 	for name, module in VanasKoS:IterateModules() do
 		local status = "";
-		if(VanasKoS:IsModuleActive(name, true)) then
+		
+		if(VanasKoS:GetModule(name):IsEnabled()) then
 			status = "|cFF00FF00active|r";
 		else
 			status = "|cFFFF0000inactive|r";
 		end
+		
 		modules = modules .. name .. ": " .. status
 		if(i % 2 == 0) then
 			modules = modules .. "<br />";

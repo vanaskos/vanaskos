@@ -1,5 +1,24 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
-	<Script file="Libs\AceLibrary\AceLibrary.lua"/>
+	<Script file="Libs\LibStub\LibStub.lua"/>
+	<Include file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+	<Include file="Libs\AceAddon-3.0\AceAddon-3.0.xml"/>
+	<Include file="Libs\AceConsole-3.0\AceConsole-3.0.xml"/>
+	<Include file="Libs\AceEvent-3.0\AceEvent-3.0.xml"/>
+	<Include file="Libs\AceDB-3.0\AceDB-3.0.xml"/>
+	<Include file="Libs\AceHook-3.0\AceHook-3.0.xml"/>
+	<Include file="Libs\AceLocale-3.0\AceLocale-3.0.xml"/>
+	<Include file="Libs\AceComm-3.0\AceComm-3.0.xml"/>
+	<Include file="Libs\AceGUI-3.0\AceGUI-3.0.xml"/>
+	<Include file="Libs\AceConfig-3.0\AceConfig-3.0.xml"/>
+	<Include file="Libs\AceSerializer-3.0\AceSerializer-3.0.xml"/>
+	<Include file="Libs\AceTimer-3.0\AceTimer-3.0.xml"/>
+
+	<Include file="Libs\SharedMedia-3.0\lib.xml"/>
+	<Include file="Libs\Babble-Zone-3.0\lib.xml"/>
+	<Include file="Libs\Tourist-3.0\lib.xml"/>
+	<Script file="Libs\Graph-2.0\LibGraph-2.0.lua"/>
+	
+<!-- <Script file="Libs\AceLibrary\AceLibrary.lua"/>
 	<Script file="Libs\AceOO-2.0\AceOO-2.0.lua"/>
 	<Script file="Libs\AceEvent-2.0\AceEvent-2.0.lua"/>
 	<Script file="Libs\AceComm-2.0\AceComm-2.0.lua"/>
@@ -8,12 +27,7 @@
 	<Script file="Libs\AceAddon-2.0\AceAddon-2.0.lua"/>
 	<Script file="Libs\AceLocale-2.2\AceLocale-2.2.lua"/>
 	<Script file="Libs\AceModuleCore-2.0\AceModuleCore-2.0.lua"/>
-	<Script file="Libs\AceHook-2.1\AceHook-2.1.lua"/>
+	<Script file="Libs\AceHook-2.1\AceHook-2.1.lua"/> -->
 	
-	<Script file="Libs\Babble-Zone-3.0\LibBabble-Zone-3.0.lua"/>
-	<Script file="Libs\Tourist-3.0\LibTourist-3.0.lua"/>
-	<Script file="Libs\Dewdrop-2.0\Dewdrop-2.0.lua"/>
 	<Script file="Libs\Tablet-2.0\Tablet-2.0.lua"/>
-	<Script file="Libs\Graph-1.0\Graph-1.0.lua"/>
-	<Script file="Libs\SharedMedia-1.0\SharedMedia-1.0.lua"/>
 </Ui>

@@ -2,77 +2,123 @@
       Importer Module - Part of VanasKoS
 Handles import of other AddOns KoS Data
 ------------------------------------------------------------------------]]
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSImporter");
+
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
 
 VanasKoSImporter = VanasKoS:NewModule("Importer");
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["UBotD data couldn't be loaded"] = true,
 	["UBotD data was imported"] = true,
 	["imported"] = true,
-	["Old VanasKoS data couldn't be loaded"] = true,
-	["Old VanasKoS Players-data couldn't be loaded"] = true,
-	["Old Vanas KoS Data successfully imported"] = true,
 	["Opium data couldn't be loaded"] = true,
 	["Opium data was imported"] = true,
+	["Imports KoS Data from other KoS tools"] = true,
+	["Imports KoS Data from Ultimate Book of the Dead"] = true,
+	["Imports KoS Data from Opium"] = true,
+	["Imports PvP Stats Data from Opium"] = true,
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["UBotD data couldn't be loaded"] = "UBotD Daten konnten nicht geladen werden",
 	["UBotD data was imported"] = "UBotD Daten wurden importiert",
 	["imported"] = "importiert",
-	["Old VanasKoS data couldn't be loaded"] = "Alte VanasKoS Daten konnten nicht geladen werden",
-	["Old VanasKoS Players-data couldn't be loaded"] = "Alte VanaskoS Spieler-Daten konnten nicht geladen werden",
-	["Old Vanas KoS Data successfully imported"] = "Alte VanasKoS Daten wurden erfolgreich importiert",
 	["Opium data couldn't be loaded"] = "Opium Daten konnten nicht geladen werden",
 	["Opium data was imported"] = "Opium Daten wurden importiert",
+	["Imports KoS Data from other KoS tools"] = "Importieren von Daten aus anderen KoS-AddOns",
+	["Imports KoS Data from Ultimate Book of the Dead"] = "Importieren von Daten aus dem Ultimate Book of the Dead",
+	["Imports KoS Data from Opium"] = "Importieren von Daten aus Opium",
+	["Imports PvP Stats Data from Opium"] = "Importieren von Opiums PvP Statistiken",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 	["UBotD data couldn't be loaded"] = "Des donn\195\169es d'UBotD n'ont pas pu \195\170tre charg\195\169es",
 	["UBotD data was imported"] = "Des donn\195\169es d'UBotD ont \195\169t\195\169 import\195\169es",
 	["imported"] = "import\195\169",
-	["Old VanasKoS data couldn't be loaded"] = "De vieilles donn\195\169es de VanasKoS n'ont pas pu \195\170tre charg\195\169es",
-	["Old VanasKoS Players-data couldn't be loaded"] = "De vieilles donn\195\169es de joueurs de VanasKoS n'ont pas pu \195\170tre charg\195\169es",
-	["Old Vanas KoS Data successfully imported"] = "Vieilles donn\195\169es de Vanas KoS import\195\169es avec succ\195\168s",
 	["Opium data couldn't be loaded"] = "Des donn\195\169es d'Opium n'ont pas pu \195\170tre charg\195\169es",
 	["Opium data was imported"] = "Des donn\195\169es d'Opium ont \195\169t\195\169 import\195\169es",
+	["Imports KoS Data from other KoS tools"] = "Importe les donn\195\169es KoS d'autres outils KoS",
+	["Imports KoS Data from Ultimate Book of the Dead"] = "Importe les donn\195\169es de \"Ultimate Book of the Dead\"",
+	["Imports KoS Data from Opium"] = "Importe les donn\195\169es de \"Opium\"",
+--	["Imports PvP Stats Data from Opium"] = true,
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["UBotD data couldn't be loaded"] = "UBotD 데이터를 불러올 수 없습니다.",
 	["UBotD data was imported"] = "UBotD 데이터를 로드하였습니다.",
 	["imported"] = "로드됨",
-	["Old VanasKoS data couldn't be loaded"] = "이전 버전 데이터를 불러올 수 없습니다.",
-	["Old VanasKoS Players-data couldn't be loaded"] = "이전 버전의 플레이어 데이터를 불러올 수 없습니다.",
-	["Old Vanas KoS Data successfully imported"] = "이전 버전의 데이터를 성공적으로 로드하였습니다.",
 	["Opium data couldn't be loaded"] = "Opium 데이터를 불러올 수 없습니다.",
 	["Opium data was imported"] = "Opium 데이터를 로드하였습니다.",
+	["Imports KoS Data from other KoS tools"] = "다른 KoS 툴에서 KoS 데이터를 불러옵니다.",
+	["Imports KoS Data from Ultimate Book of the Dead"] = "Ultimate Book of the Dead에서 KoS 데이터를 불러옵니다.",
+	["Imports KoS Data from Opium"] = "Opium의 KoS 데이터를 불러옵니다.",
+	["Imports PvP Stats Data from Opium"] = "Opium에서 PvP 상태 데이터를 불러옵니다.",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 	["UBotD data couldn't be loaded"] = "Los datos de UBotD no han podido ser cargados",
 	["UBotD data was imported"] = "Los datos de UBotD han sido importados",
 	["imported"] = "importados",
-	["Old VanasKoS data couldn't be loaded"] = "Los datos del viejo VanasKoS no han podido ser cargados",
-	["Old VanasKoS Players-data couldn't be loaded"] = "Los datos de Jugadores del viejo VanasKoS no han podido ser cargados",
-	["Old Vanas KoS Data successfully imported"] = "Los datos del viejo VanasKoS han sido importados",
 	["Opium data couldn't be loaded"] = "Los datos de Opium no han podido ser cargados",
 	["Opium data was imported"] = "Los datos de Opium han sido importados",
+	["Imports KoS Data from other KoS tools"] = "Importa datos de KoS de otras herramientas de KoS",
+	["Imports KoS Data from Ultimate Book of the Dead"] = "Importa datos de KoS de Ultimate Book of the Dead",
+	["Imports KoS Data from Opium"] = "Importa datos de KoS de Opium",
+--	["Imports PvP Stats Data from Opium"] = true,
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["UBotD data couldn't be loaded"] = "Не удалось загрузить данные UBotD",
 	["UBotD data was imported"] = "Данные UBotD импортированы",
 	["imported"] = "импортировано",
-	["Old VanasKoS data couldn't be loaded"] = "Не удалось загрузить данные старого VanasKoS",
-	["Old VanasKoS Players-data couldn't be loaded"] = "Не удалось загрузить данные игроков из старого VanasKoS",
-	["Old Vanas KoS Data successfully imported"] = "Данные из старого VanasKoS успешно загружены",
 	["Opium data couldn't be loaded"] = "Не удалось загрузить данные Opium",
 	["Opium data was imported"] = "Данные Opium импортированы",
+	["Imports KoS Data from other KoS tools"] = "Импортирует данные KoS из других KoS инструментов",
+	["Imports KoS Data from Ultimate Book of the Dead"] = "Импортирует данные KoS из Ultimate Book of the Dead",
+	["Imports KoS Data from Opium"] = "Импортирует данные KoS из Opium",
+	["Imports PvP Stats Data from Opium"] = "Импортирует ПвП статистику из Opium",
 } end);
 
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Importer", false);
+
 function VanasKoSImporter:OnInitialize()
+	VanasKoSGUI:AddConfigOption("Importer", {
+		type = "group",
+		name = L["Imports KoS Data from other KoS tools"],
+		desc = L["Imports KoS Data from other KoS tools"],
+		args = {
+			ubotd = {
+				type = "execute",
+				name = L["Imports KoS Data from Ultimate Book of the Dead"],
+				desc = L["Imports KoS Data from Ultimate Book of the Dead"],
+				func = function() VanasKoSImporter:FromUBotD(); end
+			},
+			opium = {
+				type = "execute",
+				name = L["Imports KoS Data from Opium"],
+				desc = L["Imports KoS Data from Opium"],
+				func = function() VanasKoSImporter:FromOpium(); end
+			},
+			opiumpvpstats = {
+				type = "execute",
+				name = L["Imports PvP Stats Data from Opium"],
+				desc = L["Imports PvP Stats Data from Opium"],
+				func = function() VanasKoSImporter:FromOpiumPvPStats(); end
+			},
+		}
+	});
 end
 
 function VanasKoSImporter:OnEnable()
@@ -228,38 +274,4 @@ function VanasKoSImporter:FromOpium()
 		end
 	end
 	VanasKoS:Print(L["Opium data was imported"]);
-end
-
-function VanasKoSImporter:FromOldVanasKoS()
-	if(not VanasKoSDB) then
-		VanasKoS:Print(L["Old VanasKoS data couldn't be loaded"]);
-		return nil;
-	end
-	if(not VanasKoSDB.koslist) then
-		VanasKoS:Print(L["Old VanasKoS data couldn't be loaded"]);
-		return nil;
-	end
-	if(not VanasKoSDB.koslist[GetRealmName()]) then
-		VanasKoS:Print(L["Old VanasKoS data couldn't be loaded"]);
-		return nil;
-	end
-
-	local playersdb = VanasKoSDB.koslist[GetRealmName()].players;
-	local guildsdb = VanasKoSDB.koslist[GetRealmName()].guilds;
-	if(playersdb ~= nil) then
-		for index, value in pairs(playersdb) do
-			VanasKoS:AddKoSPlayer(index, value.reason);
-		end
-
-		VanasKoSDB.koslist[GetRealmName()].players = nil;
-	end
-	if(guildsdb ~= nil) then
-		for index, value in pairs(guildsdb) do
-			VanasKoS:AddKoSGuild(index, value.reason);
-		end
-
-		VanasKoSDB.koslist[GetRealmName()].guilds = nil;
-	end
-
-	VanasKoS:Print(L["Old Vanas KoS Data successfully imported"]);
 end

@@ -3,8 +3,7 @@
 Notifies the user via Tooltip, Chat and Upper Area of a KoS/other List Target
 ------------------------------------------------------------------------]]
 
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSNotifier");
-VanasKoSNotifier = VanasKoS:NewModule("Notifier");
+VanasKoSNotifier = VanasKoS:NewModule("Notifier", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0");
 local VanasKoSNotifier = VanasKoSNotifier;
 local VanasKoS = VanasKoS;
 
@@ -12,11 +11,26 @@ local FADE_IN_TIME = 0.2;
 local FADE_OUT_TIME = 0.2;
 local FLASH_TIMES = 1;
 
-local SML = AceLibrary("SharedMedia-1.0");
+local SML = LibStub("LibSharedMedia-3.0");
 SML:Register("sound", "VanasKoS: String fading", "Interface\\AddOns\\VanasKoS\\Artwork\\StringFading.mp3");
 SML:Register("sound", "VanasKoS: Zoidbergs whooping", "Interface\\AddOns\\VanasKoS\\Artwork\\Zoidberg-Whoopwhoopwhoop.mp3");
 
-L:RegisterTranslations("enUS", function() return {
+
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Notifier", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
+
+RegisterTranslations("enUS", function() return {
 	["Enemy Detected:|cffff0000"] = true,
 	["KoS: %s"] = "KoS: %s",
 	["KoS (Guild): %s"] = "KoS (Guild): %s",
@@ -36,7 +50,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Notification through flashing Border"] = true,
 	["Notify only on my KoS-Targets"] = true,
 	["Notify of any enemy target"] = true,
-	["Notify in Shattrath"] = true,
+	["Notify in Sanctuary"] = true,
 	["Additional Reason Window"] = true,
 	["Locked"] = true,
 
@@ -49,7 +63,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Show PvP-Stats in Tooltip"] = true,
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["KoS: %s"] = "KoS: %s",
 	["KoS (Guild): %s"] = "KoS (Gilde): %s",
 	["Nicelist: %s"] = "Nette-Leute Liste: %s",
@@ -67,7 +81,7 @@ L:RegisterTranslations("deDE", function() return {
 	["Notification through Target Portrait"] = "Benachrichtigung durch aendern des Ziel-Fensters",
 	["Notification through flashing Border"] = "Benachrichtigung durch Aufleuchten des Rahmens",
 	["Notify only on my KoS-Targets"] = "Nur bei meinen KoS-Zielen benachrichtigen",
-	["Notify in Shattrath"] = "In Shattrath benachrichtigen",
+	["Notify in Sanctuary"] = "In friedlichen Gebieten benachrichtigen",
 	["Additional Reason Window"] = "Extra Grund Fenster",
 	["Locked"] = "Sperren",
 
@@ -80,7 +94,7 @@ L:RegisterTranslations("deDE", function() return {
 	["Show PvP-Stats in Tooltip"] = "Anzeigen von PvP-Statistiken im Tooltip",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 	["KoS: %s"] = "KoS: %s",
 	["KoS (Guild): %s"] = "KoS (Guilde): %s",
 	["Nicelist: %s"] = "Liste blanche: %s",
@@ -98,7 +112,7 @@ L:RegisterTranslations("frFR", function() return {
 	["Notification through Target Portrait"] = "Notification avec portrait (dragon élite)",
 	["Notification through flashing Border"] = "Notification avec bordure flash",
 	["Notify only on my KoS-Targets"] = "Notification de mes propres cibles seulement",
-	["Notify in Shattrath"] = "Notifier à Shattrath",
+--	["Notify in Sanctuary"] = true,
 	["Additional Reason Window"] = "Fenêtre additionnelle de raison",
 	["Locked"] = "Verrouill\195\169",
 
@@ -110,7 +124,7 @@ L:RegisterTranslations("frFR", function() return {
 	["Show PvP-Stats in Tooltip"] = "Afficher PvP-Stats dans le Tooltip",
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["KoS: %s"] = "KoS: %s",
 	["KoS (Guild): %s"] = "KoS (길드): %s",
 	["Nicelist: %s"] = "호인명부: %s",
@@ -128,7 +142,7 @@ L:RegisterTranslations("koKR", function() return {
 	["Notification through Target Portrait"] = "대상 사진을 통해 알림",
 	["Notification through flashing Border"] = "테두리 반짝임을 통해 알림",
 	["Notify only on my KoS-Targets"] = "나의 KoS-대상일 경우만 알림",
-	["Notify in Shattrath"] = "샤트라스 내 알림",
+--	["Notify in Sanctuary"] = true,
 	["Additional Reason Window"] = "이유창 추가",
 	["Locked"] = "고정",
 
@@ -140,7 +154,7 @@ L:RegisterTranslations("koKR", function() return {
 	["Show PvP-Stats in Tooltip"] = "툴팁에 PvP-현황 표시",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 	["KoS: %s"] = "KoS: %s",
 	["KoS (Guild): %s"] = "KoS (Hermandad): %s",
 	["Nicelist: %s"] = "Simpático: %s",
@@ -158,7 +172,7 @@ L:RegisterTranslations("esES", function() return {
 	["Notification through Target Portrait"] = "Notificar mediante el retrato del Objetivo",
 	["Notification through flashing Border"] = "Notificar mediante borde intermitente",
 	["Notify only on my KoS-Targets"] = "Notificar solo mis objetivos de KoS",
-	["Notify in Shattrath"] = "Notificar en Shattrath",
+--	["Notify in Sanctuary"] = true,
 	["Additional Reason Window"] = "Ventana adicional de Razón",
 	["Locked"] = "Bloqueado",
 
@@ -170,7 +184,7 @@ L:RegisterTranslations("esES", function() return {
 	["Show PvP-Stats in Tooltip"] = "Mostrar las estadísticas de JcJ en el tooltip",
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["KoS: %s"] = "KoS: %s",
 	["KoS (Guild): %s"] = "KoS (Гильдия): %s",
 	["Nicelist: %s"] = "Хороший: %s",
@@ -188,7 +202,7 @@ L:RegisterTranslations("ruRU", function() return {
 	["Notification through Target Portrait"] = "Уведомление через Портрет цели",
 	["Notification through flashing Border"] = "Уведомлять мерцанием краев экрана",
 	["Notify only on my KoS-Targets"] = "Уведомлять только о моих KoS-целях",
-	["Notify in Shattrath"] = "Уведомлять в Шаттрате",
+--	["Notify in Sanctuary"] = true,
 	["Additional Reason Window"] = "Дополнительное окно Причин",
 	["Locked"] = "Зафиксировано",
 
@@ -199,6 +213,8 @@ L:RegisterTranslations("ruRU", function() return {
 	["wins: %d - losses: %d"] = "побед: |cff00ff00%d|r поражений: |cffff0000%d|r",
 	["Show PvP-Stats in Tooltip"] = "Показывать PvP-статистику в Тултипе",
 } end);
+
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Notifier", false);
 
 local notifyAllowed = true;
 local flashNotifyFrame = nil;
@@ -293,27 +309,37 @@ local function GetSound(faction)
 	end
 end
 
+local mediaList = { };
+local function GetMediaList()
+	for k,v in pairs(SML:List("sound")) do
+		mediaList[v] = v;
+	end
+	
+	return mediaList;
+end
+
 function VanasKoSNotifier:OnInitialize()
-	VanasKoS:RegisterDefaults("Notifier", "profile", {
-		Enabled = true,
-		notifyVisual = true,
-		notifyChatframe = true,
-		notifyTargetFrame = true,
-		notifyOnlyMyTargets = true,
-		notifyEnemyTargets = false,
-		notifyFlashingBorder = true,
-		notifyInShattrathEnabled = false,
-		notifyExtraReasonFrameEnabled = false,
-		notifyExtraReasonFrameLocked = false,
-		notifyShowPvPStats = true,
+	
+	self.db = VanasKoS.db:RegisterNamespace("Notifier", {
+		profile = {
+			Enabled = true,
+			notifyVisual = true,
+			notifyChatframe = true,
+			notifyTargetFrame = true,
+			notifyOnlyMyTargets = true,
+			notifyEnemyTargets = false,
+			notifyFlashingBorder = true,
+			notifyInShattrathEnabled = false,
+			notifyExtraReasonFrameEnabled = false,
+			notifyExtraReasonFrameLocked = false,
+			notifyShowPvPStats = true,
 
-		NotifyTimerInterval = 60,
+			NotifyTimerInterval = 60,
 
-		playName = "VanasKoS: String fading",
-		enemyPlayName = "None",
+			playName = "VanasKoS: String fading",
+			enemyPlayName = "None",
+		}
 	});
-
-	self.db = VanasKoS:AcquireDBNamespace("Notifier");
 
 	flashNotifyFrame = CreateFrame("Frame", "VanasKoS_Notifier_Frame", WorldFrame);
 	flashNotifyFrame:SetAllPoints();
@@ -339,7 +365,7 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Enabled"],
 				desc = L["Enabled"],
 				order = 1,
-				set = function(v) VanasKoSNotifier.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("Notifier", v); end,
+				set = function(frame, v) VanasKoSNotifier.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("Notifier"); end,
 				get = function() return VanasKoSNotifier.db.profile.Enabled; end,
 			},
 			upperarea = {
@@ -347,7 +373,7 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Notification in the Upper Area"],
 				desc = L["Notification in the Upper Area"],
 				order = 2,
-				set = function(v) VanasKoSNotifier.db.profile.notifyVisual = v; end,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyVisual = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyVisual; end,
 			},
 			chatframe = {
@@ -355,7 +381,7 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Notification in the Chatframe"],
 				desc = L["Notification in the Chatframe"],
 				order = 3,
-				set = function(v) VanasKoSNotifier.db.profile.notifyChatframe = v; end,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyChatframe = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyChatframe; end,
 			},
 			targetframe = {
@@ -363,7 +389,7 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Notification through Target Portrait"],
 				desc = L["Notification through Target Portrait"],
 				order = 4,
-				set = function(v) VanasKoSNotifier.db.profile.notifyTargetFrame = v; end,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyTargetFrame = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyTargetFrame; end,
 			},
 			flashingborder = {
@@ -371,7 +397,7 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Notification through flashing Border"],
 				desc = L["Notification through flashing Border"],
 				order = 5,
-				set = function(v) VanasKoSNotifier.db.profile.notifyFlashingBorder = v; end,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyFlashingBorder = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyFlashingBorder; end,
 			},
 			onlymytargets = {
@@ -379,7 +405,7 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Notify only on my KoS-Targets"],
 				desc = L["Notify only on my KoS-Targets"],
 				order = 7,
-				set = function(v) VanasKoSNotifier.db.profile.notifyOnlyMyTargets = v; end,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyOnlyMyTargets = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyOnlyMyTargets; end,
 			},
 			notifyenemy = {
@@ -387,15 +413,15 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Notify of any enemy target"],
 				desc = L["Notify of any enemy target"],
 				order = 7,
-				set = function(v) VanasKoSNotifier.db.profile.notifyEnemyTargets = v; end,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyEnemyTargets = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyEnemyTargets; end,
 			},
-			inshattrath = {
+			insanctuary = {
 				type = 'toggle',
-				name = L["Notify in Shattrath"],
-				desc = L["Notify in Shattrath"],
+				name = L["Notify in Sanctuary"],
+				desc = L["Notify in Sanctuary"],
 				order = 8,
-				set = function(v) VanasKoSNotifier.db.profile.notifyInShattrathEnabled = v; end,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyInShattrathEnabled = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyInShattrathEnabled; end,
 			},
 			showpvpstats = {
@@ -403,7 +429,7 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Show PvP-Stats in Tooltip"],
 				desc = L["Show PvP-Stats in Tooltip"],
 				order = 9,
-				set = function(v) VanasKoSNotifier.db.profile.notifyShowPvPStats = v; end,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyShowPvPStats = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyShowPvPStats; end,
 			},
 			showextrareasonframe = {
@@ -417,7 +443,7 @@ function VanasKoSNotifier:OnInitialize()
 						name = L["Enabled"],
 						desc = L["Enabled"],
 						order = 1,
-						set = function(v) VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled = v; VanasKoSNotifier:UpdateAndCreateReasonFrame(); end,
+						set = function(frame, v) VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled = v; VanasKoSNotifier:UpdateAndCreateReasonFrame(); end,
 						get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled; end,
 					},
 					locked = {
@@ -425,7 +451,7 @@ function VanasKoSNotifier:OnInitialize()
 						name = L["Locked"],
 						desc = L["Locked"],
 						order = 1,
-						set = function(v) VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked = v; VanasKoSNotifier:UpdateAndCreateReasonFrame(); end,
+						set = function(frame, v) VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked = v; VanasKoSNotifier:UpdateAndCreateReasonFrame(); end,
 						get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked; end,
 					}
 				}
@@ -438,26 +464,26 @@ function VanasKoSNotifier:OnInitialize()
 				max = 600,
 				step = 5,
 				order = 11,
-				set = function(value) VanasKoSNotifier.db.profile.NotifyTimerInterval = value; end,
+				set = function(frame, value) VanasKoSNotifier.db.profile.NotifyTimerInterval = value; end,
 				get = function() return VanasKoSNotifier.db.profile.NotifyTimerInterval; end,
 			},
 			kosSound = {
-				type = 'text',
+				type = 'select',
 				name = L["Sound on KoS detection"],
 				desc = L["Sound on KoS detection"],
 				order = 12,
 				get = function() return GetSound("kos"); end,
-				set = function(value) SetSound("kos", value); end,
-				validate = SML:List("sound");
+				set = function(frame, value) SetSound("kos", value); end,
+				values = GetMediaList();
 			},
 			enemySound = {
-				type = 'text',
+				type = 'select',
 				name = L["Sound on enemy detection"],
 				desc = L["Sound on enemy detection"],
 				order = 13,
 				get = function() return GetSound("enemy"); end,
-				set = function(value) SetSound("enemy", value); end,
-				validate = SML:List("sound");
+				set = function(frame, value) SetSound("enemy", value); end,
+				values = GetMediaList();
 			},
 		},
 	};
@@ -466,17 +492,18 @@ function VanasKoSNotifier:OnInitialize()
 end
 
 function VanasKoSNotifier:OnEnable()
-	if(not VanasKoSNotifier.db.profile.Enabled) then
+	if(not self.db.profile.Enabled) then
+		self:SetEnabledState(false);
 		return;
 	end
-	self:RegisterEvent("VanasKoS_Player_Detected", "Player_Detected");
-	self:RegisterEvent("VanasKoS_Player_Target_Changed", "Player_Target_Changed");
-	self:RegisterEvent("VanasKoS_Mob_Target_Changed", "Player_Target_Changed");
+	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
+	self:RegisterMessage("VanasKoS_Player_Target_Changed", "Player_Target_Changed");
+	self:RegisterMessage("VanasKoS_Mob_Target_Changed", "Player_Target_Changed");
 	self:HookScript(GameTooltip, "OnTooltipSetUnit");
 end
 
 function VanasKoSNotifier:OnDisable()
-	self:UnregisterAllEvents();
+	self:UnregisterAllMessages();
 end
 
 local listsToCheck = {
@@ -600,7 +627,7 @@ function VanasKoSNotifier:Player_Target_Changed(data)
 	self:UpdateReasonFrame(data and data.name, data and data.guild);
 end
 
---/script VanasKoS:TriggerEvent("VanasKoS_Player_Detected", "Apfelherz", nil, "kos");
+--/script VanasKoS:SendMessage("VanasKoS_Player_Detected", "Apfelherz", nil, "kos");
 function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, greason, gcreator, gowner)
 	local msg = "";
 
@@ -652,7 +679,7 @@ local function ReenableNotifications()
 	notifyAllowed = true;
 end
 
-function VanasKoSNotifier:Player_Detected(data)
+function VanasKoSNotifier:Player_Detected(message, data)
 	if (data.faction == nil) then
 		return
 	end
@@ -662,7 +689,7 @@ function VanasKoSNotifier:Player_Detected(data)
 	end
 
 	-- don't notify if we're in shattrah
-	if(VanasKoSDataGatherer:IsInShattrath() and not self.db.profile.notifyInShattrathEnabled) then
+	if(VanasKoSDataGatherer:IsInSanctuary() and not self.db.profile.notifyInShattrathEnabled) then
 		return;
 	end
 
@@ -681,7 +708,7 @@ function VanasKoSNotifier:EnemyPlayer_Detected(data)
 	end
 	notifyAllowed = false;
 	-- Reallow Notifies in NotifyTimeInterval Time
-	self:ScheduleEvent("VanasKoS_Notifications_Reenable", ReenableNotifications, self.db.profile.NotifyTimerInterval);
+	self:ScheduleTimer(ReenableNotifications, self.db.profile.NotifyTimerInterval);
 
 	local msg = format(L["Enemy Detected:|cffff0000"]);
 	if (data.level ~= nil) then
@@ -727,7 +754,7 @@ function VanasKoSNotifier:KosPlayer_Detected(data)
 
 	notifyAllowed = false;
 	-- Reallow Notifies in NotifyTimeInterval Time
-	self:ScheduleEvent("VanasKoS_Notifications_Reenable", ReenableNotifications, self.db.profile.NotifyTimerInterval);
+	self:ScheduleTimer(ReenableNotifications, self.db.profile.NotifyTimerInterval);
 
 	if(self.db.profile.notifyVisual) then
 		UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME);
@@ -738,6 +765,7 @@ function VanasKoSNotifier:KosPlayer_Detected(data)
 	if(self.db.profile.notifyFlashingBorder) then
 		self:FlashNotify();
 	end
+	
 	self:PlaySound(self.db.profile.playName);
 end
 
@@ -749,5 +777,6 @@ end
 
 function VanasKoSNotifier:PlaySound(value)
 	local soundFileName = SML:Fetch("sound", value);
+	VanasKoS:Print(value .. " " .. soundFileName);
 	PlaySoundFile(soundFileName);
 end

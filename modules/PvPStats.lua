@@ -1,11 +1,23 @@
 --[[----------------------------------------------------------------------
       PvPStats Module - Part of VanasKoS
-Displays Stats about PvP in a tablet window
+Displays Stats about PvP in a window
 ------------------------------------------------------------------------]]
 
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSPvPStats");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_PvPStats", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["PvP Stats"] = true,
 	["Show/Hide"] = true,
 	["All Time"] = true,
@@ -18,7 +30,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Losses: %d (%f)"] = "Losses: |cffff0000%d|r (%.1f%%)";
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["PvP Stats"] = "PvP 현황",
 	["Show/Hide"] = "표시/숨김",
 	["All Time"] = "모든 시간",
@@ -31,7 +43,7 @@ L:RegisterTranslations("koKR", function() return {
 	["Losses: %d (%f)"] = "패: |cffff0000%d|r (%.1f%%)";
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["PvP Stats"] = "Статистика PvP",
 	["Show/Hide"] = "Показать/Скрыть",
 	["All Time"] = "Все время",
@@ -44,13 +56,13 @@ L:RegisterTranslations("ruRU", function() return {
 	["Losses: %d (%f)"] = "Поражений: |cffff0000%d|r (%.1f%%)";
 } end);
 
-local tablet = AceLibrary("Tablet-2.0");
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_PvPStats", false);
 
 VanasKoSPvPStats = VanasKoS:NewModule("PvPStats");
 
 local VanasKoSPvPStats = VanasKoSPvPStats;
 
-local GraphLib = AceLibrary("Graph-1.0");
+local GraphLib = LibStub("LibGraph-2.0");
 local frame = nil;
 
 function VanasKoSPvPStats:OnInitialize()
@@ -183,26 +195,19 @@ function VanasKoSPvPStats:OnEnable()
 	end
 
 	local showOptions = VanasKoSGUI:GetShowButtonOptions();
-	if(showOptions.args["pvpstats"]) then
-		return;
-	end
-	showOptions.args["pvpstats"] = {
-		type = 'group',
-		name = L["PvP Stats"],
-		desc = L["PvP Stats"],
-		args = {
-			showall = {
-				type = 'execute',
-				name = L["Show/Hide"],
-				desc = L["Show/Hide"],
-				func = function() VanasKoSPvPStats:ToggleAllPvPStats(); end,
-			},
-		},
+	showOptions[#showOptions+1] = {
+		text = L["PvP Stats"],
+		func = function() VanasKoSPvPStats:ToggleAllPvPStats(); end,
 	};
 end
 
 function VanasKoSPvPStats:OnDisable()
 	local showOptions = VanasKoSGUI:GetShowButtonOptions();
+	for k,v in pairs(showOptions) do
+		if v.text == L["PvP Stats"] then
+			showOptions[k] = nil;
+		end
+	end
 	showOptions.args["pvpstats"] = nil;
 end
 

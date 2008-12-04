@@ -3,9 +3,21 @@
 Creates a MinimapButton with a menu for VanasKoS
 ------------------------------------------------------------------------]]
 
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSMinimapButton");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_MinimapButton", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["Main Window"] = true,
 	["Warning Window"] = true,
 	["Add Player to KoS"] = true,
@@ -22,7 +34,7 @@ L:RegisterTranslations("enUS", function() return {
 --	["Distance"] = true,
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["Main Window"] = "Programmfenster",
 	["Warning Window"] = "Warnfenster",
 	["Add Player to KoS"] = "Spieler zur KoS-Liste hinzufuegen",
@@ -39,7 +51,7 @@ L:RegisterTranslations("deDE", function() return {
 --	["Distance"] = "Abstand",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 	["Main Window"] = "Fen\195\170tre principale",
 	["Warning Window"] = "Fen\195\170tre d'avertissement",
 	["Add Player to KoS"] = "Ajouter un joueur KoS",
@@ -56,7 +68,7 @@ L:RegisterTranslations("frFR", function() return {
 --	["Distance"] = "Distance",
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["Main Window"] = "메인창",
 	["Warning Window"] = "경고창",
 	["Add Player to KoS"] = "KoS에 플레이어 추가",
@@ -73,7 +85,7 @@ L:RegisterTranslations("koKR", function() return {
 --	["Distance"] = "거리",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 	["Main Window"] = "Ventana Principal",
 	["Warning Window"] = "Ventana de Aviso",
 	["Add Player to KoS"] = "Añadir Jugador a KoS",
@@ -90,7 +102,7 @@ L:RegisterTranslations("esES", function() return {
 --	["Distance"] = "Distancia",
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["Main Window"] = "Главное окно",
 	["Warning Window"] = "Окно предупреждений",
 	["Add Player to KoS"] = "Добавить игрока в KoS",
@@ -109,92 +121,68 @@ L:RegisterTranslations("ruRU", function() return {
 
 VanasKoSMinimapButton = VanasKoS:NewModule("MinimapButton");
 
-local dewdrop = AceLibrary("Dewdrop-2.0");
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_MinimapButton", false);
+
 local ang = 290
 local r = 75;
 
+
+local attackerMenu = { };
+
 local minimapOptions = {
-	type = 'group',
-	args = {
-		header = {
-			type = 'header',
-			name = VANASKOS.NAME .. " " .. VANASKOS.VERSION,
-			order = 1,
-		},
-		mainwindow = {
-			type = 'toggle',
-			name = L["Main Window"],
-			desc = L["Main Window"],
-			order = 2,
-			set = function() VanasKoS:ToggleMenu(); end,
-			get = function() return VanasKoSFrame:IsVisible(); end,
-		},
-		warningwindow = {
-			type = 'toggle',
-			name = L["Warning Window"],
-			desc = L["Warning Window"],
-			order = 3,
-			set = function(v) VanasKoSWarnFrame.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("WarnFrame", v); VanasKoSWarnFrame:Update(); end,
-			get = function() return VanasKoSWarnFrame.db.profile.Enabled; end,
-		},
-		locked = {
-			type = 'toggle',
-			name = L["Locked"],
-			desc = L["Locked"],
-			order = 4,
-			set = function(v) VanasKoSWarnFrame.db.profile.Locked = v; end,
-			get = function() return VanasKoSWarnFrame.db.profile.Locked; end,
-		},
-		addplayerkos = {
-			type = 'execute',
-			name = L["Add Player to KoS"],
-			desc = L["Add Player to KoS"],
-			order = 5,
-			func = function() VanasKoS:AddEntryFromTarget("PLAYERKOS"); end,
-		},
-		addguildkos = {
-			type = 'execute',
-			name = L["Add Guild to KoS"],
-			desc = L["Add Guild to KoS"],
-			order = 6,
-			func = function()
-						VanasKoS:AddEntryFromTarget("GUILDKOS");
-				end,
-		},
-		addhatelist = {
-			type = 'execute',
-			name = L["Add Player to Hatelist"],
-			desc = L["Add Player to Hatelist"],
-			order = 7,
-			func = function() VanasKoS:AddEntryFromTarget("HATELIST"); end,
-		},
-		addnicelist = {
-			type = 'execute',
-			name = L["Add Player to Nicelist"],
-			desc = L["Add Player to Nicelist"],
-			order = 8,
-			func = function() VanasKoS:AddEntryFromTarget("NICELIST"); end,
-		},
-		addattacker = {
-			type = 'group',
-			name = L["Add Attacker to KoS"],
-			desc = L["Add Attacker to KoS"],
-			order = 9,
-			args = {
-			},
-		},
-	}
+	{
+		text = VANASKOS.NAME .. " " .. VANASKOS.VERSION,
+		isTitle = true,
+	},
+	{
+		text = L["Main Window"],
+		func = function() VanasKoS:ToggleMenu(); end,
+		checked = function() return VanasKoSFrame:IsVisible(); end,
+	},
+	{
+		text = L["Warning Window"],
+		func = function() VanasKoS:ToggleModuleActive("WarnFrame"); end,
+		checked = function() return VanasKoS:GetModule("WarnFrame").enabledState; end,
+	},
+	{
+		text = L["Locked"],
+		func = function() VanasKoSWarnFrame.db.profile.Locked = not VanasKoSWarnFrame.db.profile.Locked; end,
+		checked = function() return VanasKoSWarnFrame.db.profile.Locked; end,
+	},
+	{
+		text = L["Add Player to KoS"],
+		func = function() VanasKoS:AddEntryFromTarget("PLAYERKOS"); end,
+	},
+	{
+		text = L["Add Guild to KoS"],
+		func = function()
+					VanasKoS:AddEntryFromTarget("GUILDKOS");
+			end,
+	},
+	{
+		text = L["Add Player to Hatelist"],
+		func = function() VanasKoS:AddEntryFromTarget("HATELIST"); end,
+	},
+	{
+		text = L["Add Player to Nicelist"],
+		func = function() VanasKoS:AddEntryFromTarget("NICELIST"); end,
+	},
+	{
+		text = L["Add Attacker to KoS"],
+		hasArrow = true;
+		menuList = attackerMenu;
+	},
 };
 
 
 function VanasKoSMinimapButton:OnInitialize()
-	VanasKoS:RegisterDefaults("MinimapButton", "profile", {
-		Enabled = true,
-		Locked = false,
-		Moved = false,
+	self.db = VanasKoS.db:RegisterNamespace("MinimapButton", {
+		profile = {
+			Enabled = true,
+			Locked = false,
+			Moved = false,
+		}
 	});
-
-	self.db = VanasKoS:AcquireDBNamespace("MinimapButton");
 
 	local name = "VanasKoS_MinimapButton";
 	self.frame = CreateFrame("Button", name, Minimap);
@@ -220,10 +208,6 @@ function VanasKoSMinimapButton:OnInitialize()
 	overlay:SetWidth(53);
 	overlay:SetHeight(53);
 	overlay:SetPoint("TOPLEFT", frame, "TOPLEFT");
-
-	dewdrop:Register(frame,
-			'children', minimapOptions,
-			'dontHook', true);
 
 	frame:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	frame:RegisterForDrag("LeftButton");
@@ -254,14 +238,14 @@ function VanasKoSMinimapButton:OnInitialize()
 					name = L["Enabled"],
 					desc = L["Enabled"],
 					order = 1,
-					set = function(v) VanasKoSMinimapButton.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("MinimapButton", v); end,
-					get = function() return VanasKoSMinimapButton.db.profile.Enabled; end,
+					set = function(frame, v) VanasKoSMinimapButton.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("MinimapButton"); end,
+					get = function() return VanasKoS:GetModule("MinimapButton").enabledState; end,
 				},
 				reset = {
 					type = 'execute',
 					name = L["Reset Position"],
 					desc = L["Reset Position"],
-					order = 3,
+					order = 2,
 					func = function() VanasKoSMinimapButton:ResetPosition(); end,
 				},
 --[[				angle = {
@@ -271,7 +255,7 @@ function VanasKoSMinimapButton:OnInitialize()
 					min = 0,
 					max = 360,
 					step = 1,
-					set = function(value) VanasKoSMinimapButton:SetAngle(value); VanasKoSMinimapButton.db.profile.Angle = value; end,
+					set = function(frame, value) VanasKoSMinimapButton:SetAngle(value); VanasKoSMinimapButton.db.profile.Angle = value; end,
 					get = function() return VanasKoSMinimapButton.db.profile.Angle; end,
 				},
 				distance = {
@@ -281,7 +265,7 @@ function VanasKoSMinimapButton:OnInitialize()
 					min = 40,
 					max = 150,
 					step = 1,
-					set = function(value) VanasKoSMinimapButton:SetDist(value); VanasKoSMinimapButton.db.profile.Dist = value; end,
+					set = function(frame, value) VanasKoSMinimapButton:SetDist(value); VanasKoSMinimapButton.db.profile.Dist = value; end,
 					get = function() return VanasKoSMinimapButton.db.profile.Dist; end,
 				} ]]--
 			}
@@ -319,25 +303,26 @@ end
 function VanasKoSMinimapButton:UpdateOptions()
 	local list = VanasKoSPvPDataGatherer:GetDamageFromArray();
 
-	minimapOptions.args.addattacker.args = { };
+	attackerMenu = { };
+--[[
 	for k,v in pairs(list) do
-		minimapOptions.args.addattacker.args[k] = {
-			type = 'execute',
+		attackerMenu[#attackerMenu+1] = {
 			name = v[1] .. " " .. date("%c", v[2]),
-			desc = v[1] .. " " .. date("%c", v[2]),
 			func = function()
 					VanasKoSGUI:ShowList("PLAYERKOS");
 					VANASKOS.LastNameEntered = v[1];
 					StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
 				end,
 		};
-	end
+	end ]]
 end
 
 function VanasKoSMinimapButton:OnClick()
 	if(arg1 == "LeftButton" and not IsShiftKeyDown()) then
 		VanasKoSMinimapButton:UpdateOptions();
-		dewdrop:Open(VanasKoSMinimapButton.frame);
+		local x, y = GetCursorPosition();
+		local uiScale = UIParent:GetEffectiveScale();
+		EasyMenu(minimapOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
 	end
 	if(arg1 == "RightButton") then
 		VanasKoS:AddEntryFromTarget("PLAYERKOS");
@@ -346,10 +331,11 @@ end
 
 function VanasKoSMinimapButton:OnEnable()
 	if(not self.db.profile.Enabled) then
+		self:SetEnabledState(false);
 		return;
 	end
-
-	minimapOptions.args.header.name = VANASKOS.NAME .. " " .. VANASKOS.VERSION;
+	
+	minimapOptions[1].text = VANASKOS.NAME .. " " .. VANASKOS.VERSION;
 	if(not self.db.profile.Moved) then
 		self:ResetPosition();
 	end

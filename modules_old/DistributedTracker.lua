@@ -3,15 +3,28 @@
 Broadcasts a list on ZONE and GUILD and handles returning position answers
 ------------------------------------------------------------------------]]
 
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSDistributedTracker");
 
-VanasKoSTracker = VanasKoS:NewModule("DistributedTracker");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
+
+VanasKoSTracker = VanasKoS:NewModule("DistributedTracker", "AceComm-3.0", "AceEvent-3.0", "AceTimer-3.0");
 
 local VanasKoSTracker = VanasKoSTracker;
 local VanasKoS = VanasKoS;
-local comm = AceLibrary("AceComm-2.0");
+local comm = AceLibrary("AceComm-3.0");
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = true,
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = true,
 	["Ok"] = true,
@@ -25,7 +38,7 @@ L:RegisterTranslations("enUS", function() return {
 	["%s  %s"] = "%s  |cffff00ff%s|r",
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Position von Player %s empfangen (%d, %d in %s) von %s - Grund: %s",
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%%s in %s bei %d, %d (%s) - Cartographer Notiz erstellen?",
 	["Ok"] = "Ok",
@@ -39,7 +52,7 @@ L:RegisterTranslations("deDE", function() return {
 	["%s  %s"] = "%s  |cffff00ff%s|r",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Position du joueur %s (%d, %d \195\128 %s) re\195\167u de %s - Raison: %s",
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s in %s at %d, %d (%s) - Cr\195\169er une note avec \"Cartographer\" ?",
 	["Ok"] = "Ok",
@@ -53,7 +66,7 @@ L:RegisterTranslations("frFR", function() return {
 	["%s  %s"] = "%s  |cffff00ff%s|r",
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 --	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = true,
 --	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = true,
 	["Ok"] = "확인",
@@ -67,7 +80,7 @@ L:RegisterTranslations("koKR", function() return {
 	["%s  %s"] = "%s  |cffff00ff%s|r",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Posición del Jugador %s (%d, %d in %s) recibida desde %s - Razón: %s",
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s en %s en %d, %d (%s) - ¿Crear Nota de Cartographer?",
 	["Ok"] = "Aceptar",
@@ -81,7 +94,7 @@ L:RegisterTranslations("esES", function() return {
 	["%s  %s"] = "%s  |cffff00ff%s|r",
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Расположение игрока %s (%d, %d в %s) получено от %s - Причина: %s",
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s в %s по %d, %d (%s) - Создать метку в Картографе?",
 	["Ok"] = "Ok",
@@ -94,6 +107,8 @@ L:RegisterTranslations("ruRU", function() return {
 	["Tracking via Zone"] = "Следить по локации",
 	["%s  %s"] = "%s  |cffff00ff%s|r",
 } end);
+
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_DistributedTracker", false);
 
 -- don't change the values!
 -- time span for announcing the kos list
@@ -112,25 +127,25 @@ local blockedList = { };
 local zoneNames = nil;
 
 function VanasKoSTracker:OnInitialize()
-	VanasKoS:RegisterDefaults("DistributedTracker", "profile", {
-		Enabled = true,
-		WantedListEnabled = true,
-		PublishToGuild = true,
-		PublishToZone = true,
-	});
-	VanasKoS:RegisterDefaults("DistributedTracker", "realm", {
-		wantedlist = {
-			players = {
-			},
-		},
-	});
-	self.db = VanasKoS:AcquireDBNamespace("DistributedTracker");
-
-	VanasKoS:ResetDB("DistributedTracker", "realm");
-
-	self:SetCommPrefix("VanasKoSTracker");
-	self:SetDefaultCommPriority("BULK");
-
+	self.db = VanasKoS.db:RegisterNamespace("DistributedTracker", 
+			{
+				profile = {
+					Enabled = true,
+					WantedListEnabled = true,
+					PublishToGuild = true,
+					PublishToZone = true,
+				},
+				realm = {
+					wantedlist = {
+						players = {
+						},
+					},
+				}
+			}
+	);
+	
+	self.db.realm.wantedlist.players = { };
+	
 	VanasKoSGUI:AddConfigOption("DistributedTracking", {
 			type = 'group',
 			name = L["Distributed Tracking"],
@@ -173,6 +188,7 @@ function VanasKoSTracker:OnInitialize()
 end
 
 function VanasKoSTracker:VersionReceived(player, addon, version)
+	self.commPrefix = "VanasKoSDistributedTracker";
 	if(addon == nil or addon ~= "VanasKoS" or version == nil or version == false) then
 		return;
 	end
@@ -199,7 +215,7 @@ function VanasKoSTracker:OnEnable()
 		end
 	else
 		--comm:RegisterAddonVersionReceptor(VanasKoSTracker, "VersionReceived");
-		self:ScheduleEvent(function()
+		self:ScheduleTimer(function()
 							self:RegisterComm(self.commPrefix, "WHISPER", "PositionUpdateReceived");
 							if(self.db.profile.PublishToZone) then
 								self:RegisterComm(self.commPrefix, "ZONE", "ListMessageReceived");
@@ -216,16 +232,17 @@ function VanasKoSTracker:OnEnable()
 	if(self.db.profile.WantedListEnabled) then
 		VanasKoS:RegisterList(5, "WANTED", L["Wanted"], self);
 		VanasKoSGUI:RegisterList("WANTED", self);
-		self:ScheduleRepeatingEvent(self.PublishGlobalList, PUBLISH_GLOBAL_REPEAT_TIME, self);
+		self:ScheduleRepeatingTimer(self.PublishGlobalList, PUBLISH_GLOBAL_REPEAT_TIME, self);
 	end
 
-	self:RegisterEvent("VanasKoS_Player_Detected", "Player_Detected");
-	self:ScheduleRepeatingEvent(self.PublishList, PUBLISH_REPEAT_TIME, self);
+	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
+	self:ScheduleRepeatingTimer(self.PublishList, PUBLISH_REPEAT_TIME, self);
 end
 
 function VanasKoSTracker:OnDisable()
 	self:UnregisterAllComms();
-	self:CancelAllScheduledEvents();
+	self:UnregisterAllMessages();
+	self:CancelAllTimers();
 
 	VanasKoSGUI:UnregisterList("WANTED");
 	VanasKoS:UnregisterList("WANTED");
@@ -403,7 +420,7 @@ function VanasKoSTracker:AddToBlockedList(kosTarget, playername)
 	blockedList[kosTarget] = list;
 end
 
-function VanasKoSTracker:Player_Detected(data)
+function VanasKoSTracker:Player_Detected(message, data)
 	assert(data.name ~= nil);
 
 	if(data.faction == nil or data.faction == "friendly") then
@@ -473,13 +490,20 @@ function VanasKoSTracker:SendPosition(receiver, locatedPlayer)
 
 	if(self:IsUserInChannel(receiver, "ZONE") or
 		self:IsUserInChannel(receiver, "CUSTOM", GCHANNEL)) then
-		self:SendCommMessage("WHISPER", receiver, locatedPlayer, posX, posY, continent, zone);
+		self:SendCommMessage(self.commPrefix, 
+			self:Serialize(locatedPlayer, posX, posY, continent, zone),
+			"WHISPER", 
+			receiver);
 		return true;
 	else
 		for i=1, GetNumGuildMembers(1) do
 			local name, rank, rankIndex, level, class, zoneGuild, note, officernote, online, status = GetGuildRosterInfo(i);
 			if(name ~= nil and name:lower() == receiver:lower() and online) then
-				self:SendCommMessage("WHISPER", receiver, locatedPlayer, posX, posY, continent, zone);
+				self:SendCommMessage(self.commPrefix, 
+					self:Serialize(locatedPlayer, posX, posY, continent, zone),
+					"WHISPER", 
+					receiver,
+					"BULK");
 				return true;
 			end
 		end
@@ -563,7 +587,13 @@ function VanasKoSTracker:PublishGlobalList()
 		return;
 	end
 
-	VanasKoSTracker:SendCommMessage("CUSTOM", GCHANNEL, newList);
+	VanasKoSTracker:SendCommMessage(
+		self.commPrefix, 
+		self:Serialize(newList), 
+		"CUSTOM", 
+		GCHANNEL
+	);
+	
 	if(VANASKOS.DEBUG == 1) then
 		VanasKoS:Print("[DEBUG]: Global List published - Entries:", entries);
 	end
@@ -582,12 +612,12 @@ function VanasKoSTracker:PublishList()
 	end
 
 	if(self.db.profile.PublishToGuild and IsInGuild()) then
-		self:SendCommMessage("GUILD", list);
+		self:SendCommMessage(self.commPrefix, self:Serialize(list), "GUILD");
 		--comm:QueryAddonVersion("VanasKoS", "GUILD");
 	end
 
 	if(self.db.profile.PublishToZone) then
-		self:SendCommMessage("ZONE", list);
+		self:SendCommMessage(self.commPrefix, self:Serialize(list), "ZONE");
 	end
 end
 

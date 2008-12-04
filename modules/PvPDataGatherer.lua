@@ -5,15 +5,27 @@ Gathers PvP Wins and Losses
 Credits: DeuceLog for code on how to use Parser-3.0
 ---------------------------------------------------------------------------------------------]]
 
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSPvPDataGatherer");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_PvPDataGatherer", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
 
-VanasKoSPvPDataGatherer = VanasKoS:NewModule("PvPDataGatherer");
+VanasKoSPvPDataGatherer = VanasKoS:NewModule("PvPDataGatherer", "AceEvent-3.0");
 local VanasKoSPvPDataGatherer = VanasKoSPvPDataGatherer;
 local VanasKoS = VanasKoS;
 
 local tablet = AceLibrary("Tablet-2.0");
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["PvP Data Gathering"] = true,
 	["Enabled"] = true,
 	["PvP Stats"] = true,
@@ -33,7 +45,7 @@ L:RegisterTranslations("enUS", function() return {
 	["sort by most wins to losses"] = true,
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["PvP Data Gathering"] = "PvP Daten sammeln",
 	["Enabled"] = "Aktiviert",
 	["PvP Stats"] = "PvP Statistik",
@@ -42,14 +54,14 @@ L:RegisterTranslations("deDE", function() return {
 	["PvP Loss versus %s registered."] = "PvP Verlust gegen %s registriert.",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 	["PvP Data Gathering"] = "Rassemblement de donn\195\169es PvP",
 	["Enabled"] = "actif",
 	["PvP Stats"] = "PvP Stats",
 	["wins: %d - losses: %d"] = "victoires: |cff00ff00%d|r d\195\169faites: |cffff0000%d|r",
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["PvP Data Gathering"] = "PvP 데이터 수집",
 	["Enabled"] = "사용",
 	["PvP Stats"] = "PvP 현황",
@@ -59,14 +71,14 @@ L:RegisterTranslations("koKR", function() return {
 	["Show Messages when a PvP Win/Loss is registered"] = "PvP 승/패 기록 시 메세지를 표시합니다.",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 	["PvP Data Gathering"] = "Recolección de Datos JcJ",
 	["Enabled"] = "Activado",
 	["PvP Stats"] = "Estadísticas JcJ",
 	["wins: %d - losses: %d"] = "ganados: |cff00ff00%d|r perdidos: |cffff0000%d|r",
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["PvP Data Gathering"] = "Сбор PvP-статистики",
 	["Enabled"] = "Включено",
 	["PvP Stats"] = "Статистика PvP ",
@@ -76,6 +88,8 @@ L:RegisterTranslations("ruRU", function() return {
 	["Show Messages when a PvP Win/Loss is registered"] = "Сообщать о зарегистрированной PvP победе/поражении",
 } end);
 
+
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_PvPDataGatherer", false);
 
 -- sort functions
 
@@ -183,29 +197,30 @@ local function SortByLosses(val1, val2)
 end
 
 function VanasKoSPvPDataGatherer:OnInitialize()
-	VanasKoS:RegisterDefaults("PvPDataGatherer", "profile", {
-		Enabled = true,
-		ShowWinLossMessages = true,
-	});
-	VanasKoS:RegisterDefaults("PvPDataGatherer", "realm", {
-		pvpstats = {
-			players = {
+	self.db = VanasKoS.db:RegisterNamespace("PvPDataGatherer", 
+		{
+			profile = {
+				Enabled = true,
+				ShowWinLossMessages = true,
 			},
-			pvplog = {
-			},
-		},
-	});
-
-
-	self.db = VanasKoS:AcquireDBNamespace("PvPDataGatherer");
+			realm = {
+				pvpstats = {
+					players = {
+						},
+					pvplog = {
+						},
+				},
+			}
+		}
+	);
 
 	-- import of old data, will be removed in some version in the future
-	if(VanasKoS.db.realm.pvpstats) then
+	--[[if(VanasKoS.db.realm.pvpstats) then
 		self.db.realm.pvpstats = VanasKoS.db.realm.pvpstats;
 		VanasKoS.db.realm.pvpstats = nil;
-	end
+	end]]--
 
-	VanasKoSGUI:AddConfigOption("PvP Data Gathering", {
+	VanasKoSGUI:AddConfigOption("PvPDataGathering", {
 			type = 'group',
 			name = L["PvP Data Gathering"],
 			desc = L["PvP Data Gathering"],
@@ -215,7 +230,7 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 					name = L["Enabled"],
 					desc = L["Enabled"],
 					order = 1,
-					set = function(v) VanasKoSPvPDataGatherer.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("PvPDataGatherer", v); end,
+					set = function(frame, v) VanasKoSPvPDataGatherer.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("PvPDataGatherer"); end,
 					get = function() return VanasKoSPvPDataGatherer.db.profile.Enabled end,
 				},
 				showstatusmessages = {
@@ -223,7 +238,7 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 					name = L["Show Messages when a PvP Win/Loss is registered"],
 					desc = L["Show Messages when a PvP Win/Loss is registered"],
 					order = 2,
-					set = function(v) VanasKoSPvPDataGatherer.db.profile.ShowWinLossMessages = v; end,
+					set = function(frame, v) VanasKoSPvPDataGatherer.db.profile.ShowWinLossMessages = v; end,
 					get = function() return VanasKoSPvPDataGatherer.db.profile.ShowWinLossMessages end,
 				},
 			}
@@ -353,6 +368,7 @@ end
 
 function VanasKoSPvPDataGatherer:OnEnable()
 	if(not self.db.profile.Enabled) then
+		self:SetEnabledState(false);
 		return;
 	end
 
@@ -364,7 +380,7 @@ local lastDamageFromTime = nil;
 
 local zone = nil;
 
-function VanasKoSPvPDataGatherer:CombatEvent(...)
+function VanasKoSPvPDataGatherer:CombatEvent(event, ...)
 	local timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags = select(1, ...);
 
 	-- Ignore if there was no destination

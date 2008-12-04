@@ -1,8 +1,20 @@
 -- Definitions based on Locales
 
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoS");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["Vanas KoS"] = true,
 	["Add KoS Player"] = true,
 	["Add Entry"] = true,
@@ -51,7 +63,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Donate"] = true,
 } end);
 
-L:RegisterTranslations("zhCN", function() return {
+RegisterTranslations("zhCN", function() return {
 -- Simplified Chinese by Taburiss
 	["Vanas KoS"] = "Vanas KoS",
 	["Add KoS Player"] = "登录仇敌",
@@ -105,7 +117,7 @@ L:RegisterTranslations("zhCN", function() return {
 
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["Vanas KoS"] = "Vanas KoS",
 	["Add KoS Player"] = "KoS Spieler hinzufügen",
 	["Add Entry"] = "Eintrag hinzuf\195\188gen",
@@ -158,7 +170,7 @@ L:RegisterTranslations("deDE", function() return {
 
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 	["Vanas KoS"] = "Vanas KoS",
 	["Add KoS Player"] = "Ajouter joueur KoS",
 	["Add Entry"] = "Ajouter entr\195\169e",
@@ -208,7 +220,7 @@ L:RegisterTranslations("frFR", function() return {
 	["Adds a KoS-Target"] = "Ajouter une KoS-Target (cible)",
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["Vanas KoS"] = "Vanas KoS",
 	["Add KoS Player"] = "KoS 플레이어 추가",
 	["Add Entry"] = "추가",
@@ -258,7 +270,7 @@ L:RegisterTranslations("koKR", function() return {
 	["Donate"] = "지원",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 	["Vanas KoS"] = "Vanas KoS",
 	["Add KoS Player"] = "Añadir Jugador KoS",
 	["Add Entry"] = "Añadir",
@@ -307,7 +319,7 @@ L:RegisterTranslations("esES", function() return {
 
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["Vanas KoS"] = "Vanas KoS",
 	["Add KoS Player"] = "Добавить игрока в KoS",
 	["Add Entry"] = "Добавить запись",
@@ -367,6 +379,8 @@ VANASKOS.COMMANDS = {"/kos", "/vkos", "/vanaskos"};
 VANASKOS.VERSION = "0"; -- filled later
 VANASKOS.LastNameEntered = "";
 VANASKOS.AUTHOR = "Vane of EU-Aegwynn";
+
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS", false);
 
 BINDING_HEADER_VANASKOS_HEADER = L["Vanas KoS"];
 BINDING_NAME_VANASKOS_TEXT_TOGGLE_MENU = L["Toggle Menu"];

@@ -3,15 +3,15 @@
 Handles the main gui frame
 ------------------------------------------------------------------------]]
 
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoS");
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS");
 
-VanasKoSGUI = VanasKoS:NewModule("GUI");
+VanasKoSGUI = VanasKoS:NewModule("GUI", "AceEvent-3.0");
 local VanasKoSGUI = VanasKoSGUI;
 local VanasKoS = VanasKoS;
 
-local dewdrop = AceLibrary("Dewdrop-2.0");
-
 local listHandler = { };
+
+VanasKoSGUI.dropDownFrame = nil;
 
 function VanasKoSGUI:AddConfigOption(name, option)
 	if(not self.ConfigurationOptions) then
@@ -34,88 +34,49 @@ function VanasKoSGUI:GetListName(listid)
 	return listid;
 end
 
+local sortOptions = {
+};
+
 local showOptions = { 
-	type = 'group',
-	args = {
-		sort = {
-			type = 'group',
-			name = L["sort"],
-			desc = L["sort"],
-			order = 1,
-			args = {
-			},
-		},
+	{
+		text = L["sort"],
+		hasArrow = true,
+		menuList = menuSortOptions,
 	}
 };
 
-local sortOptions = {
-};
 
 local defaultSortFunction = {
 };
 
-local waterfall = AceLibrary:HasInstance("Waterfall-1.0") and AceLibrary("Waterfall-1.0");
+--local waterfall = AceLibrary:HasInstance("Waterfall-1.0") and AceLibrary("Waterfall-1.0");
 
 function VanasKoSGUI:OnInitialize()
-	VanasKoS:RegisterDefaults("GUI", "profile", {
-		GUILocked = true,
-		GUIMoved = false,
-	});
-	
-	self.db = VanasKoS:AcquireDBNamespace("GUI");
+	self.db = VanasKoS.db:RegisterNamespace("GUI", 
+					{
+						profile = { 
+								GUILocked = true,
+								GUIMoved = false 
+								}
+					}
+	);
 	
 	UIPanelWindows["VanasKoSFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 
 	VanasKoSListFrameShowButton:SetScript("OnClick", function()
-			dewdrop:Register(this,
-				'children', showOptions,
-				'point', "TOPLEFT",
-				'dontHook', true,
-				'relativePoint', "TOPRIGHT"
-			);
-			this:SetScript("OnClick", function()
-				if(dewdrop:IsOpen(this)) then
-					dewdrop:Close();
-				else
-					dewdrop:Open(this);
-				end
-			end);
-			this:GetScript("OnClick")();
+			local x, y = GetCursorPosition();
+			local uiScale = UIParent:GetEffectiveScale();
+			EasyMenu(showOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
 	end);
 	
-	if(not waterfall) then
 		VanasKoSListFrameConfigurationButton:SetScript("OnClick", function()
-				dewdrop:Register(this, 
-								'children', self.ConfigurationOptions,
-								'point', "TOPLEFT",
-								'dontHook', true,
-								'relativePoint', "TOPRIGHT");
-				this:SetScript("OnClick", function()
-					if(dewdrop:IsOpen(this)) then
-						dewdrop:Close();
-					else
-						dewdrop:Open(this);
-					end
-				end);
-				this:GetScript("OnClick")();
+			ShowUIPanel(InterfaceOptionsFrame);
+			PanelTemplates_Tab_OnClick(InterfaceOptionsFrameTab2, InterfaceOptionsFrame);
+			PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
+			InterfaceOptionsFrame_TabOnClick();
 		end);
-	else
-		VanasKoSListFrameConfigurationButton:SetScript("OnClick", function()
-				waterfall:Register("VanasKoSConfiguration",
-						'aceOptions', self.ConfigurationOptions,
-						'title', L["Vanas KoS"]);
-				this:SetScript("OnClick", function()
-					if(waterfall:IsOpen("VanasKoSConfiguration")) then
-						waterfall:Close();
-					else
-						waterfall:Open("VanasKoSConfiguration");
-					end
-				end);
-				this:GetScript("OnClick")();
-			end);
-	end
-	
-	self:RegisterEvent("VanasKoS_List_Added", "InitializeDropDowns");
+
+	self:RegisterMessage("VanasKoS_List_Added", "InitializeDropDowns");
 	
 	self:AddConfigOption("GUI", {
 		type = 'group',
@@ -175,15 +136,37 @@ function VanasKoSGUI:InitializeDropDowns()
 	UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, "PLAYERKOS");
 end
 
+local AceConfigDialog = LibStub("AceConfigDialog-3.0");
+local AceConfig = LibStub("AceConfig-3.0");
+
 function VanasKoSGUI:OnEnable()
-	self:RegisterEvent("VanasKoS_List_Entry_Added", 
+	VanasKoSGUI.dropDownFrame = CreateFrame("Frame", "VanasKoSGUIDropDownFrame", UIParent, "UIDropDownMenuTemplate");
+	
+	self:RegisterMessage("VanasKoS_List_Entry_Added", 
 							function(listname, name, data)
 								VanasKoSGUI:UpdateShownList(); 
 							end);
-	self:RegisterEvent("VanasKoS_List_Entry_Removed", 
+	self:RegisterMessage("VanasKoS_List_Entry_Removed", 
 							function(listname, name, data)
 								VanasKoSGUI:UpdateShownList(); 
 							end);
+	
+	AceConfig:RegisterOptionsTable("VanasKoS", {
+		name = "VanasKoS",
+		type = "group",
+		args = {
+			help = {
+				type = "description",
+				name = GetAddOnMetadata("VanasKoS", "Notes"),
+			},
+		},
+	});
+	self.configFrame = AceConfigDialog:AddToBlizOptions("VanasKoS", "VanasKoS");
+	
+	for k,v in pairs(self.ConfigurationOptions.args) do
+		AceConfig:RegisterOptionsTable(k, self.ConfigurationOptions.args[k]);
+		AceConfigDialog:AddToBlizOptions(k, self.ConfigurationOptions.args[k].name, "VanasKoS");
+	end
 end
 
 function VanasKoSGUI:OnDisable()
@@ -199,9 +182,9 @@ local VANASKOSFRAME_SUBFRAMES = { "VanasKoSListFrame", "VanasKoSAboutFrame" };
 
 function VanasKoSGUI:UpdateSortOptions()
 	if(sortOptions[VANASKOS.showList]) then
-		showOptions.args.sort.args = sortOptions[VANASKOS.showList];
+		showOptions[1].menuList = sortOptions[VANASKOS.showList];
 	else
-		showOptions.args.sort.args = { };
+		showOptions[1].menuList = { };
 	end
 	
 end
@@ -451,29 +434,24 @@ end
 
 -- Registers a Sort Function with name to show up in the sorting options for a list
 -- listNames can be either the internal name of the list (i.e. PLAYERKOS) or a list of internal list names
-function VanasKoSGUI:RegisterSortOption(listNames, listOrder, sortOptionNameInternal, sortOptionName, sortOptionDesc, sortFunctionNew)
+function VanasKoSGUI:RegisterSortOption(listNames, sortOptionNameInternal, sortOptionName, sortOptionDesc, sortFunctionNew)
 	if(type(listNames) == "string") then
 		listNames = { listNames };
 	end
 	
 	for k, listNameInternal in pairs(listNames) do
 		if(not sortOptions[listNameInternal]) then
-			sortOptions[listNameInternal] = { }
+			sortOptions[listNameInternal] = { };
 		end
-		sortOptions[listNameInternal][sortOptionNameInternal] = {
-			type = 'toggle',
-			name = sortOptionName,
-			desc = sortOptionDesc,
-			isRadio = true,
-			order = listOrder,
-			get = function()
+		sortOptions[listNameInternal][#sortOptions[listNameInternal]+1] = {
+			text = sortOptionName,
+			isChecked = function()
 					if(VanasKoSGUI:GetCurrentSortFunction() == sortFunctionNew) then
 						return true;
-					else
-						return false;
 					end
+					return false;
 				end,
-			set = function()
+			func = function()
 					VanasKoSGUI:SetSortFunction(sortFunctionNew);
 				end,
 		};

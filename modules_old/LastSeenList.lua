@@ -1,6 +1,18 @@
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSLastSeenList");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_LastSeenList", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
 
-VanasKoSLastSeenList = VanasKoS:NewModule("LastSeenList");
+VanasKoSLastSeenList = VanasKoS:NewModule("LastSeenList", "AceEvent-3.0");
 
 local VanasKoSLastSeenList = VanasKoSLastSeenList;
 local VanasKoS = VanasKoS;
@@ -10,7 +22,7 @@ local tablet = AceLibrary("Tablet-2.0");
 
 local lastseenlist = { };
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["Last seen"] = true,
 	["by last seen"] = true,
 	["sort by last seen"] = true,
@@ -25,7 +37,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Enabled"] = true,
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["Last seen"] = "Zuletzt gesehen",
 	["by last seen"] = "nach zuletzt gesehen",
 	["sort by last seen"] = "sortieren nach wann zuletzt gesehen",
@@ -40,10 +52,10 @@ L:RegisterTranslations("deDE", function() return {
 	["Enabled"] = "Aktiviert",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["Last seen"] = "마지막 발견",
 	["by last seen"] = "마지막 발견에 의해",
 	["sort by last seen"] = "마지막 발견에 의한 정렬",
@@ -55,10 +67,10 @@ L:RegisterTranslations("koKR", function() return {
 	["Add to Nicelist"]  = "호인명부에 추가",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["Last seen"] = "Последние встречи",
 	["by last seen"] = "по последней встрече",
 	["sort by last seen"] = "сортировать по последней встрече",
@@ -72,6 +84,8 @@ L:RegisterTranslations("ruRU", function() return {
 	["Last Seen List"] = "Последние встречи",
 	["Enabled"] = "Включено",
 } end);
+
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_LastSeenList", false);
 
 -- sort current lastseen
 local function SortByLastSeen(val1, val2)
@@ -95,16 +109,16 @@ local function SortByLastSeen(val1, val2)
 end
 
 function VanasKoSLastSeenList:OnInitialize()
-	VanasKoS:RegisterDefaults("LastSeenList", "profile", {
-		Enabled = true,
+	self.db = VanasKoS.db:RegisterNamespace("LastSeenList", {
+		profile = {
+			Enabled = true,
+		}
 	});
-
-	self.db = VanasKoS:AcquireDBNamespace("LastSeenList");
 
 	VanasKoSGUI:RegisterSortOption({"LASTSEEN"}, 4, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen)
 	VanasKoSGUI:SetDefaultSortFunction({"LASTSEEN"}, SortByLastSeen);
 
-	VanasKoSGUI:AddConfigOption("Last Seen List", {
+	VanasKoSGUI:AddConfigOption("LastSeenList", {
 			type = 'group',
 			name = L["Last Seen List"],
 			desc = L["Last Seen List"],
@@ -114,7 +128,7 @@ function VanasKoSLastSeenList:OnInitialize()
 					name = L["Enabled"],
 					desc = L["Enabled"],
 					order = 1,
-					set = function(v) VanasKoSLastSeenList.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("LastSeenList", v); end,
+					set = function(v) VanasKoSLastSeenList.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("LastSeenList"); end,
 					get = function() return VanasKoSLastSeenList.db.profile.Enabled end,
 				}
 			}
@@ -123,18 +137,20 @@ end
 
 function VanasKoSLastSeenList:OnEnable()
 	if(not self.db.profile.Enabled) then
+		self:SetEnabledState(false);
 		return;
 	end
 	VanasKoS:RegisterList(5, "LASTSEEN", L["Last seen"], self);
 	VanasKoSGUI:RegisterList("LASTSEEN", self);
 
-	self:RegisterEvent("VanasKoS_Player_Detected", "Player_Detected");
+	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
 end
 
 function VanasKoSLastSeenList:OnDisable()
 	VanasKoSGUI:UnregisterList("LASTSEEN");
 	VanasKoS:UnregisterList("LASTSEEN");
 	self:UnregisterAllEvents();
+	self:UnregisterAllMessages();
 end
 
 function VanasKoSLastSeenList:AddEntry(list, name, data)
@@ -196,7 +212,7 @@ function VanasKoSLastSeenList:IsOnList(listname, name)
 	return nil;
 end
 
-function VanasKoSLastSeenList:Player_Detected(data)
+function VanasKoSLastSeenList:Player_Detected(message, data)
 	assert(data.name ~= nil);
 
 	local name = data.name:lower();
@@ -214,7 +230,7 @@ function VanasKoSLastSeenList:Player_Detected(data)
 	end
 
 	-- update the frame
-	self:TriggerEvent("VanasKoS_List_Entry_Added", "LASTSEEN", nil, nil);
+	self:SendMessage("VanasKoS_List_Entry_Added", "LASTSEEN", nil, nil);
 end
 
 function VanasKoSLastSeenList:ShowList(list)

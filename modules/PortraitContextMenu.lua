@@ -3,9 +3,21 @@
 modifies the TargetPortrait to add context menu options for adding targets to lists
 ------------------------------------------------------------------------]]
 
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSPortraitContextMenu");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_PortraitContextMenu", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["Add to %s"] = true,
 	["Add Context Menu to Player Portrait"] = true,
 	["Enabled"] = true,
@@ -14,7 +26,7 @@ L:RegisterTranslations("enUS", function() return {
 	["Cancel"] = true,
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["Add to %s"] = "Zu %s hinzufügen",
 	["Add Context Menu to Player Portrait"] = "Kontext Menu zum Spieler Portrait hinzufügen",
 	["Enabled"] = "Aktiviert",
@@ -22,7 +34,7 @@ L:RegisterTranslations("deDE", function() return {
 	["Cancel"] = "Abbrechen",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 	["Add to %s"] = "Ajouter - %s",
 	["Add Context Menu to Player Portrait"] = "Ajouter un menu de contexte au portrait du joueur",
 	["Enabled"] = "Actif",
@@ -30,7 +42,7 @@ L:RegisterTranslations("frFR", function() return {
 --	["Cancel"] = true,
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["Add to %s"] = "%s에 추가",
 	["Add Context Menu to Player Portrait"] = "플레이어 초상화에 메뉴 추가",
 	["Enabled"] = "사용",
@@ -38,7 +50,7 @@ L:RegisterTranslations("koKR", function() return {
 --	["Cancel"] = true,
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 	["Add to %s"] = "Añadir a %s",
 	["Add Context Menu to Player Portrait"] = "Añadir menú contextual a retrato del jugador",
 	["Enabled"] = "Activado",
@@ -46,7 +58,7 @@ L:RegisterTranslations("esES", function() return {
 --	["Cancel"] = true,
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["Add to %s"] = "Добавить в %s",
 	["Add Context Menu to Player Portrait"] = "Контекстное меню на портрете игрока",
 	["Enabled"] = "Добавлять",
@@ -54,17 +66,20 @@ L:RegisterTranslations("ruRU", function() return {
 --	["Cancel"] = true,
 } end);
 
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_PortraitContextMenu", false);
+
 VanasKoSPortraitContextMenu = VanasKoS:NewModule("PortraitContextMenu");
 local VanasKoSPortraitContextMenu = VanasKoSPortraitContextMenu;
 local VanasKoS = VanasKoS;
 local VanasKoSTaintOK = false;
 
 function VanasKoSPortraitContextMenu:OnInitialize()
-	VanasKoS:RegisterDefaults("PortraitContextMenu", "profile", {
-		Enabled = true,
-		EnabledWithTaint = false,
+	self.db = VanasKoS.db:RegisterNamespace("PortraitContextMenu", {
+		profile = {
+			Enabled = true,
+			EnabledWithTaint = false,
+		}
 	});
-	self.db = VanasKoS:AcquireDBNamespace("PortraitContextMenu");
 
 	-- FIXME(xilcoy): Modifying the UnitPopupButtons taints the player
 	-- context menu, this is a "known issue" according to the blizzard
@@ -80,9 +95,9 @@ function VanasKoSPortraitContextMenu:OnInitialize()
 					type = 'toggle',
 					name = L["Enabled"],
 					desc = L["Enabled"],
---					set = function(v) VanasKoSPortraitContextMenu.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("PortraitContextMenu", v); end,
+--					set = function(frame, v) VanasKoSPortraitContextMenu.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("PortraitContextMenu", v); end,
 --					get = function() return VanasKoSPortraitContextMenu.db.profile.Enabled; end,
-					set = function(v)
+					set = function(frame, v)
 						if (VanasKoSTaintOK == false and v == true) then
 							local dialog = StaticPopup_Show("VANASKOS_TAINT_WARNING");
 							if(dialog) then
@@ -90,7 +105,7 @@ function VanasKoSPortraitContextMenu:OnInitialize()
 								getglobal(dialog:GetName() .. "Text"):SetText(format(L["Warning! Enabling this will cause errors setting the focus from target menue. Continue?"], count, VanasKoSGUI:GetListName(nameOfList), sender));
 							end
 						else
-							VanasKoSPortraitContextMenu.db.profile.EnabledWithTaint = v; VanasKoS:ToggleModuleActive("PortraitContextMenu", v);
+							VanasKoSPortraitContextMenu.db.profile.EnabledWithTaint = v; VanasKoS:ToggleModuleActive("PortraitContextMenu");
 						end
 					end,
 					get = function() return VanasKoSPortraitContextMenu.db.profile.EnabledWithTaint; end,
@@ -105,6 +120,10 @@ function VanasKoSPortraitContextMenu:OnEnable()
 	if(not self.db.profile.EnabledWithTaint) then
 		return;
 	end
+--[[	if(not self.db.profile.Enabled) then
+		self:SetEnabledState(false);
+		return;
+	end ]]
 	for k,v in pairs(listsToAdd) do
 		local listname = VanasKoSGUI:GetListName(v);
 		local shortname = "VANASKOS_ADD_" .. v;

@@ -1,15 +1,27 @@
-local L = AceLibrary("AceLocale-2.2"):new("VanasKoSDefaultLists");
 
-VanasKoSDefaultLists = VanasKoS:NewModule("DefaultLists");
+local function RegisterTranslations(locale, translationfunction)
+	local defaultLocale = false;
+	if(locale == "enUS") then
+		defaultLocale = true;
+	end
+	
+	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DefaultLists", locale, defaultLocale);
+	if liblocale then
+		for k, v in pairs(translationfunction()) do
+			liblocale[k] = v;
+		end
+	end
+end
+
+VanasKoSDefaultLists = VanasKoS:NewModule("DefaultLists", "AceEvent-3.0");
 
 local VanasKoSDefaultLists = VanasKoSDefaultLists;
 local VanasKoS = VanasKoS;
 local VanasKoSGUI = VanasKoSGUI;
 
-local dewdrop = AceLibrary("Dewdrop-2.0");
 local tablet = AceLibrary("Tablet-2.0");
 
-L:RegisterTranslations("enUS", function() return {
+RegisterTranslations("enUS", function() return {
 	["Player KoS"] = true,
 	["Guild KoS"] = true,
 	["Nicelist"] = true,
@@ -63,7 +75,7 @@ L:RegisterTranslations("enUS", function() return {
 	["_Reason Unknown_"] = "unknown",
 } end);
 
-L:RegisterTranslations("deDE", function() return {
+RegisterTranslations("deDE", function() return {
 	["Player KoS"] = "Spieler KoS",
 	["Guild KoS"] = "Gilden KoS",
 	["Nicelist"] = "Nette Leute Liste",
@@ -116,7 +128,7 @@ L:RegisterTranslations("deDE", function() return {
 	["_Reason Unknown_"] = "unbekannt",
 } end);
 
-L:RegisterTranslations("frFR", function() return {
+RegisterTranslations("frFR", function() return {
 	["Player KoS"] = "Joueur KoS",
 	["Guild KoS"] = "Guilde KoS",
 	["Nicelist"] = "Liste blanche",
@@ -167,7 +179,7 @@ L:RegisterTranslations("frFR", function() return {
 	["_Reason Unknown_"] = "inconnu",
 } end);
 
-L:RegisterTranslations("koKR", function() return {
+RegisterTranslations("koKR", function() return {
 	["Player KoS"] = "KoS 플레이어",
 	["Guild KoS"] = "KoS 길드",
 	["Nicelist"] = "호인명부",
@@ -219,7 +231,7 @@ L:RegisterTranslations("koKR", function() return {
 	["_Reason Unknown_"] = "아무 이유 없음",
 } end);
 
-L:RegisterTranslations("esES", function() return {
+RegisterTranslations("esES", function() return {
 	["Player KoS"] = "Jugador KoS",
 	["Guild KoS"] = "Hermandad KoS",
 	["Nicelist"] = "Simpáticos",
@@ -273,7 +285,7 @@ L:RegisterTranslations("esES", function() return {
 	["Show only my entries"] = "Muestre solamente mis entradas",
 } end);
 
-L:RegisterTranslations("ruRU", function() return {
+RegisterTranslations("ruRU", function() return {
 	["Player KoS"] = "KoS-игроки",
 	["Guild KoS"] = "KoS-гильдии",
 	["Nicelist"] = "Хорошие",
@@ -326,6 +338,8 @@ L:RegisterTranslations("ruRU", function() return {
 
 	["_Reason Unknown_"] = "не известна",
 } end);
+
+local L = AceLibrary("AceLocale-3.0"):GetLocale("VanasKoS_DefaultLists", false);
 
 -- sort functions
 
@@ -450,31 +464,31 @@ end
 
 
 function VanasKoSDefaultLists:OnInitialize()
-	VanasKoS:RegisterDefaults("DefaultLists", "realm", {
-		koslist = {
-			players = {
-			},
-			guilds = {
-			}
-		},
-		hatelist = {
-			players = {
-			},
-		},
-		nicelist = {
-			players = {
-			},
-		},
-	});
-
-	VanasKoS:RegisterDefaults("DefaultLists", "profile", {
-		ShowOnlyMyEntries = false,
-	});
-
-	self.db = VanasKoS:AcquireDBNamespace("DefaultLists");
+	self.db = VanasKoS.db:RegisterNamespace("DefaultLists", 
+					{
+						realm = {
+							koslist = {
+								players = {
+								},
+								guilds = {
+								}
+							},
+							hatelist = {
+								players = {
+								},
+							},
+							nicelist = {
+								players = {
+								},
+							},
+						},
+						profile = {
+							ShowOnlyMyEntries = false
+						}
+					});
 
 	-- import of old data, will be removed in some version in the future
-	if(VanasKoS.db.realm.koslist) then
+--[[	if(VanasKoS.db.realm.koslist) then
 		self.db.realm.koslist = VanasKoS.db.realm.koslist;
 		VanasKoS.db.realm.koslist = nil;
 	end
@@ -485,7 +499,7 @@ function VanasKoSDefaultLists:OnInitialize()
 	if(VanasKoS.db.realm.nicelist) then
 		self.db.realm.nicelist = VanasKoS.db.realm.nicelist;
 		VanasKoS.db.realm.nicelist = nil;
-	end
+	end ]]
 
 	-- register lists this modules provides at the core
 	VanasKoS:RegisterList(1, "PLAYERKOS", L["Player KoS"], self);
@@ -500,13 +514,13 @@ function VanasKoSDefaultLists:OnInitialize()
 	VanasKoSGUI:RegisterList("NICELIST", self);
 
 	-- register sort options for the lists this module provides
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST", "LASTSEEN"}, 1, "byname", L["by name"], L["sort by name"], SortByName)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "HATELIST", "NICELIST" }, 2, "bylevel", L["by level"], L["sort by level"], SortByLevel)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, 3, "byreason", L["by reason"], L["sort by reason"], SortByReason)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "HATELIST", "NICELIST"}, 4, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, 5, "bycreatedate", L["by create date"], L["sort by date created"], SortByCreateDate)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, 5, "bycreator", L["by creator"], L["sort by creator"], SortByCreator)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, 6, "byowner", L["by owner"], L["sort by owner"], SortByOwner)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST", "LASTSEEN"}, "byname", L["by name"], L["sort by name"], SortByName)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "HATELIST", "NICELIST" }, "bylevel", L["by level"], L["sort by level"], SortByLevel)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "byreason", L["by reason"], L["sort by reason"], SortByReason)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "HATELIST", "NICELIST"}, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "bycreatedate", L["by create date"], L["sort by date created"], SortByCreateDate)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "bycreator", L["by creator"], L["sort by creator"], SortByCreator)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "byowner", L["by owner"], L["sort by owner"], SortByOwner)
 
 	VanasKoSGUI:SetDefaultSortFunction({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, SortByName);
 
@@ -530,15 +544,10 @@ function VanasKoSDefaultLists:OnInitialize()
 					);
 
 	local showOptions = VanasKoSGUI:GetShowButtonOptions();
-	if(showOptions.args["onlymyentries"]) then
-		return;
-	end
-	showOptions.args["onlymyentries"] = {
-		type = "toggle",
-		name = L["Show only my entries"],
-		desc = L["Show only my entries"],
-		set = function(value) VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries = value; VanasKoSGUI:UpdateShownList(); end,
-		get = function() return VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries; end,
+	showOptions[#showOptions+1] = {
+		text = L["Show only my entries"],
+		func = function(frame) VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries = not VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries; VanasKoSGUI:UpdateShownList(); end,
+		isChecked = function() return VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries; end,
 	};
 
 end
@@ -669,14 +678,14 @@ function VanasKoSDefaultLists:AddEntry(list, name, data)
 		self.db.realm.nicelist.players[name] = { ["reason"] = data['reason'], ["created"] = time(), ['creator'] = UnitName("player")  };
 	end
 
-	self:TriggerEvent("VanasKoS_List_Entry_Added", list, name, data);
+	self:SendMessage("VanasKoS_List_Entry_Added", list, name, data);
 end
 
 function VanasKoSDefaultLists:RemoveEntry(listname, name)
 	local list = VanasKoS:GetList(listname);
 	if(list and list[name]) then
 		list[name] = nil;
-		self:TriggerEvent("VanasKoS_List_Entry_Removed", list, name);
+		self:SendMessage("VanasKoS_List_Entry_Removed", list, name);
 	end
 end
 
@@ -696,65 +705,44 @@ end
 
 local entry, value;
 
-local function ListButtonOnClickMenu()
-	dewdrop:AddLine(
-			'text', string.Capitalize(entry),
-			'isTitle', true
-	);
-
-	if(value.owner == nil) then
-		if(VANASKOS.showList ~= "PLAYERKOS") then
-			dewdrop:AddLine(
-				'text', L["Move to Player KoS"],
-				'func', function()
+local function ListButtonOnRightClickMenu()
+	local x, y = GetCursorPosition();
+	local uiScale = UIParent:GetEffectiveScale();
+	local menuItems = {
+		{
+			text = string.Capitalize(entry),
+			isTitle = true,
+		},
+		{
+			text = L["Move to Player KoS"],
+			func = function()
 						VanasKoS:RemoveEntry(VANASKOS.showList, entry);
 						VanasKoS:AddEntry("PLAYERKOS", entry, value);
-					end
-			);
-		end
-		if(VANASKOS.showList ~= "HATELIST") then
-			dewdrop:AddLine(
-				'text', L["Move to Hatelist"],
-				'func', function()
+					end,
+		},
+		{
+			text = L["Move to Hatelist"],
+			func = function()
 						VanasKoS:RemoveEntry(VANASKOS.showList, entry);
 						VanasKoS:AddEntry("HATELIST", entry, value);
 					end
-			);
-		end
-		if(VANASKOS.showList ~= "NICELIST") then
-			dewdrop:AddLine(
-				'text', L["Move to Nicelist"],
-				'func', function()
+		},
+		{
+			text = L["Move to Nicelist"],
+			func = function()
 						VanasKoS:RemoveEntry(VANASKOS.showList, entry);
 						VanasKoS:AddEntry("NICELIST", entry, value);
 					end
-			);
-		end
-	end
-	if(VANASKOS.showList == "PLAYERKOS" and value.owner == nil) then
-		dewdrop:AddLine(
-			'text', L["Wanted"],
-			'func', function()
-						if(VANASKOS.showList ~= "PLAYERKOS" or
-							value.owner ~= nil) then
-							return;
-						end
-						if(not value.wanted) then
-							value.wanted = true;
-						else
-							value.wanted = nil;
-						end
-						VanasKoSGUI:ScrollFrameUpdate();
-				end,
-			'checked', value.wanted
-		);
-	end
-	dewdrop:AddLine(
-		'text', L["Remove Entry"],
-		'func', function()
+		},
+		{
+			text = L["Remove Entry"],
+			func = function()
 				VanasKoS:RemoveEntry(VANASKOS.showList, entry);
 			end
-	);
+		}
+};
+
+	EasyMenu(menuItems, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
 end
 
 function VanasKoSDefaultLists:ListButtonOnClick(button, frame)
@@ -791,13 +779,7 @@ function VanasKoSDefaultLists:ListButtonOnClick(button, frame)
 		return;
 	end
 
-	if(button == "RightButton") then
-		dewdrop:Open(frame,
-						'children', ListButtonOnClickMenu,
-						'point', "TOP",
-						'cursorX', true,
-						'cursorY', true);
-	end
+	ListButtonOnRightClickMenu();
 end
 
 local selectedPlayer, selectedPlayerData = nil;

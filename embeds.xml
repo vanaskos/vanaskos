@@ -15,6 +15,9 @@
 
 	<Include file="Libs\SharedMedia-3.0\lib.xml"/>
 	<Include file="Libs\Babble-Zone-3.0\lib.xml"/>
+	<Include file="Libs\Babble-Class-3.0\lib.xml"/>
+	<!--<Include file="Libs\Babble-Race-3.0\lib.xml"/>-->
+	<Include file="NewLibs\Babble-Race-3.0\lib.xml"/>
 	<Include file="Libs\Tourist-3.0\lib.xml"/>
 	<Script file="Libs\Graph-2.0\LibGraph-2.0.lua"/>
 	

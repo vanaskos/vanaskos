@@ -364,7 +364,15 @@ local function HideButton(buttonNr)
 end
 
 local function HideWarnFrame()
-	warnFrame:Hide();
+	if (not InCombatLockdown()) then
+		warnFrame:Hide();
+	end
+end
+
+local function ShowWarnFrame()
+	if (not InCombatLockdown()) then
+		warnFrame:Show();
+	end
 end
 
 local function UpdateWarnSize()
@@ -985,7 +993,7 @@ function VanasKoSWarnFrame:Update()
 			if((counter > 0 and self.db.profile.GrowUp == false) or (counter < (self.db.profile.WARN_BUTTONS - 1) and self.db.profile.GrowUp == true)) then
 				if(not warnFrame:IsVisible()) then
 					UIFrameFadeIn(warnFrame, 0.1, 0.0, 1.0);
-					warnFrame:Show();
+					ShowWarnFrame();
 				end
 			else
 				if(warnFrame:IsVisible()) then
@@ -996,10 +1004,10 @@ function VanasKoSWarnFrame:Update()
 		else
 			if(not warnFrame:IsVisible()) then
 				UIFrameFadeIn(warnFrame, 0.1, 0.0, 1.0);
-				warnFrame:Show();
+				ShowWarnFrame();
 			end
 		end
 	else
-		warnFrame:Hide();
+		HideWarnFrame();
 	end
 end

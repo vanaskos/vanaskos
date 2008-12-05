@@ -9,8 +9,8 @@
 ## DefaultState: Enabled
 ## SavedVariables: VanasKoSDB
 ## SavedVariablesPerCharacter: VanasKoSDBPC
-## OptionalDeps: Ace3, Cartographer, TouristLib, Babble-Zone-3.0, GraphLib, SharedMediaLib
-## X-Embeds: Ace3, TouristLib, Babble-Zone-3.0, GraphLib, SharedMediaLib
+## OptionalDeps: Ace3, Cartographer, TouristLib, Babble-Zone-3.0, Babble-Class-3.0, Babble-Race-3.0, GraphLib, SharedMediaLib
+## X-Embeds: Ace3, TouristLib, Babble-Zone-3.0, Babble-Class-3.0, Babble-Race-3.0, GraphLib, SharedMediaLib
 ## X-eMail: boredvana@gmail.com
 ## X-Date: 2008-11-17
 ## X-Category: Battlegrounds/PvP

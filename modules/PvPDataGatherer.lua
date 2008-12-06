@@ -214,6 +214,15 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 		}
 	);
 
+	for k,v in pairs(VanasKoSDB.realms) do
+		if(string.find(k, GetRealmName()) ~= nil) then
+			if(v.pvpstats) then
+				self.db.realm.pvpstats = v.pvpstats;
+				v.pvpstats = nil;
+			end
+		end
+	end
+
 	-- import of old data, will be removed in some version in the future
 	--[[if(VanasKoS.db.realm.pvpstats) then
 		self.db.realm.pvpstats = VanasKoS.db.realm.pvpstats;

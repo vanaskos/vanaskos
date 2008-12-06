@@ -162,9 +162,7 @@ local minimapOptions = {
 	},
 	{
 		text = L["Add Guild to KoS"],
-		func = function()
-					VanasKoS:AddEntryFromTarget("GUILDKOS");
-			end,
+		func = function() VanasKoS:AddEntryFromTarget("GUILDKOS"); end,
 	},
 	{
 		text = L["Add Player to Hatelist"],
@@ -187,12 +185,14 @@ function VanasKoSMinimapButton:OnInitialize()
 		profile = {
 			Enabled = true,
 			Moved = false,
+			button = {
+			},
 		}
 	});
 
 	self.name = "VanasKoSMinimapButton";
 
-	icon:Register(self.name, Broker, self.db);
+	icon:Register(self.name, Broker, self.db.profile.button);
 	
 	VanasKoSGUI:AddConfigOption("MinimapButton", {
 			type = 'group',

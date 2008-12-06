@@ -172,7 +172,7 @@ RegisterTranslations("ruRU", function() return {
 	--["SKMap PvP Stats"] = true,
 } end);
 
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Importer", false);
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Importer", true);
 
 function VanasKoSImporter:OnInitialize()
 	VanasKoSGUI:AddConfigOption("Importer", {
@@ -201,13 +201,13 @@ function VanasKoSImporter:OnInitialize()
 			skmap = {
 				type = "execute",
 				name = L["SKMap KoS"],
-				desc = L["Imports KoS Data From Shim's Kill Map"],
+				desc = L["Imports KoS Data from Shim's Kill Map"],
 				func = function() VanasKoSImporter:FromSKMap(); end
 			},
 			skmappvpstats = {
 				type = "execute",
 				name = L["SKMap PvP Stats"],
-				desc = L["Imports PvP Stats Data From Shim's Kill Map"],
+				desc = L["Imports PvP Stats Data from Shim's Kill Map"],
 				func = function() VanasKoSImporter:FromSKMapPvPStats(); end
 			},
 		}

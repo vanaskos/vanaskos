@@ -777,6 +777,5 @@ end
 
 function VanasKoSNotifier:PlaySound(value)
 	local soundFileName = SML:Fetch("sound", value);
-	VanasKoS:Print(value .. " " .. soundFileName);
 	PlaySoundFile(soundFileName);
 end

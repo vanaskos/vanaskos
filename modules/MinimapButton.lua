@@ -123,11 +123,18 @@ VanasKoSMinimapButton = VanasKoS:NewModule("MinimapButton");
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_MinimapButton", false);
 
-local ang = 290
-local r = 75;
-
-
 local attackerMenu = { };
+
+local icon = LibStub("LibDBIcon-1.0");
+local ldb = LibStub:GetLibrary("LibDataBroker-1.1");
+local Broker = ldb:NewDataObject("VanasKoS", {
+	type = "launcher",
+	icon = "Interface\\Icons\\Ability_Parry",
+	OnClick = function(frame, button) VanasKoSMinimapButton:OnClick(button); end,
+	OnTooltipShow = function(tt)
+			tt:AddLine("VanasKoS");
+		end
+});
 
 local minimapOptions = {
 	{
@@ -144,11 +151,11 @@ local minimapOptions = {
 		func = function() VanasKoS:ToggleModuleActive("WarnFrame"); end,
 		checked = function() return VanasKoS:GetModule("WarnFrame").enabledState; end,
 	},
-	{
+--[[	{
 		text = L["Locked"],
 		func = function() VanasKoSWarnFrame.db.profile.Locked = not VanasKoSWarnFrame.db.profile.Locked; end,
 		checked = function() return VanasKoSWarnFrame.db.profile.Locked; end,
-	},
+	}, ]]
 	{
 		text = L["Add Player to KoS"],
 		func = function() VanasKoS:AddEntryFromTarget("PLAYERKOS"); end,
@@ -179,55 +186,14 @@ function VanasKoSMinimapButton:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("MinimapButton", {
 		profile = {
 			Enabled = true,
-			Locked = false,
 			Moved = false,
 		}
 	});
 
-	local name = "VanasKoS_MinimapButton";
-	self.frame = CreateFrame("Button", name, Minimap);
+	self.name = "VanasKoSMinimapButton";
 
-	local frame = self.frame;
-
-	frame:SetWidth(31);
-	frame:SetHeight(31);
-	frame:SetFrameStrata("LOW");
-	frame:SetToplevel(1);
-	frame:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight");
-	frame:SetPoint("TOPLEFT", "Minimap", "TOPLEFT");
-	frame:SetMovable(true);
-
-	local button = frame:CreateTexture(name .. "Texture", "BACKGROUND");
-	button:SetTexture("Interface\\Icons\\Ability_Parry");
-	button:SetWidth(20);
-	button:SetHeight(20);
-	button:SetPoint("TOPLEFT", frame, "TOPLEFT", 7, -5);
-
-	local overlay = frame:CreateTexture(name .. "Overlay", "OVERLAY");
-	overlay:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder");
-	overlay:SetWidth(53);
-	overlay:SetHeight(53);
-	overlay:SetPoint("TOPLEFT", frame, "TOPLEFT");
-
-	frame:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-	frame:RegisterForDrag("LeftButton");
-
-	frame:SetScript("OnClick", self.OnClick);
-	frame:SetScript("OnDragStart",
-								function()
-									if(VanasKoSWarnFrame.db.profile.Locked) then
-										return;
-									end
-									if(IsShiftKeyDown()) then
-										frame:StartMoving();
-									end
-								end);
-	frame:SetScript("OnDragStop",
-								function()
-									frame:StopMovingOrSizing();
-									VanasKoSMinimapButton.db.profile.Moved = true;
-								end);
-
+	icon:Register(self.name, Broker, self.db);
+	
 	VanasKoSGUI:AddConfigOption("MinimapButton", {
 			type = 'group',
 			name = L["Minimap Button"],
@@ -241,14 +207,14 @@ function VanasKoSMinimapButton:OnInitialize()
 					set = function(frame, v) VanasKoSMinimapButton.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("MinimapButton"); end,
 					get = function() return VanasKoS:GetModule("MinimapButton").enabledState; end,
 				},
-				reset = {
+--[[				reset = {
 					type = 'execute',
 					name = L["Reset Position"],
 					desc = L["Reset Position"],
 					order = 2,
 					func = function() VanasKoSMinimapButton:ResetPosition(); end,
 				},
---[[				angle = {
+				angle = {
 					type = 'range',
 					name = L["Angle"],
 					desc = L["Angle"],
@@ -271,13 +237,8 @@ function VanasKoSMinimapButton:OnInitialize()
 			}
 		});
 
-	self.frame:Hide();
-end
-
-function VanasKoSMinimapButton:SetPosition()
-	self.frame:SetPoint("TOPLEFT", "Minimap", "TOPLEFT", 58 - (r * cos(ang)), (r * sin(ang)) - 58);
-
-	self.db.profile.Moved = false;
+	minimapOptions[1].text = VANASKOS.NAME .. " " .. VANASKOS.VERSION;
+	icon:Hide(self.name);
 end
 
 --[[
@@ -293,10 +254,10 @@ end
 ]]
 
 function VanasKoSMinimapButton:Toggle()
-	if(self.frame:IsVisible()) then
-		self.frame:Hide();
+	if(icon:IsVisible()) then
+		icon:Hide(self.name);
 	else
-		self.frame:Show();
+		icon:Show(self.name);
 	end
 end
 
@@ -335,19 +296,10 @@ function VanasKoSMinimapButton:OnEnable()
 		return;
 	end
 	
-	minimapOptions[1].text = VANASKOS.NAME .. " " .. VANASKOS.VERSION;
-	if(not self.db.profile.Moved) then
-		self:ResetPosition();
-	end
-
-	self.frame:Show();
-end
-
-function VanasKoSMinimapButton:ResetPosition()
-	self.frame:SetPoint("TOPLEFT", "Minimap", "TOPLEFT", 58 - (r * cos(ang)), (r * sin(ang)) - 58);
+	icon:Show(self.name);
 end
 
 function VanasKoSMinimapButton:OnDisable()
-	self.frame:Hide();
+	icon:Hide(self.name);
 end
 

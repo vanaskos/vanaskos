@@ -493,7 +493,7 @@ end
 
 function VanasKoSNotifier:OnEnable()
 	if(not self.db.profile.Enabled) then
-		self:SetEnabledState(false);
+		self:Disable();
 		return;
 	end
 	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");

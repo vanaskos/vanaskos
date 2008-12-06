@@ -561,9 +561,10 @@ function VanasKoSDefaultLists:OnInitialize()
 
 	local showOptions = VanasKoSGUI:GetShowButtonOptions();
 	showOptions[#showOptions+1] = {
+		
 		text = L["Show only my entries"],
 		func = function(frame) VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries = not VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries; VanasKoSGUI:UpdateShownList(); end,
-		isChecked = function() return VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries; end,
+		checked = function() return VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries; end,
 	};
 
 end

@@ -260,7 +260,7 @@ end
 
 function VanasKoSChatNotifier:OnEnable()
 	if(not self.db.profile.Enabled) then
-		self:SetEnabledState(false);
+		self:Disable();
 		return;
 	end
 	

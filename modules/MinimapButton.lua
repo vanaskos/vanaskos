@@ -148,7 +148,7 @@ local minimapOptions = {
 	},
 	{
 		text = L["Warning Window"],
-		func = function() VanasKoS:ToggleModuleActive("WarnFrame"); end,
+		func = function() VanasKoS:ToggleModuleActive("WarnFrame"); VanasKoSWarnFrame:Update(); end,
 		checked = function() return VanasKoS:GetModule("WarnFrame").enabledState; end,
 	},
 --[[	{
@@ -292,7 +292,7 @@ end
 
 function VanasKoSMinimapButton:OnEnable()
 	if(not self.db.profile.Enabled) then
-		self:SetEnabledState(false);
+		self:Disable();
 		return;
 	end
 	

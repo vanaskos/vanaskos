@@ -445,7 +445,7 @@ function VanasKoSGUI:RegisterSortOption(listNames, sortOptionNameInternal, sortO
 		end
 		sortOptions[listNameInternal][#sortOptions[listNameInternal]+1] = {
 			text = sortOptionName,
-			isChecked = function()
+			checked = function()
 					if(VanasKoSGUI:GetCurrentSortFunction() == sortFunctionNew) then
 						return true;
 					end
@@ -592,8 +592,6 @@ end
 function VanasKoSGUI:AddEntry()
 	if(VANASKOS.showList == "GUILDKOS") then
 		VANASKOS.LastNameEntered = GetGuildInfo("target");
-	elseif(VANASKOS.showList == "SYNCPLAYER") then
-		VANASKOS.LastNameEntered = nil;
 	else
 		VANASKOS.LastNameEntered = UnitName("target");
 	end
@@ -731,10 +729,6 @@ StaticPopupDialogs["VANASKOS_ADD_ENTRY"] = {
 	OnAccept = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		VANASKOS.LastNameEntered = editBox:GetText();
-		if(VANASKOS.showList == "SYNCPLAYER") then
-			VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered,  { ['reason'] = "" });
-			return;
-		end
 		if(VANASKOS.LastNameEntered ~= "") then
 			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
 		end
@@ -742,11 +736,6 @@ StaticPopupDialogs["VANASKOS_ADD_ENTRY"] = {
 	EditBoxOnEnterPressed = function()
 		local editBox = getglobal(this:GetParent():GetName().."EditBox");
 		VANASKOS.LastNameEntered = editBox:GetText();
-		if(VANASKOS.showList == "SYNCPLAYER") then
-			VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered,  { ['reason'] = "" });
-			this:GetParent():Hide();
-			return;
-		end
 		if(VANASKOS.LastNameEntered ~= "") then
 			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
 		end

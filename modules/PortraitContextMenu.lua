@@ -118,10 +118,11 @@ local listsToAdd = { "PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST" };
 
 function VanasKoSPortraitContextMenu:OnEnable()
 	if(not self.db.profile.EnabledWithTaint) then
+		self:Disable();
 		return;
 	end
 --[[	if(not self.db.profile.Enabled) then
-		self:SetEnabledState(false);
+		self:Disable();
 		return;
 	end ]]
 	for k,v in pairs(listsToAdd) do

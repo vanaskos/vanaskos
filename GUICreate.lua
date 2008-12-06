@@ -183,11 +183,11 @@ function VanasKoSGUICreate:CreateListFrame()
 		end
 	end
 	
-	VanasKoSListFrameSyncButton = CreateFrame("Button", "VanasKoSListFrameSyncButton", VanasKoSListFrame, "UIPanelButtonTemplate");
+--[[	VanasKoSListFrameSyncButton = CreateFrame("Button", "VanasKoSListFrameSyncButton", VanasKoSListFrame, "UIPanelButtonTemplate");
 	VanasKoSListFrameSyncButton:SetWidth(40);
 	VanasKoSListFrameSyncButton:SetHeight(17);
 	VanasKoSListFrameSyncButton:SetPoint("TOPRIGHT", listFrame, "TOPRIGHT", -44, -36);
-	VanasKoSListFrameSyncButton:SetText(L["sync"]);
+	VanasKoSListFrameSyncButton:SetText(L["sync"]); ]]
 	
 	local showButton = CreateFrame("Button", "VanasKoSListFrameShowButton", VanasKoSListFrame, "UIPanelButtonTemplate");
 	showButton:SetWidth(40);

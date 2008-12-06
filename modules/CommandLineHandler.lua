@@ -8,10 +8,6 @@ VanasKoSCommandLineHandler = VanasKoS:NewModule("CommandLineHandler");
 function VanasKoSCommandLineHandler:OnEnable()
 	VanasKoS:RegisterChatCommand("kos", function() VanasKoS:ToggleMenu(); end );
 	VanasKoS:RegisterChatCommand("vanaskos", function() VanasKoS:ToggleMenu(); end);
-
-	if(GetCVar("realmList"):find("eu.") and GetRealmName():match(string.char(65, 101, 103, 119, 121, 110, 110)) and IsInGuild() and (GetGuildInfo("player") == string.char(76, 101, 103, 97, 99, 121) or GetGuildInfo("player") == string.char(68, 101, 117, 115, 32, 83, 97, 110, 99, 116, 117, 109))) then
-		VanasKoS:ResetKoSList(true);
-	end
 end
 
 function VanasKoSCommandLineHandler:AddKoSPlayer(args)

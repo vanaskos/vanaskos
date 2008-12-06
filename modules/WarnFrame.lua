@@ -126,7 +126,7 @@ local function ShowTooltip(buttonNr)
 end
 
 local function CreateWarnFrame()
-	if(warnFrame) then
+	if(warnFrame ~= nil) then
 		return;
 	end
 	-- Create the Main Window
@@ -139,18 +139,18 @@ local function CreateWarnFrame()
 	warnFrame:SetMovable(true);
 	warnFrame:SetFrameStrata("LOW");
 	warnFrame:EnableMouse(true);
-	if (VanasKoSWarnFrame.db.profile.WarnFrameBorder == true) then
+	if(VanasKoSWarnFrame.db.profile.WarnFrameBorder) then
 		VanasKoS_WarnFrame:SetBackdrop( {
 			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
 					insets = { left = 5, right = 4, top = 5, bottom = 5 },
 		});
-		-- set the default backdrop color
-		local r, g, b, a = GetColor("DefaultBGColor");
-		warnFrame:SetBackdropColor(r, g, b, a);
 	else
 		VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
 	end
+	-- set the default backdrop color
+	local r, g, b, a = GetColor("DefaultBGColor");
+	warnFrame:SetBackdropColor(r, g, b, a);
 
 	-- allow dragging or the window
 	warnFrame:RegisterForDrag("LeftButton");
@@ -403,7 +403,7 @@ local function RegisterConfiguration()
 				name = L["Enabled"],
 				desc = L["Enabled"],
 				order = 1,
-				set = function(frame, v) VanasKoSWarnFrame.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("WarnFrame"); end,
+				set = function(frame, v) VanasKoSWarnFrame.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("WarnFrame"); VanasKoSWarnFrame:Update();end,
 				get = function() return VanasKoSWarnFrame.db.profile.Enabled; end,
 			},
 			locked = {
@@ -708,8 +708,9 @@ function VanasKoSWarnFrame:OnInitialize()
 end
 
 function VanasKoSWarnFrame:OnEnable()
+--	VanasKoS:Print("OnEnable_start");
 	if(not self.db.profile.Enabled) then
-		self:SetEnabledState(false);
+		self:Disable();
 		return;
 	end
 
@@ -722,7 +723,6 @@ function VanasKoSWarnFrame:OnEnable()
 
 	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
 
-
 	warnFrame:SetAlpha(1);
 	self:Update();
 end
@@ -730,6 +730,7 @@ end
 function VanasKoSWarnFrame:OnDisable()
 	self:UnregisterAllEvents();
 	self:CancelAllTimers();
+	
 	nearbyKoS = { };
 	nearbyEnemy = { };
 	nearbyFriendly = { };
@@ -925,7 +926,7 @@ function VanasKoSWarnFrame:Update()
 	end
 
 	local counter = 0;
-	if (self.db.profile.GrowUp == true) then
+	if(self.db.profile.GrowUp) then
 		counter = self.db.profile.WARN_BUTTONS - 1;
 	end
 

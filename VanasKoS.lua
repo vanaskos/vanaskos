@@ -3,21 +3,19 @@
 Main Object with database and basic list functionality, handles also Configuration
 ------------------------------------------------------------------------]]
 
-local initialized = nil;
-
 VanasKoS = LibStub("AceAddon-3.0"):NewAddon("VanasKoS", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0");
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS", false);
 local VanasKoS = VanasKoS;
 
-function VanasKoS:ToggleModuleActive(module)
-	local module = self:GetModule(module, false);
+function VanasKoS:ToggleModuleActive(moduleStr)
+	local module = self:GetModule(moduleStr, false);
 	if(module:IsEnabled()) then
 		module.db.profile.Enabled = false;
-		module:Disable();
+		VanasKoS:DisableModule(moduleStr);
 	else
 		module.db.profile.Enabled = true;
-		module:Enable();
+		VanasKoS:EnableModule(moduleStr);
 	end
 end
 

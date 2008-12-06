@@ -1,0 +1,9 @@
+## Interface: 30000
+## Title: Lib: Level Guesser
+## Notes: A library to try to guess a level of a player.
+## Author: Vane (Data from others)
+## X-Category: Library
+## X-License: MIT
+
+LibStub\LibStub.lua
+lib.xml

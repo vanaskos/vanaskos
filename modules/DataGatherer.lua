@@ -50,27 +50,25 @@ local COMBATLOG_FILTER_FRIENDLY_PLAYER = bit.bor(
 				COMBATLOG_OBJECT_TYPE_PLAYER
 				);
 
-local myName = UnitName("player");
-
 function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellID, spellName, spellSchool, auraType)
 --	self:PrintLiteral(eventType, srcName, srcFlags, dstName, dstFlags);
-
+	
 	-- source or destination is friendly, register as event
 	if(srcName ~= nil and srcFlags ~= nil and bit.band(srcFlags, COMBATLOG_FILTER_FRIENDLY_PLAYER) == COMBATLOG_FILTER_FRIENDLY_PLAYER and srcName ~= myName) then
-		VanasKoSDataGatherer:SendDataMessage(srcName, "friendly");
+		VanasKoSDataGatherer:SendDataMessage(srcName, "friendly", spellID);
 	end
 
 	if(dstName ~= nil and dstFlags ~= nil and bit.band(dstFlags, COMBATLOG_FILTER_FRIENDLY_PLAYER) == COMBATLOG_FILTER_FRIENDLY_PLAYER and dstName ~= myName) then
-		VanasKoSDataGatherer:SendDataMessage(dstName, "friendly");
+		VanasKoSDataGatherer:SendDataMessage(dstName, "friendly", spellID);
 	end
 
 	-- source or destination are hostile, register as event
 	if(srcName ~= nil and srcFlags ~= nil and bit.band(srcFlags, COMBATLOG_FILTER_HOSTILE_PLAYER) == COMBATLOG_FILTER_HOSTILE_PLAYER) then
-		VanasKoSDataGatherer:SendDataMessage(srcName, "enemy");
+		VanasKoSDataGatherer:SendDataMessage(srcName, "enemy", spellID);
 	end
 
 	if(dstName ~= nil and dstFlags ~= nil and bit.band(dstFlags, COMBATLOG_FILTER_HOSTILE_PLAYER) == COMBATLOG_FILTER_HOSTILE_PLAYER) then
-		VanasKoSDataGatherer:SendDataMessage(dstName, "enemy");
+		VanasKoSDataGatherer:SendDataMessage(dstName, "enemy", spellID);
 	end
 
 	if(VanasKoSPvPDataGatherer.db.profile.Enabled) then
@@ -311,19 +309,34 @@ function VanasKoSDataGatherer:UPDATE_MOUSEOVER_UNIT()
 	end
 end
 
-function VanasKoSDataGatherer:SendDataMessage(name, faction)
+local myName = UnitName("player");
+
+local LevelGuessLib = LibStub("LibLevelGuess-1.0");
+
+function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 	-- dumb fix to hide obviously invalid strings gathered in other localizations then enUS
 	assert(name ~= nil);
 	
-	if(name:find(" ")) then
+	if(name:find(" ") or name == myName) then
 		return;
 	end
 	gatheredData['name'] = name;
 	gatheredData['guild'] = nil;
+	
 	gatheredData['level'] = nil;
-	gatheredData['race'] = nil;
-	gatheredData['class'] = nil;
 	gatheredData['classEnglish'] = nil;
+	gatheredData['class'] = nil;
+	if(spellId ~= nil) then
+		local level, classEnglish = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
+		if(level ~= nil) then
+			gatheredData['level'] = level .. "+";
+		end
+		if(classEnglish ~= nil) then
+			gatheredData['classEnglish'] = classEnglish;
+		end
+	end
+	
+	gatheredData['race'] = nil;
 	gatheredData['gender'] = nil;
 	gatheredData['zone'] = zone;
 	gatheredData['faction'] = faction;

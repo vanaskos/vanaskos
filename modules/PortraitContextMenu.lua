@@ -68,7 +68,7 @@ RegisterTranslations("ruRU", function() return {
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_PortraitContextMenu", false);
 
-VanasKoSPortraitContextMenu = VanasKoS:NewModule("PortraitContextMenu");
+VanasKoSPortraitContextMenu = VanasKoS:NewModule("PortraitContextMenu", "AceHook-3.0");
 local VanasKoSPortraitContextMenu = VanasKoSPortraitContextMenu;
 local VanasKoS = VanasKoS;
 local VanasKoSTaintOK = false;

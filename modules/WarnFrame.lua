@@ -395,7 +395,7 @@ end
 local function RegisterConfiguration()
 	VanasKoSGUI:AddConfigOption("WarnFrame", {
 		type = 'group',
-		name = L["KoS/Enemy/Friendly Warning Window"],
+		name = L["Warning Window"],
 		desc = L["KoS/Enemy/Friendly Warning Window"],
 		args = {
 			enabled = {
@@ -403,7 +403,7 @@ local function RegisterConfiguration()
 				name = L["Enabled"],
 				desc = L["Enabled"],
 				order = 1,
-				set = function(frame, v) VanasKoSWarnFrame.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("WarnFrame"); VanasKoSWarnFrame:Update();end,
+				set = function(frame, v) VanasKoS:ToggleModuleActive("WarnFrame"); VanasKoSWarnFrame:Update();end,
 				get = function() return VanasKoSWarnFrame.db.profile.Enabled; end,
 			},
 			locked = {
@@ -493,157 +493,153 @@ local function RegisterConfiguration()
 				order = 7,
 				func = function() VanasKoS_WarnFrame:ClearAllPoints(); VanasKoS_WarnFrame:SetPoint("CENTER"); end,
 			},
-			content = {
-				type = 'group',
+			contentHeader = {
+				type = 'header',
 				name = L["Content"],
 				desc = L["What to show in it"],
 				order = 8,
-				args = {
-					showLevel = {
-						type = 'toggle',
-						name = L["Show Target Level When Possible"],
-						desc = L["Show Target Level When Possible"],
-						order = 1,
-						get = function() return VanasKoSWarnFrame.db.profile.ShowTargetLevel; end,
-						set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowTargetLevel = v; VanasKoSWarnFrame:Update(); end
-					},
-					showKoS = {
-						type = 'toggle',
-						name = L["Show KoS Targets"],
-						desc = L["Show KoS Targets"],
-						order = 2,
-						get = function() return VanasKoSWarnFrame.db.profile.ShowKoS; end,
-						set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowKoS = v; VanasKoSWarnFrame:Update(); end
-					},
-					showHostile = {
-						type = 'toggle',
-						name = L["Show Hostile Targets"],
-						desc = L["Show Hostile Targets"],
-						order = 3,
-						get = function() return VanasKoSWarnFrame.db.profile.ShowHostile; end,
-						set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowHostile = v; VanasKoSWarnFrame:Update(); end
-					},
-					showFriendly = {
-						type = 'toggle',
-						name = L["Show Friendly Targets"],
-						desc = L["Show Friendly Targets"],
-						order = 4,
-						get = function() return VanasKoSWarnFrame.db.profile.ShowFriendly; end,
-						set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowFriendly = v; VanasKoSWarnFrame:Update(); end
-					},
-					showMouseOverInfos = {
-						type = 'toggle',
-						name = L["Show additional Information on Mouse Over"],
-						desc = L["Toggles the display of additional Information on Mouse Over"],
-						order = 5,
-						get = function() return VanasKoSWarnFrame.db.profile.ShowMouseOverInfos; end,
-						set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowMouseOverInfos = v; VanasKoSWarnFrame:Update(); end
-					},
-					showClassIcons = {
-						type = 'toggle',
-						name = L["Show class icons"],
-						desc = L["Toggles the display of Class icons in the Warnframe"],
-						order = 6,
-						get = function() return VanasKoSWarnFrame.db.profile.ShowClassIcons; end,
-						set = function(frame, v)
-								VanasKoSWarnFrame.db.profile.ShowClassIcons = v;
-								VanasKoSWarnFrame:Update();
-								for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS do
-									setButtonClassIcon(i, nil);
-								end
-							end
-					},
-					setLines = {
-						type = 'range',
-						name = L["Number of lines"],
-						desc = L["Sets the number of entries to display in the Warnframe"],
-						order = 7,
-						get = function() return VanasKoSWarnFrame.db.profile.WARN_BUTTONS; end,
-						set = function(frame, v)
-								VanasKoSWarnFrame.db.profile.WARN_BUTTONS = v;
-								UpdateWarnSize();
-								VanasKoSWarnFrame:Update();
-							end,
-						min = 1,
-						max = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX,
-						step = 1,
-						isPercent = false,
-					},
-					fontSize = {
-						type = 'range',
-						name = L["Font Size"],
-						desc = L["Sets the size of the font in the Warnframe"],
-						order = 8,
-						get = function() return VanasKoSWarnFrame.db.profile.FontSize; end,
-						set = function(frame, v)
-								VanasKoSWarnFrame.db.profile.FontSize = v;
-								CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize);
-								UpdateWarnSize();
-								VanasKoSWarnFrame:Update();
-							end,
-						min = 6,
-						max = 20,
-						step = 1,
-						isPercent = false,
-					},
-				}
 			},
-			design = {
-				type = 'group',
+			contentShowLevel = {
+				type = 'toggle',
+				name = L["Show Target Level When Possible"],
+				desc = L["Show Target Level When Possible"],
+				order = 9,
+				get = function() return VanasKoSWarnFrame.db.profile.ShowTargetLevel; end,
+				set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowTargetLevel = v; VanasKoSWarnFrame:Update(); end
+			},
+			contentShowKoS = {
+				type = 'toggle',
+				name = L["Show KoS Targets"],
+				desc = L["Show KoS Targets"],
+				order = 10,
+				get = function() return VanasKoSWarnFrame.db.profile.ShowKoS; end,
+				set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowKoS = v; VanasKoSWarnFrame:Update(); end
+			},
+			contentShowHostile = {
+				type = 'toggle',
+				name = L["Show Hostile Targets"],
+				desc = L["Show Hostile Targets"],
+				order = 11,
+				get = function() return VanasKoSWarnFrame.db.profile.ShowHostile; end,
+				set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowHostile = v; VanasKoSWarnFrame:Update(); end
+			},
+			contentShowFriendly = {
+				type = 'toggle',
+				name = L["Show Friendly Targets"],
+				desc = L["Show Friendly Targets"],
+				order = 12,
+				get = function() return VanasKoSWarnFrame.db.profile.ShowFriendly; end,
+				set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowFriendly = v; VanasKoSWarnFrame:Update(); end
+			},
+			contentShowMouseOverInfos = {
+				type = 'toggle',
+				name = L["Show additional Information on Mouse Over"],
+				desc = L["Toggles the display of additional Information on Mouse Over"],
+				order = 13,
+				get = function() return VanasKoSWarnFrame.db.profile.ShowMouseOverInfos; end,
+				set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowMouseOverInfos = v; VanasKoSWarnFrame:Update(); end
+			},
+			contentShowClassIcons = {
+				type = 'toggle',
+				name = L["Show class icons"],
+				desc = L["Toggles the display of Class icons in the Warnframe"],
+				order = 14,
+				get = function() return VanasKoSWarnFrame.db.profile.ShowClassIcons; end,
+				set = function(frame, v)
+						VanasKoSWarnFrame.db.profile.ShowClassIcons = v;
+						VanasKoSWarnFrame:Update();
+						for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS do
+							setButtonClassIcon(i, nil);
+						end
+					end
+			},
+			contentSetLines = {
+				type = 'range',
+				name = L["Number of lines"],
+				desc = L["Sets the number of entries to display in the Warnframe"],
+				order = 15,
+				get = function() return VanasKoSWarnFrame.db.profile.WARN_BUTTONS; end,
+				set = function(frame, v)
+						VanasKoSWarnFrame.db.profile.WARN_BUTTONS = v;
+						UpdateWarnSize();
+						VanasKoSWarnFrame:Update();
+					end,
+				min = 1,
+				max = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX,
+				step = 1,
+				isPercent = false,
+			},
+			contentFontSize = {
+				type = 'range',
+				name = L["Font Size"],
+				desc = L["Sets the size of the font in the Warnframe"],
+				order = 16,
+				get = function() return VanasKoSWarnFrame.db.profile.FontSize; end,
+				set = function(frame, v)
+						VanasKoSWarnFrame.db.profile.FontSize = v;
+						CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize);
+						UpdateWarnSize();
+						VanasKoSWarnFrame:Update();
+					end,
+				min = 6,
+				max = 20,
+				step = 1,
+				isPercent = false,
+			},
+			designHeader = {
+				type = 'header',
 				name = L["Design"],
 				desc = L["How the content is shown"],
-				order = 3,
-				args = {
-					defaultBackdropBackgroundColor = {
-						type = 'color',
-						name = L["Default Background Color"],
-						desc = L["Sets the default Background Color and Opacity"],
-						order = 1,
-						get = function() return GetColor("DefaultBGColor") end,
-						set = function(frame, r, g, b, a) SetColor("DefaultBGColor", r, g, b, a); end,
-						hasAlpha = true,
-					},
-					moreHostilesBackdropBackgroundColor = {
-						type = 'color',
-						name = L["More Hostiles than Allied Background Color"],
-						desc = L["Sets the more Hostiles than Allied Background Color and Opacity"],
-						order = 2,
-						get = function() return GetColor("MoreHostileBGColor"); end,
-						set = function(frame, r, g, b, a) SetColor("MoreHostileBGColor", r, g, b, a); end,
-						hasAlpha = true
-					},
-					moreAlliedBackdropBackgroundColor = {
-						type = 'color',
-						name = L["More Allied than Hostiles Background Color"],
-						desc = L["Sets the more Allied than Hostiles Background Color and Opacity"],
-						order = 3,
-						get = function() return GetColor("MoreAlliedBGColor"); end,
-						set = function(frame, r, g, b, a) SetColor("MoreAlliedBGColor", r, g, b, a); end,
-						hasAlpha = true
-					},
-					growUp = {
-						type = 'toggle',
-						name = L["Grow list upwards"],
-						desc = L["Grow list from the bottom of the WarnFrame"],
-						order = 4,
-						get = function () return VanasKoSWarnFrame.db.profile.GrowUp; end,
-						set = function (v)
-							VanasKoSWarnFrame.db.profile.GrowUp = v;
-							VanasKoSWarnFrame:Update();
+				order = 17,
+			},
+			designDefaultBackdropBackgroundColor = {
+				type = 'color',
+				name = L["Default Background Color"],
+				desc = L["Sets the default Background Color and Opacity"],
+				order = 18,
+				get = function() return GetColor("DefaultBGColor") end,
+				set = function(frame, r, g, b, a) SetColor("DefaultBGColor", r, g, b, a); end,
+				hasAlpha = true,
+			},
+			designMoreHostilesBackdropBackgroundColor = {
+				type = 'color',
+				name = L["More Hostiles than Allied Background Color"],
+				desc = L["Sets the more Hostiles than Allied Background Color and Opacity"],
+				order = 19,
+				get = function() return GetColor("MoreHostileBGColor"); end,
+				set = function(frame, r, g, b, a) SetColor("MoreHostileBGColor", r, g, b, a); end,
+				hasAlpha = true
+			},
+			designMoreAlliedBackdropBackgroundColor = {
+				type = 'color',
+				name = L["More Allied than Hostiles Background Color"],
+				desc = L["Sets the more Allied than Hostiles Background Color and Opacity"],
+				order = 20,
+				get = function() return GetColor("MoreAlliedBGColor"); end,
+				set = function(frame, r, g, b, a) SetColor("MoreAlliedBGColor", r, g, b, a); end,
+				hasAlpha = true
+			},
+			designGrowUp = {
+				type = 'toggle',
+				name = L["Grow list upwards"],
+				desc = L["Grow list from the bottom of the WarnFrame"],
+				order = 21,
+				get = function () return VanasKoSWarnFrame.db.profile.GrowUp; end,
+				set = function (v)
+					VanasKoSWarnFrame.db.profile.GrowUp = v;
+					VanasKoSWarnFrame:Update();
+				end,
+			},
+			designResetBackgroundColors = {
+				type = 'execute',
+				name = L["Reset Background Colors"],
+				desc = L["Resets all Background Colors to default Settings"],
+				order = 22,
+				func = function()
+							SetColor("MoreHostileBGColor", 1.0, 0.0, 0.0, 0.5);
+							SetColor("MoreAlliedBGColor", 0.0, 1.0, 0.0, 0.5);
+							SetColor("DefaultBGColor", 0.5, 0.5, 1.0, 0.5);
 						end,
-					},
-					resetBackgroundColors = {
-						type = 'execute',
-						name = L["Reset Background Colors"],
-						desc = L["Resets all Background Colors to default Settings"],
-						order = 5,
-						func = function()
-									SetColor("MoreHostileBGColor", 1.0, 0.0, 0.0, 0.5);
-									SetColor("MoreAlliedBGColor", 0.0, 1.0, 0.0, 0.5);
-									SetColor("DefaultBGColor", 0.5, 0.5, 1.0, 0.5);
-								end,
-					},
-				}
 			},
 		}
 	});

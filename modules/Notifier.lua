@@ -432,30 +432,6 @@ function VanasKoSNotifier:OnInitialize()
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyShowPvPStats = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyShowPvPStats; end,
 			},
-			showextrareasonframe = {
-				type = 'group',
-				name = L["Additional Reason Window"],
-				desc = L["Additional Reason Window"],
-				order = 10,
-				args = {
-					enabled = {
-						type = 'toggle',
-						name = L["Enabled"],
-						desc = L["Enabled"],
-						order = 1,
-						set = function(frame, v) VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled = v; VanasKoSNotifier:UpdateAndCreateReasonFrame(); end,
-						get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled; end,
-					},
-					locked = {
-						type = 'toggle',
-						name = L["Locked"],
-						desc = L["Locked"],
-						order = 1,
-						set = function(frame, v) VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked = v; VanasKoSNotifier:UpdateAndCreateReasonFrame(); end,
-						get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked; end,
-					}
-				}
-			},
 			notificationInterval = {
 				type = 'range',
 				name = L["Notification Interval (seconds)"],
@@ -463,7 +439,7 @@ function VanasKoSNotifier:OnInitialize()
 				min = 0,
 				max = 600,
 				step = 5,
-				order = 11,
+				order = 10,
 				set = function(frame, value) VanasKoSNotifier.db.profile.NotifyTimerInterval = value; end,
 				get = function() return VanasKoSNotifier.db.profile.NotifyTimerInterval; end,
 			},
@@ -471,7 +447,7 @@ function VanasKoSNotifier:OnInitialize()
 				type = 'select',
 				name = L["Sound on KoS detection"],
 				desc = L["Sound on KoS detection"],
-				order = 12,
+				order = 11,
 				get = function() return GetSound("kos"); end,
 				set = function(frame, value) SetSound("kos", value); end,
 				values = GetMediaList();
@@ -480,10 +456,32 @@ function VanasKoSNotifier:OnInitialize()
 				type = 'select',
 				name = L["Sound on enemy detection"],
 				desc = L["Sound on enemy detection"],
-				order = 13,
+				order = 12,
 				get = function() return GetSound("enemy"); end,
 				set = function(frame, value) SetSound("enemy", value); end,
 				values = GetMediaList();
+			},
+			extrareasonframetitle = {
+				type = 'header',
+				name = L["Additional Reason Window"],
+				desc = L["Additional Reason Window"],
+				order = 13,
+			},
+			extrareasonframeenabled = {
+				type = 'toggle',
+				name = L["Enabled"],
+				desc = L["Enabled"],
+				order = 14,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled = v; VanasKoSNotifier:UpdateAndCreateReasonFrame(); end,
+				get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled; end,
+			},
+			extrareasonframelocked = {
+				type = 'toggle',
+				name = L["Locked"],
+				desc = L["Locked"],
+				order = 15,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked = v; VanasKoSNotifier:UpdateAndCreateReasonFrame(); end,
+				get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked; end,
 			},
 		},
 	};

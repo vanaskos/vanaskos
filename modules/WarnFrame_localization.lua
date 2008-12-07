@@ -30,6 +30,7 @@ if L then
 
 	L["Configuration"] = true;
 	L["KoS/Enemy/Friendly Warning Window"] = true;
+	L["Warning Window"] = true;
 	L["Hide if inactive"] = true;
 	L["Enabled"] = true;
 	L["Locked"] = true;
@@ -82,6 +83,7 @@ if L then
 
 	L["Configuration"] = "Konfiguration";
 	L["KoS/Enemy/Friendly Warning Window"] = "KoS/Feind/Freund Warn-Fenster";
+--	L["Warning Window"] = true;
 	L["Hide if inactive"] = "Verstecken wenn inaktiv";
 	L["Enabled"] = "Aktiviert";
 	L["Locked"] = "Sperren";
@@ -134,6 +136,7 @@ if L then
 
 	L["Configuration"] = "Configuration";
 	L["KoS/Enemy/Friendly Warning Window"] = "Fen\195\170tre d'avertissement KoS/Ennemi/Amis";
+--	L["Warning Window"] = true;
 	L["Hide if inactive"] = "Cacher si inactif";
 	L["Enabled"] = "Actif";
 	L["Locked"] = "Verrouill\195\169";
@@ -186,6 +189,7 @@ if L then
 
 	L["Configuration"] = "환경설정";
 	L["KoS/Enemy/Friendly Warning Window"] = "KoS/적대적/우호적 알림창";
+--	L["Warning Window"] = true;
 	L["Hide if inactive"] = "사용하지 않으면 숨김";
 	L["Enabled"] = "사용";
 	L["Locked"] = "고정";
@@ -237,6 +241,7 @@ if L then
 
 	L["Configuration"] = "Configuración";
 	L["KoS/Enemy/Friendly Warning Window"] = "Ventana de Aviso de KoS/Enemigo/Amistoso";
+--	L["Warning Window"] = true;
 	L["Hide if inactive"] = "Ocultar si inactivo";
 	L["Enabled"] = "Activado";
 	L["Locked"] = "Bloqueado";
@@ -287,6 +292,7 @@ if L then
 
 	L["Configuration"] = "Настройка";
 	L["KoS/Enemy/Friendly Warning Window"] = "Окно предупреждений о KoS/Враге/Друге";
+--	L["Warning Window"] = true;
 	L["Hide if inactive"] = "Скрывать, если не активно";
 	L["Enabled"] = "Включено";
 	L["Locked"] = "Зафиксировано";

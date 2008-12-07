@@ -8,6 +8,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS");
 VanasKoSGUI = VanasKoS:NewModule("GUI", "AceEvent-3.0");
 local VanasKoSGUI = VanasKoSGUI;
 local VanasKoS = VanasKoS;
+local AceConfigDialog = LibStub("AceConfigDialog-3.0");
+local AceConfig = LibStub("AceConfig-3.0");
+
 
 local listHandler = { };
 
@@ -23,6 +26,13 @@ function VanasKoSGUI:AddConfigOption(name, option)
 	end
 	
 	self.ConfigurationOptions.args[name] = option;
+	
+--[[	for k,v in pairs(self.ConfigurationOptions.args) do
+		AceConfig:RegisterOptionsTable(k, self.ConfigurationOptions.args[k]);
+		AceConfigDialog:AddToBlizOptions(k, self.ConfigurationOptions.args[k].name, "VanasKoS");
+	end ]]
+	AceConfig:RegisterOptionsTable(name, option);
+	AceConfigDialog:AddToBlizOptions(name, option.name, "VanasKoS")
 end
 
 function VanasKoSGUI:GetListName(listid)
@@ -49,8 +59,6 @@ local showOptions = {
 local defaultSortFunction = {
 };
 
---local waterfall = AceLibrary:HasInstance("Waterfall-1.0") and AceLibrary("Waterfall-1.0");
-
 function VanasKoSGUI:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("GUI", 
 					{
@@ -63,6 +71,19 @@ function VanasKoSGUI:OnInitialize()
 	
 	UIPanelWindows["VanasKoSFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 
+	AceConfig:RegisterOptionsTable("VanasKoS", {
+		name = "VanasKoS",
+		type = "group",
+		args = {
+			help = {
+				type = "description",
+				name = GetAddOnMetadata("VanasKoS", "Notes"),
+			},
+		},
+	});
+
+	self.configFrame = AceConfigDialog:AddToBlizOptions("VanasKoS", "VanasKoS");
+	
 	VanasKoSListFrameShowButton:SetScript("OnClick", function()
 			local x, y = GetCursorPosition();
 			local uiScale = UIParent:GetEffectiveScale();
@@ -136,9 +157,6 @@ function VanasKoSGUI:InitializeDropDowns()
 	UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, "PLAYERKOS");
 end
 
-local AceConfigDialog = LibStub("AceConfigDialog-3.0");
-local AceConfig = LibStub("AceConfig-3.0");
-
 function VanasKoSGUI:OnEnable()
 	VanasKoSGUI.dropDownFrame = CreateFrame("Frame", "VanasKoSGUIDropDownFrame", UIParent, "UIDropDownMenuTemplate");
 	
@@ -151,22 +169,10 @@ function VanasKoSGUI:OnEnable()
 								VanasKoSGUI:UpdateShownList(); 
 							end);
 	
-	AceConfig:RegisterOptionsTable("VanasKoS", {
-		name = "VanasKoS",
-		type = "group",
-		args = {
-			help = {
-				type = "description",
-				name = GetAddOnMetadata("VanasKoS", "Notes"),
-			},
-		},
-	});
-	self.configFrame = AceConfigDialog:AddToBlizOptions("VanasKoS", "VanasKoS");
-	
-	for k,v in pairs(self.ConfigurationOptions.args) do
+--[[	for k,v in pairs(self.ConfigurationOptions.args) do
 		AceConfig:RegisterOptionsTable(k, self.ConfigurationOptions.args[k]);
 		AceConfigDialog:AddToBlizOptions(k, self.ConfigurationOptions.args[k].name, "VanasKoS");
-	end
+	end ]]
 end
 
 function VanasKoSGUI:OnDisable()

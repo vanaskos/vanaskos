@@ -90,12 +90,13 @@ function VanasKoSGUI:OnInitialize()
 			EasyMenu(showOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
 	end);
 	
-		VanasKoSListFrameConfigurationButton:SetScript("OnClick", function()
-			ShowUIPanel(InterfaceOptionsFrame);
-			PanelTemplates_Tab_OnClick(InterfaceOptionsFrameTab2, InterfaceOptionsFrame);
-			PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
-			InterfaceOptionsFrame_TabOnClick();
-		end);
+	VanasKoSListFrameConfigurationButton:SetScript("OnClick", function()
+		-- Disabled - caused other frames to not work
+		--[[ShowUIPanel(InterfaceOptionsFrame);
+		PanelTemplates_Tab_OnClick(InterfaceOptionsFrameTab2, InterfaceOptionsFrame);
+		PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
+		InterfaceOptionsFrame_TabOnClick(); ]]
+	end);
 
 	self:RegisterMessage("VanasKoS_List_Added", "InitializeDropDowns");
 	

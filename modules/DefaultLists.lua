@@ -19,7 +19,7 @@ local VanasKoSDefaultLists = VanasKoSDefaultLists;
 local VanasKoS = VanasKoS;
 local VanasKoSGUI = VanasKoSGUI;
 
-local tablet = AceLibrary("Tablet-2.0");
+local tooltip = nil;
 
 RegisterTranslations("enUS", function() return {
 	["Player KoS"] = true,
@@ -546,7 +546,7 @@ function VanasKoSDefaultLists:OnInitialize()
 	-- show the PLAYERKOS list after startup
 	VanasKoSGUI:ShowList("PLAYERKOS");
 
-	tablet:Register("VanasKoS_DefaultLists_MouseOverFrame",
+--[[	tablet:Register("VanasKoS_DefaultLists_MouseOverFrame",
 						'children', self.UpdateMouseOverFrame,
 						'parent', VanasKoSListFrame,
 						'positionFunc', function(this)
@@ -557,7 +557,7 @@ function VanasKoSDefaultLists:OnInitialize()
 						'strata', "HIGH",
 						'frameLevel', 11,
 						'dontHook', true
-					);
+					); ]]
 
 	local showOptions = VanasKoSGUI:GetShowButtonOptions();
 	showOptions[#showOptions+1] = {
@@ -567,6 +567,10 @@ function VanasKoSDefaultLists:OnInitialize()
 		checked = function() return VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries; end,
 	};
 
+	self.tooltipFrame = CreateFrame("GameTooltip", "VanasKoSDefaultListsTooltip", UIParent, "GameTooltipTemplate");
+	tooltip = self.tooltipFrame;
+	
+	tooltip:Hide();
 end
 
 function VanasKoSDefaultLists:OnEnable()
@@ -757,7 +761,7 @@ local function ListButtonOnRightClickMenu()
 				VanasKoS:RemoveEntry(VANASKOS.showList, entry);
 			end
 		}
-};
+	};
 
 	EasyMenu(menuItems, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
 end
@@ -801,87 +805,53 @@ end
 
 local selectedPlayer, selectedPlayerData = nil;
 
--- /script local tablet = AceLibrary("Tablet-2.0"); for i=1,10000 do tablet:Open("VanasKoS_DefaultLists_MouseOverFrame"); tablet:Close("VanasKoS_DefaultLists_MouseOverFrame"); end
 function VanasKoSDefaultLists:UpdateMouseOverFrame()
-	local catBasisInfo = tablet:AddCategory('id', "basisinfo");
-	local catListEntryInfo = tablet:AddCategory('id', "listentryinfo");
-	local catPvPLog = tablet:AddCategory('id', "pvplog");
-
 	if(not selectedPlayer) then
-		catBasisInfo:AddLine('text', "----");
+		tooltip:AddLine("----");
 		return;
 	end
+	
+	-- name
 	local pdatalist = VanasKoS:GetList("PLAYERDATA")[selectedPlayer];
-
 	if(pdatalist and pdatalist['displayname']) then
-		text = pdatalist['displayname'];
+		tooltip:AddLine(pdatalist['displayname']);
 	else
-		text = string.Capitalize(selectedPlayer);
+		tooltip:AddLine(string.Capitalize(selectedPlayer));
 	end
-	catBasisInfo:AddLine(
-			'text', text,
-			'textR', 1.0,
-			'textG', 1.0,
-			'textB', 1.0,
-			'size', 16
-		);
-
+	
+	-- guild, level, race, class, zone, lastseen
 	if(pdatalist) then
-		-- guild
 		if(pdatalist['guild']) then
-			catBasisInfo:AddLine(
-					'text', pdatalist['guild'],
-					'textR', 0.0,
-					'textG', 1.0,
-					'textB', 0.0
-				);
+			tooltip:AddLine("<|cffffffff" .. pdatalist['guild'] .. "|r>");
 		end
-
-		-- level, race, class
 		if(pdatalist['level'] and pdatalist['race'] and pdatalist['class']) then
-			catBasisInfo:AddLine(
-					'text', format(L['Level %s %s %s'], pdatalist['level'], pdatalist['race'], pdatalist['class'])
-				);
+			tooltip:AddLine(format(L['Level %s %s %s'], pdatalist['level'], pdatalist['race'], pdatalist['class']));
 		end
-
-		-- last seen
 		if(pdatalist['zone'] and pdatalist['lastseen']) then
-			catBasisInfo:AddLine(
-					'text', format(L['Last seen at %s in %s'], date("%x", pdatalist['lastseen']), pdatalist['zone'])
-				);
+			tooltip:AddLine(format(L['Last seen at %s in %s'], date("%x", pdatalist['lastseen']), pdatalist['zone']));
 		end
 	end
 
 	-- infos about creator, sender, owner, last updated
 	if(selectedPlayerData) then
 		if(selectedPlayerData['owner']) then
-			catListEntryInfo:AddLine(
-					'text', format(L['Owner: %s'], selectedPlayerData['owner'])
-				);
+			tooltip:AddLine(format(L['Owner: %s'], selectedPlayerData['owner']));
 		end
 
 		if(selectedPlayerData['creator']) then
-			catListEntryInfo:AddLine(
-					'text', format(L['Creator: %s'], selectedPlayerData['creator'])
-				);
+			tooltip:AddLine(format(L['Creator: %s'], selectedPlayerData['creator']));
 		end
 
 		if(selectedPlayerData['created']) then
-			catListEntryInfo:AddLine(
-					'text', format(L['Created: %s'], date("%x", selectedPlayerData['created']))
-				);
+			tooltip:AddLine(format(L['Created: %s'], date("%x", selectedPlayerData['created'])));
 		end
 
 		if(selectedPlayerData['sender']) then
-			catListEntryInfo:AddLine(
-					'text', format(L['Received from: %s'], selectedPlayerData['sender'])
-				);
+			tooltip:AddLine(format(L['Received from: %s'], selectedPlayerData['sender']));
 		end
 
 		if(selectedPlayerData['lastupdated']) then
-			catListEntryInfo:AddLine(
-					'text', format(L['Last updated: %s'], date("%x", selectedPlayerData['lastupdated']))
-				);
+			tooltip:AddLine(format(L['Last updated: %s'], date("%x", selectedPlayerData['lastupdated'])));
 		end
 	end
 
@@ -889,63 +859,58 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 	if(pvplog) then
 		pvplog = pvplog[selectedPlayer];
 		if(pvplog) then
-			catPvPLog:AddLine(
-				'text', L["PvP Encounter:"],
-				'textR', 1.0,
-				'textG', 1.0,
-				'textB', 1.0
-			);
+			tooltip:AddLine("|cffffffff" .. L["PvP Encounter:"] .. "|r");
 			local i = 0;
-
 			for k,v in VanasKoSGUI:pairsByKeys(pvplog, nil, nil) do -- sorted from old to new
 				if(v.type and (v.zoneid or v.zone) and v.myname) then
 					if(v.type == 'win') then
 						if(v.zone) then
-							catPvPLog:AddLine(
-								'text', format(L["%s: Win in %s (%s)"], date("%c", k), v.zone, v.myname)
-							);
+							tooltip:AddLine(format(L["%s: Win in %s (%s)"], date("%c", k), v.zone, v.myname));
 						else
 							local zone = VanasKoSDataGatherer:GetZoneName(v.continent, v.zoneid);
 							if(zone == nil) then
 								-- because it's possible there is is no zone, and continent/zoneid aren't valid
 								zone = UNKNOWN;
 							end
-							catPvPLog:AddLine(
-								'text', format(L["%s: Win in %s (%s)"], date("%c", k), zone, v.myname)
-							);
+							tooltip:AddLine(format(L["%s: Win in %s (%s)"], date("%c", k), zone, v.myname));
 						end
 					else
 						if(v.zone) then
-							catPvPLog:AddLine(
-								'text', format(L["%s: Loss in %s (%s)"], date("%c", k), v.zone, v.myname)
-							);
+							tooltip:AddLine(format(L["%s: Loss in %s (%s)"], date("%c", k), v.zone, v.myname));
 						else
 							local zone = VanasKoSDataGatherer:GetZoneName(v.continent, v.zoneid);
 							if(zone == nil) then
 								-- because it's possible there is is no zone, and continent/zoneid aren't valid
 								zone = UNKNOWN;
 							end
-							catPvPLog:AddLine(
-								'text', format(L["%s: Loss in %s (%s)"], date("%c", k), zone, v.myname)
-							);
+							tooltip:AddLine(format(L["%s: Loss in %s (%s)"], date("%c", k), zone, v.myname));
 						end
 					end
 				end
-
 				i = i + 1;
 			end
 		end
 	end
 end
 
+function VanasKoSDefaultLists:ShowTooltip()
+	tooltip:ClearLines();
+	tooltip:SetOwner(VanasKoSListFrame, "ANCHOR_CURSOR");
+	tooltip:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -30);
+	tooltip:SetPoint("BOTTOMLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -390);
+	
+	self:UpdateMouseOverFrame();
+	tooltip:Show();
+end
+
 function VanasKoSDefaultLists:ListButtonOnEnter(button, frame)
-	selectedPlayer, selectedPlayerData = VanasKoSGUI:GetListEntryForID(frame:GetID());
-	tablet:Open("VanasKoS_DefaultLists_MouseOverFrame");
-	--tablet:Refresh("VanasKoS_DefaultLists_MouseOverFrame");
+	self:SetSelectedPlayerData(VanasKoSGUI:GetListEntryForID(frame:GetID()));
+	
+	self:ShowTooltip();
 end
 
 function VanasKoSDefaultLists:ListButtonOnLeave(button, frame)
-	tablet:Close("VanasKoS_DefaultLists_MouseOverFrame")
+	tooltip:Hide();
 end
 
 function VanasKoSDefaultLists:SetSelectedPlayerData(selPlayer, selPlayerData)

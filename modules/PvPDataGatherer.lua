@@ -1,8 +1,6 @@
 --[[---------------------------------------------------------------------------------------------
       PvPDataGatherer Module - Part of VanasKoS
 Gathers PvP Wins and Losses
-
-Credits: DeuceLog for code on how to use Parser-3.0
 ---------------------------------------------------------------------------------------------]]
 
 local function RegisterTranslations(locale, translationfunction)
@@ -22,8 +20,6 @@ end
 VanasKoSPvPDataGatherer = VanasKoS:NewModule("PvPDataGatherer", "AceEvent-3.0");
 local VanasKoSPvPDataGatherer = VanasKoSPvPDataGatherer;
 local VanasKoS = VanasKoS;
-
-local tablet = AceLibrary("Tablet-2.0");
 
 RegisterTranslations("enUS", function() return {
 	["PvP Data Gathering"] = true,
@@ -292,13 +288,11 @@ function VanasKoSPvPDataGatherer:RenderButton(list, buttonIndex, button, key, va
 end
 
 function VanasKoSPvPDataGatherer:ShowList(list)
-	VanasKoSListFrameSyncButton:Disable();
 	VanasKoSListFrameChangeButton:Disable();
 	VanasKoSListFrameAddButton:Disable();
 end
 
 function VanasKoSPvPDataGatherer:HideList(list)
-	VanasKoSListFrameSyncButton:Enable();
 	VanasKoSListFrameChangeButton:Enable();
 	VanasKoSListFrameAddButton:Enable();
 end
@@ -582,10 +576,10 @@ end
 function VanasKoSPvPDataGatherer:ListButtonOnEnter(button, frame)
 	local selectedPlayer, selectedPlayerData = VanasKoSGUI:GetListEntryForID(frame:GetID());
 	VanasKoSDefaultLists:SetSelectedPlayerData(selectedPlayer, selectedPlayerData)
-	tablet:Open("VanasKoS_DefaultLists_MouseOverFrame");
-	--tablet:Refresh("VanasKoS_DefaultLists_MouseOverFrame");
+	
+	VanasKoSDefaultLists:ShowTooltip();
 end
 
 function VanasKoSPvPDataGatherer:ListButtonOnLeave(button, frame)
-	tablet:Close("VanasKoS_DefaultLists_MouseOverFrame")
+	VanasKoSDefaultLists:ListButtonOnLeave();
 end

@@ -332,11 +332,26 @@ end
 
 -- resets the database
 function VanasKoS:ResetKoSList(silent)
-	self:ResetDB("realm");
+	self.db:ResetDB("realm");
 	if(not silent) then
 		self:Print(format(L["KoS List for Realm \"%s\" now purged."], GetRealmName()));
 	end
 	self:SendMessage("VanasKoS_KoS_Database_Purged", GetRealmName());
+end
+
+function VanasKoS:IsVersionNewer(version)
+	local otherVersion = tonumber(string.match(version, "%d+.%d+"));
+	local myVersion = tonumber(string.match(VANASKOS.VERSION, "%d+.%d+"));
+	
+	if(otherVersion == nil or myVersion== nil) then
+		return nil;
+	end
+	
+	if(otherVersion > myVersion) then
+		return true;
+	end
+	
+	return false;
 end
 
 --[[----------------------------------------------------------------------
@@ -345,12 +360,4 @@ end
 
 function VanasKoS:ToggleMenu()
 	VanasKoSGUI:Toggle();
-end
-
-function VanasKoS:ConfigSetNotificationInterval(args)
-	if(tonumber(args) == self:GetOpt("NotifyTimerInterval")) then
-		return nil;
-	end
-	self:SetOpt("NotifyTimerInterval", tonumber(args));
-	self:TogMsg(L["Notification Interval (seconds)"], self:GetOpt("NotifyTimerInterval"));
 end

@@ -227,7 +227,10 @@ function VanasKoSDataGatherer:UpdateZone()
 		return;
 	end
 
-	if(tourist:IsBattleground(zone) or tourist:IsInstance(zone) or tourist:IsArena(zone)) then
+	if(tourist:IsBattleground(zone) or 
+		tourist:IsInstance(zone) or 
+		tourist:IsArena(zone) or 
+		tourist:IsPvPZone(zone)) then
 		inBattleground = true;
 	else
 		inBattleground = false;
@@ -247,6 +250,12 @@ function VanasKoSDataGatherer:IsInSanctuary()
 end
 
 function VanasKoSDataGatherer:IsInBattleground()
+    local instance, instanceType = IsInInstance()
+    if(instance and (instancetype =="pvp" or instancetype == "arena")) then
+		inBattleground = true;
+        return true;
+    end
+
 	-- TODO: workaround
 	self:UpdateZone();
 	return inBattleground;

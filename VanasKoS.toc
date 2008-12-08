@@ -1,8 +1,8 @@
 ﻿## Interface: 30000
-## Title: VanasKoS |cff7fff7f -Ace3-|r
+## Title: Vanas|cffff0000KoS|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS
-## Version: 3.19-$Rev$
+## Version: 4.00a-$Rev$
 ## Notes: KoS-Management Tool
 ## Notes-esES: Herramienta de gestión de KoS (Matar al Ver)
 ## Notes-zhCN: 仇敌管理工具，中文官方版本由Taburiss汉化
@@ -10,9 +10,8 @@
 ## SavedVariables: VanasKoSDB
 ## SavedVariablesPerCharacter: VanasKoSDBPC
 ## OptionalDeps: Ace3, Cartographer, TouristLib, Babble-Zone-3.0, Babble-Class-3.0, Babble-Race-3.0, GraphLib, SharedMediaLib
-## X-Embeds: Ace3, TouristLib, Babble-Zone-3.0, Babble-Class-3.0, Babble-Race-3.0, GraphLib, SharedMediaLib
 ## X-eMail: boredvana@gmail.com
-## X-Date: 2008-11-17
+## X-Date: 2008-12-07
 ## X-Category: Battlegrounds/PvP
 ## X-AceForum: http://www.wowace.com/forums/index.php?topic=3938.0
 ## X-License: CreativeCommons-Attribution-NonCommercial-ShareAlike-2.5

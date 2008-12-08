@@ -341,6 +341,9 @@ local function CreateCombatButtons()
 end
 
 local function HideButton(buttonNr)
+	if(not warnButtonsOOC or not warnButtonsOOC[buttonNr]) then
+		return;
+	end
 	if(InCombatLockdown()) then
 		warnButtonsOOC[buttonNr]:SetText("");
 		warnButtonsOOC[buttonNr]:SetAlpha(0);

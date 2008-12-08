@@ -484,7 +484,7 @@ local function RegisterConfiguration()
 				desc = L["Grow list from the bottom of the WarnFrame"],
 				order = 6,
 				get = function () return VanasKoSWarnFrame.db.profile.GrowUp; end,
-				set = function (v)
+				set = function (frame, v)
 					VanasKoSWarnFrame.db.profile.GrowUp = v;
 					VanasKoSWarnFrame:Update();
 				end,

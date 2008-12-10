@@ -339,7 +339,7 @@ RegisterTranslations("ruRU", function() return {
 	["_Reason Unknown_"] = "не известна",
 } end);
 
-local L = AceLibrary("AceLocale-3.0"):GetLocale("VanasKoS_DefaultLists", false);
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_DefaultLists", false);
 
 -- sort functions
 
@@ -501,7 +501,7 @@ function VanasKoSDefaultLists:OnInitialize()
 		VanasKoS.db.realm.nicelist = nil;
 	end ]]
 
-	for k,v in pairs(VanasKoSDB.realms) do
+	for k,v in pairs(VanasKoSDB.namespaces.DefaultLists.realms) do
 		if(string.find(k, GetRealmName()) ~= nil) then
 			if(v.koslist) then
 				self.db.realm.koslist = v.koslist;

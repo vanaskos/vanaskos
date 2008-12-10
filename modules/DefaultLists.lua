@@ -501,22 +501,25 @@ function VanasKoSDefaultLists:OnInitialize()
 		VanasKoS.db.realm.nicelist = nil;
 	end ]]
 
-	for k,v in pairs(VanasKoSDB.namespaces.DefaultLists.realms) do
-		if(string.find(k, GetRealmName()) ~= nil) then
-			if(v.koslist) then
-				self.db.realm.koslist = v.koslist;
-				v.koslist = nil;
-			end
-			if(v.hatelist) then
-				self.db.realm.hatelist = v.hatelist;
-				v.hatelist = nil;
-			end
-			if(v.nicelist) then
-				self.db.realm.nicelist = v.nicelist;
-				v.nicelist = nil;
+	if(VanasKoSDB.namespaces.DefaultLists.realms) then
+		for k,v in pairs(VanasKoSDB.namespaces.DefaultLists.realms) do
+			if(string.find(k, GetRealmName()) ~= nil) then
+				if(v.koslist) then
+					self.db.realm.koslist = v.koslist;
+					v.koslist = nil;
+				end
+				if(v.hatelist) then
+					self.db.realm.hatelist = v.hatelist;
+					v.hatelist = nil;
+				end
+				if(v.nicelist) then
+					self.db.realm.nicelist = v.nicelist;
+					v.nicelist = nil;
+				end
 			end
 		end
 	end
+	
 	-- register lists this modules provides at the core
 	VanasKoS:RegisterList(1, "PLAYERKOS", L["Player KoS"], self);
 	VanasKoS:RegisterList(2, "GUILDKOS", L["Guild KoS"], self);

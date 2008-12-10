@@ -135,6 +135,9 @@ function VanasKoSPvPStats:OnEnable()
 		local list = VanasKoS:GetList("PVPLOG");
 
 		local twinks = { };
+		if(list == nil) then
+			list = { };
+		end
 		for name,values in pairs(list) do
 			for timestamp, data in pairs(values) do
 				if(data.myname) then

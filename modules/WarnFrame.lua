@@ -441,23 +441,6 @@ local function RegisterConfiguration()
 				step = 1,
 				isPercent = false,
 			},
-			fontSize = {
-				type = 'range',
-				name = L["Font Size"],
-				desc = L["Sets the size of the font in the Warnframe"],
-				order = 8,
-				get = function() return VanasKoSWarnFrame.db.profile.FontSize; end,
-				set = function(frame, v)
-						VanasKoSWarnFrame.db.profile.FontSize = v;
-						CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize);
-						UpdateWarnSize();
-						VanasKoSWarnFrame:Update();
-					end,
-				min = 6,
-				max = 20,
-				step = 1,
-				isPercent = false,
-			},
 			showBorder = {
 				type = 'toggle',
 				name = L["Show border"],
@@ -478,11 +461,28 @@ local function RegisterConfiguration()
 					end,
 				get = function() return VanasKoSWarnFrame.db.profile.WarnFrameBorder; end,
 			},
+			fontSize = {
+				type = 'range',
+				name = L["Font Size"],
+				desc = L["Sets the size of the font in the Warnframe"],
+				order = 6,
+				get = function() return VanasKoSWarnFrame.db.profile.FontSize; end,
+				set = function(frame, v)
+						VanasKoSWarnFrame.db.profile.FontSize = v;
+						CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize);
+						UpdateWarnSize();
+						VanasKoSWarnFrame:Update();
+					end,
+				min = 6,
+				max = 20,
+				step = 1,
+				isPercent = false,
+			},
 			growUp = {
 				type = 'toggle',
 				name = L["Grow list upwards"],
 				desc = L["Grow list from the bottom of the WarnFrame"],
-				order = 6,
+				order = 7,
 				get = function () return VanasKoSWarnFrame.db.profile.GrowUp; end,
 				set = function (frame, v)
 					VanasKoSWarnFrame.db.profile.GrowUp = v;
@@ -493,14 +493,14 @@ local function RegisterConfiguration()
 				type = 'execute',
 				name = L["Reset Position"],
 				desc= L["Reset Position"],
-				order = 7,
+				order = 8,
 				func = function() VanasKoS_WarnFrame:ClearAllPoints(); VanasKoS_WarnFrame:SetPoint("CENTER"); end,
 			},
 			contentHeader = {
 				type = 'header',
 				name = L["Content"],
 				desc = L["What to show in it"],
-				order = 8,
+				order = 9,
 			},
 			contentShowLevel = {
 				type = 'toggle',
@@ -556,50 +556,17 @@ local function RegisterConfiguration()
 						end
 					end
 			},
-			contentSetLines = {
-				type = 'range',
-				name = L["Number of lines"],
-				desc = L["Sets the number of entries to display in the Warnframe"],
-				order = 15,
-				get = function() return VanasKoSWarnFrame.db.profile.WARN_BUTTONS; end,
-				set = function(frame, v)
-						VanasKoSWarnFrame.db.profile.WARN_BUTTONS = v;
-						UpdateWarnSize();
-						VanasKoSWarnFrame:Update();
-					end,
-				min = 1,
-				max = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX,
-				step = 1,
-				isPercent = false,
-			},
-			contentFontSize = {
-				type = 'range',
-				name = L["Font Size"],
-				desc = L["Sets the size of the font in the Warnframe"],
-				order = 16,
-				get = function() return VanasKoSWarnFrame.db.profile.FontSize; end,
-				set = function(frame, v)
-						VanasKoSWarnFrame.db.profile.FontSize = v;
-						CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize);
-						UpdateWarnSize();
-						VanasKoSWarnFrame:Update();
-					end,
-				min = 6,
-				max = 20,
-				step = 1,
-				isPercent = false,
-			},
 			designHeader = {
 				type = 'header',
 				name = L["Design"],
 				desc = L["How the content is shown"],
-				order = 17,
+				order = 15,
 			},
 			designDefaultBackdropBackgroundColor = {
 				type = 'color',
 				name = L["Default Background Color"],
 				desc = L["Sets the default Background Color and Opacity"],
-				order = 18,
+				order = 16,
 				get = function() return GetColor("DefaultBGColor") end,
 				set = function(frame, r, g, b, a) SetColor("DefaultBGColor", r, g, b, a); end,
 				hasAlpha = true,
@@ -608,7 +575,7 @@ local function RegisterConfiguration()
 				type = 'color',
 				name = L["More Hostiles than Allied Background Color"],
 				desc = L["Sets the more Hostiles than Allied Background Color and Opacity"],
-				order = 19,
+				order = 17,
 				get = function() return GetColor("MoreHostileBGColor"); end,
 				set = function(frame, r, g, b, a) SetColor("MoreHostileBGColor", r, g, b, a); end,
 				hasAlpha = true
@@ -617,27 +584,16 @@ local function RegisterConfiguration()
 				type = 'color',
 				name = L["More Allied than Hostiles Background Color"],
 				desc = L["Sets the more Allied than Hostiles Background Color and Opacity"],
-				order = 20,
+				order = 18,
 				get = function() return GetColor("MoreAlliedBGColor"); end,
 				set = function(frame, r, g, b, a) SetColor("MoreAlliedBGColor", r, g, b, a); end,
 				hasAlpha = true
-			},
-			designGrowUp = {
-				type = 'toggle',
-				name = L["Grow list upwards"],
-				desc = L["Grow list from the bottom of the WarnFrame"],
-				order = 21,
-				get = function () return VanasKoSWarnFrame.db.profile.GrowUp; end,
-				set = function (v)
-					VanasKoSWarnFrame.db.profile.GrowUp = v;
-					VanasKoSWarnFrame:Update();
-				end,
 			},
 			designResetBackgroundColors = {
 				type = 'execute',
 				name = L["Reset Background Colors"],
 				desc = L["Resets all Background Colors to default Settings"],
-				order = 22,
+				order = 19,
 				func = function()
 							SetColor("MoreHostileBGColor", 1.0, 0.0, 0.0, 0.5);
 							SetColor("MoreAlliedBGColor", 0.0, 1.0, 0.0, 0.5);

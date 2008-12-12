@@ -265,17 +265,21 @@ function VanasKoSMinimapButton:UpdateOptions()
 	local list = VanasKoSPvPDataGatherer:GetDamageFromArray();
 
 	attackerMenu = { };
---[[
+	if(not list) then
+		return;
+	end
+
 	for k,v in pairs(list) do
 		attackerMenu[#attackerMenu+1] = {
 			name = v[1] .. " " .. date("%c", v[2]),
+			order = #attackerMenu,
 			func = function()
 					VanasKoSGUI:ShowList("PLAYERKOS");
 					VANASKOS.LastNameEntered = v[1];
 					StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
 				end,
 		};
-	end ]]
+	end
 end
 
 function VanasKoSMinimapButton:OnClick()

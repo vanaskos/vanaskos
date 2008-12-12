@@ -33,11 +33,14 @@ VanasKoSSynchronizer = VanasKoS:NewModule("Synchronizer", "AceComm-3.0", "AceTim
 local module = VanasKoSSynchronizer;
 local core = VanasKoS;
 
+local configOptions = nil;
+
 local function RegisterConfiguration()
-	VanasKoSGUI:AddConfigOption("Synchronizer-Common", {
+	configOptions = {
 		type = 'group',
 		name = L["Sharing"],
 		desc = L["Options to share your lists with other people"],
+		childGroups = "tab",
 		args = {
 			enabled = {
 				type = "toggle",
@@ -52,9 +55,38 @@ local function RegisterConfiguration()
 				name = L["Accept/Ignore-Lists"],
 				desc = L["Lists in which you can put people from whom you want or do not want to receive data"],
 				order = 2,
-			}
+			},
+			playerkos  = {
+				type = "group",
+				name = "Player KoS",
+				desc = "Players from whom to accept/ignore Player KoS entries",
+				order = 3,
+				args = { },
+			},
+			guildkos  = {
+				type = "group",
+				name = "Guild KoS",
+				desc = "Players from whom to accept/ignore Guild KoS entries",
+				order = 4,
+				args = { },
+			},
+			hatelist  = {
+				type = "group",
+				name = "Hatelist",
+				desc = "Players from whom to accept/ignore Hatelist entries",
+				order = 5,
+				args = { },
+			},
+			nicelist  = {
+				type = "group",
+				name = "Nicelist",
+				desc = "Players from whom to accept/ignore Nicelist entries",
+				order = 6,
+				args = { },
+			},
 		},
-	});
+	};
+	VanasKoSGUI:AddConfigOption("Synchronizer", configOptions);
 	
 	VanasKoSGUI:AddConfigOption("Synchronizer-Guild", {
 		type = "group",

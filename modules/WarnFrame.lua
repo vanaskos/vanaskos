@@ -28,6 +28,8 @@ local nearbyFriendlyCount = 0;
 local dataCache = nil;
 local buttonData = nil;
 
+local timer = nil;
+
 local function clear(...)
 	for i=1,select('#', ...) do
 		local t = select(i, ...)
@@ -691,13 +693,10 @@ function VanasKoSWarnFrame:OnDisable()
 	nearbyFriendly = { };
 	dataCache = { };
 	buttonData = { };
-	timerCache = { };
 	
 	self:Update();
 	warnFrame:Hide();
 end
-
-local timerCache = { };
 
 
 local function RemovePlayer(name)
@@ -721,11 +720,29 @@ local function RemovePlayer(name)
 		clear(x);
 		dataCache[name] = nil;
 	end
-	
-	timerCache[name] = nil;
+end
+
+local function UpdateList()
+	local t = time();
+	for k, v in pairs(nearbyKoS) do
+		if(t-v > 60) then
+			RemovePlayer(k);
+		end
+	end
+	for k, v in pairs(nearbyEnemy) do
+		if(t-v > 10) then
+			RemovePlayer(k);
+		end
+	end
+	for k, v in pairs(nearbyFriendly) do
+		if(t-v > 10) then
+			RemovePlayer(k);
+		end
+	end
 	
 	VanasKoSWarnFrame:Update();
 end
+
 
 -- /Script VanasKoSWarnFrame:Player_Detected("xxx", nil, "enemy"); VanasKoSWarnFrame:Player_Detected("xxx2", nil, "enemy");
 -- /script local x = {  ['name'] = 'x', ['faction'] = 'enemy', ['class'] = 'Poser',  ['race'] = 'GM', ['level'] = "31336"} ; for i=1,10000 do x.name = "xxx" .. math.random(1, 1000); VanasKoSWarnFrame:Player_Detected(x); end
@@ -744,20 +761,21 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 
 	if(faction == "kos" and self.db.profile.ShowKoS) then
 		if(not nearbyKoS[name]) then
-			nearbyKoS[name] = true;
 			nearbyKoSCount = nearbyKoSCount + 1;
 		end
+		nearbyKoS[name] = time();
 	elseif(faction == "enemy" and self.db.profile.ShowHostile) then
 		if(not nearbyEnemy[name]) then
-			nearbyEnemy[name] = true;
 			nearbyEnemyCount = nearbyEnemyCount + 1;
 		end
+		nearbyEnemy[name] = time();
 	elseif(faction == "friendly" and self.db.profile.ShowFriendly) then
 		if(not nearbyFriendly[name]) then
-			nearbyFriendly[name] = true;
 			nearbyFriendlyCount = nearbyFriendlyCount + 1;
 		end
+		nearbyFriendly[name] = time();
 	else
+		error("unknown faction");
 		return;
 	end
 
@@ -769,20 +787,19 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 
 	if(data.level) then
 		dataCache[name]['level'] = data.level;
-		dataCache[name]['class'] = data.class;
+	end
+	if(data.classEnglish) then
 		dataCache[name]['classEnglish'] = data.classEnglish;
+	end
+	if(data.class) then
+		dataCache[name]['class'] = data.class;
+	end
+	if(data.race) then
 		dataCache[name]['race'] = data.race;
 	end
 	
-	if(timerCache[name] ~= nil) then
-		self:CancelTimer(timerCache[name], false);
-	end
-	timerCache[name] = nil;
-	
-	if(faction == "kos") then
-		timerCache[name] = self:ScheduleTimer(RemovePlayer, 60, name);
-	else
-		timerCache[name] = self:ScheduleTimer(RemovePlayer, 10, name);
+	if(not timer) then
+		self:ScheduleRepeatingTimer(UpdateList, 1);
 	end
 
 	self:Update();

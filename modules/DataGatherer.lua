@@ -174,8 +174,9 @@ function VanasKoSDataGatherer:RemoveEntry(listname, name)
 end
 
 function VanasKoSDataGatherer:UpdateLastSeen(name)
-	if(playerDataList[name] ~= nil) then
-		playerDataList[name].lastseen = time();
+	local lname = data.name:lower();
+	if(playerDataList[lname] ~= nil) then
+		playerDataList[lname].lastseen = time();
 	end
 end
 
@@ -342,46 +343,48 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 	gatheredData['faction'] = faction;
 	gatheredData['zone'] = zone;
 
+	local lname = data.name:lower();
+
 	if(not self:IsInBattleground()) then
 		if(spellId ~= nil) then
 			local level, classEnglish = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
 			if(level ~= nil) then
-				if(not playerDataList[name]) then
-					playerDataList[name] = { };
+				if(not playerDataList[lname]) then
+					playerDataList[lname] = { };
 				end
-				if(not playerDataList[name].level or 
-					playerDataList[name].level == -1 
-					or string.find(playerDataList[name].level, "+")) then
-					local oldLevel = string.match(playerDataList[name].level, "%d+");
+				if(not playerDataList[lname].level or 
+					playerDataList[lname].level == -1 
+					or string.find(playerDataList[lname].level, "+")) then
+					local oldLevel = tonumber(string.match(playerDataList[lname].level, "%d+"));
 					if(oldLevel < level) then
 						if(level < 80) then
 							level = level .. "+";
 						end
-						playerDataList[name].level = level;
+						playerDataList[lname].level = level;
 					end
 				end
 				gatheredData['level'] = level;
 			end
 			if(classEnglish ~= nil) then
 				if(not playerDataList[name]) then
-					playerDataList[name] = { };
+					playerDataList[lname] = { };
 				end
 				if(playerDataList[name].classEnglish ~= nil) then
-					playerDataList[name].classEnglish = classEnglish;
+					playerDataList[lname].classEnglish = classEnglish;
 				end
 			end
 		end
 	end
 	
 	if(not self:IsInBattleground() and playerDataList[name]) then
-		gatheredData['level'] =  playerDataList[name].level;
-		gatheredData['classEnglish'] = playerDataList[name].classEnglish;
-		gatheredData['guild'] = playerDataList[name].guild;
+		gatheredData['level'] =  playerDataList[lname].level;
+		gatheredData['classEnglish'] = playerDataList[lname].classEnglish;
+		gatheredData['guild'] = playerDataList[lname].guild;
 		
-		gatheredData['level'] = playerDataList[name].level;
-		gatheredData['class'] = playerDataList[name].class;
-		gatheredData['race'] = playerDataList[name].race;
-		gatheredData['gender'] = playerDataList[name].gender;
+		gatheredData['level'] = playerDataList[lname].level;
+		gatheredData['class'] = playerDataList[lname].class;
+		gatheredData['race'] = playerDataList[lname].race;
+		gatheredData['gender'] = playerDataList[lname].gender;
 		gatheredData['realm'] = nil;
 	else
 		gatheredData['level'] =  nil;

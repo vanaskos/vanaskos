@@ -196,6 +196,7 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 
 	playerDataList[lname].displayname = data.name;
 	playerDataList[lname].guild = data['guild'];
+	playerDataList[lname].guildrank = data['guildrank'];
 	if((data['level'] and data['level'] ~= -1) or
 		(data['level'] == -1 and playerDataList[lname].level == nil)) then
 		playerDataList[lname].level = data['level'];
@@ -384,6 +385,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 	if(not self:IsInBattleground() and playerDataList[lname]) then
 		gatheredData['level'] =  playerDataList[lname].level;
 		gatheredData['guild'] = playerDataList[lname].guild;
+		gatheredData['guildrank'] = playerDataList[lname].guildrank;
 		
 		gatheredData['level'] = playerDataList[lname].level;
 		gatheredData['class'] = playerDataList[lname].class;

@@ -216,19 +216,6 @@ function VanasKoSDefaultLists:OnInitialize()
 	-- show the PLAYERKOS list after startup
 	VanasKoSGUI:ShowList("PLAYERKOS");
 
---[[	tablet:Register("VanasKoS_DefaultLists_MouseOverFrame",
-						'children', self.UpdateMouseOverFrame,
-						'parent', VanasKoSListFrame,
-						'positionFunc', function(this)
-												this:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -28);
-												this:SetPoint("BOTTOMLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -370);
-										end,
-						'cantAttach', true,
-						'strata', "HIGH",
-						'frameLevel', 11,
-						'dontHook', true
-					); ]]
-
 	local showOptions = VanasKoSGUI:GetShowButtonOptions();
 	showOptions[#showOptions+1] = {
 		
@@ -280,24 +267,16 @@ end
 function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2)
 	if(list == "PLAYERKOS" or list == "HATELIST" or list == "NICELIST") then
 		local data = VanasKoS:GetPlayerData(key);
-		-- displayname, guild, level, race, class, gender, zone, lastseen
+		-- displayname, guildrank, guild, level, race, class, gender, zone, lastseen
 		local owner = "";
 		if(value.owner ~= nil and value.owner ~= "") then
 			owner = string.Capitalize(value.owner);
 		end
 		if(data and data.displayname and data.level and data.race and data.class) then
 			local displayname = data.displayname;
-			if(value.wanted) then
-				displayname = "|cffff0000" .. displayname;
-			end
 			buttonText1:SetText(format(L["%s  Level %s %s %s %s"], displayname, data.level, data.race, data.class, owner));
 		else
-			local displayname;
-			if(value.wanted) then
-				displayname = "|cffff0000" .. string.Capitalize(key);
-			else
-				displayname = string.Capitalize(key);
-			end
+			local displayname = string.Capitalize(key);
 			buttonText1:SetText(format(L["%s  %s"], displayname, owner));
 		end
 		if(data and data.lastseen) then
@@ -492,7 +471,11 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 	-- guild, level, race, class, zone, lastseen
 	if(pdatalist) then
 		if(pdatalist['guild']) then
-			tooltip:AddLine("<|cffffffff" .. pdatalist['guild'] .. "|r>");
+			local text = "<|cffffffff" .. pdatalist['guild'] .. "|r>";
+			if(pdatalist['guildrank']) then
+				text = text .. " (" .. pdatalist['guildrank'] .. ")";
+			end
+			tooltip:AddLine(text);
 		end
 		if(pdatalist['level'] and pdatalist['race'] and pdatalist['class']) then
 			tooltip:AddLine(format(L['Level %s %s %s'], pdatalist['level'], pdatalist['race'], pdatalist['class']));

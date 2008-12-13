@@ -174,7 +174,7 @@ function VanasKoSDataGatherer:RemoveEntry(listname, name)
 end
 
 function VanasKoSDataGatherer:UpdateLastSeen(name)
-	local lname = data.name:lower();
+	local lname = name:lower();
 	if(playerDataList[lname] ~= nil) then
 		playerDataList[lname].lastseen = time();
 	end
@@ -343,7 +343,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 	gatheredData['faction'] = faction;
 	gatheredData['zone'] = zone;
 
-	local lname = data.name:lower();
+	local lname = name:lower();
 
 	if(not self:IsInBattleground()) then
 		if(spellId ~= nil) then

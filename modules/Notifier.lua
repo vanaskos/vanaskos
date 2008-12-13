@@ -678,6 +678,8 @@ local function ReenableNotifications()
 end
 
 function VanasKoSNotifier:Player_Detected(message, data)
+	assert(data.name ~= nil);
+	
 	if (data.faction == nil) then
 		return
 	end

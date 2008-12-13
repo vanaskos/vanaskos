@@ -260,7 +260,7 @@ end
 
 function VanasKoSDataGatherer:IsInBattleground()
     local instance, instanceType = IsInInstance()
-    if(instance and (instancetype =="pvp" or instancetype == "arena")) then
+    if(instance and (instanceType =="pvp" or instanceType == "arena")) then
 		inBattleground = true;
         return true;
     end

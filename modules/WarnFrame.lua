@@ -30,17 +30,6 @@ local buttonData = nil;
 
 local timer = nil;
 
-local function clear(...)
-	for i=1,select('#', ...) do
-		local t = select(i, ...)
-		if type(t) == 'table' then
-			for k in pairs(t) do
-				t[k] = nil
-			end
-		end
-	end
-end
-
 local function GetColor(which)
 	return VanasKoSWarnFrame.db.profile[which .. "R"], VanasKoSWarnFrame.db.profile[which .. "G"], VanasKoSWarnFrame.db.profile[which .. "B"], VanasKoSWarnFrame.db.profile[which .. "A"];
 end
@@ -682,11 +671,16 @@ function VanasKoSWarnFrame:OnEnable()
 
 	warnFrame:SetAlpha(1);
 	self:Update();
+
+	if(timer == nil) then
+		timer = self:ScheduleRepeatingTimer("UpdateList", 1);
+	end
 end
 
 function VanasKoSWarnFrame:OnDisable()
 	self:UnregisterAllEvents();
 	self:CancelAllTimers();
+	timer = nil;
 	
 	nearbyKoS = { };
 	nearbyEnemy = { };
@@ -716,13 +710,12 @@ local function RemovePlayer(name)
 	end
 
 	if(dataCache[name]) then
-		local x = dataCache[name];
-		clear(x);
+		wipe(dataCache[name]);
 		dataCache[name] = nil;
 	end
 end
 
-local function UpdateList()
+function VanasKoSWarnFrame:UpdateList()
 	local t = time();
 	for k, v in pairs(nearbyKoS) do
 		if(t-v > 60) then
@@ -797,10 +790,6 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 		dataCache[name]['race'] = data.race;
 	end
 	
-	if(timer == nil) then
-		timer = self:ScheduleRepeatingTimer(UpdateList, 1);
-	end
-
 	self:Update();
 end
 

@@ -39,40 +39,6 @@ function VanasKoS:OnDisable()
 	self:UnregisterAllMessages();
 end
 
-function VanasKoS:GetOpt(var)
-	if(self.db.profile[var] == nil) then
-		self:Print("[DEBUG] access", var);
-	end
-	return self.db.profile[var]; 
-end
-
-function VanasKoS:SetOpt(var, val)
-	self.db.profile[var] = val; 
-end
-
-function VanasKoS:TogOpt(var)
-	local x = self:GetOpt(var);
-	if(x == nil or x == false) then
-		self:SetOpt(var, true);
-		return true;
-	else
-		self:SetOpt(var, false);
-		return false;
-	end
-end
-
-function VanasKoS:TogMsg(text, val)
-	local x = val;
-	if(val == true) then
-		x = L[true];
-	elseif(val == false) then
-		x = L[false];
-	elseif(x == nil) then
-		x = "nil";
-	end
-	self:Print(format(L["%s set to %s"], text, x));
-end
-
 --[[----------------------------------------------------------------------
   Main Functions
 ------------------------------------------------------------------------]]

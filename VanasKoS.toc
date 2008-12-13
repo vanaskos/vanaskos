@@ -24,6 +24,7 @@ VanasKoS.lua
 GUICreate.lua
 VanasKoSGUI.lua
 
+modules\DefaultLists_localization.lua
 modules\DefaultLists.lua
 modules\PvPDataGatherer.lua
 modules\DataGatherer.lua

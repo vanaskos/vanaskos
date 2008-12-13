@@ -775,7 +775,6 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 		end
 		nearbyFriendly[name] = time();
 	else
-		error("unknown faction");
 		return;
 	end
 
@@ -798,8 +797,8 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 		dataCache[name]['race'] = data.race;
 	end
 	
-	if(not timer) then
-		self:ScheduleRepeatingTimer(UpdateList, 1);
+	if(timer == nil) then
+		timer = self:ScheduleRepeatingTimer(UpdateList, 1);
 	end
 
 	self:Update();

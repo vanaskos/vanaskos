@@ -346,14 +346,19 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 		if(spellId ~= nil) then
 			local level, classEnglish = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
 			if(level ~= nil) then
-				if(level < 80) then
-					level = level .. "+";
-				end
 				if(not playerDataList[name]) then
 					playerDataList[name] = { };
 				end
-				if(not playerDataList[name].level or playerDataList[name].level == -1) then
-					playerDataList[name].level = level;
+				if(not playerDataList[name].level or 
+					playerDataList[name].level == -1 
+					or string.find(playerDataList[name].level, "+")) then
+					local oldLevel = string.match(playerDataList[name].level, "%d+");
+					if(oldLevel < level) then
+						if(level < 80) then
+							level = level .. "+";
+						end
+						playerDataList[name].level = level;
+					end
 				end
 				gatheredData['level'] = level;
 			end
@@ -368,7 +373,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 		end
 	end
 	
-	if(not self:IsInBattleground() and playerDataLis[name]) then
+	if(not self:IsInBattleground() and playerDataList[name]) then
 		gatheredData['level'] =  playerDataList[name].level;
 		gatheredData['classEnglish'] = playerDataList[name].classEnglish;
 		gatheredData['guild'] = playerDataList[name].guild;

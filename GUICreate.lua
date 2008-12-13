@@ -118,7 +118,10 @@ function VanasKoSGUICreate:CreateListFrame()
 	listFrame:SetAllPoints(VanasKoSFrame);
 	
 	local chooseListDropDown = CreateFrame("Frame", "VanasKoSFrameChooseListDropDown", VanasKoSListFrame, "UIDropDownMenuTemplate");
+	--chooseListDropDown:ClearAllPoints();
 	chooseListDropDown:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPLEFT", 65, -44);
+	--chooseListDropDown:SetAllPoints();
+	VanasKoSFrameChooseListDropDownButton:SetScript("OnClick", function() ToggleDropDownMenu(1, nil, VanasKoSFrameChooseListDropDown, VanasKoSFrameChooseListDropDown, 15, 10); end);
 	
 	local addEntryButton = CreateFrame("Button", "VanasKoSListFrameAddButton", VanasKoSListFrame, "UIPanelButtonTemplate");
 	addEntryButton:SetWidth(131);

@@ -15,7 +15,6 @@ local inBattleground = false;
 local zoneContinentZoneID = { };
 local myName = nil;
 
-
 function VanasKoSDataGatherer:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("DataGatherer", 
 		{
@@ -53,25 +52,68 @@ local COMBATLOG_FILTER_FRIENDLY_PLAYER = bit.bor(
 				COMBATLOG_OBJECT_TYPE_PLAYER
 				);
 
+local function isFriendlyOrEnemy(flags)
+	if(bit.band(flags, COMBATLOG_FILTER_FRIENDLY_PLAYER) == COMBATLOG_FILTER_FRIENDLY_PLAYER) then
+		return "friendly";
+	end
+	if(bit.band(flags, COMBATLOG_FILTER_HOSTILE_PLAYER) == COMBATLOG_FILTER_HOSTILE_PLAYER) then
+		return "enemy";
+	end
+	return nil;
+end
+
 function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellID, spellName, spellSchool, auraType)
 --	self:PrintLiteral(eventType, srcName, srcFlags, dstName, dstFlags);
+	-- spell id is only relevant on RANGE_ SPELL_ and SPELL_PERIODIC_ prefix - otherwise it represents something else and is therefore unusable
+	if(not string.find(eventType, "RANGE_") and not string.find(eventType, "SPELL_") and not string.find(eventType, "SPELL_PERIODIC_")) then
+		spellID = nil;
+	end
+	--[[if(dstName and srcName and dstName ~= srcName) then
+		ChatFrame2:AddMessage(eventType .. " " .. (srcName or "nil") .. " -> " .. (dstName or "nil") .. "  -  " .. (spellName or "nil"));
+	end]]
+	if(string.find(eventType, "SPELL_AURA_")) then
+		-- in case a auro is removed or applied it may be that the auro was gained from someone else and spellID is therefore from the class who casted the aura 
+		--(and because we don't know where that player is, ignore him)
+		if(srcName ~= dstName) then
+			spellID = nil;
+		end		
+		
+		-- in case auras are applied or fade, use only the player who gains the aura / from whom fades the aura
+		--[[ 
+			SPELL_AURA_APPLIED:
+				lockenkopf gains Raktic's trueshot aura
+				dst<-			src
+			
+			SPELL_AURA_REMOVED:
+				name's *aura* fades from name
+				src				   dst <-
+			
+		]]
+
+		
+		local fOrE = isFriendlyOrEnemy(dstFlags);
+		if(dstName and fOrE) then
+			VanasKoSDataGatherer:SendDataMessage(dstName, fOrE, spellID);
+			return;
+		end
+	end
+	
+	
+	-- try source and destinationation - if 
 	
 	-- source or destination is friendly, register as event
-	if(srcName ~= nil and srcFlags ~= nil and bit.band(srcFlags, COMBATLOG_FILTER_FRIENDLY_PLAYER) == COMBATLOG_FILTER_FRIENDLY_PLAYER and srcName ~= myName) then
-		VanasKoSDataGatherer:SendDataMessage(srcName, "friendly", spellID);
+	if(srcName ~= nil and srcFlags ~= nil and srcName ~= myName) then
+		local fOrE = isFriendlyOrEnemy(srcFlags);
+		if(fOrE) then
+			VanasKoSDataGatherer:SendDataMessage(srcName, fOrE, spellID);
+		end
 	end
 
 	if(dstName ~= nil and dstFlags ~= nil and bit.band(dstFlags, COMBATLOG_FILTER_FRIENDLY_PLAYER) == COMBATLOG_FILTER_FRIENDLY_PLAYER and dstName ~= myName) then
-		VanasKoSDataGatherer:SendDataMessage(dstName, "friendly", spellID);
-	end
-
-	-- source or destination are hostile, register as event
-	if(srcName ~= nil and srcFlags ~= nil and bit.band(srcFlags, COMBATLOG_FILTER_HOSTILE_PLAYER) == COMBATLOG_FILTER_HOSTILE_PLAYER) then
-		VanasKoSDataGatherer:SendDataMessage(srcName, "enemy", spellID);
-	end
-
-	if(dstName ~= nil and dstFlags ~= nil and bit.band(dstFlags, COMBATLOG_FILTER_HOSTILE_PLAYER) == COMBATLOG_FILTER_HOSTILE_PLAYER) then
-		VanasKoSDataGatherer:SendDataMessage(dstName, "enemy", spellID);
+		local fOrE = isFriendlyOrEnemy(dstFlags);
+		if(fOrE) then
+			VanasKoSDataGatherer:SendDataMessage(srcName, fOrE, spellID);
+		end
 	end
 
 	if(VanasKoSPvPDataGatherer.db.profile.Enabled) then
@@ -95,7 +137,6 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, even
 			end
 		end ]]
 	end
-
 end
 
 local playerDataList = nil;
@@ -128,6 +169,11 @@ function VanasKoSDataGatherer:OnEnable()
 		count = count + 1;
 	end
 	VanasKoS:Print(format("%d entries in datalist", count));
+end
+
+function VanasKoSDataGatherer:PurgeData()
+	self.db.realm.data.players = { };
+	playerDataList = { };
 end
 
 function VanasKoSDataGatherer:OnDisable()
@@ -302,9 +348,7 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 				gatheredData['faction'] = "friendly";
 			end
 
-			--if(gatheredData['list']) then
-				self:SendMessage("VanasKoS_Player_Data_Gathered", gatheredData['list'], gatheredData);
-			--end
+			self:SendMessage("VanasKoS_Player_Data_Gathered", gatheredData['list'], gatheredData);
 		end
 
 		return true;
@@ -328,7 +372,6 @@ end
 function VanasKoSDataGatherer:UPDATE_MOUSEOVER_UNIT()
 	if(self:Get_Player_Data("mouseover")) then
 		self:SendMessage("VanasKoS_Player_Detected", gatheredData);
-		--self:SendMessage("VanasKoS_Player_MouseOver", gatheredData);
 	end
 end
 
@@ -347,20 +390,22 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 	local lname = name:lower();
 
 	if(not self:IsInBattleground()) then
-		if(spellId ~= nil) then
+		if(spellId ~= nil and tonumber(spellId)) then
 			local level, classEnglish = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
-			if(level ~= nil) then
+			--print("spellid", spellId, "level", level, "english", classEnglish);
+			if(level ~= nil and classEnglish ~= nil) then
 				if(not playerDataList[lname]) then
 					playerDataList[lname] = { };
 				end
+
+				local oldLevel = 0;
+				if(playerDataList[lname].level ~= nil) then -- update old level (was lower)
+					if(string.find(playerDataList[lname].level, "+") ~= nil) then
+						oldLevel = tonumber(string.match(playerDataList[lname].level, "%d+"));
+					end
+				end
 				if(not playerDataList[lname].level or 
 					playerDataList[lname].level == -1) then
-					local oldLevel = 0;
-					if(playerDataList[lname].level) then
-						if(string.find(playerDataList[lname].level, "+")) then
-							oldLevel = tonumber(string.match(playerDataList[lname].level, "%d+"));
-						end
-					end
 					if(oldLevel < level) then
 						if(level < 80) then
 							level = level .. "+";
@@ -368,15 +413,11 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 						playerDataList[lname].level = level;
 					end
 				end
-				gatheredData['level'] = level;
-			end
-			if(classEnglish ~= nil) then
-				if(not playerDataList[lname]) then
-					playerDataList[lname] = { };
+				
+				if(playerDataList[lname].classEnglish and playerDataList[lname].classEnglish ~= classEnglish) then
+					print("VanasKoS DEBUG: Wrong spellid: " .. spellId .. " " .. lname .. playerDataList[lname].classEnglish .. " ~= " .. classEnglish .. "  " .. spellName);
 				end
-				if(playerDataList[lname].classEnglish ~= nil) then
-					playerDataList[lname].classEnglish = classEnglish;
-				end
+				playerDataList[lname].classEnglish = classEnglish;
 			end
 		end
 	end
@@ -386,8 +427,6 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 		gatheredData['level'] =  playerDataList[lname].level;
 		gatheredData['guild'] = playerDataList[lname].guild;
 		gatheredData['guildrank'] = playerDataList[lname].guildrank;
-		
-		gatheredData['level'] = playerDataList[lname].level;
 		gatheredData['class'] = playerDataList[lname].class;
 		gatheredData['classEnglish'] = playerDataList[lname].classEnglish;
 		gatheredData['race'] = playerDataList[lname].race;
@@ -395,10 +434,10 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 		gatheredData['realm'] = nil;
 	else
 		gatheredData['level'] =  nil;
-		gatheredData['classEnglish'] = nil;
 		gatheredData['guild'] = nil;
-		gatheredData['level'] = nil;
+		gatheredData['guildrank'] = nil;
 		gatheredData['class'] = nil;
+		gatheredData['classEnglish'] = nil;
 		gatheredData['race'] = nil;
 		gatheredData['gender'] = nil;
 		gatheredData['realm'] = nil;

@@ -48,6 +48,17 @@ RegisterTranslations("deDE", function() return {
 	["wins: %d - losses: %d"] = "gewonnen: |cff00ff00%d|r verloren: |cffff0000%d|r",
 	["PvP Win versus %s registered."] = "PvP Sieg gegen %s registriert.",
 	["PvP Loss versus %s registered."] = "PvP Verlust gegen %s registriert.",
+	["Show Messages when a PvP Win/Loss is registered"] = true,
+--	["by name"] = true,
+--	["sort by name"] = true,
+--	["by encounters"] = true,
+--	["sort by most PVP encounters"] = true,
+--	["by wins"] = true, 
+--	["sort by most wins"] = true,
+--	["by losses"] = true, 
+--	["sort by most losses"] = true,
+--	["by score"] = true, 
+--	["sort by most wins to losses"] = true,
 } end);
 
 RegisterTranslations("frFR", function() return {
@@ -257,11 +268,11 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 	VanasKoSGUI:RegisterList("PVPSTATS", self);
 
 	-- register sort options for the lists this module provides
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, 1, "byname", L["by name"], L["sort by name"], SortByName);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, 2, "byscore", L["by score"], L["sort by most wins to losses"], SortByScore);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, 2, "byencounters", L["by encounters"], L["sort by most PVP encounters"], SortByEncounters);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, 3, "bywins", L["by wins"], L["sort by most wins"], SortByWins);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, 4, "bylosses", L["by losses"], L["sort by most losses"], SortByLosses);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byname", L["by name"], L["sort by name"], SortByName);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byscore", L["by score"], L["sort by most wins to losses"], SortByScore);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byencounters", L["by encounters"], L["sort by most PVP encounters"], SortByEncounters);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bywins", L["by wins"], L["sort by most wins"], SortByWins);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bylosses", L["by losses"], L["sort by most losses"], SortByLosses);
 
 	VanasKoSGUI:SetDefaultSortFunction({"PVPSTATS"}, SortByName);
 end
@@ -348,7 +359,7 @@ function VanasKoSPvPDataGatherer:RemoveEntry(listname, name, guild)
 	local list = self:GetList(listname);
 	if(list and list[name]) then
 		list[name] = nil;
-		self:TriggerEvent("VanasKoS_List_Entry_Removed", listname, name);
+		self:SendMessage("VanasKoS_List_Entry_Removed", listname, name);
 	end
 end
 

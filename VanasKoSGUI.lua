@@ -154,7 +154,7 @@ function VanasKoSGUI:InitializeDropDowns()
 				end
 				UIDropDownMenu_AddButton(button); 
 			end
-		end);
+		end, nil, nil);
 	UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, "PLAYERKOS");
 end
 

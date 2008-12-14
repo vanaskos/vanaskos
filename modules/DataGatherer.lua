@@ -112,7 +112,7 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, even
 	if(dstName ~= nil and dstFlags ~= nil and bit.band(dstFlags, COMBATLOG_FILTER_FRIENDLY_PLAYER) == COMBATLOG_FILTER_FRIENDLY_PLAYER and dstName ~= myName) then
 		local fOrE = isFriendlyOrEnemy(dstFlags);
 		if(fOrE) then
-			VanasKoSDataGatherer:SendDataMessage(srcName, fOrE, spellID);
+			VanasKoSDataGatherer:SendDataMessage(dstName, fOrE, spellID);
 		end
 	end
 
@@ -415,7 +415,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 				end
 				
 				if(playerDataList[lname].classEnglish and playerDataList[lname].classEnglish ~= classEnglish) then
-					print("VanasKoS DEBUG: Wrong spellid: " .. spellId .. " " .. lname .. playerDataList[lname].classEnglish .. " ~= " .. classEnglish .. "  " .. spellName);
+					--print("VanasKoS DEBUG: Wrong data gathered: " .. spellId .. " " .. lname .. playerDataList[lname].classEnglish .. " ~= " .. classEnglish .. "  " .. spellName);
 				end
 				playerDataList[lname].classEnglish = classEnglish;
 			end

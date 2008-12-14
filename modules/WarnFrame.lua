@@ -860,7 +860,7 @@ local function SetButton(buttonNr, name, data, faction)
 			warnButtonsOOC[buttonNr]:SetNormalFontObject(GetFactionFont(faction));
 			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));
 			warnButtonsOOC[buttonNr]:EnableMouse(true);
-			warnButtonsOOC[buttonNr]:SetAttribute("macrotext", "/target " .. name);
+			warnButtonsOOC[buttonNr]:SetAttribute("macrotext", "/targetexact " .. name);
 			warnButtonsOOC[buttonNr]:Show();
 		else
 			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));

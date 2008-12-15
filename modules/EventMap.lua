@@ -99,6 +99,7 @@ local function VanasKoSEventMap_CreatePOI(x, y)
 	POI:SetWidth(16);
 	POI:SetHeight(16);
 	POI:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+	POI:SetToplevel(true);
 	POI:SetScript("OnEnter", POI_OnEnter);
 	POI:SetScript("OnLeave", POI_OnLeave);
 	POI:SetScript("OnClick", POI_OnClick);

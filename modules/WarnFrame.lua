@@ -608,7 +608,7 @@ function VanasKoSWarnFrame:OnInitialize()
 			ShowKoS = true,
 			ShowHostile = true,
 			ShowFriendly = true,
-			ShowMouseOverInfos = true,
+			ShowMouseOverInfos = false,
 			ShowClassIcons = true,
 			GrowUp = false,
 

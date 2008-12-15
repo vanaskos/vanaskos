@@ -3,10 +3,11 @@ if L then
 	L["Sharing"] = true;
 	L["Sharing - Guild"] = true;
 	L["Sharing - Group"] = true;
-
+	L["Lists to share with guild"] = true;
+	L["Select the lists you want to share with your guild."] = true;
 	L["Options to share your lists with other people"] = true;
 	L["Options to share lists with groups"] = true;
-
+	
 	L["Enabled"] = true;
 	L["Enables/Disables the sharing module"] = true;
 	L["Guild Sharing"] = true;
@@ -50,43 +51,89 @@ local function RegisterConfiguration()
 				set = function(frame, v) VanasKoS:ToggleModuleActive("Synchronizer"); end,
 				get = function() return VanasKoSSynchronizer.enabledState end,
 			},
-			listoptionsheader = {
+			--[[listoptionsheader = {
 				type = "header",
 				name = L["Accept/Ignore-Lists"],
 				desc = L["Lists in which you can put people from whom you want or do not want to receive data"],
 				order = 2,
 			},
-			playerkos  = {
+			acceptgroup = {
 				type = "group",
-				name = "Player KoS",
-				desc = "Players from whom to accept/ignore Player KoS entries",
-				order = 3,
-				args = { },
+				name = "Accept",
+				childGroups = "tab",
+				order = 3;
+				args = { 
+					playerkos  = {
+						type = "group",
+						name = "Player KoS",
+						desc = "Players from whom to accept/ignore Player KoS entries",
+						order = 3,
+						args = { },
+					},
+					guildkos  = {
+						type = "group",
+						name = "Guild KoS",
+						desc = "Players from whom to accept/ignore Guild KoS entries",
+						order = 4,
+						args = { },
+					},
+					hatelist  = {
+						type = "group",
+						name = "Hatelist",
+						desc = "Players from whom to accept/ignore Hatelist entries",
+						order = 5,
+						args = { },
+					},
+					nicelist  = {
+						type = "group",
+						name = "Nicelist",
+						desc = "Players from whom to accept/ignore Nicelist entries",
+						order = 6,
+						args = { },
+					},
+				}
 			},
-			guildkos  = {
+			ignoregroup = {
 				type = "group",
-				name = "Guild KoS",
-				desc = "Players from whom to accept/ignore Guild KoS entries",
-				order = 4,
-				args = { },
-			},
-			hatelist  = {
-				type = "group",
-				name = "Hatelist",
-				desc = "Players from whom to accept/ignore Hatelist entries",
-				order = 5,
-				args = { },
-			},
-			nicelist  = {
-				type = "group",
-				name = "Nicelist",
-				desc = "Players from whom to accept/ignore Nicelist entries",
-				order = 6,
-				args = { },
-			},
+				name = "Ignore",
+				childGroups = "tab",
+				order = 4;
+				args = { 
+					playerkos  = {
+						type = "group",
+						name = "Player KoS",
+						desc = "Players from whom to accept/ignore Player KoS entries",
+						order = 3,
+						args = { },
+					},
+					guildkos  = {
+						type = "group",
+						name = "Guild KoS",
+						desc = "Players from whom to accept/ignore Guild KoS entries",
+						order = 4,
+						args = { },
+					},
+					hatelist  = {
+						type = "group",
+						name = "Hatelist",
+						desc = "Players from whom to accept/ignore Hatelist entries",
+						order = 5,
+						args = { },
+					},
+					nicelist  = {
+						type = "group",
+						name = "Nicelist",
+						desc = "Players from whom to accept/ignore Nicelist entries",
+						order = 6,
+						args = { },
+					},
+				}
+			},]]
 		},
 	};
 	VanasKoSGUI:AddConfigOption("Synchronizer", configOptions);
+	
+	local DL = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_DefaultLists", false);
 	
 	VanasKoSGUI:AddConfigOption("Synchronizer-Guild", {
 		type = "group",
@@ -107,6 +154,23 @@ local function RegisterConfiguration()
 							end
 						end,
 				get = function() return VanasKoSSynchronizer.db.profile.GuildSharingEnabled; end,
+			},
+			liststoshare = {
+				type = "multiselect",
+				name = L["Lists to share with guild"],
+				desc = L["Select the lists you want to share with your guild."],
+				order = 2,
+				get = function(frame, key) 
+						return VanasKoSSynchronizer.db.profile.GuildShareLists[key];
+					end,
+				set = function(frame, key, value) VanasKoSSynchronizer.db.profile.GuildShareLists[key] = value end,
+				
+				values = {
+						["PLAYERKOS"] = DL["Player KoS"],
+						["GUILDKOS"] = DL["Guild KoS"],
+						["HATELIST"] = DL["Hatelist"],
+						["NICELIST"] = DL["Nicelist"],
+					},
 			}
 		},
 	});
@@ -161,7 +225,7 @@ function module:OnInitialize()
 			GuildSharingEnabled = false,
 			GuildShareLists = {
 				['PLAYERKOS'] = true,
-				['GUILDKOS'] = false,
+				['GUILDKOS'] = true,
 				['HATELIST'] = true,
 				['NICELIST'] = true,
 			},

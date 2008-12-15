@@ -77,7 +77,26 @@ function VanasKoSGUI:OnInitialize()
 		args = {
 			help = {
 				type = "description",
+				order = 1,
 				name = GetAddOnMetadata("VanasKoS", "Notes"),
+			},
+			version = {
+				type = "description",
+				order = 2,
+				name = L["Version: "] .. VANASKOS.VERSION,
+			},
+			performanceheader = {
+				type = "header",
+				order = 3,
+				name = L["Performance"],
+			},
+			combatlog = {
+				type = "toggle",
+				order = 4,
+				name = L["Use Combat Log"],
+				desc = L["Toggles if the combatlog should be used to detect nearby player (Needs UI-Reload)"],
+				get = function() return VanasKoSDataGatherer.db.profile.UseCombatLog; end,
+				set = function(frame, v) VanasKoSDataGatherer.db.profile.UseCombatLog = v; end,
 			},
 		},
 	});

@@ -61,6 +61,10 @@ RegisterTranslations("enUS", function() return {
 	["Reset Position"] = true,
 	["Resets the Position of the Main Window"] = true,
 	["Donate"] = true,
+	["Performance"] = true,
+	["Version: "] = true,
+	["Use Combat Log"] = true,
+	["Toggles if the combatlog should be used to detect nearby player (Needs UI-Reload)"] = true,
 } end);
 
 RegisterTranslations("zhCN", function() return {
@@ -114,7 +118,6 @@ RegisterTranslations("zhCN", function() return {
 
 	["Adds a KoS-Target"] = "添加仇敌目标",
 	["Donate"] = "捐赠",
-
 } end);
 
 RegisterTranslations("deDE", function() return {
@@ -167,7 +170,6 @@ RegisterTranslations("deDE", function() return {
 
 	["Adds a KoS-Target"] = "KoS-Ziel hinzuf\195\188gen",
 	["Donate"] = "Spenden",
-
 } end);
 
 RegisterTranslations("frFR", function() return {
@@ -316,7 +318,6 @@ RegisterTranslations("esES", function() return {
 	["Locks the Main Window"] = "Bloquea la ventana principal",
 	["Reset Position"] = "Reestablecer Posición",
 	["Resets the Position of the Main Window"] = "Reestablece la posición de la ventana principal",
-
 } end);
 
 RegisterTranslations("ruRU", function() return {
@@ -369,7 +370,6 @@ RegisterTranslations("ruRU", function() return {
 
 	["Adds a KoS-Target"] = "Добавляет цель в KoS",
 	["Donate"] = "Donate",
-
 } end);
 
 VANASKOS = { };

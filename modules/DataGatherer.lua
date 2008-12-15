@@ -15,6 +15,8 @@ local inBattleground = false;
 local zoneContinentZoneID = { };
 local myName = nil;
 
+local combatLogEventRegistered = true;
+
 function VanasKoSDataGatherer:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("DataGatherer", 
 		{
@@ -25,7 +27,10 @@ function VanasKoSDataGatherer:OnInitialize()
 					guilds = {
 					},
 				},
-			}
+			},
+			profile = {
+				UseCombatLog = true,
+			},
 		});
 
 	-- import of old data, will be removed in some version in the future
@@ -89,7 +94,6 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, even
 				src				   dst <-
 			
 		]]
-
 		
 		local fOrE = isFriendlyOrEnemy(dstFlags);
 		if(dstName and fOrE) then
@@ -109,14 +113,14 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, even
 		end
 	end
 
-	if(dstName ~= nil and dstFlags ~= nil and bit.band(dstFlags, COMBATLOG_FILTER_FRIENDLY_PLAYER) == COMBATLOG_FILTER_FRIENDLY_PLAYER and dstName ~= myName) then
+	if(dstName ~= nil and dstFlags ~= nil and dstName ~= myName) then
 		local fOrE = isFriendlyOrEnemy(dstFlags);
 		if(fOrE) then
 			VanasKoSDataGatherer:SendDataMessage(dstName, fOrE, spellID);
 		end
 	end
 
-	if(VanasKoSPvPDataGatherer.db.profile.Enabled) then
+	if(VanasKoSPvPDataGatherer and VanasKoSPvPDataGatherer.db.profile.Enabled) then
 		if(dstName ~= nil and dstFlags ~= nil and dstName == myName and
 			bit.band(srcFlags, COMBATLOG_FILTER_HOSTILE_PLAYER) == COMBATLOG_FILTER_HOSTILE_PLAYER) then
 			VanasKoSPvPDataGatherer:DamageDoneFrom(srcName);
@@ -146,8 +150,10 @@ function VanasKoSDataGatherer:OnEnable()
 	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 
-	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-
+	if(self.db.profile.UseCombatLog) then
+		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+	end
+	
 	-- on zonechange update zone
 	self:RegisterEvent("ZONE_CHANGED", "UpdateZone");
 	self:RegisterEvent("ZONE_CHANGED_INDOORS", "UpdateZone");
@@ -155,7 +161,7 @@ function VanasKoSDataGatherer:OnEnable()
 
 	self:RegisterMessage("VanasKoS_Player_Data_Gathered", "Data_Gathered");
 	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
-
+	
 	zoneContinentZoneID[1] = { GetMapZones(1); };
 	zoneContinentZoneID[2] = { GetMapZones(2); };
 	zoneContinentZoneID[3] = { GetMapZones(3); };
@@ -171,14 +177,14 @@ function VanasKoSDataGatherer:OnEnable()
 	VanasKoS:Print(format("%d entries in datalist", count));
 end
 
-function VanasKoSDataGatherer:PurgeData()
-	self.db.realm.data.players = { };
-	playerDataList = { };
-end
-
 function VanasKoSDataGatherer:OnDisable()
 	self:UnregisterAllEvents();
 	self:UnregisterAllMessages();
+end
+
+function VanasKoSDataGatherer:PurgeData()
+	self.db.realm.data.players = { };
+	playerDataList = { };
 end
 
 -- if a player was detected nearby through chat or mouseover, update lastseen
@@ -269,6 +275,7 @@ function VanasKoSDataGatherer:GetZoneName(continent, zoneid)
 	local zone = zoneContinentZoneID[continent] and zoneContinentZoneID[continent][zoneid] or nil;
 	return zone or nil;
 end
+
 
 function VanasKoSDataGatherer:UpdateZone()
 	continent = GetCurrentMapContinent();

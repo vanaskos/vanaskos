@@ -141,6 +141,12 @@ local function VanasKoSEventMap_CreatePOI(x, y)
 	tex:SetPoint("CENTER", 0, 0);
 
 	VanasKoSEventMap.POIList[id] = POI;
+
+	if (not VanasKoSEventMap.POIGrid[floor(x) % 16]) then
+		VanasKoSEventMap.POIGrid[floor(x) % 16] = {[floor(y) % 16] = POI};
+	else
+		VanasKoSEventMap.POIGrid[floor(x) % 16][floor(y) % 16] = POI;
+	end
 	VanasKoSEventMap.POICnt = VanasKoSEventMap.POICnt + 1;
 
 	return VanasKoSEventMap.POIList[id];
@@ -152,12 +158,21 @@ local function VanasKoSEventMap_GetPOI(x, y)
 			return POI;
 		end
 	end
+	if (VanasKoSEventMap.POIGrid[floor(x) % 16] and
+	    VanasKoSEventMap.POIGrid[floor(x) % 16][floor(y) % 16]) then
+		return VanasKoSEventMap.POIGrid[floor(x) % 16][floor(y) % 16];
+	end
 
 	VanasKoSEventMap.POIUsed = VanasKoSEventMap.POIUsed + 1;
 	if (VanasKoSEventMap.POIUsed <= VanasKoSEventMap.POICnt) then
 		local POI = VanasKoSEventMap.POIList[VanasKoSEventMap.POIUsed];
 		POI.x = x;
 		POI.y = y;
+		if (not VanasKoSEventMap.POIGrid[floor(x) % 16]) then
+			VanasKoSEventMap.POIGrid[floor(x) % 16] = {[floor(y) % 16] = POI};
+		else
+			VanasKoSEventMap.POIGrid[floor(x) % 16][floor(y) % 16] = POI;
+		end
 		return POI;
 	end
 
@@ -171,6 +186,9 @@ local function HideEventMap()
 		POI.score = 0;
 		wipe(POI.event);
 		POI.event = {};
+	end
+	for i,grid in ipairs(VanasKoSEventMap.POIGrid) do
+		wipe(grid);
 	end
 	VanasKoSEventMap.POIUsed = 0;
 end
@@ -251,6 +269,7 @@ function VanasKoSEventMap:OnInitialize()
 	self.POICnt = 0;
 	self.POIUsed = 0;
 	self.POIList = {};
+	self.POIGrid = {};
 end
 
 function VanasKoSEventMap:ReadjustCamera()

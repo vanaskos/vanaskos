@@ -7,8 +7,8 @@ local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "enUS", true);
 if L then
 	L["Enabled"] = true;
 	L["PvP Event Map"] = true;
-	L["%s - %s (%d) killed by %s"] = "|cffff0000%s: %s (%d) killed by %s|r";
-	L["%s - %s (%d) killed %s"] = "|cff00ff00%s: %s (%d) killed %s|r";
+	L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
+	L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	L["PvP Encounter"] = true;
 end
 
@@ -16,8 +16,8 @@ local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "deDE", false)
 if L then
 	L["Enabled"] = "Aktiviert";
 	--L["PvP Event Map"] = true;
-	--L["%s - %s (%d) killed by %s"] = "|cffff0000%s: %s (%d) killed by %s|r";
-	--L["%s - %s (%d) killed %s"] = "|cff00ff00%s: %s (%d) killed %s|r";
+	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
+	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
 end
 
@@ -25,8 +25,8 @@ local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "frFR", false)
 if L then
 	L["Enabled"] = "actif";
 	--L["PvP Event Map"] = true;
-	--L["%s - %s (%d) killed by %s"] = "|cffff0000%s: %s (%d) killed by %s|r";
-	--L["%s - %s (%d) killed %s"] = "|cff00ff00%s: %s (%d) killed %s|r";
+	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
+	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
 end
 
@@ -34,8 +34,8 @@ local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "koKR", false)
 if L then
 	L["Enabled"] = "사용";
 	--L["PvP Event Map"] = true;
-	--L["%s - %s (%d) killed by %s"] = "|cffff0000%s: %s (%d) killed by %s|r";
-	--L["%s - %s (%d) killed %s"] = "|cff00ff00%s: %s (%d) killed %s|r";
+	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
+	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
 end
 
@@ -43,8 +43,8 @@ local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "esES", false)
 if L then
 	L["Enabled"] = "Activado";
 	--L["PvP Event Map"] = true;
-	--L["%s - %s (%d) killed by %s"] = "|cffff0000%s: %s (%d) killed by %s|r";
-	--L["%s - %s (%d) killed %s"] = "|cff00ff00%s: %s (%d) killed %s|r";
+	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
+	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
 end
 
@@ -52,20 +52,36 @@ local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "ruRU", false)
 if L then
 	L["Enabled"] = "Включено";
 	--L["PvP Event Map"] = true;
-	--L["%s - %s (%d) killed by %s"] = "|cffff0000%s: %s (%d) killed by %s|r";
-	--L["%s - %s (%d) killed %s"] = "|cff00ff00%s: %s (%d) killed %s|r";
+	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
+	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_EventMap", true);
 
-VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0");
+VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0", "AceHook-3.0");
 
 local VanasKoSEventMap = VanasKoSEventMap;
 
+local function POI_Resize(self)
+	local zoom = 20;
+	if (Cartographer3) then
+		zoom = Cartographer3.Data.cameraZoom;
+		if (zoom < Cartographer3.Data.LIMITED_CAMERA_ZOOM) then
+			zoom = Cartographer3.Data.LIMITED_CAMERA_ZOOM;
+		end
+	end
+	local size = 20 * 16 / zoom;
+
+	self:SetWidth(size)
+	self:SetHeight(size)
+end
+
+local function POI_OnShow(self, id)
+	self:Resize(self);
+end
+
 local function POI_OnEnter(self, id)
-	--Add some type of tooltip or menu
-	--POI.enemy = enemy;
 	local x = WorldMapButton:GetCenter();
 	local anchor = "ANCHOR_RIGHT";
 	if (x < self.x) then
@@ -75,10 +91,20 @@ local function POI_OnEnter(self, id)
 	WorldMapTooltip:SetOwner(self, anchor);
 	WorldMapTooltip:AddLine(format(L["PvP Encounter"]));
 	for i,v in ipairs(self.event) do
+		local player = "";
+		if (v.myname) then
+			player = player .. v.myname;
+		end
+		if (v.mylevel) then
+			player = player .. " (" .. v.mylevel .. ")";
+		end
+
+		local enemy = string.Capitalize(v.enemy);
+
 		if (v.type == "loss") then
-			WorldMapTooltip:AddLine(format(L["%s - %s (%d) killed by %s"], date("%c", v.time), v.myname, v.mylevel, string.Capitalize(v.enemy)));
+			WorldMapTooltip:AddLine(format(L["%s - %s killed by %s"], date("%c", v.time), player, enemy));
 		elseif (v.type == "win") then
-			WorldMapTooltip:AddLine(format(L["%s - %s (%d) killed %s"], date("%c", v.time), v.myname, v.mylevel, string.Capitalize(v.enemy)));
+			WorldMapTooltip:AddLine(format(L["%s - %s killed %s"], date("%c", v.time), player, enemy));
 		end
 	end
 	
@@ -100,9 +126,12 @@ local function VanasKoSEventMap_CreatePOI(x, y)
 	POI:SetHeight(16);
 	POI:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	POI:SetToplevel(true);
+
+	POI.Resize = POI_Resize;
 	POI:SetScript("OnEnter", POI_OnEnter);
 	POI:SetScript("OnLeave", POI_OnLeave);
 	POI:SetScript("OnClick", POI_OnClick);
+	POI:SetScript("OnShow", POI_OnShow)
 	POI.x = x;
 	POI.y = y;
 	POI.score = 0;
@@ -110,8 +139,7 @@ local function VanasKoSEventMap_CreatePOI(x, y)
 	POI:Hide();
 
 	local tex = POI:CreateTexture("VanasKoSEventMapPOI" .. id .. "Texture");
-	tex:SetWidth(16);
-	tex:SetHeight(16);
+	tex:SetAllPoints();
 	tex:SetPoint("CENTER", 0, 0);
 
 	VanasKoSEventMap.POIList[id] = POI;
@@ -227,6 +255,12 @@ function VanasKoSEventMap:OnInitialize()
 	self.POIList = {};
 end
 
+function VanasKoSEventMap:ReadjustCamera()
+	for i,POI in ipairs(VanasKoSEventMap.POIList) do
+		POI:Resize()
+	end
+end
+
 function VanasKoSEventMap:OnEnable()
 	if(not self.db.profile.Enabled) then
 		self:Disable();
@@ -235,6 +269,9 @@ function VanasKoSEventMap:OnEnable()
 
 	self:RegisterEvent("WORLD_MAP_UPDATE", UpdatePOI);
 	self:RegisterEvent("CLOSE_WORLD_MAP", HideEventMap);
+	if (Cartographer3) then
+		self:SecureHook(Cartographer3.Utils, "ReadjustCamera");
+	end
 end
 
 function VanasKoSEventMap:OnDisable()

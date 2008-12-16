@@ -408,8 +408,8 @@ end
 local function importSKMapPoint(player, idx)
 	local point = assert(SKM_Data[GetRealmName()][player].GlobalMapData[idx]);
 	local myname = SKM_Data[GetRealmName()][player]["PlayerName"] or player;
-	local posX = point["xpos"] or point["x"];
-	local posY = point["ypos"] or point["y"];
+	local posX = point["x"] or point["xpos"];
+	local posY = point["y"] or point["ypos"];
 	local continent = point["continent"] or SKMGetContinent(point["ZoI"]);
 	local zoneid = point["zone"] or SKMGetZoneId(point["ZoI"]);
 	local zone = point["zoneName"] or SKMGetZoneName(point["ZoI"]);
@@ -423,7 +423,7 @@ local function importSKMapPoint(player, idx)
 		sktime = SKMTimeTranslate(info["Da"] or info["date"]) or date();
 	end
 	if (not (posX and posY and continent and zoneid and zone and name and
-			enemylevel and sktype and sktime and mylevel)) then
+			sktype and sktime)) then
 		return 0;
 	end
 

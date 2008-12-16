@@ -508,15 +508,13 @@ function VanasKoSPvPDataGatherer:LogPvPLoss(name)
 	VanasKoS:AddEntry("PVPSTATS", name, tempStatData);
 
 	local posX, posY = GetPlayerMapPosition("player");
-	local lastseen, faction, guild, data = VanasKoS:IsOnList("LASTSEEN", name);
-	local enemylevel = nil;
-	if(lastseen and data and data['level']) then
-		enemylevel = data['level'];
-	end
+	
+	local data = VanasKoSDataGatherer:GetData(name);
+
 	VanasKoS:AddEntry("PVPLOG", name, { ['time'] = time(),
 										['myname'] = UnitName("player"),
 										['mylevel'] = UnitLevel("player"),
-										['enemylevel'] = enemylevel,
+										['enemylevel'] = data['level'],
 										['type'] = "loss",
 										['continent'] = GetCurrentMapContinent(),
 										['zoneid'] = GetCurrentMapZone(),
@@ -544,16 +542,13 @@ function VanasKoSPvPDataGatherer:LogPvPWin(name)
 	VanasKoS:AddEntry("PVPSTATS", name, tempStatData);
 
 	local posX, posY = GetPlayerMapPosition("player");
-	local lastseen, faction, guild, data = VanasKoS:IsOnList("LASTSEEN", name);
-	local enemylevel = nil;
-	if(lastseen and data and data['level']) then
-		enemylevel = data['level'];
-	end
+
+	local data = VanasKoSDataGatherer:GetData(name);
 
 	VanasKoS:AddEntry("PVPLOG", name, { ['time'] = time(),
 										['myname'] = UnitName("player"),
 										['mylevel'] = UnitLevel("player"),
-										['enemylevel'] = enemylevel,
+										['enemylevel'] = data['level'],
 										['type'] = "win",
 										['continent'] = GetCurrentMapContinent(),
 										['zoneid'] = GetCurrentMapZone(),

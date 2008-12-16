@@ -232,6 +232,10 @@ function VanasKoSDataGatherer:UpdateLastSeen(name)
 	end
 end
 
+function VanasKoSDataGatherer:GetData(player)
+	return playerDataList(player:lower());
+end
+
 function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	-- self:PrintLiteral(list, name, guild, level, race, class, gender);
 	assert(data.name ~= nil)

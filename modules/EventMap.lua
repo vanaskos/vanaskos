@@ -62,14 +62,12 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_EventMap", true);
 VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0", "AceHook-3.0");
 
 local VanasKoSEventMap = VanasKoSEventMap;
+local Cartographer3_Data = nil;
 
 local function POI_Resize(self)
 	local zoom = 20;
-	if (Cartographer3) then
-		zoom = Cartographer3.Data.cameraZoom;
-		if (zoom < Cartographer3.Data.LIMITED_CAMERA_ZOOM) then
-			zoom = Cartographer3.Data.LIMITED_CAMERA_ZOOM;
-		end
+	if (Cartographer3_Data and Cartographer3_Data.cameraZoom > 20) then
+		zoom = Cartographer3_Data.cameraZoom;
 	end
 	local size = 20 * 16 / zoom;
 
@@ -270,6 +268,7 @@ function VanasKoSEventMap:OnEnable()
 	self:RegisterEvent("WORLD_MAP_UPDATE", UpdatePOI);
 	self:RegisterEvent("CLOSE_WORLD_MAP", HideEventMap);
 	if (Cartographer3) then
+		Cartographer3_Data = Cartographer3.Data;
 		self:SecureHook(Cartographer3.Utils, "ReadjustCamera");
 	end
 end

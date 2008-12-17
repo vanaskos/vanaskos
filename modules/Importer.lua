@@ -6,173 +6,166 @@ local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable()
 local BC = LibStub("LibBabble-Class-3.0"):GetLookupTable()
 local BR = LibStub("LibBabble-Race-3.0"):GetLookupTable()
 
-local function RegisterTranslations(locale, translationfunction)
-	local defaultLocale = false;
-	if(locale == "enUS") then
-		defaultLocale = true;
-	end
-	
-	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", locale, defaultLocale);
-	if liblocale then
-		for k, v in pairs(translationfunction()) do
-			liblocale[k] = v;
-		end
-	end
-end
-
 VanasKoSImporter = VanasKoS:NewModule("Importer");
 
-RegisterTranslations("enUS", function() return {
-	["UBotD data couldn't be loaded"] = true,
-	["UBotD data was imported"] = true,
-	["imported"] = true,
-	["Opium data couldn't be loaded"] = true,
-	["Opium data was imported"] = true,
-	["SKMap data couldn't be loaded"] = true,
-	["SKMap data was imported"] = true,
-	["Imported %d KoS entries (%d duplicates)"] = true,
-	["Updated %d PVP statistics"] = true,
-	["Imported %d PVP events"] = true,
-	["Imports KoS Data from other KoS tools"] = true,
-	["Imports KoS Data from Ultimate Book of the Dead"] = true,
-	["Imports KoS Data from Opium"] = true,
-	["Imports PvP Stats Data from Opium"] = true,
-	["Imports KoS Data from Shim's Kill Map"] = true,
-	["Imports PvP Stats Data from Shim's Kill Map"] = true,
-	["Import Data"] = true,
-	["UBotD KoS"] = true,
-	["Opium KoS"] = true,
-	["Opium PvP Stats"] = true,
-	["SKMap KoS"] = true,
-	["SKMap PvP Stats"] = true,
-} end);
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "enUS", true);
+if L then
+	L["UBotD data couldn't be loaded"] = true;
+	L["UBotD data was imported"] = true;
+	L["imported"] = true;
+	L["Opium data couldn't be loaded"] = true;
+	L["Opium data was imported"] = true;
+	L["SKMap data couldn't be loaded"] = true;
+	L["SKMap data was imported"] = true;
+	L["Imported %d KoS entries (%d duplicates)"] = true;
+	L["Updated %d PVP statistics"] = true;
+	L["Imported %d PVP events"] = true;
+	L["Imports KoS Data from other KoS tools"] = true;
+	L["Imports KoS Data from Ultimate Book of the Dead"] = true;
+	L["Imports KoS Data from Opium"] = true;
+	L["Imports PvP Stats Data from Opium"] = true;
+	L["Imports KoS Data from Shim's Kill Map"] = true;
+	L["Imports PvP Stats Data from Shim's Kill Map"] = true;
+	L["Import Data"] = true;
+	L["UBotD KoS"] = true;
+	L["Opium KoS"] = true;
+	L["Opium PvP Stats"] = true;
+	L["SKMap KoS"] = true;
+	L["SKMap PvP Stats"] = true;
+end
 
-RegisterTranslations("deDE", function() return {
-	["UBotD data couldn't be loaded"] = "UBotD Daten konnten nicht geladen werden",
-	["UBotD data was imported"] = "UBotD Daten wurden importiert",
-	["imported"] = "importiert",
-	["Opium data couldn't be loaded"] = "Opium Daten konnten nicht geladen werden",
-	["Opium data was imported"] = "Opium Daten wurden importiert",
-	--["SKMap data couldn't be loaded"] = true,
-	--["SKMap data was imported"] = true,
-	--["Imported %d KoS entries (%d duplicates)"] = true,
-	--["Updated %d PVP statistics"] = true,
-	--["Imported %d PVP events"] = true,
-	["Imports KoS Data from other KoS tools"] = "Importieren von Daten aus anderen KoS-AddOns",
-	["Imports KoS Data from Ultimate Book of the Dead"] = "Importieren von Daten aus dem Ultimate Book of the Dead",
-	["Imports KoS Data from Opium"] = "Importieren von Daten aus Opium",
-	["Imports PvP Stats Data from Opium"] = "Importieren von Opiums PvP Statistiken",
-	--["Imports KoS Data from Shim's Kill Map"] = true,
-	--["Imports PvP Stats Data from Shim's Kill Map"] = true,
-	--["Import Data"] = true,
-	--["UBotD KoS"] = true,
-	--["Opium KoS"] = true,
-	--["Opium PvP Stats"] = true,
-	--["SKMap KoS"] = true,
-	--["SKMap PvP Stats"] = true,
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "deDE", false);
+if L then
+	L["UBotD data couldn't be loaded"] = "UBotD Daten konnten nicht geladen werden";
+	L["UBotD data was imported"] = "UBotD Daten wurden importiert";
+	L["imported"] = "importiert";
+	L["Opium data couldn't be loaded"] = "Opium Daten konnten nicht geladen werden";
+	L["Opium data was imported"] = "Opium Daten wurden importiert";
+	L["SKMap data couldn't be loaded"] = "SKMap Daten konnten nicht geladen werden";
+	L["SKMap data was imported"] = "SKMap Daten wurden importiert";
+	L["Imported %d KoS entries (%d duplicates)"] = "%d KoS-Einträge wurden importiert (%d Duplikate)";
+	L["Updated %d PVP statistics"] = "%d PvP-Statisttik-Einträge geupdated";
+	L["Imported %d PVP events"] = "%d PvP-Events importiert";
+	L["Imports KoS Data from other KoS tools"] = "Importieren von Daten aus anderen KoS-AddOns";
+	L["Imports KoS Data from Ultimate Book of the Dead"] = "Importieren von Daten aus dem Ultimate Book of the Dead";
+	L["Imports KoS Data from Opium"] = "Importieren von Daten aus Opium";
+	L["Imports PvP Stats Data from Opium"] = "Importieren von Opiums PvP Statistiken";
+	L["Imports KoS Data from Shim's Kill Map"] = "Importiert KoS-Daten von Shim's Kill Map";
+	L["Imports PvP Stats Data from Shim's Kill Map"] = "Importiert PvP-Statistiken von Shim's Kill Map";
+	L["Import Data"] = "Daten importieren";
+	L["UBotD KoS"] = "UBotD KoS";
+	L["Opium KoS"] = "Opium KoS";
+	L["Opium PvP Stats"] = "Opium PvP Stats";
+	L["SKMap KoS"] = "SKMap KoS";
+	L["SKMap PvP Stats"] = "SKMap PvP Stats";
+end
 
-RegisterTranslations("frFR", function() return {
-	["UBotD data couldn't be loaded"] = "Des donn\195\169es d'UBotD n'ont pas pu \195\170tre charg\195\169es",
-	["UBotD data was imported"] = "Des donn\195\169es d'UBotD ont \195\169t\195\169 import\195\169es",
-	["imported"] = "import\195\169",
-	["Opium data couldn't be loaded"] = "Des donn\195\169es d'Opium n'ont pas pu \195\170tre charg\195\169es",
-	["Opium data was imported"] = "Des donn\195\169es d'Opium ont \195\169t\195\169 import\195\169es",
-	--["SKMap data couldn't be loaded"] = true,
-	--["SKMap data was imported"] = true,
-	--["Imported %d KoS entries (%d duplicates)"] = true,
-	--["Updated %d PVP statistics"] = true,
-	--["Imported %d PVP events"] = true,
-	["Imports KoS Data from other KoS tools"] = "Importe les donn\195\169es KoS d'autres outils KoS",
-	["Imports KoS Data from Ultimate Book of the Dead"] = "Importe les donn\195\169es de \"Ultimate Book of the Dead\"",
-	["Imports KoS Data from Opium"] = "Importe les donn\195\169es de \"Opium\"",
-	--["Imports PvP Stats Data from Opium"] = true,
-	--["Imports KoS Data from Shim's Kill Map"] = true,
-	--["Imports PvP Stats Data from Shim's Kill Map"] = true,
-	--["Import Data"] = true,
-	--["UBotD KoS"] = true,
-	--["Opium KoS"] = true,
-	--["Opium PvP Stats"] = true,
-	--["SKMap KoS"] = true,
-	--["SKMap PvP Stats"] = true,
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "frFR", false);
+if L then
+	L["UBotD data couldn't be loaded"] = "Des donn\195\169es d'UBotD n'ont pas pu \195\170tre charg\195\169es";
+	L["UBotD data was imported"] = "Des donn\195\169es d'UBotD ont \195\169t\195\169 import\195\169es";
+	L["imported"] = "import\195\169";
+	L["Opium data couldn't be loaded"] = "Des donn\195\169es d'Opium n'ont pas pu \195\170tre charg\195\169es";
+	L["Opium data was imported"] = "Des donn\195\169es d'Opium ont \195\169t\195\169 import\195\169es";
+	--L["SKMap data couldn't be loaded"] = true;
+	--L["SKMap data was imported"] = true;
+	--L["Imported %d KoS entries (%d duplicates)"] = true;
+	--L["Updated %d PVP statistics"] = true;
+	--L["Imported %d PVP events"] = true;
+	L["Imports KoS Data from other KoS tools"] = "Importe les donn\195\169es KoS d'autres outils KoS";
+	L["Imports KoS Data from Ultimate Book of the Dead"] = "Importe les donn\195\169es de \"Ultimate Book of the Dead\"";
+	L["Imports KoS Data from Opium"] = "Importe les donn\195\169es de \"Opium\"";
+	--L["Imports PvP Stats Data from Opium"] = true;
+	--L["Imports KoS Data from Shim's Kill Map"] = true;
+	--L["Imports PvP Stats Data from Shim's Kill Map"] = true;
+	--L["Import Data"] = true;
+	--L["UBotD KoS"] = true;
+	--L["Opium KoS"] = true;
+	--L["Opium PvP Stats"] = true;
+	--L["SKMap KoS"] = true;
+	--L["SKMap PvP Stats"] = true;
+end
 
-RegisterTranslations("koKR", function() return {
-	["UBotD data couldn't be loaded"] = "UBotD 데이터를 불러올 수 없습니다.",
-	["UBotD data was imported"] = "UBotD 데이터를 로드하였습니다.",
-	["imported"] = "로드됨",
-	["Opium data couldn't be loaded"] = "Opium 데이터를 불러올 수 없습니다.",
-	["Opium data was imported"] = "Opium 데이터를 로드하였습니다.",
-	--["SKMap data couldn't be loaded"] = true,
-	--["SKMap data was imported"] = true,
-	--["Imported %d KoS entries (%d duplicates)"] = true,
-	--["Updated %d PVP statistics"] = true,
-	--["Imported %d PVP events"] = true,
-	["Imports KoS Data from other KoS tools"] = "다른 KoS 툴에서 KoS 데이터를 불러옵니다.",
-	["Imports KoS Data from Ultimate Book of the Dead"] = "Ultimate Book of the Dead에서 KoS 데이터를 불러옵니다.",
-	["Imports KoS Data from Opium"] = "Opium의 KoS 데이터를 불러옵니다.",
-	["Imports PvP Stats Data from Opium"] = "Opium에서 PvP 상태 데이터를 불러옵니다.",
-	--["Imports KoS Data from Shim's Kill Map"] = true,
-	--["Imports PvP Stats Data from Shim's Kill Map"] = true,
-	--["Import Data"] = true,
-	--["UBotD KoS"] = true,
-	--["Opium KoS"] = true,
-	--["Opium PvP Stats"] = true,
-	--["SKMap KoS"] = true,
-	--["SKMap PvP Stats"] = true,
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "koKR", false);
+if L then
+	L["UBotD data couldn't be loaded"] = "UBotD 데이터를 불러올 수 없습니다.";
+	L["UBotD data was imported"] = "UBotD 데이터를 로드하였습니다.";
+	L["imported"] = "로드됨";
+	L["Opium data couldn't be loaded"] = "Opium 데이터를 불러올 수 없습니다.";
+	L["Opium data was imported"] = "Opium 데이터를 로드하였습니다.";
+	--L["SKMap data couldn't be loaded"] = true;
+	--L["SKMap data was imported"] = true;
+	--L["Imported %d KoS entries (%d duplicates)"] = true;
+	--L["Updated %d PVP statistics"] = true;
+	--L["Imported %d PVP events"] = true;
+	L["Imports KoS Data from other KoS tools"] = "다른 KoS 툴에서 KoS 데이터를 불러옵니다.";
+	L["Imports KoS Data from Ultimate Book of the Dead"] = "Ultimate Book of the Dead에서 KoS 데이터를 불러옵니다.";
+	L["Imports KoS Data from Opium"] = "Opium의 KoS 데이터를 불러옵니다.";
+	L["Imports PvP Stats Data from Opium"] = "Opium에서 PvP 상태 데이터를 불러옵니다.";
+	--L["Imports KoS Data from Shim's Kill Map"] = true;
+	--L["Imports PvP Stats Data from Shim's Kill Map"] = true;
+	--L["Import Data"] = true;
+	--L["UBotD KoS"] = true;
+	--L["Opium KoS"] = true;
+	--L["Opium PvP Stats"] = true;
+	--L["SKMap KoS"] = true;
+	--L["SKMap PvP Stats"] = true;
+end
 
-RegisterTranslations("esES", function() return {
-	["UBotD data couldn't be loaded"] = "Los datos de UBotD no han podido ser cargados",
-	["UBotD data was imported"] = "Los datos de UBotD han sido importados",
-	["imported"] = "importados",
-	["Opium data couldn't be loaded"] = "Los datos de Opium no han podido ser cargados",
-	["Opium data was imported"] = "Los datos de Opium han sido importados",
-	--["SKMap data couldn't be loaded"] = true,
-	--["SKMap data was imported"] = true,
-	--["Imported %d KoS entries (%d duplicates)"] = true,
-	--["Updated %d PVP statistics"] = true,
-	--["Imported %d PVP events"] = true,
-	["Imports KoS Data from other KoS tools"] = "Importa datos de KoS de otras herramientas de KoS",
-	["Imports KoS Data from Ultimate Book of the Dead"] = "Importa datos de KoS de Ultimate Book of the Dead",
-	["Imports KoS Data from Opium"] = "Importa datos de KoS de Opium",
-	--["Imports PvP Stats Data from Opium"] = true,
-	--["Imports KoS Data from Shim's Kill Map"] = true,
-	--["Imports PvP Stats Data from Shim's Kill Map"] = true,
-	--["Import Data"] = true,
-	--["UBotD KoS"] = true,
-	--["Opium KoS"] = true,
-	--["Opium PvP Stats"] = true,
-	--["SKMap KoS"] = true,
-	--["SKMap PvP Stats"] = true,
-} end);
 
-RegisterTranslations("ruRU", function() return {
-	["UBotD data couldn't be loaded"] = "Не удалось загрузить данные UBotD",
-	["UBotD data was imported"] = "Данные UBotD импортированы",
-	["imported"] = "импортировано",
-	["Opium data couldn't be loaded"] = "Не удалось загрузить данные Opium",
-	["Opium data was imported"] = "Данные Opium импортированы",
-	--["SKMap data couldn't be loaded"] = true,
-	--["SKMap data was imported"] = true,
-	--["Imported %d KoS entries (%d duplicates)"] = true,
-	--["Updated %d PVP statistics"] = true,
-	--["Imported %d PVP events"] = true,
-	["Imports KoS Data from other KoS tools"] = "Импортирует данные KoS из других KoS инструментов",
-	["Imports KoS Data from Ultimate Book of the Dead"] = "Импортирует данные KoS из Ultimate Book of the Dead",
-	["Imports KoS Data from Opium"] = "Импортирует данные KoS из Opium",
-	["Imports PvP Stats Data from Opium"] = "Импортирует ПвП статистику из Opium",
-	--["Imports KoS Data from Shim's Kill Map"] = true,
-	--["Imports PvP Stats Data from Shim's Kill Map"] = true,
-	--["Import Data"] = true,
-	--["UBotD KoS"] = true,
-	--["Opium KoS"] = true,
-	--["Opium PvP Stats"] = true,
-	--["SKMap KoS"] = true,
-	--["SKMap PvP Stats"] = true,
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "esES", false);
+if L then
+	L["UBotD data couldn't be loaded"] = "Los datos de UBotD no han podido ser cargados";
+	L["UBotD data was imported"] = "Los datos de UBotD han sido importados";
+	L["imported"] = "importados";
+	L["Opium data couldn't be loaded"] = "Los datos de Opium no han podido ser cargados";
+	L["Opium data was imported"] = "Los datos de Opium han sido importados";
+	--L["SKMap data couldn't be loaded"] = true;
+	--L["SKMap data was imported"] = true;
+	--L["Imported %d KoS entries (%d duplicates)"] = true;
+	--L["Updated %d PVP statistics"] = true;
+	--L["Imported %d PVP events"] = true;
+	L["Imports KoS Data from other KoS tools"] = "Importa datos de KoS de otras herramientas de KoS";
+	L["Imports KoS Data from Ultimate Book of the Dead"] = "Importa datos de KoS de Ultimate Book of the Dead";
+	L["Imports KoS Data from Opium"] = "Importa datos de KoS de Opium";
+	--L["Imports PvP Stats Data from Opium"] = true;
+	--L["Imports KoS Data from Shim's Kill Map"] = true;
+	--L["Imports PvP Stats Data from Shim's Kill Map"] = true;
+	--L["Import Data"] = true;
+	--L["UBotD KoS"] = true;
+	--L["Opium KoS"] = true;
+	--L["Opium PvP Stats"] = true;
+	--L["SKMap KoS"] = true;
+	--L["SKMap PvP Stats"] = true;
+end
 
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Importer", true);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "ruRU", false);
+if L then
+	L["UBotD data couldn't be loaded"] = "Не удалось загрузить данные UBotD";
+	L["UBotD data was imported"] = "Данные UBotD импортированы";
+	L["imported"] = "импортировано";
+	L["Opium data couldn't be loaded"] = "Не удалось загрузить данные Opium";
+	L["Opium data was imported"] = "Данные Opium импортированы";
+	--L["SKMap data couldn't be loaded"] = true;
+	--L["SKMap data was imported"] = true;
+	--L["Imported %d KoS entries (%d duplicates)"] = true;
+	--L["Updated %d PVP statistics"] = true;
+	--L["Imported %d PVP events"] = true;
+	L["Imports KoS Data from other KoS tools"] = "Импортирует данные KoS из других KoS инструментов";
+	L["Imports KoS Data from Ultimate Book of the Dead"] = "Импортирует данные KoS из Ultimate Book of the Dead";
+	L["Imports KoS Data from Opium"] = "Импортирует данные KoS из Opium";
+	L["Imports PvP Stats Data from Opium"] = "Импортирует ПвП статистику из Opium";
+	--L["Imports KoS Data from Shim's Kill Map"] = true;
+	--L["Imports PvP Stats Data from Shim's Kill Map"] = true;
+	--L["Import Data"] = true;
+	--L["UBotD KoS"] = true;
+	--L["Opium KoS"] = true;
+	--L["Opium PvP Stats"] = true;
+	--L["SKMap KoS"] = true;
+	--L["SKMap PvP Stats"] = true;
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Importer", true);
 
 function VanasKoSImporter:OnInitialize()
 	VanasKoSGUI:AddConfigOption("Importer", {
@@ -485,7 +478,6 @@ local function importSKMapEnemy(player, enemy)
 						['level'] = level,
 						['class'] = class,
 						['race'] = race,
-						['displayname'] = name,
 						['lastseen'] = lastseen,
 						['zone'] = zone
 					};
@@ -494,7 +486,6 @@ local function importSKMapEnemy(player, enemy)
 			datalist[lname].level = level;
 			datalist[lname].class = class;
 			datalist[lname].race = race;
-			datalist[lname].displayname = name;
 			datalist[lname].lastseen = lastseen;
 			datalist[lname].zone = zone;
 		end

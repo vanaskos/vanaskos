@@ -509,12 +509,12 @@ function VanasKoSPvPDataGatherer:LogPvPLoss(name)
 
 	local posX, posY = GetPlayerMapPosition("player");
 	
-	local data = VanasKoSDataGatherer:GetData(name);
+	local data = VanasKoS:GetPlayerData(name);
 
 	VanasKoS:AddEntry("PVPLOG", name, { ['time'] = time(),
 										['myname'] = UnitName("player"),
 										['mylevel'] = UnitLevel("player"),
-										['enemylevel'] = data['level'],
+										['enemylevel'] = data and data['level'] or 0,
 										['type'] = "loss",
 										['continent'] = GetCurrentMapContinent(),
 										['zoneid'] = GetCurrentMapZone(),

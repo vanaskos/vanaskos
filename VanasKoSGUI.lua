@@ -16,6 +16,8 @@ local listHandler = { };
 
 VanasKoSGUI.dropDownFrame = nil;
 
+local optionsFrameInner = nil;
+
 function VanasKoSGUI:AddConfigOption(name, option)
 	if(not self.ConfigurationOptions) then
 		self.ConfigurationOptions = {
@@ -32,7 +34,7 @@ function VanasKoSGUI:AddConfigOption(name, option)
 		AceConfigDialog:AddToBlizOptions(k, self.ConfigurationOptions.args[k].name, "VanasKoS");
 	end ]]
 	AceConfig:RegisterOptionsTable(name, option);
-	AceConfigDialog:AddToBlizOptions(name, option.name, "VanasKoS")
+	configFrameInner = AceConfigDialog:AddToBlizOptions(name, option.name, "VanasKoS")
 end
 
 function VanasKoSGUI:GetListName(listid)
@@ -98,6 +100,14 @@ function VanasKoSGUI:OnInitialize()
 				get = function() return VanasKoSDataGatherer.db.profile.UseCombatLog; end,
 				set = function(frame, v) VanasKoSDataGatherer.db.profile.UseCombatLog = v; end,
 			},
+			playerdatastore = {
+				type = "toggle",
+				order = 5,
+				name = L["Permanent Player-Data-Storage"],
+				desc = L["Toggles if the data about players (level, class, etc) should be saved permanently."],
+				get = function() return VanasKoSDataGatherer.profile.StorePlayerDataPermanently; end,
+				set = function(frame, v) VanasKoSDataGatherer.profile.StorePlayerDataPermanently = v; end,
+			}
 		},
 	});
 
@@ -107,15 +117,12 @@ function VanasKoSGUI:OnInitialize()
 			local x, y = GetCursorPosition();
 			local uiScale = UIParent:GetEffectiveScale();
 			EasyMenu(showOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
-	end);
+		end);
 	
 	VanasKoSListFrameConfigurationButton:SetScript("OnClick", function()
-		-- Disabled - caused other frames to not work
-		--[[ShowUIPanel(InterfaceOptionsFrame);
-		PanelTemplates_Tab_OnClick(InterfaceOptionsFrameTab2, InterfaceOptionsFrame);
-		PanelTemplates_UpdateTabs(InterfaceOptionsFrame);
-		InterfaceOptionsFrame_TabOnClick(); ]]
-	end);
+			InterfaceOptionsFrame_OpenToCategory(configFrameInner); -- open any inner config frame first (causes list to expand)
+			InterfaceOptionsFrame_OpenToCategory(VanasKoSGUI.configFrame);
+		end);
 
 	self:RegisterMessage("VanasKoS_List_Added", "InitializeDropDowns");
 	

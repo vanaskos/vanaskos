@@ -118,7 +118,7 @@ function VanasKoS:GetPlayerData(name)
 	if(name == nil or not list or list[string.lower(name)] == nil) then
 		return nil;
 	end
-		--      displayname, guild, level, race, class, gender, lastzone, lastseen
+	--      name, guild, level, race, class, gender, lastzone, lastseen
 	return list[string.lower(name)];
 end
 

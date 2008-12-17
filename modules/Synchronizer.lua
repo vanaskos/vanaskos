@@ -270,13 +270,13 @@ end
 
 local AceSerializer = LibStub("AceSerializer-3.0");
 
-local function GetSerializedString(list)
+local function GetSerializedString(command, list)
 	-- VanasKoS Version, Protocol Version
-	return AceSerializer:Serialize(VANASKOS.VERSION, 1, VanasKoSSynchronizer.db.realm.synchronizer.mainchar, list);
+	return AceSerializer:Serialize(VANASKOS.VERSION, 1, command, VanasKoSSynchronizer.db.realm.synchronizer.mainchar, list);
 end
 
 local function DeserializeString(serializedString)
-	local result, vanasKoSVersion, protocolVersion, mainchar, list = AceSerializer:Deserialize(serializedString);
+	local result, vanasKoSVersion, protocolVersion, command, mainchar, list = AceSerializer:Deserialize(serializedString);
 	if(protocolVersion ~= 1) then
 		return false, "Unknown protocol version";
 	end
@@ -287,7 +287,7 @@ local function DeserializeString(serializedString)
 		return false, "Invalid list";
 	end
 	
-	return true, vanasKoSVersion, protocolVersion, mainchar, list;
+	return true, vanasKoSVersion, protocolVersion, command, mainchar, list;
 end
 
 local listsToShare = {"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"};
@@ -295,12 +295,13 @@ local listsToShare = {"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"};
 function module:SendListsToGuild()
 	for index, listName in pairs(listsToShare) do
 		if(self.db.profile.GuildShareLists[listName]) then
-			--[[  TODO:REEnabled for releases
+			--[[  TODO:REEnable for releases
 			if(not IsInGuild()) then
 				return;
 			end]]
 			local shareList = self:GetListToShare(listName);
-			self:SendCommMessage("VanasKoS", GetSerializedString(shareList), "WHISPER", "Vanae", "BULK");
+			-- sl = setlist
+			self:SendCommMessage("VanasKoS", GetSerializedString("sl", shareList), "WHISPER", "Vanae", "BULK");
 		end
 	end
 end
@@ -308,9 +309,7 @@ end
 local sendList = { };
 function module:GetListToShare(listName)
 	local list = VanasKoS:GetList(listName);
-	for k, v in pairs(sendList) do
-		sendList[k] = nil;
-	end
+	wipe(sendList);
 	for k, v in pairs(list) do
 		sendList[k] = {
 			['reason'] = v.reason;
@@ -338,7 +337,7 @@ end
 local moppelkotze = false;
 
 function module:OnCommReceived(prefix, text, distribution, sender)
-	local result, vanasKoSVersion, protocolVersion, mainchar, list = DeserializeString(text);
+	local result, vanasKoSVersion, protocolVersion, command, mainchar, list = DeserializeString(text);
 	if(not result) then
 		-- TODO: Log
 		return;
@@ -350,7 +349,9 @@ function module:OnCommReceived(prefix, text, distribution, sender)
 		end
 	end
 	
-	self:ProcessList(distribution, sender, mainchar, list);
+	if(command == "sl") then
+		self:ProcessList(distribution, sender, mainchar, list);
+	end
 end
 
 function module:ProcessList(distribution, sender, mainchar, receivedList)

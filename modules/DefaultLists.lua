@@ -267,16 +267,15 @@ end
 function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2)
 	if(list == "PLAYERKOS" or list == "HATELIST" or list == "NICELIST") then
 		local data = VanasKoS:GetPlayerData(key);
-		-- displayname, guildrank, guild, level, race, class, gender, zone, lastseen
+		-- name, guildrank, guild, level, race, class, gender, zone, lastseen
 		local owner = "";
 		if(value.owner ~= nil and value.owner ~= "") then
 			owner = string.Capitalize(value.owner);
 		end
-		if(data and data.displayname and data.level and data.race and data.class) then
-			local displayname = data.displayname;
+		local displayname = string.Capitalize(key);
+		if(data and data.level and data.race and data.class) then
 			buttonText1:SetText(format(L["%s  Level %s %s %s %s"], displayname, data.level, data.race, data.class, owner));
 		else
-			local displayname = string.Capitalize(key);
 			buttonText1:SetText(format(L["%s  %s"], displayname, owner));
 		end
 		if(data and data.lastseen) then
@@ -428,11 +427,8 @@ function VanasKoSDefaultLists:ListButtonOnClick(button, frame)
 			if(not value) then
 				return;
 			end
-			if(value.displayname) then
-				name = value.displayname;
-			else
-				name = string.Capitalize(entry);
-			end
+
+			name = string.Capitalize(entry);
 
 			local str = nil;
 			if(value.owner) then
@@ -462,11 +458,7 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 	
 	-- name
 	local pdatalist = VanasKoS:GetList("PLAYERDATA")[selectedPlayer];
-	if(pdatalist and pdatalist['displayname']) then
-		tooltip:AddLine(pdatalist['displayname']);
-	else
-		tooltip:AddLine(string.Capitalize(selectedPlayer));
-	end
+	tooltip:AddLine(string.Capitalize(selectedPlayer));
 	
 	-- guild, level, race, class, zone, lastseen
 	if(pdatalist) then

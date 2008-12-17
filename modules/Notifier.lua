@@ -15,206 +15,198 @@ local SML = LibStub("LibSharedMedia-3.0");
 SML:Register("sound", "VanasKoS: String fading", "Interface\\AddOns\\VanasKoS\\Artwork\\StringFading.mp3");
 SML:Register("sound", "VanasKoS: Zoidbergs whooping", "Interface\\AddOns\\VanasKoS\\Artwork\\Zoidberg-Whoopwhoopwhoop.mp3");
 
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Notifier", "enUS", true);
+if L then
+	L["Enemy Detected:|cffff0000"] = true;
+	L["KoS: %s"] = "KoS: %s";
+	L["KoS (Guild): %s"] = "KoS (Guild): %s";
+	L["Nicelist: %s"] = "Nicelist: %s";
+	L["Hatelist: %s"] = "Hatelist: %s";
+	L["Wanted: %s"] = "Wanted: %s";
+	L["%sKoS: %s"] = "|cffff00ff%s's|r KoS: %s";
+	L["%sKoS (Guild): %s"] = "|cffff00ff%s's|r KoS (Guild): %s";
+	L["%sNicelist: %s"] = "|cffff00ff%s's|r Nicelist: %s";
+	L["%sHatelist: %s"] = "|cffff00ff%s's|r Hatelist: %s";
+	L["%sWanted: %s"] = "|cffff00ff%s's|r Wanted: %s";
 
-local function RegisterTranslations(locale, translationfunction)
-	local defaultLocale = false;
-	if(locale == "enUS") then
-		defaultLocale = true;
-	end
-	
-	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Notifier", locale, defaultLocale);
-	if liblocale then
-		for k, v in pairs(translationfunction()) do
-			liblocale[k] = v;
-		end
-	end
+	L["Notifications"] = true;
+	L["Notification in the Upper Area"] = true;
+	L["Notification in the Chatframe"] = true;
+	L["Notification through Target Portrait"] = true;
+	L["Notification through flashing Border"] = true;
+	L["Notify only on my KoS-Targets"] = true;
+	L["Notify of any enemy target"] = true;
+	L["Notify in Sanctuary"] = true;
+	L["Additional Reason Window"] = true;
+	L["Locked"] = true;
+
+	L["Sound on KoS detection"] = true;
+	L["Sound on enemy detection"] = true;
+	L["Notification Interval (seconds)"] = true;
+	L["Enabled"]  = true;
+	L["None"] = true;
+	L["wins: %d - losses: %d"] = "wins: |cff00ff00%d|r losses: |cffff0000%d|r";
+	L["Show PvP-Stats in Tooltip"] = true;
 end
 
-RegisterTranslations("enUS", function() return {
-	["Enemy Detected:|cffff0000"] = true,
-	["KoS: %s"] = "KoS: %s",
-	["KoS (Guild): %s"] = "KoS (Guild): %s",
-	["Nicelist: %s"] = "Nicelist: %s",
-	["Hatelist: %s"] = "Hatelist: %s",
-	["Wanted: %s"] = "Wanted: %s",
-	["%sKoS: %s"] = "|cffff00ff%s's|r KoS: %s",
-	["%sKoS (Guild): %s"] = "|cffff00ff%s's|r KoS (Guild): %s",
-	["%sNicelist: %s"] = "|cffff00ff%s's|r Nicelist: %s",
-	["%sHatelist: %s"] = "|cffff00ff%s's|r Hatelist: %s",
-	["%sWanted: %s"] = "|cffff00ff%s's|r Wanted: %s",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Notifier", "deDE", false);
+if L then
+	L["KoS: %s"] = "KoS: %s";
+	L["KoS (Guild): %s"] = "KoS (Gilde): %s";
+	L["Nicelist: %s"] = "Nette-Leute Liste: %s";
+	L["Hatelist: %s"] = "Hassliste: %s";
+	L["Wanted: %s"] = "Gesucht: %s";
+	L["%sKoS: %s"] = "|cffff00ff%ss|r KoS: %s";
+	L["%sKoS (Guild): %s"] = "|cffff00ff%ss|r KoS (Gilde): %s";
+	L["%sNicelist: %s"] = "|cffff00ff%ss|r Nette-Leute Liste: %s";
+	L["%sHatelist: %s"] = "|cffff00ff%ss|r Hassliste: %s";
+	L["%sWanted: %s"] = "|cffff00ff%s's|r Gesucht-Liste: %s";
 
-	["Notifications"] = true,
-	["Notification in the Upper Area"] = true,
-	["Notification in the Chatframe"] = true,
-	["Notification through Target Portrait"] = true,
-	["Notification through flashing Border"] = true,
-	["Notify only on my KoS-Targets"] = true,
-	["Notify of any enemy target"] = true,
-	["Notify in Sanctuary"] = true,
-	["Additional Reason Window"] = true,
-	["Locked"] = true,
+	L["Notifications"] = "Benachrichtigungen";
+	L["Notification in the Upper Area"] = "Benachrichtigung im oberen Bereich";
+	L["Notification in the Chatframe"] = "Benachrichtigung im Chat-Fenster";
+	L["Notification through Target Portrait"] = "Benachrichtigung durch aendern des Ziel-Fensters";
+	L["Notification through flashing Border"] = "Benachrichtigung durch Aufleuchten des Rahmens";
+	L["Notify only on my KoS-Targets"] = "Nur bei meinen KoS-Zielen benachrichtigen";
+	L["Notify in Sanctuary"] = "In friedlichen Gebieten benachrichtigen";
+	L["Additional Reason Window"] = "Extra Grund Fenster";
+	L["Locked"] = "Sperren";
 
-	["Sound on KoS detection"] = true,
-	["Sound on enemy detection"] = true,
-	["Notification Interval (seconds)"] = true,
-	["Enabled"]  = true,
-	["None"] = true,
-	["wins: %d - losses: %d"] = "wins: |cff00ff00%d|r losses: |cffff0000%d|r",
-	["Show PvP-Stats in Tooltip"] = true,
-} end);
+	L["Notify only on my KoS-Targets"] = "Nur meine KoS-Ziele benachrichtigen";
+	L["Sound on KoS detection"] = "Audio Benachrichtigung bei KoS";
+	L["Notification Interval (seconds)"] = "Benachrichtigungs Interval (Sekunden)";
+	L["Enabled"] = "Aktiviert";
+	L["None"] = "Keiner";
+	L["wins: %d - losses: %d"] = "gewonnen: |cff00ff00%d|r verloren: |cffff0000%d|r";
+	L["Show PvP-Stats in Tooltip"] = "Anzeigen von PvP-Statistiken im Tooltip";
+end
 
-RegisterTranslations("deDE", function() return {
-	["KoS: %s"] = "KoS: %s",
-	["KoS (Guild): %s"] = "KoS (Gilde): %s",
-	["Nicelist: %s"] = "Nette-Leute Liste: %s",
-	["Hatelist: %s"] = "Hassliste: %s",
-	["Wanted: %s"] = "Gesucht: %s",
-	["%sKoS: %s"] = "|cffff00ff%ss|r KoS: %s",
-	["%sKoS (Guild): %s"] = "|cffff00ff%ss|r KoS (Gilde): %s",
-	["%sNicelist: %s"] = "|cffff00ff%ss|r Nette-Leute Liste: %s",
-	["%sHatelist: %s"] = "|cffff00ff%ss|r Hassliste: %s",
-	["%sWanted: %s"] = "|cffff00ff%s's|r Gesucht-Liste: %s",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Notifier", "frFR", false);
+if L then
+	L["KoS: %s"] = "KoS: %s";
+	L["KoS (Guild): %s"] = "KoS (Guilde): %s";
+	L["Nicelist: %s"] = "Liste blanche: %s";
+	L["Hatelist: %s"] = "Liste noire: %s";
+	L["Wanted: %s"] = "Wanted: %s";
+	L["%sKoS: %s"] = "KoS à |cffff00ff%s|r: %s";
+	L["%sKoS (Guild): %s"] = "KoS (Guilde) à |cffff00ff%s|r: %s";
+	L["%sNicelist: %s"] = "Liste blanche à |cffff00ff%s|r: %s";
+	L["%sHatelist: %s"] = "Liste noire à |cffff00ff%s|r: %s";
+	L["%sWanted: %s"] = "|cffff00ff%s's|r Wanted: %s";
 
-	["Notifications"] = "Benachrichtigungen",
-	["Notification in the Upper Area"] = "Benachrichtigung im oberen Bereich",
-	["Notification in the Chatframe"] = "Benachrichtigung im Chat-Fenster",
-	["Notification through Target Portrait"] = "Benachrichtigung durch aendern des Ziel-Fensters",
-	["Notification through flashing Border"] = "Benachrichtigung durch Aufleuchten des Rahmens",
-	["Notify only on my KoS-Targets"] = "Nur bei meinen KoS-Zielen benachrichtigen",
-	["Notify in Sanctuary"] = "In friedlichen Gebieten benachrichtigen",
-	["Additional Reason Window"] = "Extra Grund Fenster",
-	["Locked"] = "Sperren",
+	L["Notifications"] = "Notifications";
+	L["Notification in the Upper Area"] = "Notification en message principal central";
+	L["Notification in the Chatframe"] = "Notification dans la fen\195\170tre de discussion";
+	L["Notification through Target Portrait"] = "Notification avec portrait (dragon élite)";
+	L["Notification through flashing Border"] = "Notification avec bordure flash";
+	L["Notify only on my KoS-Targets"] = "Notification de mes propres cibles seulement";
+--	L["Notify in Sanctuary"] = true;
+	L["Additional Reason Window"] = "Fenêtre additionnelle de raison";
+	L["Locked"] = "Verrouill\195\169";
 
-	["Notify only on my KoS-Targets"] = "Nur meine KoS-Ziele benachrichtigen",
-	["Sound on KoS detection"] = "Audio Benachrichtigung bei KoS",
-	["Notification Interval (seconds)"] = "Benachrichtigungs Interval (Sekunden)",
-	["Enabled"] = "Aktiviert",
-	["None"] = "Keiner",
-	["wins: %d - losses: %d"] = "gewonnen: |cff00ff00%d|r verloren: |cffff0000%d|r",
-	["Show PvP-Stats in Tooltip"] = "Anzeigen von PvP-Statistiken im Tooltip",
-} end);
+	L["Sound on KoS detection"] = "Son de d\195\169tection KoS";
+	L["Notification Interval (seconds)"] = "Intervalle entre notifications (secondes)";
+	L["Enabled"] = "Actif";
+	L["None"] = "Aucun";
+	L["wins: %d - losses: %d"] = "victoires: |cff00ff00%d|r d\195\169faites: |cffff0000%d|r";
+	L["Show PvP-Stats in Tooltip"] = "Afficher PvP-Stats dans le Tooltip";
+end
 
-RegisterTranslations("frFR", function() return {
-	["KoS: %s"] = "KoS: %s",
-	["KoS (Guild): %s"] = "KoS (Guilde): %s",
-	["Nicelist: %s"] = "Liste blanche: %s",
-	["Hatelist: %s"] = "Liste noire: %s",
-	["Wanted: %s"] = "Wanted: %s",
-	["%sKoS: %s"] = "KoS à |cffff00ff%s|r: %s",
-	["%sKoS (Guild): %s"] = "KoS (Guilde) à |cffff00ff%s|r: %s",
-	["%sNicelist: %s"] = "Liste blanche à |cffff00ff%s|r: %s",
-	["%sHatelist: %s"] = "Liste noire à |cffff00ff%s|r: %s",
-	["%sWanted: %s"] = "|cffff00ff%s's|r Wanted: %s",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Notifier", "koKR", false);
+if L then
+	L["KoS: %s"] = "KoS: %s";
+	L["KoS (Guild): %s"] = "KoS (길드): %s";
+	L["Nicelist: %s"] = "호인명부: %s";
+	L["Hatelist: %s"] = "악인명부: %s";
+	L["Wanted: %s"] = "수배: %s";
+	L["%sKoS: %s"] = "|cffff00ff%s|r의 KoS: %s";
+	L["%sKoS (Guild): %s"] = "|cffff00ff%s|r의 KoS (길드): %s";
+	L["%sNicelist: %s"] = "|cffff00ff%s|r의 호인명부: %s";
+	L["%sHatelist: %s"] = "|cffff00ff%s|r의 악인명부: %s";
+	L["%sWanted: %s"] = "|cffff00ff%s|r의 수배: %s";
 
-	["Notifications"] = "Notifications",
-	["Notification in the Upper Area"] = "Notification en message principal central",
-	["Notification in the Chatframe"] = "Notification dans la fen\195\170tre de discussion",
-	["Notification through Target Portrait"] = "Notification avec portrait (dragon élite)",
-	["Notification through flashing Border"] = "Notification avec bordure flash",
-	["Notify only on my KoS-Targets"] = "Notification de mes propres cibles seulement",
---	["Notify in Sanctuary"] = true,
-	["Additional Reason Window"] = "Fenêtre additionnelle de raison",
-	["Locked"] = "Verrouill\195\169",
+	L["Notifications"] = "알림";
+	L["Notification in the Upper Area"] = "상단 영역에 알림";
+	L["Notification in the Chatframe"] = "대화창에 알림";
+	L["Notification through Target Portrait"] = "대상 사진을 통해 알림";
+	L["Notification through flashing Border"] = "테두리 반짝임을 통해 알림";
+	L["Notify only on my KoS-Targets"] = "나의 KoS-대상일 경우만 알림";
+--	L["Notify in Sanctuary"] = true;
+	L["Additional Reason Window"] = "이유창 추가";
+	L["Locked"] = "고정";
 
-	["Sound on KoS detection"] = "Son de d\195\169tection KoS",
-	["Notification Interval (seconds)"] = "Intervalle entre notifications (secondes)",
-	["Enabled"] = "Actif",
-	["None"] = "Aucun",
-	["wins: %d - losses: %d"] = "victoires: |cff00ff00%d|r d\195\169faites: |cffff0000%d|r",
-	["Show PvP-Stats in Tooltip"] = "Afficher PvP-Stats dans le Tooltip",
-} end);
+	L["Sound on KoS detection"] = "KoS 발견 효과음";
+	L["Notification Interval (seconds)"] = "알림 간격(초)";
+	L["Enabled"]  = "사용";
+	L["None"] = "없음";
+	L["wins: %d - losses: %d"] = "승: |cff00ff00%d|r 패: |cffff0000%d|r";
+	L["Show PvP-Stats in Tooltip"] = "툴팁에 PvP-현황 표시";
+end
 
-RegisterTranslations("koKR", function() return {
-	["KoS: %s"] = "KoS: %s",
-	["KoS (Guild): %s"] = "KoS (길드): %s",
-	["Nicelist: %s"] = "호인명부: %s",
-	["Hatelist: %s"] = "악인명부: %s",
-	["Wanted: %s"] = "수배: %s",
-	["%sKoS: %s"] = "|cffff00ff%s|r의 KoS: %s",
-	["%sKoS (Guild): %s"] = "|cffff00ff%s|r의 KoS (길드): %s",
-	["%sNicelist: %s"] = "|cffff00ff%s|r의 호인명부: %s",
-	["%sHatelist: %s"] = "|cffff00ff%s|r의 악인명부: %s",
-	["%sWanted: %s"] = "|cffff00ff%s|r의 수배: %s",
 
-	["Notifications"] = "알림",
-	["Notification in the Upper Area"] = "상단 영역에 알림",
-	["Notification in the Chatframe"] = "대화창에 알림",
-	["Notification through Target Portrait"] = "대상 사진을 통해 알림",
-	["Notification through flashing Border"] = "테두리 반짝임을 통해 알림",
-	["Notify only on my KoS-Targets"] = "나의 KoS-대상일 경우만 알림",
---	["Notify in Sanctuary"] = true,
-	["Additional Reason Window"] = "이유창 추가",
-	["Locked"] = "고정",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Notifier", "esES", false);
+if L then
+	L["KoS: %s"] = "KoS: %s";
+	L["KoS (Guild): %s"] = "KoS (Hermandad): %s";
+	L["Nicelist: %s"] = "Simpático: %s";
+	L["Hatelist: %s"] = "Odiado: %s";
+	L["Wanted: %s"] = "Se Busca: %s";
+	L["%sKoS: %s"] = "KoS de |cffff00ff%s|: %s";
+	L["%sKoS (Guild): %s"] = "KoS (Hermandad) de |cffff00ff%s|r: %s";
+	L["%sNicelist: %s"] = "Simpático de |cffff00ff%s|r: %s";
+	L["%sHatelist: %s"] = "Odiado de |cffff00ff%s|r: %s";
+	L["%sWanted: %s"] = "Se Busca de |cffff00ff%s|r: %s";
 
-	["Sound on KoS detection"] = "KoS 발견 효과음",
-	["Notification Interval (seconds)"] = "알림 간격(초)",
-	["Enabled"]  = "사용",
-	["None"] = "없음",
-	["wins: %d - losses: %d"] = "승: |cff00ff00%d|r 패: |cffff0000%d|r",
-	["Show PvP-Stats in Tooltip"] = "툴팁에 PvP-현황 표시",
-} end);
+	L["Notifications"] = "Notificaciones";
+	L["Notification in the Upper Area"] = "Notificar en el área superior";
+	L["Notification in the Chatframe"] = "Notificar en la ventana de chat";
+	L["Notification through Target Portrait"] = "Notificar mediante el retrato del Objetivo";
+	L["Notification through flashing Border"] = "Notificar mediante borde intermitente";
+	L["Notify only on my KoS-Targets"] = "Notificar solo mis objetivos de KoS";
+--	L["Notify in Sanctuary"] = true;
+	L["Additional Reason Window"] = "Ventana adicional de Razón";
+	L["Locked"] = "Bloqueado";
 
-RegisterTranslations("esES", function() return {
-	["KoS: %s"] = "KoS: %s",
-	["KoS (Guild): %s"] = "KoS (Hermandad): %s",
-	["Nicelist: %s"] = "Simpático: %s",
-	["Hatelist: %s"] = "Odiado: %s",
-	["Wanted: %s"] = "Se Busca: %s",
-	["%sKoS: %s"] = "KoS de |cffff00ff%s|: %s",
-	["%sKoS (Guild): %s"] = "KoS (Hermandad) de |cffff00ff%s|r: %s",
-	["%sNicelist: %s"] = "Simpático de |cffff00ff%s|r: %s",
-	["%sHatelist: %s"] = "Odiado de |cffff00ff%s|r: %s",
-	["%sWanted: %s"] = "Se Busca de |cffff00ff%s|r: %s",
+	L["Sound on KoS detection"] = "Sonido al detectar KoS";
+	L["Notification Interval (seconds)"] = "Intervalo de notificación (segundos)";
+	L["Enabled"]  = "Activado";
+	L["None"] = "Ninguno";
+	L["wins: %d - losses: %d"] = "ganados: |cff00ff00%d|r perdidos: |cffff0000%d|r";
+	L["Show PvP-Stats in Tooltip"] = "Mostrar las estadísticas de JcJ en el tooltip";
+end
 
-	["Notifications"] = "Notificaciones",
-	["Notification in the Upper Area"] = "Notificar en el área superior",
-	["Notification in the Chatframe"] = "Notificar en la ventana de chat",
-	["Notification through Target Portrait"] = "Notificar mediante el retrato del Objetivo",
-	["Notification through flashing Border"] = "Notificar mediante borde intermitente",
-	["Notify only on my KoS-Targets"] = "Notificar solo mis objetivos de KoS",
---	["Notify in Sanctuary"] = true,
-	["Additional Reason Window"] = "Ventana adicional de Razón",
-	["Locked"] = "Bloqueado",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Notifier", "ruRU", false);
+if L then
+	L["KoS: %s"] = "KoS: %s";
+	L["KoS (Guild): %s"] = "KoS (Гильдия): %s";
+	L["Nicelist: %s"] = "Хороший: %s";
+	L["Hatelist: %s"] = "Ненавистный: %s";
+	L["Wanted: %s"] = "Розыск: %s";
+	L["%sKoS: %s"] = "KoS |cffff00ff%s'а|r: %s";
+	L["%sKoS (Guild): %s"] = "KoS (Гильдия) |cffff00ff%s'а|r: %s";
+	L["%sNicelist: %s"] = "Хороший |cffff00ff%s'а|r: %s";
+	L["%sHatelist: %s"] = "Ненавистный |cffff00ff%s'а|r: %s";
+	L["%sWanted: %s"] = "Розыск |cffff00ff%s'а|r: %s";
 
-	["Sound on KoS detection"] = "Sonido al detectar KoS",
-	["Notification Interval (seconds)"] = "Intervalo de notificación (segundos)",
-	["Enabled"]  = "Activado",
-	["None"] = "Ninguno",
-	["wins: %d - losses: %d"] = "ganados: |cff00ff00%d|r perdidos: |cffff0000%d|r",
-	["Show PvP-Stats in Tooltip"] = "Mostrar las estadísticas de JcJ en el tooltip",
-} end);
+	L["Notifications"] = "Уведомления";
+	L["Notification in the Upper Area"] = "Уведомление в Верхней части";
+	L["Notification in the Chatframe"] = "Уведомление в Окне чата";
+	L["Notification through Target Portrait"] = "Уведомление через Портрет цели";
+	L["Notification through flashing Border"] = "Уведомлять мерцанием краев экрана";
+	L["Notify only on my KoS-Targets"] = "Уведомлять только о моих KoS-целях";
+--	L["Notify in Sanctuary"] = true;
+	L["Additional Reason Window"] = "Дополнительное окно Причин";
+	L["Locked"] = "Зафиксировано";
 
-RegisterTranslations("ruRU", function() return {
-	["KoS: %s"] = "KoS: %s",
-	["KoS (Guild): %s"] = "KoS (Гильдия): %s",
-	["Nicelist: %s"] = "Хороший: %s",
-	["Hatelist: %s"] = "Ненавистный: %s",
-	["Wanted: %s"] = "Розыск: %s",
-	["%sKoS: %s"] = "KoS |cffff00ff%s'а|r: %s",
-	["%sKoS (Guild): %s"] = "KoS (Гильдия) |cffff00ff%s'а|r: %s",
-	["%sNicelist: %s"] = "Хороший |cffff00ff%s'а|r: %s",
-	["%sHatelist: %s"] = "Ненавистный |cffff00ff%s'а|r: %s",
-	["%sWanted: %s"] = "Розыск |cffff00ff%s'а|r: %s",
+	L["Sound on KoS detection"] = "Звук при обнаружении KoS";
+	L["Notification Interval (seconds)"] = "Интевал Уведомлений (в секундах)";
+	L["Enabled"]  = "Включено";
+	L["None"] = "Нет";
+	L["wins: %d - losses: %d"] = "побед: |cff00ff00%d|r поражений: |cffff0000%d|r";
+	L["Show PvP-Stats in Tooltip"] = "Показывать PvP-статистику в Тултипе";
+end
 
-	["Notifications"] = "Уведомления",
-	["Notification in the Upper Area"] = "Уведомление в Верхней части",
-	["Notification in the Chatframe"] = "Уведомление в Окне чата",
-	["Notification through Target Portrait"] = "Уведомление через Портрет цели",
-	["Notification through flashing Border"] = "Уведомлять мерцанием краев экрана",
-	["Notify only on my KoS-Targets"] = "Уведомлять только о моих KoS-целях",
---	["Notify in Sanctuary"] = true,
-	["Additional Reason Window"] = "Дополнительное окно Причин",
-	["Locked"] = "Зафиксировано",
-
-	["Sound on KoS detection"] = "Звук при обнаружении KoS",
-	["Notification Interval (seconds)"] = "Интевал Уведомлений (в секундах)",
-	["Enabled"]  = "Включено",
-	["None"] = "Нет",
-	["wins: %d - losses: %d"] = "побед: |cff00ff00%d|r поражений: |cffff0000%d|r",
-	["Show PvP-Stats in Tooltip"] = "Показывать PvP-статистику в Тултипе",
-} end);
-
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Notifier", false);
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Notifier", false);
 
 local notifyAllowed = true;
 local flashNotifyFrame = nil;

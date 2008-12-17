@@ -3,7 +3,7 @@
 Handles all external Player Data from Chat and Target Changes/Mouseovers
 ------------------------------------------------------------------------]]
 
-VanasKoSDataGatherer = VanasKoS:NewModule("DataGatherer", "AceEvent-3.0");
+VanasKoSDataGatherer = VanasKoS:NewModule("DataGatherer", "AceEvent-3.0", "AceTimer-3.0");
 
 local VanasKoSDataGatherer = VanasKoSDataGatherer;
 local VanasKoS = VanasKoS;
@@ -30,6 +30,7 @@ function VanasKoSDataGatherer:OnInitialize()
 			},
 			profile = {
 				UseCombatLog = true,
+				StorePlayerDataPermanently = false,
 			},
 		});
 
@@ -174,12 +175,29 @@ function VanasKoSDataGatherer:OnEnable()
 	for k, v in pairs(playerDataList) do
 		count = count + 1;
 	end
-	VanasKoS:Print(format("%d entries in datalist", count));
+
+	if(not self.db.profile.StorePlayerDataPermanently) then
+		self:ScheduleTimer("CleanupPlayerDataDatabase", 10);
+	end
+	--VanasKoS:Print(format("%d entries in datalist", count));
 end
 
 function VanasKoSDataGatherer:OnDisable()
 	self:UnregisterAllEvents();
 	self:UnregisterAllMessages();
+end
+
+function VanasKoSDataGatherer:CleanupPlayerDataDatabase()
+	local pkos = VanasKoS:GetList("PLAYERKOS");
+	local hl = VanasKoS:GetList("HATELIST");
+	local nl = VanasKoS:GetList("NICELIST");
+	
+	for k, v in pairs(playerDataList) do
+		if(not (pkos[k] or hl[k] or nl[k])) then -- entry isn't in any of these lists.
+			wipe(playerDataList[k]);
+			playerDataList[k] = nil;
+		end
+	end
 end
 
 function VanasKoSDataGatherer:PurgeData()
@@ -232,10 +250,6 @@ function VanasKoSDataGatherer:UpdateLastSeen(name)
 	end
 end
 
-function VanasKoSDataGatherer:GetData(player)
-	return playerDataList(player:lower());
-end
-
 function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	-- self:PrintLiteral(list, name, guild, level, race, class, gender);
 	assert(data.name ~= nil)
@@ -250,7 +264,6 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 		playerDataList[lname] = { };
 	end
 
-	playerDataList[lname].displayname = data.name;
 	playerDataList[lname].guild = data['guild'];
 	playerDataList[lname].guildrank = data['guildrank'];
 	if((data['level'] and data['level'] ~= -1) or

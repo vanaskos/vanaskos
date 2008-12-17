@@ -25,7 +25,7 @@ local nearbyKoSCount = 0;
 local nearbyEnemyCount = 0;
 local nearbyFriendlyCount = 0;
 
-local dataCache = nil;
+--local dataCache = nil;
 local buttonData = nil;
 
 local timer = nil;
@@ -43,8 +43,10 @@ local function SetColor(which, r, g, b, a)
 	VanasKoSWarnFrame.db.profile[which .. "A"] = a;
 end
 
-local function GetTooltipText(name, data)
+local function GetTooltipText(name) -- , data
 	local result = "";
+	local data = VanasKoS:GetPlayerData(name);
+	
 	if (data and data.level ~= nil) then
 		result = result .. L["Level"] .. " " .. data.level .. " ";
 	end
@@ -97,7 +99,7 @@ local function ShowTooltip(buttonNr)
 	end
 
 	local name = buttonData[buttonNr];
-	tooltipFrame:SetText(GetTooltipText(name, dataCache[name]));
+	tooltipFrame:SetText(GetTooltipText(name)); --, dataCache[name]));
 
 	tooltipFrame:ClearAllPoints();
 
@@ -646,7 +648,7 @@ function VanasKoSWarnFrame:OnInitialize()
 	nearbyKoS = { };
 	nearbyEnemy = { };
 	nearbyFriendly = { };
-	dataCache = { };
+--	dataCache = { };
 	buttonData = { };
 
 	CreateWarnFrame();
@@ -683,11 +685,17 @@ function VanasKoSWarnFrame:OnDisable()
 	self:CancelAllTimers();
 	timer = nil;
 	
+	wipe(nearbyKoS);
+	wipe(nearbyEnemy);
+	wipe(nearbyFriendly);
+--	wipe(dataCache);
+	wipe(buttonData);
+	--[[
 	nearbyKoS = { };
 	nearbyEnemy = { };
 	nearbyFriendly = { };
 	dataCache = { };
-	buttonData = { };
+	buttonData = { }; ]]
 	
 	self:Update();
 	warnFrame:Hide();
@@ -713,10 +721,10 @@ local function RemovePlayer(name)
 		nearbyFriendlyCount = nearbyFriendlyCount - 1;
 	end
 
-	if(dataCache[name]) then
+--[[	if(dataCache[name]) then
 		wipe(dataCache[name]);
 		dataCache[name] = nil;
-	end
+	end ]]
 end
 
 function VanasKoSWarnFrame:UpdateList()
@@ -742,10 +750,15 @@ end
 
 
 -- /Script VanasKoSWarnFrame:Player_Detected("xxx", nil, "enemy"); VanasKoSWarnFrame:Player_Detected("xxx2", nil, "enemy");
--- /script local x = {  ['name'] = 'x', ['faction'] = 'enemy', ['class'] = 'Poser',  ['race'] = 'GM', ['level'] = "31336"} ; for i=1,10000 do x.name = "xxx" .. math.random(1, 1000); VanasKoSWarnFrame:Player_Detected(x); end
+-- /script local x = {  ['name'] = 'x', ['faction'] = 'enemy', ['class'] = 'Poser',  ['race'] = 'GM', ['level'] = "31336"} ; for i=1,10000 do x.name = "xxx" .. math.random(1, 1000); VanasKoSWarnFrame:Player_Detected("VanasKoS_Player_Detected", x); end
 local UNKNOWNLOWERCASE = UNKNOWN:lower();
 
+
 function VanasKoSWarnFrame:Player_Detected(message, data)
+	if(not self.db.profile.Enabled) then
+		return;
+	end
+
 	assert(data.name ~= nil);
 
 	local name = data.name:trim():lower();
@@ -775,7 +788,7 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 		return;
 	end
 
-	if (not dataCache[name]) then
+--[[	if (not dataCache[name]) then
 		dataCache[name] = { };
 	end
 	dataCache[name]['name'] = data.name:trim();
@@ -792,18 +805,18 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 	end
 	if(data.race) then
 		dataCache[name]['race'] = data.race;
-	end
+	end ]]
 	
 	self:Update();
 end
 
-local function GetButtonText(name, data)
-	local result = name;
+local function GetButtonText(name) -- , data
+	assert(name ~= nil);
+	
+	local result = string.Capitalize(name);
 
-	if (data ~= nil and data.name ~= nil) then
-		result = data.name
-	end
-
+	local data = VanasKoS:GetPlayerData(name);
+	
 	-- Create a cache entry.
 	if(VanasKoSWarnFrame.db.profile.ShowTargetLevel) then
 		local level = nil;
@@ -839,7 +852,7 @@ local function GetFactionFont(faction)
 	return "VanasKoS_FontNormal";
 end
 
-local function SetButton(buttonNr, name, data, faction)
+local function SetButton(buttonNr, name, faction) -- data, 
 	if(InCombatLockdown()) then
 		warnFrame:SetBackdropBorderColor(1.0, 0.0, 0.0);
 		if(buttonData[buttonNr] ~= name) then
@@ -850,11 +863,11 @@ local function SetButton(buttonNr, name, data, faction)
 			end
 
 			warnButtonsCombat[buttonNr]:SetNormalFontObject(GetFactionFont(faction));
-			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name, data));
+			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name)); -- , data
 			warnButtonsCombat[buttonNr]:Show();
 		else
-			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));
-			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name, data));
+			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name)); -- , data
+			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name)); -- , data
 		end
 	else
 		warnFrame:SetBackdropBorderColor(0.8, 0.8, 0.8);
@@ -862,12 +875,12 @@ local function SetButton(buttonNr, name, data, faction)
 			warnButtonsOOC[buttonNr]:SetAlpha(1);
 			warnButtonsCombat[buttonNr]:Hide();
 			warnButtonsOOC[buttonNr]:SetNormalFontObject(GetFactionFont(faction));
-			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));
+			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name)); -- , data
 			warnButtonsOOC[buttonNr]:EnableMouse(true);
 			warnButtonsOOC[buttonNr]:SetAttribute("macrotext", "/targetexact " .. name);
 			warnButtonsOOC[buttonNr]:Show();
 		else
-			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));
+			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name)); -- , data
 		end
 	end
 
@@ -897,9 +910,9 @@ function VanasKoSWarnFrame:Update()
 	if(self.db.profile.ShowKoS) then
 		for k,v in pairs(nearbyKoS) do
 			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS and counter >= 0) then
-				SetButton(counter+1, k, dataCache and dataCache[k] or nil, "kos");
+				SetButton(counter+1, k, "kos"); --dataCache and dataCache[k] or nil, 
 				if(self.db.profile.ShowClassIcons) then
-					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
+					setButtonClassIcon(counter + 1); --, dataCache and dataCache[k] and dataCache[k].classEnglish);
 				end
 			end
 
@@ -914,9 +927,9 @@ function VanasKoSWarnFrame:Update()
 	if(self.db.profile.ShowHostile) then
 		for k,v in pairs(nearbyEnemy) do
 			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS and counter >= 0) then
-				SetButton(counter+1, k, dataCache and dataCache[k] or nil, "enemy");
+				SetButton(counter+1, k, "enemy"); -- dataCache and dataCache[k] or nil, 
 				if(self.db.profile.ShowClassIcons) then
-					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
+					setButtonClassIcon(counter + 1); --, dataCache and dataCache[k] and dataCache[k].classEnglish);
 				end
 			end
 
@@ -931,9 +944,9 @@ function VanasKoSWarnFrame:Update()
 	if(self.db.profile.ShowFriendly) then
 		for k,v in pairs(nearbyFriendly) do
 			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS and counter >= 0) then
-				SetButton(counter+1, k, dataCache and dataCache[k] or nil, "friendly");
+				SetButton(counter+1, k, "friendly"); --  dataCache and dataCache[k] or nil, 
 				if(self.db.profile.ShowClassIcons) then
-					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
+					setButtonClassIcon(counter + 1); --, dataCache and dataCache[k] and dataCache[k].classEnglish);
 				end
 			end
 

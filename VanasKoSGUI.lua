@@ -113,6 +113,8 @@ function VanasKoSGUI:OnInitialize()
 
 	self.configFrame = AceConfigDialog:AddToBlizOptions("VanasKoS", "VanasKoS");
 	
+	self:AddConfigOption(L["Profiles"], LibStub("AceDBOptions-3.0"):GetOptionsTable(VanasKoS.db));
+	
 	VanasKoSListFrameShowButton:SetScript("OnClick", function()
 			local x, y = GetCursorPosition();
 			local uiScale = UIParent:GetEffectiveScale();

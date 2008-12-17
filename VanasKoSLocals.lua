@@ -54,6 +54,7 @@ if L then
 	L["Toggles if the combatlog should be used to detect nearby player (Needs UI-Reload)"] = true;
 	L["Permanent Player-Data-Storage"] = true;
 	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
+	L["Profiles"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "zhCN", false);

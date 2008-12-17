@@ -105,8 +105,8 @@ function VanasKoSGUI:OnInitialize()
 				order = 5,
 				name = L["Permanent Player-Data-Storage"],
 				desc = L["Toggles if the data about players (level, class, etc) should be saved permanently."],
-				get = function() return VanasKoSDataGatherer.profile.StorePlayerDataPermanently; end,
-				set = function(frame, v) VanasKoSDataGatherer.profile.StorePlayerDataPermanently = v; end,
+				get = function() return VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently; end,
+				set = function(frame, v) VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently = v; end,
 			}
 		},
 	});

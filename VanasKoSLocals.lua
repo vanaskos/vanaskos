@@ -55,6 +55,8 @@ if L then
 	L["Permanent Player-Data-Storage"] = true;
 	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
 	L["Profiles"] = true;
+	L["Save data gathered in cities"] = true;
+	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "zhCN", false);
@@ -111,6 +113,8 @@ if L then
 	L["Donate"] = "捐赠";
 --	L["Permanent Player-Data-Storage"] = true;
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
+--	L["Save data gathered in cities"] = true;
+--	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "deDE", false);
@@ -166,6 +170,8 @@ if L then
 	L["Donate"] = "Spenden";
 --	L["Permanent Player-Data-Storage"] = true;
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
+--	L["Save data gathered in cities"] = true;
+--	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "frFR", false);
@@ -219,6 +225,8 @@ if L then
 	L["Adds a KoS-Target"] = "Ajouter une KoS-Target (cible)";
 --	L["Permanent Player-Data-Storage"] = true;
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
+--	L["Save data gathered in cities"] = true;
+--	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "koKR", false);
@@ -272,6 +280,8 @@ if L then
 	L["Donate"] = "지원";
 --	L["Permanent Player-Data-Storage"] = true;
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
+--	L["Save data gathered in cities"] = true;
+--	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "esES", false);
@@ -323,6 +333,8 @@ if L then
 	L["Resets the Position of the Main Window"] = "Reestablece la posición de la ventana principal";
 --	L["Permanent Player-Data-Storage"] = true;
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
+--	L["Save data gathered in cities"] = true;
+--	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "ruRU", false);
@@ -378,6 +390,8 @@ if L then
 	L["Donate"] = "Donate";
 --	L["Permanent Player-Data-Storage"] = true;
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
+--	L["Save data gathered in cities"] = true;
+--	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 end
 
 VANASKOS = { };

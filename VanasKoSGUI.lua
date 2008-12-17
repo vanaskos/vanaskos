@@ -62,14 +62,13 @@ local defaultSortFunction = {
 };
 
 function VanasKoSGUI:OnInitialize()
-	self.db = VanasKoS.db:RegisterNamespace("GUI", 
-					{
+	self.db = VanasKoS.db:RegisterNamespace("GUI", {
 						profile = { 
 								GUILocked = true,
-								GUIMoved = false 
-								}
+								GUIMoved = false,
+							},
 					}
-	);
+				);
 	
 	UIPanelWindows["VanasKoSFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 
@@ -106,8 +105,17 @@ function VanasKoSGUI:OnInitialize()
 				name = L["Permanent Player-Data-Storage"],
 				desc = L["Toggles if the data about players (level, class, etc) should be saved permanently."],
 				get = function() return VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently; end,
-				set = function(frame, v) VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently = v; end,
-			}
+				set = function(frame, v) VanwwwwwwwwwwwasKoSDataGatherer.db.profile.StorePlayerDataPermanently = v; end,
+			},
+			gatherincities = {
+				type = "toggle",
+				order = 6,
+				name = L["Save data gathered in cities"],
+				desc = L["Toggles if data from players gathered in cities should be (temporarily) saved."],
+				get = function() return VanasKoSDataGatherer.db.profile.GatherInCities; end,
+				set = function(frame, v) VanwwwwwwwwwwwasKoSDataGatherer.db.profile.GatherInCities = v; end,
+			},
+			
 		},
 	});
 

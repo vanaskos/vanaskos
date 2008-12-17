@@ -31,6 +31,7 @@ function VanasKoSDataGatherer:OnInitialize()
 			profile = {
 				UseCombatLog = true,
 				StorePlayerDataPermanently = false,
+				GatherInCities = false,
 			},
 		});
 
@@ -258,6 +259,10 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 		return;
 	end
 	
+	if(self:IsInSanctuary() and not self.db.profile.GatherInCities) then
+		return;
+	end
+	
 	local lname = data.name:lower();
 
 	if(not playerDataList[lname]) then
@@ -413,7 +418,10 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 
 	local lname = name:lower();
 
-	if(not self:IsInBattleground()) then
+	if((not self:IsInBattleground() and not self:IsInSanctuary()) or 
+		(not self:IsInBattleground() and self.db.profile.GatherInCities)) then
+		-- gather data when i'm not in a battleground and not in a city
+		-- OR when i'm not in a battle and gatherincities is enabled
 		if(spellId ~= nil and tonumber(spellId)) then
 			local level, classEnglish = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
 			--print("spellid", spellId, "level", level, "english", classEnglish);
@@ -434,6 +442,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 						if(level < 80) then
 							level = level .. "+";
 						end
+
 						playerDataList[lname].level = level;
 					end
 				end

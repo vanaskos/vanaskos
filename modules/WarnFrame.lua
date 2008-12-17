@@ -675,6 +675,7 @@ function VanasKoSWarnFrame:OnEnable()
 	if(timer == nil) then
 		timer = self:ScheduleRepeatingTimer("UpdateList", 1);
 	end
+	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 end
 
 function VanasKoSWarnFrame:OnDisable()
@@ -692,6 +693,9 @@ function VanasKoSWarnFrame:OnDisable()
 	warnFrame:Hide();
 end
 
+function VanasKoSWarnFrame:PLAYER_REGEN_ENABLED(event) -- ...
+	self:Update();
+end
 
 local function RemovePlayer(name)
 	if(nearbyKoS[name]) then

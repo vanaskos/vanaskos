@@ -275,6 +275,8 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bylosses", L["by losses"], L["sort by most losses"], SortByLosses);
 
 	VanasKoSGUI:SetDefaultSortFunction({"PVPSTATS"}, SortByName);
+	
+	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 function VanasKoSPvPDataGatherer:FilterFunction(key, value, searchBoxText)
@@ -383,11 +385,6 @@ function VanasKoSPvPDataGatherer:OnDisable()
 end
 
 function VanasKoSPvPDataGatherer:OnEnable()
-	if(not self.db.profile.Enabled) then
-		self:Disable();
-		return;
-	end
-
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "CombatEvent");
 end
 

@@ -239,6 +239,8 @@ function VanasKoSMinimapButton:OnInitialize()
 
 	minimapOptions[1].text = VANASKOS.NAME .. " " .. VANASKOS.VERSION;
 	icon:Hide(self.name);
+	
+	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 --[[
@@ -295,11 +297,6 @@ function VanasKoSMinimapButton:OnClick()
 end
 
 function VanasKoSMinimapButton:OnEnable()
-	if(not self.db.profile.Enabled) then
-		self:Disable();
-		return;
-	end
-	
 	icon:Show(self.name);
 end
 

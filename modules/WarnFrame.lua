@@ -653,15 +653,11 @@ function VanasKoSWarnFrame:OnInitialize()
 
 	CreateWarnFrame();
 	RegisterConfiguration();
+	
+	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 function VanasKoSWarnFrame:OnEnable()
---	VanasKoS:Print("OnEnable_start");
-	if(not self.db.profile.Enabled) then
-		self:Disable();
-		return;
-	end
-
 	--CreateWarnFrame();
 	CreateOOCButtons();
 	CreateCombatButtons();

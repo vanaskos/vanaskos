@@ -241,14 +241,11 @@ function module:OnInitialize()
 	end
 	
 	RegisterConfiguration();
+	
+	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 function module:OnEnable()
-	if(not self.db.profile.Enabled) then
-		self:Disable();
-		return;
-	end
-	
 	self:RegisterCommunicationChannels();
 	if(self.db.profile.GuildSharingEnabled) then
 		self:ScheduleTimer("StartGuildSync", 30);

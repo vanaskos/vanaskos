@@ -47,6 +47,7 @@ RegisterTranslations("ruRU", function() return {
 local TabID = 5;
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_FriendsFrameDocker", false);
+local frame = nil;
 
 function VanasKoSFriendsFrameDocker:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("FriendsFrameDocker", {
@@ -66,19 +67,15 @@ function VanasKoSFriendsFrameDocker:OnInitialize()
 					name = L["Enabled"],
 					desc = L["Enabled"],
 					set = function(frame, v) VanasKoSFriendsFrameDocker.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("FriendsFrameDocker"); end,
-					get = function() return VanasKoSFriendsFrameDocker.db.profile.Enabled end,
+					get = function() return VanasKoSFriendsFrameDocker.db.profile.Enabled; end,
 				}
 			}
 		});
 
+	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 function VanasKoSFriendsFrameDocker:OnEnable()
-	if(not self.db.profile.Enabled) then
-		self:Disable();
-		return;
-	end
-
 	-- fix ctraid button so that the KoS button fits - why in hell they made it that big?
 	if(FriendsFrameTab5 ~= nil and FriendsFrameTab5:GetText() == "CTRaid") then
 		FriendsFrameTab5:SetText("CTRA");
@@ -89,11 +86,18 @@ function VanasKoSFriendsFrameDocker:OnEnable()
 		TabID = TabID + 1;
 	end
 
-	local frame = CreateFrame("Button", "FriendsFrameTab" .. TabID, FriendsFrame, "FriendsFrameTabTemplate");
-	frame:SetPoint("LEFT", "FriendsFrameTab" .. (TabID - 1), "RIGHT", -14, 0);
-	frame:SetText("KoS");
-	frame:SetID(TabID);
-
+	if(getglobal("FriendsFrameTab" .. (TabID-1)) and getglobal("FriendsFrameTab" .. (TabID-1)):GetText() == "KoS") then
+		print("moep");
+		TabID = TabID - 1;
+		frame = getglobal("FriendsFrameTab" .. TabID);
+		--frame:SetParent(FriendsFrame);
+	else
+		frame = CreateFrame("Button", "FriendsFrameTab" .. TabID, FriendsFrame, "FriendsFrameTabTemplate");
+		frame:SetPoint("LEFT", "FriendsFrameTab" .. (TabID - 1), "RIGHT", -14, 0);
+		frame:SetText("KoS");
+		frame:SetID(TabID);
+	end
+	
 	-- add ourself to the subframe list....
 	tinsert(FRIENDSFRAME_SUBFRAMES, "VanasKoSListFrame");
 
@@ -102,26 +106,29 @@ function VanasKoSFriendsFrameDocker:OnEnable()
 	PanelTemplates_UpdateTabs(FriendsFrame);
 
 	self:SecureHook("FriendsFrame_Update", "FriendsFrame_Update");
-
 end
 
 function VanasKoSFriendsFrameDocker:OnDisable()
---[[	for k,v in pairs(FRIENDSFRAME_SUBFRAMES) do
+	for k,v in pairs(FRIENDSFRAME_SUBFRAMES) do
 		if(v == "VanasKoSListFrame") then
-			k = nil;
+			tremove(FRIENDSFRAME_SUBFRAMES, k);
 		end
-	end ]]--
+	end 
+	if(frame ~= nil) then
+		getglobal("FriendsFrameTab" .. TabID):Hide();
 
-	self:UnhookAll();
-	getglobal("FriendsFrameTab" .. TabID):SetParent("UIParent");
-	getglobal("FriendsFrameTab" .. TabID):Hide();
-	PanelTemplates_SetNumTabs(FriendsFrame, TabID - 1);
-	PanelTemplates_UpdateTabs(FriendsFrame);
+		PanelTemplates_SetNumTabs(FriendsFrame, TabID - 1);
+		PanelTemplates_UpdateTabs(FriendsFrame);
 
-	FriendsFrame.selectedTab = 1;
-	if(FriendsFrame:IsVisible()) then
-		FriendsFrame_ShowSubFrame("FriendsListFrame");
+		VanasKoSListFrame:SetParent("UIParent");
+		VanasKoSListFrame:Hide();
+		
+		FriendsFrame.selectedTab = 1;
+		if(FriendsFrame:IsVisible()) then
+			FriendsFrame_ShowSubFrame("FriendsListFrame");
+		end
 	end
+	self:UnhookAll();
 end
 
 function VanasKoSFriendsFrameDocker:FriendsFrame_Update()

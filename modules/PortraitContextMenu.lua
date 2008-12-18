@@ -112,19 +112,12 @@ function VanasKoSPortraitContextMenu:OnInitialize()
 				}
 			}
 		});
+	self:SetEnabledState(self.db.profile.EnabledWithTaint);
 end
 
 local listsToAdd = { "PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST" };
 
 function VanasKoSPortraitContextMenu:OnEnable()
-	if(not self.db.profile.EnabledWithTaint) then
-		self:Disable();
-		return;
-	end
---[[	if(not self.db.profile.Enabled) then
-		self:Disable();
-		return;
-	end ]]
 	for k,v in pairs(listsToAdd) do
 		local listname = VanasKoSGUI:GetListName(v);
 		local shortname = "VANASKOS_ADD_" .. v;

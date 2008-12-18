@@ -256,14 +256,11 @@ function VanasKoSChatNotifier:OnInitialize()
 			},
 		}
 	});
+	
+	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 function VanasKoSChatNotifier:OnEnable()
-	if(not self.db.profile.Enabled) then
-		self:Disable();
-		return;
-	end
-	
 	self:Update();
 	self:RawHook("ChatFrame_OnEvent", true);
 	SetLookup(self.db.profile.AddLookupEntry);

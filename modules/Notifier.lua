@@ -479,13 +479,10 @@ function VanasKoSNotifier:OnInitialize()
 	};
 
 	VanasKoSGUI:AddConfigOption("Notifier", configOptions);
+	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 function VanasKoSNotifier:OnEnable()
-	if(not self.db.profile.Enabled) then
-		self:Disable();
-		return;
-	end
 	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
 	self:RegisterMessage("VanasKoS_Player_Target_Changed", "Player_Target_Changed");
 	self:RegisterMessage("VanasKoS_Mob_Target_Changed", "Player_Target_Changed");

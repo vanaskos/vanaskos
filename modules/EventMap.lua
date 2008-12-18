@@ -270,6 +270,8 @@ function VanasKoSEventMap:OnInitialize()
 	self.POIUsed = 0;
 	self.POIList = {};
 	self.POIGrid = {};
+	
+	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 function VanasKoSEventMap:ReadjustCamera()
@@ -279,11 +281,6 @@ function VanasKoSEventMap:ReadjustCamera()
 end
 
 function VanasKoSEventMap:OnEnable()
-	if(not self.db.profile.Enabled) then
-		self:Disable();
-		return;
-	end
-
 	self:RegisterEvent("WORLD_MAP_UPDATE", UpdatePOI);
 	self:RegisterEvent("CLOSE_WORLD_MAP", HideEventMap);
 	if (Cartographer3) then

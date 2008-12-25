@@ -97,7 +97,30 @@ local function POI_OnEnter(self, id)
 			player = player .. " (" .. v.mylevel .. ")";
 		end
 
-		local enemy = string.Capitalize(v.enemy);
+		local playerdata = VanasKoS:GetPlayerData(v.enemy);
+		local enemy = (playerdata and playerdata.displayname) or string.Capitalize(v.enemy);
+		local enemyNote = "";
+
+		if (v.enemylevel) then
+			enemyNote = v.enemylevel .. " " .. enemyNote;
+		end
+
+		if (playerdata) then
+			enemy = playerdata.displayname or string.Capitalize(v.enemy);
+			if (playerdata.guild) then
+				enemy = enemy .. " <" .. playerdata.guild .. ">";
+			end
+			if (playerdata.race) then
+				enemyNote = enemyNote .. " " .. playerdata.race;
+			end
+			if (playerdata.class) then
+				enemyNote = enemyNote .. " " .. playerdata.class;
+			end
+		end
+
+		if (enemyNote ~= "") then
+			enemy = enemy .. " (" .. enemyNote .. ")";
+		end
 
 		if (v.type == "loss") then
 			WorldMapTooltip:AddLine(format(L["%s - %s killed by %s"], date("%c", v.time), player, enemy));

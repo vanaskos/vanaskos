@@ -37,7 +37,7 @@ modules\WarnFrame.lua
 modules\MinimapButton.lua
 modules\CommandLineHandler.lua
 modules\FriendsFrameDocker.lua
-modules\Synchronizer.lua
+#modules\Synchronizer.lua
 modules\PortraitContextMenu.lua
 #modules\LastSeenList.lua
 modules\PvPStats.lua

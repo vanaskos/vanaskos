@@ -202,7 +202,7 @@ local function VanasKoSEventMap_GetPOI(x, y)
 	return VanasKoSEventMap_CreatePOI(x, y);
 end
 
-local function HideEventMap()
+local function ClearEventMap()
 	for i,POI in ipairs(VanasKoSEventMap.POIList) do
 		POI:Hide();
 		POI.show = nil;
@@ -216,14 +216,23 @@ local function HideEventMap()
 	VanasKoSEventMap.POIUsed = 0;
 end
 
+local lastzone = "";
+local lastcontinent = "";
 local function UpdatePOI()
 	local continent = GetCurrentMapContinent();
 	local zone = GetCurrentMapZone();
 	local pvplog = VanasKoS:GetList("PVPLOG");
 
-	-- For some Reason the CLOSE_WORLD_MAP doesn't seem to work, so just
-	-- redraw everything every time
-	HideEventMap();
+	-- Cartographer 3 causes the map to update much too often, slowing the
+	-- UI almost to a halt. So only draw if we are in the same zone
+	if (lastzone == zone and lastcontinent == continent) then
+		return
+	end
+	lastzone = zone;
+	lastcontinent = continent;
+
+
+	ClearEventMap();
 
 	for enemy, etable in pairs(pvplog) do
 		for time, event in pairs(etable) do
@@ -305,7 +314,6 @@ end
 
 function VanasKoSEventMap:OnEnable()
 	self:RegisterEvent("WORLD_MAP_UPDATE", UpdatePOI);
-	self:RegisterEvent("CLOSE_WORLD_MAP", HideEventMap);
 	if (Cartographer3) then
 		Cartographer3_Data = Cartographer3.Data;
 		self:SecureHook(Cartographer3.Utils, "ReadjustCamera");
@@ -314,6 +322,5 @@ end
 
 function VanasKoSEventMap:OnDisable()
 	self:UnregisterEvent("WORLD_MAP_UPDATE");
-	self:UnregisterEvent("CLOSE_WORLD_MAP");
-	HideEventMap();
+	ClearEventMap();
 end

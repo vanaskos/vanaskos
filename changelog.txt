@@ -1,5 +1,12 @@
 Release Changelog for VanasKoS
 
+4.00 beta:
+- Updated libraries to Ace3
+- Added "event map" to show pvp events on the world map.
+- Added level-guessing library from paranoia
+- Allow portrait context menu with warning
+- Added Shim's Kill Map data importer
+
 3.19 beta:
 - Fixed error when clicking on party member. (injected in 3.18)
 

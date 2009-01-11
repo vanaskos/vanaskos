@@ -533,6 +533,9 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 					end
 				end
 				i = i + 1;
+				if(i > 10) then
+					return;
+				end
 			end
 		end
 	end

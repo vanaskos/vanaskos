@@ -503,7 +503,7 @@ local listsToCheck = {
 
 function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 	if(not UnitIsPlayer("mouseover")) then
-		return self.hooks[tooltip].OnTooltipSetUnit(tooltip, ...);
+		--return self.hooks[tooltip].OnTooltipSetUnit(tooltip, ...);
 	end
 
 	local name, realm = UnitName("mouseover");
@@ -539,7 +539,7 @@ function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 		end
 	end
 
-	return self.hooks[tooltip].OnTooltipSetUnit(tooltip, ...);
+	--return self.hooks[tooltip].OnTooltipSetUnit(tooltip, ...);
 end
 
 function VanasKoSNotifier:UpdateReasonFrame(name, guild)

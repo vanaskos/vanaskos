@@ -315,8 +315,7 @@ function VanasKoSDataGatherer:UpdateZone()
 
 	if(tourist:IsBattleground(zone) or 
 		tourist:IsInstance(zone) or 
-		tourist:IsArena(zone) or 
-		tourist:IsPvPZone(zone)) then
+		tourist:IsArena(zone)) then
 		inBattleground = true;
 	else
 		inBattleground = false;

@@ -390,6 +390,8 @@ end
 
 local lastDamageFrom = nil;
 local lastDamageFromTime = nil;
+local lastDamageTo = { };
+
 
 local zone = nil;
 
@@ -423,30 +425,33 @@ function VanasKoSPvPDataGatherer:CombatEvent(event, ...)
 			return;
 		end
 		-- Ignore non-damage spells
-		if (eventType ~= "PARTY_KILL" and not (string.match(eventType, ".*_DAMAGE") or (string.match(eventType, ".*_DRAIN")))) then
-
+		if (not (string.match(eventType, ".*_DAMAGE") or (string.match(eventType, ".*_DRAIN")) or (string.match(eventType, ".*_LEECH")))) then
 			return;
 		end
 	end
 
 	if (bit.band(dstFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) ~= 0) then
-		if (eventType == "PARTY_KILL") then
-			-- Record all PARTY_KILLs as "wins"? or should we match
-			-- up the source to the player?
-			self:Death(dstName, "win");
- 		--Without this we may not catch killing blows by pet 
---[[		elseif (eventType == "UNIT_DIED") then
-			self:Death(lastDamageTo, "win");
+		if (eventType == "UNIT_DIED") then
+			if not lastDamageTo then
+				return;
+			end
+			for k,v in pairs(lastDamageTo) do
+				if (dstName == v[1]) then
+					self:Death(dstName, "win");
+				end
+			end
 		else
 			self:DamageDoneTo(dstName);
-]]
 		end
 	end
 	if (bit.band(dstFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) ~= 0) then
 		if (eventType == "UNIT_DIED") then
 			self:Death(lastDamageFrom, "loss");
 		else
-			self:DamageDoneFrom(srcName);
+			-- Ignore if the source is not a player
+			if (bit.band(srcFlags, COMBATLOG_OBJECT_TYPE_PLAYER) ~= 0) then
+				self:DamageDoneFrom(srcName);
+			end
 		end
 	end
 end
@@ -455,14 +460,21 @@ end
 function VanasKoSPvPDataGatherer:Death(name, winOrLoss)
 	if(winOrLoss == "win") then
 		self:LogPvPWin(name);
-	end
-	if(winOrLoss == "loss") then
+		if lastDamageTo then
+			for i=1,#lastDamageTo do
+				if(lastDamageTo[i] and lastDamageTo[i][1] == name) then
+					tremove(lastDamageTo, i);
+				end
+			end
+		end
+	elseif(winOrLoss == "loss") then
 		if(lastDamageFromTime ~= nil) then
 			if((time() - lastDamageFromTime) < 5) then
 				self:LogPvPLoss(name);
 			end
 		end
 		lastDamageFrom = nil;
+		wipe(lastDamageTo);
 	end
 end
 
@@ -475,16 +487,23 @@ function VanasKoSPvPDataGatherer:DamageDoneFrom(name)
 	end
 end
 
---[[
-function VanasKoSPvPDataGatherer:DamageDoneTo(t)
-	if(t.recipientName) then
-		tinsert(lastDamageTo, 1,  { t.recipientName, time() });
+function VanasKoSPvPDataGatherer:DamageDoneTo(name)
+	tinsert(lastDamageTo, 1,  {name, time()});
 
-		if(#lastDamageTo > 5) then
-			tremove(lastDamageTo, 5);
+	if(#lastDamageTo < 2) then
+		return;
+	end
+
+	for i=2,#lastDamageTo do
+		if(lastDamageTo[i] and lastDamageTo[i][1] == name) then
+			tremove(lastDamageTo, i);
 		end
 	end
-end]]
+
+	if(#lastDamageTo > 5) then
+		tremove(lastDamageTo, 6);
+	end
+end
 
 local tempStatData = { ['wins'] = 0, ['losses'] = 0 };
 
@@ -576,6 +595,10 @@ end
 
 function VanasKoSPvPDataGatherer:GetDamageFromArray()
 	return DamageFromArray;
+end
+
+function VanasKoSPvPDataGatherer:GetDamageToArray()
+	return lastDamageTo;
 end
 
 function VanasKoSPvPDataGatherer:ListButtonOnEnter(button, frame)

@@ -591,16 +591,18 @@ function VanasKoSNotifier:Player_Target_Changed(data)
 	-- data is nil if target was changed to a mob
 	if(self.db.profile.notifyTargetFrame) then
 		if(UnitIsPlayer("target")) then
-			if(VanasKoS:BooleanIsOnList("PLAYERKOS", data.name)) then
+			local name = UnitName("target");
+			local guild = GetGuildInfo("target");
+			if(VanasKoS:BooleanIsOnList("PLAYERKOS", name)) then
 				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
 				TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
-			elseif(VanasKoS:BooleanIsOnList("GUILDKOS", data.guild)) then
+			elseif(VanasKoS:BooleanIsOnList("GUILDKOS", guild)) then
 				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
 				TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
-			elseif(VanasKoS:BooleanIsOnList("HATELIST", data.name)) then
+			elseif(VanasKoS:BooleanIsOnList("HATELIST", name)) then
 				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
 				TargetFrameTexture:SetVertexColor(1.0, 0.0, 0.0, TargetFrameTexture:GetAlpha());
-			elseif(VanasKoS:BooleanIsOnList("NICELIST", data.name)) then
+			elseif(VanasKoS:BooleanIsOnList("NICELIST", name)) then
 				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
 				TargetFrameTexture:SetVertexColor(0.0, 1.0, 0.0, TargetFrameTexture:GetAlpha());
 			else

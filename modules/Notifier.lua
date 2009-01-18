@@ -703,7 +703,8 @@ function VanasKoSNotifier:EnemyPlayer_Detected(data)
 
 	local msg = format(L["Enemy Detected:|cffff0000"]);
 	if (data.level ~= nil) then
-		if (data.level < 1) then
+		--level can now be a string (eg. 44+)
+		if (tonumber(data.level) or 1 < 1) then
 			msg = msg .. " [??]";
 		else
 			msg = msg .. " [" .. data.level .. "]";

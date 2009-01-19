@@ -10,12 +10,15 @@ if L then
 	L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	L["PvP Encounter"] = true;
+	L["Performance"] = true;
 	L["Events Processed"] = true;
 	L["Number of events to process at a time"] = true;
 	L["Process Delay"] = true;
 	L["Delay between processing the next set of events"] = true;
 	L["Draw Alts"] = true;
 	L["Draws PvP events on map for all characters"] = true;
+	L["Dynamic Zoom"] = true;
+	L["Redraws points based on Cartographer3 zoom level"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "deDE", false);
@@ -25,12 +28,15 @@ if L then
 	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
+	--L["Performance"] = true;
 	--L["Events Processed"] = true;
 	--L["Number of events to process at a time"] = true;
 	--L["Process Delay"] = true;
 	--L["Delay between processing the next set of events"] = true;
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
+	--L["Dynamic Zoom"] = true;
+	--L["Redraws points based on Cartographer3 zoom level"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "frFR", false);
@@ -40,12 +46,15 @@ if L then
 	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
+	--L["Performance"] = true;
 	--L["Events Processed"] = true;
 	--L["Number of events to process at a time"] = true;
 	--L["Process Delay"] = true;
 	--L["Delay between processing the next set of events"] = true;
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
+	--L["Dynamic Zoom"] = true;
+	--L["Redraws points based on Cartographer3 zoom level"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "koKR", false);
@@ -55,12 +64,15 @@ if L then
 	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
+	--L["Performance"] = true;
 	--L["Events Processed"] = true;
 	--L["Number of events to process at a time"] = true;
 	--L["Process Delay"] = true;
 	--L["Delay between processing the next set of events"] = true;
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
+	--L["Dynamic Zoom"] = true;
+	--L["Redraws points based on Cartographer3 zoom level"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "esES", false);
@@ -70,12 +82,15 @@ if L then
 	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
+	--L["Performance"] = true;
 	--L["Events Processed"] = true;
 	--L["Number of events to process at a time"] = true;
 	--L["Process Delay"] = true;
 	--L["Delay between processing the next set of events"] = true;
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
+	--L["Dynamic Zoom"] = true;
+	--L["Redraws points based on Cartographer3 zoom level"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "ruRU", false);
@@ -85,12 +100,15 @@ if L then
 	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
+	--L["Performance"] = true;
 	--L["Events Processed"] = true;
 	--L["Number of events to process at a time"] = true;
 	--L["Process Delay"] = true;
 	--L["Delay between processing the next set of events"] = true;
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
+	--L["Dynamic Zoom"] = true;
+	--L["Redraws points based on Cartographer3 zoom level"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_EventMap", true);
@@ -99,11 +117,15 @@ VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0", "AceHook-3.0",
 
 local VanasKoSEventMap = VanasKoSEventMap;
 local Cartographer3_Data = nil;
-local POIGRIDALIGN = 16;
+VanasKoSEventMap.POIGRIDALIGN = 16;
+VanasKoSEventMap.ICONSIZE = 16;
+VanasKoSEventMap.lastzoom = 20;
+VanasKoSEventMap.lastzone = "";
+VanasKoSEventMap.lastcontinent = "";
 
 local function POI_Resize(self)
-	self:SetWidth(POIGRIDALIGN);
-	self:SetHeight(POIGRIDALIGN);
+	self:SetWidth(VanasKoSEventMap.ICONSIZE);
+	self:SetHeight(VanasKoSEventMap.ICONSIZE);
 end
 
 local function POI_OnShow(self, id)
@@ -181,8 +203,8 @@ local function VanasKoSEventMap_CreatePOI(x, y)
 	POI:SetScript("OnLeave", POI_OnLeave);
 	POI:SetScript("OnClick", POI_OnClick);
 	POI:SetScript("OnShow", POI_OnShow)
-	POI.x = floor(x/POIGRIDALIGN) * POIGRIDALIGN;
-	POI.y = floor(y/POIGRIDALIGN) * POIGRIDALIGN;
+	POI.x = floor(x/VanasKoSEventMap.POIGRIDALIGN) * VanasKoSEventMap.POIGRIDALIGN;
+	POI.y = floor(y/VanasKoSEventMap.POIGRIDALIGN) * VanasKoSEventMap.POIGRIDALIGN;
 	POI.score = 0;
 	POI.event = {};
 	POI:Hide();
@@ -204,8 +226,8 @@ local function VanasKoSEventMap_CreatePOI(x, y)
 end
 
 local function VanasKoSEventMap_GetPOI(x, y)
-	local xAlign = floor(x/POIGRIDALIGN) * POIGRIDALIGN;
-	local yAlign = floor(y/POIGRIDALIGN) * POIGRIDALIGN;
+	local xAlign = floor(x/VanasKoSEventMap.POIGRIDALIGN) * VanasKoSEventMap.POIGRIDALIGN;
+	local yAlign = floor(y/VanasKoSEventMap.POIGRIDALIGN) * VanasKoSEventMap.POIGRIDALIGN;
 	
 	if (VanasKoSEventMap.POIGrid[xAlign] and
 	    VanasKoSEventMap.POIGrid[xAlign][yAlign]) then
@@ -307,19 +329,16 @@ local function ClearEventMap()
 	VanasKoSEventMap:CancelAllTimers();
 end
 
-local lastzone = "";
-local lastcontinent = "";
 local function UpdatePOI()
 	local continent = GetCurrentMapContinent();
 	local zone = GetCurrentMapZone();
 
-	-- Cartographer 3 causes the map to update much too often, slowing the
-	-- UI almost to a halt. So only draw if we are in the same zone
-	if (lastzone == zone and lastcontinent == continent) then
+	-- Only draw if the zone has changed
+	if (VanasKoSEventMap.lastzone == zone and VanasKoSEventMap.lastcontinent == continent) then
 		return
 	end
-	lastzone = zone;
-	lastcontinent = continent;
+	VanasKoSEventMap.lastzone = zone;
+	VanasKoSEventMap.lastcontinent = continent;
 
 	ClearEventMap();
 
@@ -334,6 +353,7 @@ function VanasKoSEventMap:OnInitialize()
 				drawPoints = 50,
 				drawDelay = 0.05,
 				drawAlts = true,
+				dynamicZoom = true,
 			},
 		}
 	);
@@ -356,14 +376,28 @@ function VanasKoSEventMap:OnInitialize()
 				name = L["Draw Alts"],
 				desc = L["Draws PvP events on map for all characters"],
 				order = 2,
-				set = function(frame, v) VanasKoSEventMap.db.profile.drawAlts = v; lastzone=""; UpdatePOI(); end,
+				set = function(frame, v) VanasKoSEventMap.db.profile.drawAlts = v; VanasKoSEventMap.lastzone=""; UpdatePOI(); end,
 				get = function() return VanasKoSEventMap.db.profile.drawAlts; end,
+			},
+			dynamicZoom = {
+				type = 'toggle',
+				name = L["Dynamic Zoom"],
+				desc = L["Redraws points based on Cartographer3 zoom level"],
+				order = 3,
+				set = function(frame, v) VanasKoSEventMap.db.profile.dynamicZoom = v; end,
+				get = function() return VanasKoSEventMap.db.profile.dynamicZoom; end,
+			},
+			performanceHeader = {
+				type = 'header',
+				name = L["Performance"],
+				desc = L["Performance"],
+				order = 4,
 			},
 			drawPoints = {
 				type = 'range',
 				name = L["Events Processed"],
 				desc = L["Number of events to process at a time"],
-				order = 3,
+				order = 5,
 				set = function(frame, v) VanasKoSEventMap.db.profile.drawPoints = v; end,
 				get = function() return VanasKoSEventMap.db.profile.drawPoints; end,
 				min = 1,
@@ -375,7 +409,7 @@ function VanasKoSEventMap:OnInitialize()
 				type = 'range',
 				name = L["Process Delay"],
 				desc = L["Delay between processing the next set of events"],
-				order = 4,
+				order = 6,
 				set = function(frame, v) VanasKoSEventMap.db.profile.drawDelay = v; end,
 				get = function() return VanasKoSEventMap.db.profile.drawDelay; end,
 				min = 0,
@@ -393,33 +427,50 @@ function VanasKoSEventMap:OnInitialize()
 	self:SetEnabledState(self.db.profile.Enabled);
 end
 
-local lastzoom = 20;
-function VanasKoSEventMap:ReadjustCamera()
+function VanasKoSEventMap:ReadjustCamera(...)
+	--Call original function
+	self.hooks[Cartographer3.Utils]["ReadjustCamera"](Cartographer3.Utils, ...);
+
+	-- Cartographer Zoom must not work the way I think it does. Using the
+	-- zoom causes the icons to remain tiny no matter how close we zoom in.
+	-- So using the WorldMapFrame Scale is a decent workaround for now.
+	--[[
 	local zoom = 20;
 	if (Cartographer3_Data and Cartographer3_Data.cameraZoom > 20) then
 		zoom = Cartographer3_Data.cameraZoom;
 	end
-	POIGRIDALIGN = 20 * 16 / zoom;
+	VanasKoSEventMap.ICONSIZE = 20 * 16 / zoom;
+	]]
 
-	-- redraw all the points based on new zoom
-	if (lastzoom ~= zoom) then
-		lastzone = "";
-		UpdatePOI();
+	local zoom = WorldMapFrame:GetScale();
+	if (WorldMapFrame:GetScale() < 1) then
+		zoom = 1;
 	end
+	VanasKoSEventMap.ICONSIZE = 16 / zoom;
 
-	lastzoom = zoom;
+	if (self.lastzoom == zoom) then
+		return;
+	end
+	self.lastzoom = zoom;
 
---	Resize all points
---	for i,POI in ipairs(VanasKoSEventMap.POIList) do
---		POI:Resize()
---	end
+	if (self.db.profile.dynamicZoom == true) then
+		VanasKoSEventMap.POIGRIDALIGN = VanasKoSEventMap.ICONSIZE;
+		-- redraw all the points based on new zoom
+		self.lastzone = "";
+		UpdatePOI();
+	else
+		-- Resize all points
+		for i,POI in ipairs(VanasKoSEventMap.POIList) do
+			POI:Resize();
+		end
+	end
 end
 
 function VanasKoSEventMap:OnEnable()
 	self:RegisterEvent("WORLD_MAP_UPDATE", UpdatePOI);
 	if (Cartographer3) then
 		Cartographer3_Data = Cartographer3.Data;
-		self:SecureHook(Cartographer3.Utils, "ReadjustCamera");
+		self:RawHook(Cartographer3.Utils, "ReadjustCamera");
 	end
 end
 

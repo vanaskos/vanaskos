@@ -266,14 +266,14 @@ end
 function VanasKoSMinimapButton:UpdateOptions()
 	local list = VanasKoSPvPDataGatherer:GetDamageFromArray();
 
-	attackerMenu = { };
+	wipe(attackerMenu);
 	if(not list) then
 		return;
 	end
 
 	for k,v in pairs(list) do
 		attackerMenu[#attackerMenu+1] = {
-			name = v[1] .. " " .. date("%c", v[2]),
+			text = v[1] .. " " .. date("%c", v[2]),
 			order = #attackerMenu,
 			func = function()
 					VanasKoSGUI:ShowList("PLAYERKOS");

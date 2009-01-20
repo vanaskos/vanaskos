@@ -551,6 +551,10 @@ function VanasKoSDefaultLists:ShowTooltip()
 	tooltip:Show();
 end
 
+function VanasKoSDefaultLists:HideTooltip()
+	tooltip:Hide();
+end
+
 function VanasKoSDefaultLists:ListButtonOnEnter(button, frame)
 	self:SetSelectedPlayerData(VanasKoSGUI:GetListEntryForID(frame:GetID()));
 	
@@ -558,7 +562,7 @@ function VanasKoSDefaultLists:ListButtonOnEnter(button, frame)
 end
 
 function VanasKoSDefaultLists:ListButtonOnLeave(button, frame)
-	tooltip:Hide();
+	self:HideTooltip();
 end
 
 function VanasKoSDefaultLists:SetSelectedPlayerData(selPlayer, selPlayerData)

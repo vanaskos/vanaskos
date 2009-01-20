@@ -1,3 +1,9 @@
+--[[----------------------------------------------------------------------
+      LastSeenList Module - Part of VanasKoS
+Keeps track of recently seen players
+------------------------------------------------------------------------]]
+
+
 local function RegisterTranslations(locale, translationfunction)
 	local defaultLocale = false;
 	if(locale == "enUS") then
@@ -17,9 +23,6 @@ VanasKoSLastSeenList = VanasKoS:NewModule("LastSeenList", "AceEvent-3.0");
 local VanasKoSLastSeenList = VanasKoSLastSeenList;
 local VanasKoS = VanasKoS;
 
-local dewdrop = AceLibrary("Dewdrop-2.0");
-local tablet = AceLibrary("Tablet-2.0");
-
 local lastseenlist = { };
 
 RegisterTranslations("enUS", function() return {
@@ -28,6 +31,7 @@ RegisterTranslations("enUS", function() return {
 	["sort by last seen"] = true,
 	["0 Secs ago"] = true,
 	["%s ago"] = true,
+	["never seen"] = true,
 
 	["Add to Player KoS"]  = true,
 	["Add to Hatelist"]  = true,
@@ -43,6 +47,7 @@ RegisterTranslations("deDE", function() return {
 	["sort by last seen"] = "sortieren nach wann zuletzt gesehen",
 	["0 Secs ago"] = "Vor 0 Sekunden",
 	["%s ago"] = "Vor %s",
+	["never seen"] = "noch nicht gesehen",
 
 	["Add to Player KoS"]  = "Zur KoS Liste hinzufügen",
 	["Add to Hatelist"]  = "Zur Hassliste hinzufügen",
@@ -115,7 +120,7 @@ function VanasKoSLastSeenList:OnInitialize()
 		}
 	});
 
-	VanasKoSGUI:RegisterSortOption({"LASTSEEN"}, 4, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen)
+	VanasKoSGUI:RegisterSortOption({"LASTSEEN"}, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen)
 	VanasKoSGUI:SetDefaultSortFunction({"LASTSEEN"}, SortByLastSeen);
 
 	VanasKoSGUI:AddConfigOption("LastSeenList", {
@@ -140,6 +145,22 @@ function VanasKoSLastSeenList:OnEnable()
 		self:SetEnabledState(false);
 		return;
 	end
+	if(VanasKoSDataGatherer) then
+		if(VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently == true) then
+			VanasKoS:Print("using");
+			lastseenlist = VanasKoSDataGatherer.db.realm.data.players or { };
+		else
+			VanasKoS:Print("copying");
+			-- Copy player data into the volatile lastseenlist
+			for name, data in pairs(VanasKoSDataGatherer.db.realm.data.players) do
+				lastseenlist[name] = { };
+				for k, v in pairs(data) do
+					lastseenlist[name][k] = v; 
+				end
+			end
+		end
+	end
+
 	VanasKoS:RegisterList(5, "LASTSEEN", L["Last seen"], self);
 	VanasKoSGUI:RegisterList("LASTSEEN", self);
 
@@ -192,11 +213,15 @@ function VanasKoSLastSeenList:RenderButton(list, buttonIndex, button, key, value
 			buttonText1:SetText(format("%s%s|r", "", key));
 		end
 
-		local timespan = SecondsToTime(time() - value.lastseen);
-		if(timespan == "") then
-			buttonText2:SetText(format(L["0 Secs ago"], timespan));
+		if(not value.lastseen) then
+			buttonText2:SetText(L["never seen"]);
 		else
-			buttonText2:SetText(format(L["%s ago"], timespan));
+			local timespan = SecondsToTime(time() - value.lastseen);
+			if(timespan == "") then
+				buttonText2:SetText(L["0 Secs ago"]);
+			else
+				buttonText2:SetText(format(L["%s ago"], timespan));
+			end
 		end
 		button:Show();
 	end
@@ -205,7 +230,6 @@ end
 function VanasKoSLastSeenList:IsOnList(listname, name)
 	if(listname == "LASTSEEN") then
 		if(lastseenlist[name]) then
---			return lastseenlist[name].lastseen, lastseenlist[name].faction, lastseenlist[name].guild, lastseenlist[name].data;
 			return lastseenlist[name];
 		end
 	end
@@ -215,17 +239,15 @@ end
 function VanasKoSLastSeenList:Player_Detected(message, data)
 	assert(data.name ~= nil);
 
-	local name = data.name:lower();
+	if(not VanasKoSDataGatherer or VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently ~= true) then
+		local name = data.name:lower();
+		if(not lastseenlist[name]) then
+			lastseenlist[name] = { };
+		end
 
-	if(not lastseenlist[name]) then
-		lastseenlist[name] = {
-			["faction"] = data.faction,
-			["guild"] = data.guild,
-			["lastseen"] = time(),
-		};
-	else
-		lastseenlist[name].guild = data.guild;
-		lastseenlist[name].faction = data.faction;
+		for k, v in pairs(data) do
+			lastseenlist[name][k] = v;
+		end
 		lastseenlist[name].lastseen = time();
 	end
 
@@ -235,7 +257,7 @@ end
 
 function VanasKoSLastSeenList:ShowList(list)
 	if(list == "LASTSEEN") then
-		VanasKoSListFrameSyncButton:Disable();
+		--VanasKoSListFrameSyncButton:Disable();
 		VanasKoSListFrameChangeButton:Disable();
 		VanasKoSListFrameAddButton:Disable();
 		VanasKoSListFrameRemoveButton:Disable();
@@ -244,51 +266,64 @@ end
 
 function VanasKoSLastSeenList:HideList(list)
 	if(list == "LASTSEEN") then
-		VanasKoSListFrameSyncButton:Enable();
+		--VanasKoSListFrameSyncButton:Enable();
 		VanasKoSListFrameChangeButton:Enable();
 		VanasKoSListFrameAddButton:Enable();
 		VanasKoSListFrameRemoveButton:Enable();
 	end
 end
 
+local lastseenOptions = { };
+local entry, value;
+
+local function ListButtonOnRightClickMenu()
+	local x, y = GetCursorPosition();
+	local uiScale = UIParent:GetEffectiveScale();
+	wipe(lastseenOptions);
+	lastseenOptions = {
+		{
+			text = string.Capitalize(entry),
+			isTitle = true,
+			order = 1,
+		},
+		{
+			text = L["Add to Player KoS"],
+			func = function() VanasKoS:AddEntry("PLAYERKOS", entry, { ['reason'] = date() }); end,
+			order = 2,
+		},
+		{
+			text = L["Add to Hatelist"],
+			func = function() VanasKoS:AddEntry("HATELIST", entry, { ['reason'] = date() }); end,
+			order = 3,
+		},
+		{
+			text = L["Add to Nicelist"],
+			func = function() VanasKoS:AddEntry("NICELIST", entry, { ['reason'] = date() }); end,
+			order = 4,
+		},
+	};
+	EasyMenu(lastseenOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
+end
+
 function VanasKoSLastSeenList:ListButtonOnClick(button, frame)
 	local id = frame:GetID();
-	local entry, value = VanasKoSGUI:GetListEntryForID(id);
+	entry, value = VanasKoSGUI:GetListEntryForID(id);
+
 	if(id == nil or entry == nil) then
 		return;
 	end
-	if(button == "RightButton") then
-		dewdrop:Open(frame,
-						'children', function()
-										dewdrop:AddLine(
-												'text', string.Capitalize(entry),
-												'isTitle', true
-										);
 
-										if(value.owner == nil) then
-												dewdrop:AddLine(
-													'text', L["Add to Player KoS"],
-													'func', function()
-															VanasKoS:AddEntry("PLAYERKOS", entry, { ['reason'] = date() });
-														end
-												);
-												dewdrop:AddLine(
-													'text', L["Add to Hatelist"],
-													'func', function()
-															VanasKoS:AddEntry("HATELIST", entry, { ['reason'] = date() });
-														end
-												);
-												dewdrop:AddLine(
-													'text', L["Add to Nicelist"],
-													'func', function()
-															VanasKoS:AddEntry("NICELIST", entry, { ['reason'] = date() });
-														end
-												);
-										end
-							end,
-						'point', "TOP",
-						'cursorX', true,
-						'cursorY', true);
+	if(button == "RightButton") then
+		ListButtonOnRightClickMenu();
 	end
 end
 
+function VanasKoSLastSeenList:ListButtonOnEnter(button, frame)
+	VanasKoSDefaultLists:SetSelectedPlayerData(VanasKoSGUI:GetListEntryForID(frame:GetID()));
+	
+	VanasKoSDefaultLists:ShowTooltip();
+end
+
+function VanasKoSLastSeenList:ListButtonOnLeave(button, frame)
+	VanasKoSDefaultLists:HideTooltip();
+end

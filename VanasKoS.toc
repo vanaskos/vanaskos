@@ -39,6 +39,6 @@ modules\CommandLineHandler.lua
 modules\FriendsFrameDocker.lua
 #modules\Synchronizer.lua
 modules\PortraitContextMenu.lua
-#modules\LastSeenList.lua
+modules\LastSeenList.lua
 modules\PvPStats.lua
 modules\EventMap.lua

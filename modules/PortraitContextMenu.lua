@@ -19,6 +19,7 @@ end
 
 RegisterTranslations("enUS", function() return {
 	["Add to %s"] = true,
+	["Context Menu"] = true,
 	["Add Context Menu to Player Portrait"] = true,
 	["Enabled"] = true,
 	["Warning! Enabling this will cause errors setting the focus from target menue. Continue?"] = true,
@@ -28,6 +29,7 @@ RegisterTranslations("enUS", function() return {
 
 RegisterTranslations("deDE", function() return {
 	["Add to %s"] = "Zu %s hinzufügen",
+	["Context Menu"] = "Kontext Menu",
 	["Add Context Menu to Player Portrait"] = "Kontext Menu zum Spieler Portrait hinzufügen",
 	["Enabled"] = "Aktiviert",
 	["Accept"] = "Ok",
@@ -36,6 +38,7 @@ RegisterTranslations("deDE", function() return {
 
 RegisterTranslations("frFR", function() return {
 	["Add to %s"] = "Ajouter - %s",
+--	["Context Menu"] = "menu de contexte",
 	["Add Context Menu to Player Portrait"] = "Ajouter un menu de contexte au portrait du joueur",
 	["Enabled"] = "Actif",
 --	["Accept"] = true,
@@ -44,6 +47,7 @@ RegisterTranslations("frFR", function() return {
 
 RegisterTranslations("koKR", function() return {
 	["Add to %s"] = "%s에 추가",
+--	["Context Menu"] = true,
 	["Add Context Menu to Player Portrait"] = "플레이어 초상화에 메뉴 추가",
 	["Enabled"] = "사용",
 --	["Accept"] = true,
@@ -52,6 +56,7 @@ RegisterTranslations("koKR", function() return {
 
 RegisterTranslations("esES", function() return {
 	["Add to %s"] = "Añadir a %s",
+--	["Context Menu"] = "mennú contextual",
 	["Add Context Menu to Player Portrait"] = "Añadir menú contextual a retrato del jugador",
 	["Enabled"] = "Activado",
 --	["Accept"] = true,
@@ -60,6 +65,7 @@ RegisterTranslations("esES", function() return {
 
 RegisterTranslations("ruRU", function() return {
 	["Add to %s"] = "Добавить в %s",
+--	["Context Menu"] = "Контекстное меню",
 	["Add Context Menu to Player Portrait"] = "Контекстное меню на портрете игрока",
 	["Enabled"] = "Добавлять",
 --	["Accept"] = true,
@@ -71,80 +77,89 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_PortraitContextMenu", fal
 VanasKoSPortraitContextMenu = VanasKoS:NewModule("PortraitContextMenu", "AceHook-3.0");
 local VanasKoSPortraitContextMenu = VanasKoSPortraitContextMenu;
 local VanasKoS = VanasKoS;
-local VanasKoSTaintOK = false;
+local VanasKoSTargetPopupButtons = { };
+local VanasKoSTargetPopupMenu = { };
 
 function VanasKoSPortraitContextMenu:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("PortraitContextMenu", {
 		profile = {
 			Enabled = true,
-			EnabledWithTaint = false,
 		}
 	});
 
-	-- FIXME(xilcoy): Modifying the UnitPopupButtons taints the player
-	-- context menu, this is a "known issue" according to the blizzard
-	-- forums. Which may mean this will work without causing taint again
-	-- someday...
 	VanasKoSGUI:AddConfigOption("PortraitContextMenu",
 		{
 			type = 'group',
-			name = L["Add Context Menu to Player Portrait"],
+			name = L["Context Menu"],
 			desc = L["Add Context Menu to Player Portrait"],
 			args = {
 				enabled = {
 					type = 'toggle',
 					name = L["Enabled"],
 					desc = L["Enabled"],
---					set = function(frame, v) VanasKoSPortraitContextMenu.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("PortraitContextMenu", v); end,
---					get = function() return VanasKoSPortraitContextMenu.db.profile.Enabled; end,
-					set = function(frame, v)
-						if (VanasKoSTaintOK == false and v == true) then
-							local dialog = StaticPopup_Show("VANASKOS_TAINT_WARNING");
-							if(dialog) then
-								dialog.sender = sender;
-								getglobal(dialog:GetName() .. "Text"):SetText(format(L["Warning! Enabling this will cause errors setting the focus from target menue. Continue?"], count, VanasKoSGUI:GetListName(nameOfList), sender));
-							end
-						else
-							VanasKoSPortraitContextMenu.db.profile.EnabledWithTaint = v; VanasKoS:ToggleModuleActive("PortraitContextMenu");
-						end
-					end,
-					get = function() return VanasKoSPortraitContextMenu.db.profile.EnabledWithTaint; end,
+					set = function(frame, v) VanasKoSPortraitContextMenu.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("PortraitContextMenu", v); end,
+					get = function() return VanasKoSPortraitContextMenu.db.profile.Enabled; end,
 				}
 			}
 		});
-	self:SetEnabledState(self.db.profile.EnabledWithTaint);
+	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 local listsToAdd = { "PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST" };
 
 function VanasKoSPortraitContextMenu:OnEnable()
-	for k,v in pairs(listsToAdd) do
+	for k,v in ipairs(listsToAdd) do
 		local listname = VanasKoSGUI:GetListName(v);
 		local shortname = "VANASKOS_ADD_" .. v;
-		UnitPopupButtons[shortname] = { text = format(L["Add to %s"], listname), dist = 0 };
-		tinsert(UnitPopupMenus["PLAYER"], #UnitPopupMenus["PLAYER"]-1, shortname);
+		VanasKoSTargetPopupButtons[shortname] = { text = format(L["Add to %s"], listname), dist = 0 };
+		tinsert(VanasKoSTargetPopupMenu, #VanasKoSTargetPopupMenu+1, shortname);
 	end
 	self:SecureHook("UnitPopup_OnClick");
-end
-
-function VanasKoSPortraitContextMenu:RemoveFromList(list, entryname)
-	local moveEntries = nil;
-	local list2 = UnitPopupMenus["PLAYER"];
-	for k,v in pairs(list2) do
-		if(v == entryname) then
-			tremove(list2, k);
-		end
-	end
-	if(list[entryname]) then
-		list[entryname] = nil;
-	end
+	self:SecureHook("UnitPopup_ShowMenu");
 end
 
 function VanasKoSPortraitContextMenu:OnDisable()
+	self:Unhook("UnitPopup_ShowMenu");
 	self:Unhook("UnitPopup_OnClick");
-	for k,v in pairs(listsToAdd) do
-		local shortname = "VANASKOS_ADD_" .. v;
-		self:RemoveFromList(UnitPopupButtons, shortname);
+end
+
+function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
+	if(which ~= "PLAYER") then
+		return;
+	end
+
+	local info = UIDropDownMenu_CreateInfo();
+	for index, value in ipairs(VanasKoSTargetPopupMenu) do
+		if(UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] == 1) then
+			info.text = VanasKoSTargetPopupButtons[value].text;
+			info.value = value;
+			info.owner = "PLAYER";
+			info.func = UnitPopup_OnClick;
+			if(not VanasKoSTargetPopupButtons[value].checkable) then
+				info.notCheckable = 1;
+			else
+				info.notCheckable = nil;
+			end
+			local color = VanasKoSTargetPopupButtons[value].color;
+			if(color) then
+				info.colorCode = string.format("|cFF%02x%02x%02x", color.r*255, color.g*255, color.b*255);
+			else
+				info.colorCode = nil;
+			end
+
+			info.icon = VanasKoSTargetPopupButtons[value].icon;
+			info.tCoordLeft = VanasKoSTargetPopupButtons[value].tCoordLeft;
+			info.tCoordRight = VanasKoSTargetPopupButtons[value].tCoordRight;
+			info.tCoordTop = VanasKoSTargetPopupButtons[value].tCoordTop;
+			info.tCoordBottom = VanasKoSTargetPopupButtons[value].tCoordBottom;
+			info.checked = nil;
+			if(VanasKoSTargetPopupButtons[value].nested) then
+				info.hasArrow = 1;
+			else
+				info.hasArrow = nil;
+			end
+			UIDropDownMenu_AddButton(info);
+		end
 	end
 end
 
@@ -167,25 +182,3 @@ function VanasKoSPortraitContextMenu:UnitPopup_OnClick()
 		VanasKoS:AddEntryFromTarget("NICELIST");
 	end
 end
-
-
-StaticPopupDialogs["VANASKOS_TAINT_WARNING"] = {
-	text = "TEMPLATE",
-	button1 = L["Accept"],
-	button2 = L["Cancel"],
-	OnAccept = function()
-		local dialog = this:GetParent();
-		VanasKoSPortraitContextMenu.db.profile.EnabledWithTaint = true;
-		VanasKoSTaintOK = true;
-		VanasKoS:ToggleModuleActive("PortraitContextMenu", true);
-	end,
-	OnHide = function()
-		if(ChatFrameEditBox:IsVisible() ) then
-			ChatFrameEditBox:SetFocus();
-		end
-	end,
-	timeout = 10,
-	exclusive = 0,
-	whileDead = 1,
-	hideOnEscape = 1
-}

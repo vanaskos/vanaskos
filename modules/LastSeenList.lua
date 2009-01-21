@@ -147,10 +147,8 @@ function VanasKoSLastSeenList:OnEnable()
 	end
 	if(VanasKoSDataGatherer) then
 		if(VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently == true) then
-			VanasKoS:Print("using");
 			lastseenlist = VanasKoSDataGatherer.db.realm.data.players or { };
 		else
-			VanasKoS:Print("copying");
 			-- Copy player data into the volatile lastseenlist
 			for name, data in pairs(VanasKoSDataGatherer.db.realm.data.players) do
 				lastseenlist[name] = { };

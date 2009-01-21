@@ -108,11 +108,11 @@ end
 local listsToAdd = { "PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST" };
 
 function VanasKoSPortraitContextMenu:OnEnable()
-	for k,v in ipairs(listsToAdd) do
+	for i,v in ipairs(listsToAdd) do
 		local listname = VanasKoSGUI:GetListName(v);
 		local shortname = "VANASKOS_ADD_" .. v;
 		VanasKoSTargetPopupButtons[shortname] = { text = format(L["Add to %s"], listname), dist = 0 };
-		tinsert(VanasKoSTargetPopupMenu, #VanasKoSTargetPopupMenu+1, shortname);
+		VanasKoSTargetPopupMenu[i] = shortname;
 	end
 	self:SecureHook("UnitPopup_OnClick");
 	self:SecureHook("UnitPopup_ShowMenu");
@@ -124,7 +124,7 @@ function VanasKoSPortraitContextMenu:OnDisable()
 end
 
 function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
-	if(which ~= "PLAYER") then
+	if(which ~= "PLAYER" and which ~= "PARTY" and which ~= "RAID_PLAYER" and which ~= "RAID") then
 		return;
 	end
 
@@ -133,7 +133,7 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 		if(UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] == 1) then
 			info.text = VanasKoSTargetPopupButtons[value].text;
 			info.value = value;
-			info.owner = "PLAYER";
+			info.owner = which;
 			info.func = UnitPopup_OnClick;
 			if(not VanasKoSTargetPopupButtons[value].checkable) then
 				info.notCheckable = 1;

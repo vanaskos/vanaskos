@@ -152,11 +152,7 @@ local function POI_OnEnter(self, id)
 
 		local playerdata = VanasKoS:GetPlayerData(v.enemy);
 		local enemy = (playerdata and playerdata.displayname) or string.Capitalize(v.enemy);
-		local enemyNote = "";
-
-		if (v.enemylevel) then
-			enemyNote = v.enemylevel .. " " .. enemyNote;
-		end
+		local enemyNote = v.enemylevel or "";
 
 		if (playerdata) then
 			enemy = playerdata.displayname or string.Capitalize(v.enemy);
@@ -298,6 +294,7 @@ local function CreatePoints(enemyIdx)
 							myname = event.myname,
 							type = event.type,
 							mylevel = event.mylevel,
+							enemylevel = event.enemylevel,
 							});
 				drawPOI(POI);
 			end

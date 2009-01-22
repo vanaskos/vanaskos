@@ -339,16 +339,17 @@ function VanasKoSPvPDataGatherer:AddEntry(list, name, data)
 		if(listVar[name] == nil) then
 			listVar[name] = { };
 		end
-		listVar[name][data['time']] = { ['myname'] = data['myname'],
-										['mylevel'] = data['mylevel'],
-										['enemylevel'] = data['enemylevel'],
-										['type'] = data['type'],
-										['continent'] = data['continent'],
-										['zoneid'] = data['zoneid'],
-										['zone']  = data['zone'],
-										['posX'] = data['posX'],
-										['posY'] = data['posY']
-									};
+		listVar[name][data['time']] = {
+						['myname'] = data['myname'],
+						['mylevel'] = data['mylevel'],
+						['enemylevel'] = data['enemylevel'],
+						['type'] = data['type'],
+						['continent'] = data['continent'],
+						['zoneid'] = data['zoneid'],
+						['zone']  = data['zone'],
+						['posX'] = data['posX'],
+						['posY'] = data['posY']
+						};
 		return true;
 	end
 	return true;
@@ -379,13 +380,12 @@ function VanasKoSPvPDataGatherer:IsOnList(list, name)
 end
 
 function VanasKoSPvPDataGatherer:OnDisable()
---FIXME(xilcoy): Cannot unregister for some reason
---	VanasKoSPvPDataGatherer:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-	self:UnregisterAllEvents();
+	self:UnregisterAllMessages();
 end
 
 function VanasKoSPvPDataGatherer:OnEnable()
-	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "CombatEvent");
+	self:RegisterMessage("VanasKoS_PvPDamage", "PvPDamage");
+	self:RegisterMessage("VanasKoS_PvPDeath", "PvPDeath");
 end
 
 local lastDamageFrom = nil;
@@ -395,86 +395,32 @@ local lastDamageTo = { };
 
 local zone = nil;
 
-function VanasKoSPvPDataGatherer:CombatEvent(event, ...)
-	local timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags = select(1, ...);
-
-	-- Ignore if there was no destination
-	if (dstFlags == nil) then
-		return;
-	end
-	-- Ignore if the destination is not a player
-	if (bit.band(dstFlags, COMBATLOG_OBJECT_TYPE_PLAYER) == 0) then
-		return;
-	end
-	-- Ignore if there was no source and the event is not UNIT_DIED
-	if (srcFlags == nil) then
-		if (eventType ~= "UNIT_DIED") then
-			return;
-		end
-	elseif (eventType ~= "UNIT_DIED") then
-		-- Ignore unless both the source and destination are player controlled
-		if (bit.band(srcFlags, dstFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) == 0) then
-			return;
-		end
-		-- Ignore if neither the source nor the target is self
-		if (bit.band(bit.bor(srcFlags, dstFlags), COMBATLOG_OBJECT_AFFILIATION_MINE) == 0) then
-			return;
-		end
-		-- Ignore if neither the source nor the target is hostile
-		if (bit.band(bit.bor(srcFlags, dstFlags), COMBATLOG_OBJECT_REACTION_HOSTILE) == 0) then
-			return;
-		end
-		-- Ignore non-damage spells
-		if (not (string.match(eventType, ".*_DAMAGE") or (string.match(eventType, ".*_DRAIN")) or (string.match(eventType, ".*_LEECH")))) then
-			return;
-		end
-	end
-
-	if (bit.band(dstFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) ~= 0) then
-		if (eventType == "UNIT_DIED") then
-			if not lastDamageTo then
-				return;
-			end
-			for k,v in pairs(lastDamageTo) do
-				if (dstName == v[1]) then
-					self:Death(dstName, "win");
-				end
-			end
-		else
-			self:DamageDoneTo(dstName);
-		end
-	end
-	if (bit.band(dstFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) ~= 0) then
-		if (eventType == "UNIT_DIED") then
-			self:Death(lastDamageFrom, "loss");
-		else
-			-- Ignore if the source is not a player
-			if (bit.band(srcFlags, COMBATLOG_OBJECT_TYPE_PLAYER) ~= 0) then
-				self:DamageDoneFrom(srcName);
-			end
-		end
+function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, dstName, amount)
+	if (srcName == UnitName("player")) then
+		self:DamageDoneTo(dstName, amount);
+	elseif (dstName == UnitName("player")) then
+		self:DamageDoneFrom(srcName, amount);
 	end
 end
 
-
-function VanasKoSPvPDataGatherer:Death(name, winOrLoss)
-	if(winOrLoss == "win") then
-		self:LogPvPWin(name);
-		if lastDamageTo then
+function VanasKoSPvPDataGatherer:PvPDeath(message, name)
+	if (name ~= UnitName("player")) then
+		if (lastDamageTo) then
 			for i=1,#lastDamageTo do
 				if(lastDamageTo[i] and lastDamageTo[i][1] == name) then
+					self:LogPvPWin(name);
 					tremove(lastDamageTo, i);
 				end
 			end
 		end
-	elseif(winOrLoss == "loss") then
-		if(lastDamageFromTime ~= nil) then
+	else
+		if (lastDamageFromTime ~= nil) then
 			if((time() - lastDamageFromTime) < 5) then
-				self:LogPvPLoss(name);
+				self:LogPvPLoss(lastDamageFrom);
 			end
 		end
 		lastDamageFrom = nil;
-		wipe(lastDamageTo);
+		wipe (lastDamageTo);
 	end
 end
 
@@ -527,16 +473,17 @@ function VanasKoSPvPDataGatherer:LogPvPLoss(name)
 	
 	local data = VanasKoS:GetPlayerData(name);
 
-	VanasKoS:AddEntry("PVPLOG", name, { ['time'] = time(),
-										['myname'] = UnitName("player"),
-										['mylevel'] = UnitLevel("player"),
-										['enemylevel'] = data and data['level'] or 0,
-										['type'] = "loss",
-										['continent'] = GetCurrentMapContinent(),
-										['zoneid'] = GetCurrentMapZone(),
-										['zone']  = zone,
-										['posX'] = posX,
-										['posY'] = posY });
+	VanasKoS:AddEntry("PVPLOG", name, {
+						['time'] = time(),
+						['myname'] = UnitName("player"),
+						['mylevel'] = UnitLevel("player"),
+						['enemylevel'] = data and data['level'] or 0,
+						['type'] = "loss",
+						['continent'] = GetCurrentMapContinent(),
+						['zoneid'] = GetCurrentMapZone(),
+						['zone']  = zone,
+						['posX'] = posX,
+						['posY'] = posY });
 end
 
 function VanasKoSPvPDataGatherer:LogPvPWin(name)
@@ -561,16 +508,17 @@ function VanasKoSPvPDataGatherer:LogPvPWin(name)
 
 	local data = VanasKoS:GetPlayerData(name);
 
-	VanasKoS:AddEntry("PVPLOG", name, { ['time'] = time(),
-										['myname'] = UnitName("player"),
-										['mylevel'] = UnitLevel("player"),
-										['enemylevel'] = data['level'],
-										['type'] = "win",
-										['continent'] = GetCurrentMapContinent(),
-										['zoneid'] = GetCurrentMapZone(),
-										['zone']  = zone,
-										['posX'] = posX,
-										['posY'] = posY });
+	VanasKoS:AddEntry("PVPLOG", name, {
+						['time'] = time(),
+						['myname'] = UnitName("player"),
+						['mylevel'] = UnitLevel("player"),
+						['enemylevel'] = data['level'],
+						['type'] = "win",
+						['continent'] = GetCurrentMapContinent(),
+						['zoneid'] = GetCurrentMapZone(),
+						['zone']  = zone,
+						['posX'] = posX,
+						['posY'] = posY });
 end
 
 local DamageFromArray = { };

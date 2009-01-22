@@ -46,35 +46,52 @@ function VanasKoSDataGatherer:OnInitialize()
 	myName = UnitName("player");
 end
 
+local COMBATLOG_FILTER_PLAYER = bit.bor(COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PLAYER);
+local COMBATLOG_FILTER_HOSTILE_PLAYER = bit.bor(COMBATLOG_OBJECT_REACTION_HOSTILE, COMBATLOG_FILTER_PLAYER);
+local COMBATLOG_FILTER_FRIENDLY_PLAYER = bit.bor(COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_FILTER_PLAYER);
 
-local COMBATLOG_FILTER_HOSTILE_PLAYER = bit.bor(
-				COMBATLOG_OBJECT_REACTION_HOSTILE,
-				COMBATLOG_OBJECT_CONTROL_PLAYER,
-				COMBATLOG_OBJECT_TYPE_PLAYER
-				);
-
-local COMBATLOG_FILTER_FRIENDLY_PLAYER = bit.bor(
-				COMBATLOG_OBJECT_REACTION_FRIENDLY,
-				COMBATLOG_OBJECT_CONTROL_PLAYER,
-				COMBATLOG_OBJECT_TYPE_PLAYER
-				);
+local COMBATLOG_POWERTYPE_HEALTH = -2;
 
 local function isFriendlyOrEnemy(flags)
-	if(bit.band(flags, COMBATLOG_FILTER_FRIENDLY_PLAYER) == COMBATLOG_FILTER_FRIENDLY_PLAYER) then
+	if(flags and bit.band(flags, COMBATLOG_FILTER_FRIENDLY_PLAYER) == COMBATLOG_FILTER_FRIENDLY_PLAYER) then
 		return "friendly";
 	end
-	if(bit.band(flags, COMBATLOG_FILTER_HOSTILE_PLAYER) == COMBATLOG_FILTER_HOSTILE_PLAYER) then
+	if(flags and bit.band(flags, COMBATLOG_FILTER_HOSTILE_PLAYER) == COMBATLOG_FILTER_HOSTILE_PLAYER) then
 		return "enemy";
 	end
 	return nil;
 end
 
-function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, spellID, spellName, spellSchool, auraType)
---	self:PrintLiteral(eventType, srcName, srcFlags, dstName, dstFlags);
-	-- spell id is only relevant on RANGE_ SPELL_ and SPELL_PERIODIC_ prefix - otherwise it represents something else and is therefore unusable
-	if(not string.find(eventType, "RANGE_") and not string.find(eventType, "SPELL_") and not string.find(eventType, "SPELL_PERIODIC_")) then
-		spellID = nil;
+local function isPlayer(flags)
+	if(flags and bit.band(flags, COMBATLOG_FILTER_PLAYER) == COMBATLOG_FILTER_PLAYER) then
+		return true;
 	end
+	return nil;
+end
+
+function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, eventType, srcGUID, srcName, srcFlags, dstGUID, dstName, dstFlags, ...)
+	local offset = 1;
+	local spellID = nil;
+	local spellName = nil;
+	local spellSchool = nil;
+	local amount = nil;
+	local powerType = nil;
+
+	if(string.find(eventType, "SPELL_") or string.find(eventType, "RANGE_")) then
+		spellID, spellName, spellSchool = select(offset, ...);
+		offset = offset + 3;
+	end
+	if(string.find(eventType, "_DAMAGE")) then
+--		amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = select(offset, ...);
+		amount = select(offset, ...);
+		offset = offset + 9;
+	elseif(string.find(eventType, "_LEECH") or string.find(eventType, "DRAIN")) then
+--		amount, powerType, extraAmount = select(offset, ...);
+		amount, powerType = select(offset, ...);
+		offset = offset + 3;
+	end
+
+--	self:PrintLiteral(eventType, srcName, srcFlags, dstName, dstFlags);
 	--[[if(dstName and srcName and dstName ~= srcName) then
 		ChatFrame2:AddMessage(eventType .. " " .. (srcName or "nil") .. " -> " .. (dstName or "nil") .. "  -  " .. (spellName or "nil"));
 	end]]
@@ -106,42 +123,32 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, even
 	
 	
 	-- try source and destinationation - if 
-	
 	-- source or destination is friendly, register as event
-	if(srcName ~= nil and srcFlags ~= nil and srcName ~= myName) then
+	if(srcName ~= nil and srcName ~= myName) then
 		local fOrE = isFriendlyOrEnemy(srcFlags);
 		if(fOrE) then
 			VanasKoSDataGatherer:SendDataMessage(srcName, fOrE, spellID);
 		end
 	end
 
-	if(dstName ~= nil and dstFlags ~= nil and dstName ~= myName) then
+	if(dstName ~= nil and dstName ~= myName) then
 		local fOrE = isFriendlyOrEnemy(dstFlags);
 		if(fOrE) then
 			VanasKoSDataGatherer:SendDataMessage(dstName, fOrE, spellID);
 		end
 	end
 
-	if(VanasKoSPvPDataGatherer and VanasKoSPvPDataGatherer.db.profile.Enabled) then
-		if(dstName ~= nil and dstFlags ~= nil and dstName == myName and
-			bit.band(srcFlags, COMBATLOG_FILTER_HOSTILE_PLAYER) == COMBATLOG_FILTER_HOSTILE_PLAYER) then
-			VanasKoSPvPDataGatherer:DamageDoneFrom(srcName);
+	if((dstName == myName and isFriendlyOrEnemy(srcFlags) == "enemy") or 
+		(srcName == myName and isFriendlyOrEnemy(dstFlags) == "enemy")) then
+		if(string.find(eventType, "_DAMAGE")) then
+			self:SendMessage("VanasKoS_PvPDamage", srcName, dstName, amount);
+		elseif ((string.find(eventType, "_DRAIN") or (string.find(eventType, "_LEECH"))) and powerType == COMBATLOG_POWERTYPE_HEALTH) then
+			self:SendMessage("VanasKoS_PvPDamage", srcName, dstName, amount);
 		end
---[[
-		if(eventType == "UNIT_DIED") then
-			-- someone got killed by a hositile player
-			if(bit.band(dstFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) == COMBATLOG_OBJECT_AFFILIATION_MINE) then
-				self:PrintLiteral("got killed");
-				VanasKoSPvPDataGatherer:Death(dstName, "loss");
-			end
+	end
 
-			if(bit.band(dstFlags, COMBATLOG_FILTER_HOSTILE_PLAYER) == COMBATLOG_FILTER_HOSTILE_PLAYER) then
-				self:PrintLiteral("someone hostile got killed");
-				if(bit.band(srcFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) == COMBATLOG_OBJECT_AFFILIATION_MINE) then
-					self:PrintLiteral("it was me");
-				end
-			end
-		end ]]
+	if(eventType == "UNIT_DIED" and isPlayer(dstFlags)) then
+		self:SendMessage("VanasKoS_PvPDeath", dstName);
 	end
 end
 

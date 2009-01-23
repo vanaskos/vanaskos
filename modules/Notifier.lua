@@ -587,22 +587,23 @@ function VanasKoSNotifier:UpdateReasonFrame(name, guild)
 	end
 end
 
-function VanasKoSNotifier:Player_Target_Changed(data)
-	-- data is nil if target was changed to a mob
+function VanasKoSNotifier:Player_Target_Changed(message, data)
+	-- data is nil if target was changed to a mob, and the name and guild
+	-- are null if the target was changed to self.
+	local name = data and data.name or UnitName("target");
+	local guild = data and data.guild or GetGuildInfo("target");
 	if(self.db.profile.notifyTargetFrame) then
-		if(UnitIsPlayer("target")) then
-			local name = UnitName("target");
-			local guild = GetGuildInfo("target");
-			if(VanasKoS:BooleanIsOnList("PLAYERKOS", name)) then
+		if(UnitIsPlayer("target") and data) then
+			if(VanasKoS:BooleanIsOnList("PLAYERKOS", data.name)) then
 				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
 				TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
-			elseif(VanasKoS:BooleanIsOnList("GUILDKOS", guild)) then
+			elseif(VanasKoS:BooleanIsOnList("GUILDKOS", data.guild)) then
 				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
 				TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
-			elseif(VanasKoS:BooleanIsOnList("HATELIST", name)) then
+			elseif(VanasKoS:BooleanIsOnList("HATELIST", data.name)) then
 				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
 				TargetFrameTexture:SetVertexColor(1.0, 0.0, 0.0, TargetFrameTexture:GetAlpha());
-			elseif(VanasKoS:BooleanIsOnList("NICELIST", name)) then
+			elseif(VanasKoS:BooleanIsOnList("NICELIST", data.name)) then
 				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
 				TargetFrameTexture:SetVertexColor(0.0, 1.0, 0.0, TargetFrameTexture:GetAlpha());
 			else
@@ -613,7 +614,7 @@ function VanasKoSNotifier:Player_Target_Changed(data)
 			TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
 		end
 	end
-	self:UpdateReasonFrame(data and data.name, data and data.guild);
+	self:UpdateReasonFrame(name, guild);
 end
 
 --/script VanasKoS:SendMessage("VanasKoS_Player_Detected", "Apfelherz", nil, "kos");

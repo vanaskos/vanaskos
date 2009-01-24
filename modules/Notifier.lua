@@ -504,6 +504,7 @@ local listsToCheck = {
 function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 	if(not UnitIsPlayer("mouseover")) then
 		--return self.hooks[tooltip].OnTooltipSetUnit(tooltip, ...);
+		return;
 	end
 
 	local name, realm = UnitName("mouseover");

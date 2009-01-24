@@ -508,7 +508,7 @@ function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 
 	local name, realm = UnitName("mouseover");
 	if(realm ~= nil) then
-		return self.hooks[tooltip].OnTooltipSetUnit(tooltip, ...);
+		return; -- self.hooks[tooltip].OnTooltipSetUnit(tooltip, ...);
 	end
 	local guild = GetGuildInfo("mouseover");
 

@@ -6,7 +6,7 @@ local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable()
 local BC = LibStub("LibBabble-Class-3.0"):GetLookupTable()
 local BR = LibStub("LibBabble-Race-3.0"):GetLookupTable()
 
-VanasKoSImporter = VanasKoS:NewModule("Importer");
+VanasKoSImporter = VanasKoS:NewModule("Importer", "AceEvent-3.0");
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "enUS", true);
 if L then

@@ -242,7 +242,7 @@ function VanasKoSImporter:ConvertFromOldVanasKoSList()
 				['zone'] = nil
 			};
 
-			self:SendMessage("VanasKoS_Player_Data_Gathered", "PLAYERKOS", name, data);
+			self:SendMessage("VanasKoS_Player_Data_Gathered", "PLAYERKOS", data);
 			-- fix lastseen:
 			datalist[k].lastseen = lastseen;
 

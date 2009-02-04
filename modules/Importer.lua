@@ -233,6 +233,7 @@ function VanasKoSImporter:ConvertFromOldVanasKoSList()
 			end
 
 			local data = {
+				['name'] = name,
 				['guild'] = nil,
 				['level'] = level,
 				['race'] = race,

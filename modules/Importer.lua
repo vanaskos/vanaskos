@@ -221,7 +221,7 @@ function VanasKoSImporter:ConvertFromOldVanasKoSList()
 	for k,v in pairs(koslist) do
 		if(koslist[k].lastseen ~= nil and koslist[k].lastseen ~= -1) then
 			local name = koslist[k].displayname;
-			if(name == "") then
+			if(name == nil or name == "") then
 				name = k;
 			end
 			local level = koslist[k].level;

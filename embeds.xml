@@ -14,28 +14,13 @@
 	<Include file="Libs\AceSerializer-3.0\AceSerializer-3.0.xml"/>
 	<Include file="Libs\AceTimer-3.0\AceTimer-3.0.xml"/>
 
-	<Include file="Libs\SharedMedia-3.0\lib.xml"/>
-	<Include file="Libs\Babble-Zone-3.0\lib.xml"/>
-	<Include file="Libs\Babble-Class-3.0\lib.xml"/>
-	<Include file="Libs\Babble-Race-3.0\lib.xml"/>
-	<!-- <Include file="NewLibs\Babble-Race-3.0\lib.xml"/>-->
-	<Include file="Libs\LevelGuess-1.0\lib.xml"/>
-	<!-- <Include file="NewLibs\LibLevelGuess-1.0\lib.xml"/>-->
-	<Include file="Libs\Tourist-3.0\lib.xml"/>
-	<Script file="Libs\Graph-2.0\LibGraph-2.0.lua"/>
-	<Script file="Libs\DBIcon-1.0\libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
-	<Script file="Libs\DBIcon-1.0\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
-	
-<!-- <Script file="Libs\AceLibrary\AceLibrary.lua"/>
-	<Script file="Libs\AceOO-2.0\AceOO-2.0.lua"/>
-	<Script file="Libs\AceEvent-2.0\AceEvent-2.0.lua"/>
-	<Script file="Libs\AceComm-2.0\AceComm-2.0.lua"/>
-	<Script file="Libs\AceDB-2.0\AceDB-2.0.lua"/>
-	<Script file="Libs\AceConsole-2.0\AceConsole-2.0.lua"/>
-	<Script file="Libs\AceAddon-2.0\AceAddon-2.0.lua"/>
-	<Script file="Libs\AceLocale-2.2\AceLocale-2.2.lua"/>
-	<Script file="Libs\AceModuleCore-2.0\AceModuleCore-2.0.lua"/>
-	<Script file="Libs\AceHook-2.1\AceHook-2.1.lua"/> 
-	
-	<Script file="Libs\Tablet-2.0\Tablet-2.0.lua"/> -->
+	<Include file="Libs\LibSharedMedia-3.0\lib.xml"/>
+	<Include file="Libs\LibBabble-Zone-3.0\lib.xml"/>
+	<Include file="Libs\LibBabble-Class-3.0\lib.xml"/>
+	<Include file="Libs\LibBabble-Race-3.0\lib.xml"/>
+	<Include file="Libs\LibLevelGuess-1.0\lib.xml"/>
+	<Include file="Libs\LibTourist-3.0\lib.xml"/>
+	<Script file="Libs\LibGraph-2.0\LibGraph-2.0.lua"/>
+	<Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
+	<Script file="Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
 </Ui>

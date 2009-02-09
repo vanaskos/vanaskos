@@ -130,36 +130,34 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 
 	local info = UIDropDownMenu_CreateInfo();
 	for index, value in ipairs(VanasKoSTargetPopupMenu) do
-		if(UnitPopupShown[UIDROPDOWNMENU_MENU_LEVEL][index] == 1) then
-			info.text = VanasKoSTargetPopupButtons[value].text;
-			info.value = value;
-			info.owner = which;
-			info.func = UnitPopup_OnClick;
-			if(not VanasKoSTargetPopupButtons[value].checkable) then
-				info.notCheckable = 1;
-			else
-				info.notCheckable = nil;
-			end
-			local color = VanasKoSTargetPopupButtons[value].color;
-			if(color) then
-				info.colorCode = string.format("|cFF%02x%02x%02x", color.r*255, color.g*255, color.b*255);
-			else
-				info.colorCode = nil;
-			end
-
-			info.icon = VanasKoSTargetPopupButtons[value].icon;
-			info.tCoordLeft = VanasKoSTargetPopupButtons[value].tCoordLeft;
-			info.tCoordRight = VanasKoSTargetPopupButtons[value].tCoordRight;
-			info.tCoordTop = VanasKoSTargetPopupButtons[value].tCoordTop;
-			info.tCoordBottom = VanasKoSTargetPopupButtons[value].tCoordBottom;
-			info.checked = nil;
-			if(VanasKoSTargetPopupButtons[value].nested) then
-				info.hasArrow = 1;
-			else
-				info.hasArrow = nil;
-			end
-			UIDropDownMenu_AddButton(info);
+		info.text = VanasKoSTargetPopupButtons[value].text;
+		info.value = value;
+		info.owner = which;
+		info.func = UnitPopup_OnClick;
+		if(not VanasKoSTargetPopupButtons[value].checkable) then
+			info.notCheckable = 1;
+		else
+			info.notCheckable = nil;
 		end
+		local color = VanasKoSTargetPopupButtons[value].color;
+		if(color) then
+			info.colorCode = string.format("|cFF%02x%02x%02x", color.r*255, color.g*255, color.b*255);
+		else
+			info.colorCode = nil;
+		end
+
+		info.icon = VanasKoSTargetPopupButtons[value].icon;
+		info.tCoordLeft = VanasKoSTargetPopupButtons[value].tCoordLeft;
+		info.tCoordRight = VanasKoSTargetPopupButtons[value].tCoordRight;
+		info.tCoordTop = VanasKoSTargetPopupButtons[value].tCoordTop;
+		info.tCoordBottom = VanasKoSTargetPopupButtons[value].tCoordBottom;
+		info.checked = nil;
+		if(VanasKoSTargetPopupButtons[value].nested) then
+			info.hasArrow = 1;
+		else
+			info.hasArrow = nil;
+		end
+		UIDropDownMenu_AddButton(info);
 	end
 end
 

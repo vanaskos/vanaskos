@@ -22,9 +22,6 @@ RegisterTranslations("enUS", function() return {
 	["Context Menu"] = true,
 	["Add Context Menu to Player Portrait"] = true,
 	["Enabled"] = true,
-	["Warning! Enabling this will cause errors setting the focus from target menue. Continue?"] = true,
-	["Accept"] = true,
-	["Cancel"] = true,
 } end);
 
 RegisterTranslations("deDE", function() return {
@@ -32,8 +29,6 @@ RegisterTranslations("deDE", function() return {
 	["Context Menu"] = "Kontext Menu",
 	["Add Context Menu to Player Portrait"] = "Kontext Menu zum Spieler Portrait hinzufügen",
 	["Enabled"] = "Aktiviert",
-	["Accept"] = "Ok",
-	["Cancel"] = "Abbrechen",
 } end);
 
 RegisterTranslations("frFR", function() return {
@@ -41,8 +36,6 @@ RegisterTranslations("frFR", function() return {
 --	["Context Menu"] = "menu de contexte",
 	["Add Context Menu to Player Portrait"] = "Ajouter un menu de contexte au portrait du joueur",
 	["Enabled"] = "Actif",
---	["Accept"] = true,
---	["Cancel"] = true,
 } end);
 
 RegisterTranslations("koKR", function() return {
@@ -50,8 +43,6 @@ RegisterTranslations("koKR", function() return {
 --	["Context Menu"] = true,
 	["Add Context Menu to Player Portrait"] = "플레이어 초상화에 메뉴 추가",
 	["Enabled"] = "사용",
---	["Accept"] = true,
---	["Cancel"] = true,
 } end);
 
 RegisterTranslations("esES", function() return {
@@ -59,8 +50,6 @@ RegisterTranslations("esES", function() return {
 --	["Context Menu"] = "mennú contextual",
 	["Add Context Menu to Player Portrait"] = "Añadir menú contextual a retrato del jugador",
 	["Enabled"] = "Activado",
---	["Accept"] = true,
---	["Cancel"] = true,
 } end);
 
 RegisterTranslations("ruRU", function() return {
@@ -68,8 +57,6 @@ RegisterTranslations("ruRU", function() return {
 --	["Context Menu"] = "Контекстное меню",
 	["Add Context Menu to Player Portrait"] = "Контекстное меню на портрете игрока",
 	["Enabled"] = "Добавлять",
---	["Accept"] = true,
---	["Cancel"] = true,
 } end);
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_PortraitContextMenu", false);
@@ -125,6 +112,11 @@ end
 
 function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 	if(which ~= "PLAYER" and which ~= "PARTY" and which ~= "RAID_PLAYER" and which ~= "RAID") then
+		return;
+	end
+
+	-- Only create menus for the top level
+	if (UIDROPDOWNMENU_MENU_LEVEL > 1) then
 		return;
 	end
 

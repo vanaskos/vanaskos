@@ -1,6 +1,12 @@
 Release Changelog for VanasKoS
 
-4.00 beta:
+4.00b beta
+- Importer bugfixes
+- Portrait Context menu bugfixes
+- Added data cache back to warnframe so class icons show up
+- Standardized embedded libraries
+
+4.00a beta:
 - Updated libraries to Ace3
 - Added "event map" to show pvp events on the world map.
 - Added level-guessing library from paranoia

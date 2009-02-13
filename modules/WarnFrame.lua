@@ -686,11 +686,6 @@ function VanasKoSWarnFrame:OnDisable()
 	wipe(nearbyFriendly);
 	wipe(dataCache);
 	wipe(buttonData);
-	--[[
-	nearbyKoS = { };
-	nearbyEnemy = { };
-	nearbyFriendly = { };
-	buttonData = { }; ]]
 	
 	self:Update();
 	warnFrame:Hide();

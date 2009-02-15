@@ -442,7 +442,7 @@ function VanasKoSNotifier:OnInitialize()
 				order = 11,
 				get = function() return GetSound("kos"); end,
 				set = function(frame, value) SetSound("kos", value); end,
-				values = GetMediaList();
+				values = function() return GetMediaList(); end,
 			},
 			enemySound = {
 				type = 'select',
@@ -451,7 +451,7 @@ function VanasKoSNotifier:OnInitialize()
 				order = 12,
 				get = function() return GetSound("enemy"); end,
 				set = function(frame, value) SetSound("enemy", value); end,
-				values = GetMediaList();
+				values = function() return GetMediaList(); end,
 			},
 			extrareasonframetitle = {
 				type = 'header',

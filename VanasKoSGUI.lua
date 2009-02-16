@@ -16,7 +16,7 @@ local listHandler = { };
 
 VanasKoSGUI.dropDownFrame = nil;
 
-local optionsFrameInner = nil;
+local configFrameInner = nil;
 
 function VanasKoSGUI:AddConfigOption(name, option)
 	if(not self.ConfigurationOptions) then
@@ -121,7 +121,7 @@ function VanasKoSGUI:OnInitialize()
 
 	self.configFrame = AceConfigDialog:AddToBlizOptions("VanasKoS", "VanasKoS");
 	
-	self:AddConfigOption(L["Profiles"], LibStub("AceDBOptions-3.0"):GetOptionsTable(VanasKoS.db));
+	self:AddConfigOption("VanasKosProfiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(VanasKoS.db));
 	
 	VanasKoSListFrameShowButton:SetScript("OnClick", function()
 			local x, y = GetCursorPosition();

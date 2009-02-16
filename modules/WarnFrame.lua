@@ -203,7 +203,7 @@ local function CreateWarnFrameFonts(size)
 
 	if (testFontFrame == nil) then
 		testFontFrame = CreateFrame("Button", nil, UIParent);
-		testFontFrame:SetText("XXXXXXXXXXXX [00]");
+		testFontFrame:SetText("XXXXXXXXXXXX [00+]");
 		testFontFrame:Hide();
 	end
 

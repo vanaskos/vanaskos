@@ -168,7 +168,7 @@ end
 L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Importer", true);
 
 function VanasKoSImporter:OnInitialize()
-	VanasKoSGUI:AddConfigOption("Importer", {
+	VanasKoSGUI:AddConfigOption("VanasKoS-Importer", {
 		type = "group",
 		name = L["Import Data"],
 		desc = L["Imports KoS Data from other KoS tools"],

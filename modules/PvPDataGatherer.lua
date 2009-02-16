@@ -238,7 +238,7 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 		VanasKoS.db.realm.pvpstats = nil;
 	end]]--
 
-	VanasKoSGUI:AddConfigOption("PvPDataGathering", {
+	VanasKoSGUI:AddConfigOption("VanasKoS-PvPDataGathering", {
 			type = 'group',
 			name = L["PvP Data Gathering"],
 			desc = L["PvP Data Gathering"],

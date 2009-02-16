@@ -74,7 +74,7 @@ function VanasKoSPortraitContextMenu:OnInitialize()
 		}
 	});
 
-	VanasKoSGUI:AddConfigOption("PortraitContextMenu",
+	VanasKoSGUI:AddConfigOption("VanasKoS-PortraitContextMenu",
 		{
 			type = 'group',
 			name = L["Context Menu"],

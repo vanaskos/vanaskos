@@ -478,7 +478,7 @@ function VanasKoSNotifier:OnInitialize()
 		},
 	};
 
-	VanasKoSGUI:AddConfigOption("Notifier", configOptions);
+	VanasKoSGUI:AddConfigOption("VanasKoS-Notifier", configOptions);
 	self:SetEnabledState(self.db.profile.Enabled);
 end
 

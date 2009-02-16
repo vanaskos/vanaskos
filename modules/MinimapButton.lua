@@ -194,7 +194,7 @@ function VanasKoSMinimapButton:OnInitialize()
 
 	icon:Register(self.name, Broker, self.db.profile.button);
 	
-	VanasKoSGUI:AddConfigOption("MinimapButton", {
+	VanasKoSGUI:AddConfigOption("VanasKoS-MinimapButton", {
 			type = 'group',
 			name = L["Minimap Button"],
 			desc = L["Minimap Button"],

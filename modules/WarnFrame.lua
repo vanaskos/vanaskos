@@ -389,7 +389,7 @@ local function UpdateWarnSize()
 end
 
 local function RegisterConfiguration()
-	VanasKoSGUI:AddConfigOption("WarnFrame", {
+	VanasKoSGUI:AddConfigOption("VanasKoS-WarnFrame", {
 		type = 'group',
 		name = L["Warning Window"],
 		desc = L["KoS/Enemy/Friendly Warning Window"],

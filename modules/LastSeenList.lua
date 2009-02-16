@@ -123,7 +123,7 @@ function VanasKoSLastSeenList:OnInitialize()
 	VanasKoSGUI:RegisterSortOption({"LASTSEEN"}, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen)
 	VanasKoSGUI:SetDefaultSortFunction({"LASTSEEN"}, SortByLastSeen);
 
-	VanasKoSGUI:AddConfigOption("LastSeenList", {
+	VanasKoSGUI:AddConfigOption("VanasKoS-LastSeenList", {
 			type = 'group',
 			name = L["Last Seen List"],
 			desc = L["Last Seen List"],

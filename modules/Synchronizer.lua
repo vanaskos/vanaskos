@@ -131,7 +131,7 @@ local function RegisterConfiguration()
 			},]]
 		},
 	};
-	VanasKoSGUI:AddConfigOption("Synchronizer", configOptions);
+	VanasKoSGUI:AddConfigOption("VanasKoS-Synchronizer", configOptions);
 	
 	local DL = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_DefaultLists", false);
 	

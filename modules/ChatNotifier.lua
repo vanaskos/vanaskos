@@ -207,7 +207,7 @@ function VanasKoSChatNotifier:OnInitialize()
 		}
 	});
 
-	VanasKoSGUI:AddConfigOption("ChatNotifier", {
+	VanasKoSGUI:AddConfigOption("VanasKoS-ChatNotifier", {
 		type = 'group',
 		name = L["Chat Modifications"],
 		desc = L["Modifies the Chat Window for Hate/Nicelist Entries."],

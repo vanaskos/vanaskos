@@ -56,7 +56,7 @@ function VanasKoSFriendsFrameDocker:OnInitialize()
 		}
 	});
 
-	VanasKoSGUI:AddConfigOption("FriendsFrameDocker",
+	VanasKoSGUI:AddConfigOption("VanasKoS-FriendsFrameDocker",
 		{
 			type = 'group',
 			name = L["Dock into Friends Frame"],

@@ -355,7 +355,7 @@ function VanasKoSEventMap:OnInitialize()
 		}
 	);
 
-	VanasKoSGUI:AddConfigOption("EventMap", {
+	VanasKoSGUI:AddConfigOption("VanasKoS-EventMap", {
 		type = 'group',
 		name = L["PvP Event Map"],
 		desc = L["PvP Event Map"],

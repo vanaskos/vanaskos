@@ -5,6 +5,13 @@ Release Changelog for VanasKoS
 - Portrait Context menu bugfixes
 - Added data cache back to warnframe so class icons show up
 - Standardized embedded libraries
+- Fixed bug preventing use of other addon's Shared Media sound files
+- Slightly Increased width of warning frame
+- Made blizzoptionsframe name more unique
+- Changed how the current zone is detected. (Requires automatic db upgrade)
+- Added Wintergrasp to the list of "Battlegrounds" to be ignored
+- Added option to disable events in the data gatherer module in Sanctuaries.
+- Allow clicking through the warning window when the border/backdrop is hidden
 
 4.00a beta:
 - Updated libraries to Ace3

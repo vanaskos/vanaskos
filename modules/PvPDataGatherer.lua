@@ -344,8 +344,6 @@ function VanasKoSPvPDataGatherer:AddEntry(list, name, data)
 						['mylevel'] = data['mylevel'],
 						['enemylevel'] = data['enemylevel'],
 						['type'] = data['type'],
-						['continent'] = data['continent'],
-						['zoneid'] = data['zoneid'],
 						['zone']  = data['zone'],
 						['posX'] = data['posX'],
 						['posY'] = data['posY']
@@ -392,8 +390,6 @@ local lastDamageFrom = nil;
 local lastDamageFromTime = nil;
 local lastDamageTo = { };
 
-
-local zone = nil;
 
 function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, dstName, amount)
 	if (srcName == UnitName("player")) then
@@ -470,17 +466,14 @@ function VanasKoSPvPDataGatherer:LogPvPLoss(name)
 	VanasKoS:AddEntry("PVPSTATS", name, tempStatData);
 
 	local posX, posY = GetPlayerMapPosition("player");
-	
 	local data = VanasKoS:GetPlayerData(name);
+	local zone = GetRealZoneText();
 
-	VanasKoS:AddEntry("PVPLOG", name, {
-						['time'] = time(),
+	VanasKoS:AddEntry("PVPLOG", name, {	['time'] = time(),
 						['myname'] = UnitName("player"),
 						['mylevel'] = UnitLevel("player"),
 						['enemylevel'] = data and data['level'] or 0,
 						['type'] = "loss",
-						['continent'] = GetCurrentMapContinent(),
-						['zoneid'] = GetCurrentMapZone(),
 						['zone']  = zone,
 						['posX'] = posX,
 						['posY'] = posY });
@@ -505,8 +498,8 @@ function VanasKoSPvPDataGatherer:LogPvPWin(name)
 	VanasKoS:AddEntry("PVPSTATS", name, tempStatData);
 
 	local posX, posY = GetPlayerMapPosition("player");
-
 	local data = VanasKoS:GetPlayerData(name);
+	local zone = GetRealZoneText();
 
 	VanasKoS:AddEntry("PVPLOG", name, {
 						['time'] = time(),
@@ -514,8 +507,6 @@ function VanasKoSPvPDataGatherer:LogPvPWin(name)
 						['mylevel'] = UnitLevel("player"),
 						['enemylevel'] = data['level'],
 						['type'] = "win",
-						['continent'] = GetCurrentMapContinent(),
-						['zoneid'] = GetCurrentMapZone(),
 						['zone']  = zone,
 						['posX'] = posX,
 						['posY'] = posY });

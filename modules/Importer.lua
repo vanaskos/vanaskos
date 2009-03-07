@@ -2,11 +2,11 @@
       Importer Module - Part of VanasKoS
 Handles import of other AddOns KoS Data
 ------------------------------------------------------------------------]]
-local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable()
 local BC = LibStub("LibBabble-Class-3.0"):GetLookupTable()
 local BR = LibStub("LibBabble-Race-3.0"):GetLookupTable()
 
 VanasKoSImporter = VanasKoS:NewModule("Importer", "AceEvent-3.0");
+local zoneContinentZoneID = {};
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "enUS", true);
 if L then
@@ -208,6 +208,11 @@ function VanasKoSImporter:OnInitialize()
 end
 
 function VanasKoSImporter:OnEnable()
+	zoneContinentZoneID[1] = {GetMapZones(1)};
+	zoneContinentZoneID[2] = {GetMapZones(2)};
+	zoneContinentZoneID[3] = {GetMapZones(3)};
+	zoneContinentZoneID[4] = {GetMapZones(4)};
+
 	self:ConvertFromOldVanasKoSList();
 end
 
@@ -266,107 +271,114 @@ function VanasKoSImporter:ConvertFromOldVanasKoSList()
 			end
 		end
 	end
+
+	--convert continent/id zone information to zone only
+	local pvplog = VanasKoS:GetList("PVPLOG");
+	for player, event in pairs(pvplog) do
+		for timestamp, data in pairs(event) do
+			if (data.zoneid and data.continent) then
+				pvplog[player][timestamp].zone = zoneContinentZoneID[data.continent][data.zoneid];
+				pvplog[player][timestamp].zoneid = nil;
+				pvplog[player][timestamp].continent = nil;
+			end
+		end
+	end
+
+	for player, data in pairs(datalist) do
+		if (data.zoneid and data.continent) then
+			datalist[player].zone = zoneContinentZoneID[data.continent][data.zoneid];
+			datalist[player].zoneid = nil;
+			datalist[player].continent = nil;
+		end
+	end
 end
 --[[----------------------------------------------------------------------
 	Import Functions
 ------------------------------------------------------------------------]]
 
 local SKMZoneTranslate = {
-	["KA_01"] = {1,  1, BZ["Ashenvale"],},
-	["KA_02"] = {1,  2, BZ["Azshara"],},
-	["KA_03"] = {1,  3, BZ["Azuremyst Isle"],},
-	["KA_04"] = {1,  4, BZ["Bloodmyst Isle"],},
-	["KA_05"] = {1,  5, BZ["Darkshore"],},
-	["KA_06"] = {1,  6, BZ["Darnassus"],},
-	["KA_07"] = {1,  7, BZ["Desolace"],},
-	["KA_08"] = {1,  8, BZ["Durotar"],},
-	["KA_09"] = {1,  9, BZ["Dustwallow Marsh"],},
-	["KA_10"] = {1, 10, BZ["Felwood"],},
-	["KA_11"] = {1, 11, BZ["Feralas"],},
-	["KA_12"] = {1, 12, BZ["Moonglade"],},
-	["KA_13"] = {1, 13, BZ["Mulgore"],},
-	["KA_14"] = {1, 14, BZ["Orgrimmar"],},
-	["KA_15"] = {1, 15, BZ["Silithus"],},
-	["KA_16"] = {1, 16, BZ["Stonetalon Mountains"],},
-	["KA_17"] = {1, 17, BZ["Tanaris"],},
-	["KA_18"] = {1, 18, BZ["Teldrassil"],},
-	["KA_19"] = {1, 19, BZ["The Barrens"],},
-	["KA_20"] = {1, 20, BZ["The Exodar"],},
-	["KA_21"] = {1, 21, BZ["Thousand Needles"],},
-	["KA_22"] = {1, 22, BZ["Thunder Bluff"],},
-	["KA_23"] = {1, 23, BZ["Un'Goro Crater"],},
-	["KA_24"] = {1, 24, BZ["Winterspring"],},
-	["EK_01"] = {2,  1, BZ["Alterac Mountains"],},
-	["EK_02"] = {2,  2, BZ["Arathi Highlands"],},
-	["EK_03"] = {2,  3, BZ["Badlands"],},
-	["EK_04"] = {2,  4, BZ["Blasted Lands"],},
-	["EK_05"] = {2,  5, BZ["Burning Steppes"],},
-	["EK_06"] = {2,  6, BZ["Deadwind Pass"],},
-	["EK_07"] = {2,  7, BZ["Dun Morogh"],},
-	["EK_08"] = {2,  8, BZ["Duskwood"],},
-	["EK_09"] = {2,  9, BZ["Eastern Plaguelands"],},
-	["EK_10"] = {2, 10, BZ["Elwynn Forest"],},
-	["EK_11"] = {2, 11, BZ["Eversong Woods"],},
-	["EK_12"] = {2, 12, BZ["Ghostlands"],},
-	["EK_13"] = {2, 13, BZ["Hillsbrad Foothills"],},
-	["EK_14"] = {2, 14, BZ["Ironforge"],},
-	["EK_15"] = {2, 16, BZ["Loch Modan"],},
-	["EK_16"] = {2, 17, BZ["Redridge Mountains"],},
-	["EK_17"] = {2, 18, BZ["Searing Gorge"],},
-	["EK_18"] = {2, 19, BZ["Silvermoon City"],},
-	["EK_19"] = {2, 20, BZ["Silverpine Forest"],},
-	["EK_20"] = {2, 21, BZ["Stormwind City"],},
-	["EK_21"] = {2, 22, BZ["Stranglethorn Vale"],},
-	["EK_22"] = {2, 23, BZ["Swamp of Sorrows"],},
-	["EK_23"] = {2, 24, BZ["The Hinterlands"],},
-	["EK_24"] = {2, 25, BZ["Tirisfal Glades"],},
-	["EK_25"] = {2, 26, BZ["Undercity"],},
-	["EK_26"] = {2, 27, BZ["Western Plaguelands"],},
-	["EK_27"] = {2, 28, BZ["Westfall"],},
-	["EK_28"] = {2, 29, BZ["Wetlands"],},
-	--["EK_29"] = {2, 14, BZ["Isle of Quel'Danas"],},
-	["OL_01"] = {3,  1, BZ["Blade's Edge Mountains"],},
-	["OL_02"] = {3,  2, BZ["Hellfire Peninsula"],},
-	["OL_03"] = {3,  3, BZ["Nagrand"],},
-	["OL_04"] = {3,  4, BZ["Netherstorm"],},
-	["OL_05"] = {3,  5, BZ["Shadowmoon Valley"],},
-	["OL_06"] = {3,  6, BZ["Shattrath City"],},
-	["OL_07"] = {3,  7, BZ["Terokkar Forest"],},
-	["OL_08"] = {3,  8, BZ["Zangarmarsh"],},
+	["KA_01"] = "Ashenvale",
+	["KA_02"] = "Azshara",
+	["KA_03"] = "Azuremyst Isle",
+	["KA_04"] = "Bloodmyst Isle",
+	["KA_05"] = "Darkshore",
+	["KA_06"] = "Darnassus",
+	["KA_07"] = "Desolace",
+	["KA_08"] = "Durotar",
+	["KA_09"] = "Dustwallow Marsh",
+	["KA_10"] = "Felwood",
+	["KA_11"] = "Feralas",
+	["KA_12"] = "Moonglade",
+	["KA_13"] = "Mulgore",
+	["KA_14"] = "Orgrimmar",
+	["KA_15"] = "Silithus",
+	["KA_16"] = "Stonetalon Mountains",
+	["KA_17"] = "Tanaris",
+	["KA_18"] = "Teldrassil",
+	["KA_19"] = "The Barrens",
+	["KA_20"] = "The Exodar",
+	["KA_21"] = "Thousand Needles",
+	["KA_22"] = "Thunder Bluff",
+	["KA_23"] = "Un'Goro Crater",
+	["KA_24"] = "Winterspring",
+	["EK_01"] = "Alterac Mountains",
+	["EK_02"] = "Arathi Highlands",
+	["EK_03"] = "Badlands",
+	["EK_04"] = "Blasted Lands",
+	["EK_05"] = "Burning Steppes",
+	["EK_06"] = "Deadwind Pass",
+	["EK_07"] = "Dun Morogh",
+	["EK_08"] = "Duskwood",
+	["EK_09"] = "Eastern Plaguelands",
+	["EK_10"] = "Elwynn Forest",
+	["EK_11"] = "Eversong Woods",
+	["EK_12"] = "Ghostlands",
+	["EK_13"] = "Hillsbrad Foothills",
+	["EK_14"] = "Ironforge",
+	["EK_15"] = "Loch Modan",
+	["EK_16"] = "Redridge Mountains",
+	["EK_17"] = "Searing Gorge",
+	["EK_18"] = "Silvermoon City",
+	["EK_19"] = "Silverpine Forest",
+	["EK_20"] = "Stormwind City",
+	["EK_21"] = "Stranglethorn Vale",
+	["EK_22"] = "Swamp of Sorrows",
+	["EK_23"] = "The Hinterlands",
+	["EK_24"] = "Tirisfal Glades",
+	["EK_25"] = "Undercity",
+	["EK_26"] = "Western Plaguelands",
+	["EK_27"] = "Westfall",
+	["EK_28"] = "Wetlands",
+	["OL_01"] = "Blade's Edge Mountains",
+	["OL_02"] = "Hellfire Peninsula",
+	["OL_03"] = "Nagrand",
+	["OL_04"] = "Netherstorm",
+	["OL_05"] = "Shadowmoon Valley",
+	["OL_06"] = "Shattrath City",
+	["OL_07"] = "Terokkar Forest",
+	["OL_08"] = "Zangarmarsh",
+
 	-- These are not defined in current skmap
-	--["NR_01"] = {4,  1, BZ["Borean Tundra"],},
-	--["NR_02"] = {4,  2, BZ["Crystalsong Forest"],},
-	--["NR_03"] = {4,  3, BZ["Dalaran"],},
-	--["NR_04"] = {4,  4, BZ["Dragonblight"],},
-	--["NR_05"] = {4,  5, BZ["Grizzly Hills"],},
-	--["NR_06"] = {4,  6, BZ["Howling Fjord"],},
-	--["NR_07"] = {4,  7, BZ["Icecrown"],},
-	--["NR_08"] = {4,  8, BZ["Sholazar Basin"],},
-	--["NR_09"] = {4,  9, BZ["The Storm Peaks"],},
-	--["NR_10"] = {4, 10, BZ["Wintergrasp"],},
-	--["NR_11"] = {4, 11, BZ["Zul'Drak"],},
+	--["EK_29"] = "Isle of Quel'Danas",
+	--["NR_01"] = "Borean Tundra",
+	--["NR_02"] = "Crystalsong Forest",
+	--["NR_03"] = "Dalaran",
+	--["NR_04"] = "Dragonblight",
+	--["NR_05"] = "Grizzly Hills",
+	--["NR_06"] = "Howling Fjord",
+	--["NR_07"] = "Icecrown",
+	--["NR_08"] = "Sholazar Basin",
+	--["NR_09"] = "The Storm Peaks",
+	--["NR_10"] = "Wintergrasp",
+	--["NR_11"] = "Zul'Drak",
 };
 
 local SKMRaceTranslate = {BR["Dwarf"], BR["Gnome"], BR["Human"], BR["Night Elf"], BR["Orc"], BR["Tauren"], BR["Troll"], BR["Undead"], BR["Draenei"], BR["Blood Elf"]};
 local SKMClassTranslate = {BC["Druid"], BC["Hunter"], BC["Mage"], BC["Paladin"], BC["Priest"], BC["Rogue"], BC["Shaman"], BC["Warrior"], BC["Warlock"]};
 
-local function SKMGetContinent(ZoI)
-	if (ZoI ~= nil and SKMZoneTranslate[ZoI] ~= nil) then
-		return SKMZoneTranslate[ZoI][1];
-	end
-	return nil;
-end
-
-local function SKMGetZoneId(ZoI)
-	if (ZoI ~= nil and SKMZoneTranslate[ZoI] ~= nil) then
-		return SKMZoneTranslate[ZoI][2];
-	end
-	return nil;
-end
-
 local function SKMGetZoneName(ZoI)
-	if (ZoI ~= nil and SKMZoneTranslate[ZoI] ~= nil) then
-		return SKMZoneTranslate[ZoI][3];
+	if (ZoI ~= nil) then
+		return BZ[SKMZoneTranslate[ZoI]];
 	end
 	return nil;
 end
@@ -404,8 +416,6 @@ local function importSKMapPoint(player, idx)
 	local myname = SKM_Data[GetRealmName()][player]["PlayerName"] or player;
 	local posX = point["x"] or point["xpos"];
 	local posY = point["y"] or point["ypos"];
-	local continent = point["continent"] or SKMGetContinent(point["ZoI"]);
-	local zoneid = point["zone"] or SKMGetZoneId(point["ZoI"]);
 	local zone = point["zoneName"] or SKMGetZoneName(point["ZoI"]);
 	local info = point["Inf"] or point["storedInfo"];
 	local name, sktype, sktime;
@@ -416,16 +426,13 @@ local function importSKMapPoint(player, idx)
 		name = info["Na"] or info["name"];
 		sktime = SKMTimeTranslate(info["Da"] or info["date"]) or date();
 	end
-	if (not (posX and posY and continent and zoneid and zone and name and
-			sktype and sktime)) then
+	if (not (posX and posY and zone and name and sktype and sktime)) then
 		return 0;
 	end
 
 	VanasKoS:AddEntry("PVPLOG", name:lower(), { ['time'] = sktime,
 					['myname'] = myname,
 					['type'] = sktype,
-					['continent'] = continent,
-					['zoneid'] = zoneid,
 					['zone']  = zone,
 					['posX'] = posX,
 					['posY'] = posY });

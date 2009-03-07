@@ -507,29 +507,11 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 			tooltip:AddLine("|cffffffff" .. L["PvP Encounter:"] .. "|r");
 			local i = 0;
 			for k,v in VanasKoSGUI:pairsByKeys(pvplog, nil, nil) do -- sorted from old to new
-				if(v.type and (v.zoneid or v.zone) and v.myname) then
+				if(v.type and v.zone and v.myname) then
 					if(v.type == 'win') then
-						if(v.zone) then
-							tooltip:AddLine(format(L["%s: Win in %s (%s)"], date("%c", k), v.zone, v.myname));
-						else
-							local zone = VanasKoSDataGatherer:GetZoneName(v.continent, v.zoneid);
-							if(zone == nil) then
-								-- because it's possible there is is no zone, and continent/zoneid aren't valid
-								zone = UNKNOWN;
-							end
-							tooltip:AddLine(format(L["%s: Win in %s (%s)"], date("%c", k), zone, v.myname));
-						end
+						tooltip:AddLine(format(L["%s: Win in %s (%s)"], date("%c", k), v.zone, v.myname));
 					else
-						if(v.zone) then
-							tooltip:AddLine(format(L["%s: Loss in %s (%s)"], date("%c", k), v.zone, v.myname));
-						else
-							local zone = VanasKoSDataGatherer:GetZoneName(v.continent, v.zoneid);
-							if(zone == nil) then
-								-- because it's possible there is is no zone, and continent/zoneid aren't valid
-								zone = UNKNOWN;
-							end
-							tooltip:AddLine(format(L["%s: Loss in %s (%s)"], date("%c", k), zone, v.myname));
-						end
+						tooltip:AddLine(format(L["%s: Loss in %s (%s)"], date("%c", k), v.zone, v.myname));
 					end
 				end
 				i = i + 1;

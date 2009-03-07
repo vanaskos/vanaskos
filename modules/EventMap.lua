@@ -117,11 +117,13 @@ VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0", "AceHook-3.0",
 
 local VanasKoSEventMap = VanasKoSEventMap;
 local Cartographer3_Data = nil;
+local zoneContinentZoneID = {};
 VanasKoSEventMap.POIGRIDALIGN = 16;
 VanasKoSEventMap.ICONSIZE = 16;
 VanasKoSEventMap.lastzoom = 20;
 VanasKoSEventMap.lastzone = "";
 VanasKoSEventMap.lastcontinent = "";
+
 
 local function POI_Resize(self)
 	self:SetWidth(VanasKoSEventMap.ICONSIZE);
@@ -273,12 +275,14 @@ local function CreatePoints(enemyIdx)
 	local pvplog = VanasKoS:GetList("PVPLOG");
 	local lastEnemy = nil;
 	local continent = GetCurrentMapContinent();
-	local zone = GetCurrentMapZone();
+	local zoneid = GetCurrentMapZone();
 	local myname = UnitName("player");
+	local zones = {GetMapZones(continent)};
+	local zoneName = zones and zones[zoneid];
 
 	for enemy, etable in next, pvplog, enemyIdx do
 		for time, event in pairs(etable) do
-			if (event.continent == continent and event.zoneid == zone and (VanasKoSEventMap.db.profile.drawAlts or event.myname == myname)) then
+			if (event.zone and event.zone == zoneName and (VanasKoSEventMap.db.profile.drawAlts or event.myname == myname)) then
 				local x = event.posX * WorldMapDetailFrame:GetWidth();
 				local y = -event.posY * WorldMapDetailFrame:GetHeight();
 				local POI = VanasKoSEventMap_GetPOI(x, y);

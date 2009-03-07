@@ -115,6 +115,14 @@ function VanasKoSGUI:OnInitialize()
 				get = function() return VanasKoSDataGatherer.db.profile.GatherInCities; end,
 				set = function(frame, v) VanasKoSDataGatherer.db.profile.GatherInCities = v; end,
 			},
+			enableinsanctuary = {
+				type = "toggle",
+				order = 7,
+				name = L["Enable in Sanctuaries"],
+				desc = L["Toggles detection of players in sanctuaries"],
+				get = function() return VanasKoSDataGatherer.db.profile.EnableInSanctuary; end,
+				set = function(frame, v) VanasKoSDataGatherer.db.profile.EnableInSanctuary = v; VanasKoSDataGatherer:UpdateZone(); end,
+			}
 			
 		},
 	});

@@ -8,14 +8,11 @@ VanasKoSDataGatherer = VanasKoS:NewModule("DataGatherer", "AceEvent-3.0", "AceTi
 local VanasKoSDataGatherer = VanasKoSDataGatherer;
 local VanasKoS = VanasKoS;
 
-local continent = -1;
-local zoneID = -1;
-local zone = nil;
 local inBattleground = false;
-local zoneContinentZoneID = { };
 local myName = nil;
 
 local combatLogEventRegistered = true;
+local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable();
 
 function VanasKoSDataGatherer:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("DataGatherer", 
@@ -32,6 +29,7 @@ function VanasKoSDataGatherer:OnInitialize()
 				UseCombatLog = true,
 				StorePlayerDataPermanently = false,
 				GatherInCities = false,
+				EnableInSanctuary = false,
 			},
 		});
 
@@ -155,14 +153,6 @@ end
 local playerDataList = nil;
 
 function VanasKoSDataGatherer:OnEnable()
-	-- Mouseover, Targetchanges
-	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
-	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-
-	if(self.db.profile.UseCombatLog) then
-		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-	end
-	
 	-- on zonechange update zone
 	self:RegisterEvent("ZONE_CHANGED", "UpdateZone");
 	self:RegisterEvent("ZONE_CHANGED_INDOORS", "UpdateZone");
@@ -170,11 +160,6 @@ function VanasKoSDataGatherer:OnEnable()
 
 	self:RegisterMessage("VanasKoS_Player_Data_Gathered", "Data_Gathered");
 	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
-	
-	zoneContinentZoneID[1] = { GetMapZones(1); };
-	zoneContinentZoneID[2] = { GetMapZones(2); };
-	zoneContinentZoneID[3] = { GetMapZones(3); };
-	zoneContinentZoneID[4] = { GetMapZones(4); };
 
 	self:UpdateZone();
 
@@ -298,43 +283,52 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	end
 end
 
-local tourist = LibStub("LibTourist-3.0")
+local tourist = LibStub("LibTourist-3.0");
+local eventsEnabled = false;
 
-function VanasKoSDataGatherer:GetZoneName(continent, zoneid)
-	local zone = zoneContinentZoneID[continent] and zoneContinentZoneID[continent][zoneid] or nil;
-	return zone or nil;
+function VanasKoSDataGatherer:EnableEvents()
+	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	if(self.db.profile.UseCombatLog) then
+		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+	end
+	eventsEnabled = true;
 end
 
+function VanasKoSDataGatherer:DisableEvents()
+	self:UnregisterEvent("UPDATE_MOUSEOVER_UNIT");
+	self:UnregisterEvent("PLAYER_TARGET_CHANGED");
+	if (self.db.profile.UseCombatLog) then
+		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+	end
+	eventsEnabled = false;
+end
 
 function VanasKoSDataGatherer:UpdateZone()
-	continent = GetCurrentMapContinent();
-	zoneID = GetCurrentMapZone();
+	local zone = GetRealZoneText();
+	local gatherEvents;
 
-	if(zoneContinentZoneID[continent] and zoneContinentZoneID[continent][zoneID]) then
-		zone = zoneContinentZoneID[continent][zoneID];
+	if (self:IsInBattleground()) then
+		gatherEvents = false;
+	elseif (self:IsInSanctuary()) then
+		gatherEvents = self.db.profile.EnableInSanctuary;
 	else
-		zone = GetZoneText();
+		gatherEvents = true;
 	end
 
-	if(zone == nil) then
-		return;
+	if (eventsEnabled and not gatherEvents) then
+		self:DisableEvents();
+	elseif (not eventsEnabled and gatherEvents) then
+		self:EnableEvents();
 	end
-
-	if(tourist:IsBattleground(zone) or 
-		tourist:IsInstance(zone) or 
-		tourist:IsArena(zone)) then
-		inBattleground = true;
-	else
-		inBattleground = false;
-	end
-
-	--self:PrintLiteral("[DEBUG]: BG: ", inBattleground, "Shatt:", self:IsInShattrath());
-	self:SendMessage("VanasKoS_Zone_Changed", zone, continent, zoneID);
+	
+	self:SendMessage("VanasKoS_Zone_Changed", zone);
 end
 
 function VanasKoSDataGatherer:IsInSanctuary()
-	if( (continent == 3 and zoneID == 6) or -- shattrath
-		(continent == 4 and zoneID == 3)) then -- dalaran
+	local zone = GetRealZoneText();
+
+	if(zone == BZ["Shattrath City"] or zone == BZ["Dalaran"]) then
 		return true;
 	else
 		return false;
@@ -342,19 +336,22 @@ function VanasKoSDataGatherer:IsInSanctuary()
 end
 
 function VanasKoSDataGatherer:IsInBattleground()
-    local instance, instanceType = IsInInstance()
-    if(instance and (instanceType =="pvp" or instanceType == "arena")) then
-		inBattleground = true;
-        return true;
-    end
+	local zone = GetRealZoneText();
 
-	-- TODO: workaround
-	self:UpdateZone();
-	return inBattleground;
+	if(tourist:IsBattleground(zone) or
+		tourist:IsInstance(zone) or
+		tourist:IsArena(zone) or
+		zone == BZ["Wintergrasp"]) then
+		return true;
+	else
+		return false
+	end
 end
 
 local gatheredData = { };
 function VanasKoSDataGatherer:Get_Player_Data(unit)
+	local zone = GetRealZoneText();
+
 	if(UnitIsPlayer(unit) and UnitName(unit) ~= myName) then
 		local name, realm = UnitName(unit);
 
@@ -413,6 +410,7 @@ end
 local LevelGuessLib = LibStub("LibLevelGuess-1.0");
 
 function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
+	local zone = GetRealZoneText();
 	-- dumb fix to hide obviously invalid strings gathered in other localizations then enUS
 	if(name == nil or name:lower() == myName:lower()) then
 		return;
@@ -424,40 +422,35 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 
 	local lname = name:lower();
 
-	if((not self:IsInBattleground() and not self:IsInSanctuary()) or 
-		(not self:IsInBattleground() and self.db.profile.GatherInCities)) then
-		-- gather data when i'm not in a battleground and not in a city
-		-- OR when i'm not in a battle and gatherincities is enabled
-		if(spellId ~= nil and tonumber(spellId)) then
-			local level, classEnglish = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
-			--print("spellid", spellId, "level", level, "english", classEnglish);
-			if(level ~= nil and classEnglish ~= nil) then
-				if(not playerDataList[lname]) then
-					playerDataList[lname] = { };
-				end
-
-				local oldLevel = 0;
-				if(playerDataList[lname].level ~= nil) then -- update old level (was lower)
-					if(string.find(playerDataList[lname].level, "+") ~= nil) then
-						oldLevel = tonumber(string.match(playerDataList[lname].level, "%d+"));
-					end
-				end
-				if(not playerDataList[lname].level or 
-					playerDataList[lname].level == -1) then
-					if(oldLevel < level) then
-						if(level < 80) then
-							level = level .. "+";
-						end
-
-						playerDataList[lname].level = level;
-					end
-				end
-				
-				if(playerDataList[lname].classEnglish and playerDataList[lname].classEnglish ~= classEnglish) then
-					--print("VanasKoS DEBUG: Wrong data gathered: " .. spellId .. " " .. lname .. playerDataList[lname].classEnglish .. " ~= " .. classEnglish .. "  " .. spellName);
-				end
-				playerDataList[lname].classEnglish = classEnglish;
+	if(spellId ~= nil and tonumber(spellId)) then
+		local level, classEnglish = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
+		--print("spellid", spellId, "level", level, "english", classEnglish);
+		if(level ~= nil and classEnglish ~= nil) then
+			if(not playerDataList[lname]) then
+				playerDataList[lname] = { };
 			end
+
+			local oldLevel = 0;
+			if(playerDataList[lname].level ~= nil) then -- update old level (was lower)
+				if(string.find(playerDataList[lname].level, "+") ~= nil) then
+					oldLevel = tonumber(string.match(playerDataList[lname].level, "%d+"));
+				end
+			end
+			if(not playerDataList[lname].level or 
+				playerDataList[lname].level == -1) then
+				if(oldLevel < level) then
+					if(level < 80) then
+						level = level .. "+";
+					end
+
+					playerDataList[lname].level = level;
+				end
+			end
+			
+			if(playerDataList[lname].classEnglish and playerDataList[lname].classEnglish ~= classEnglish) then
+				--print("VanasKoS DEBUG: Wrong data gathered: " .. spellId .. " " .. lname .. playerDataList[lname].classEnglish .. " ~= " .. classEnglish .. "  " .. spellName);
+			end
+			playerDataList[lname].classEnglish = classEnglish;
 		end
 	end
 	-- /script VanasKoSDataGatherer:SendDataMessage("name", "enemy", nil);

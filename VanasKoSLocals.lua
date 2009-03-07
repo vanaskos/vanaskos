@@ -57,6 +57,8 @@ if L then
 	L["Profiles"] = true;
 	L["Save data gathered in cities"] = true;
 	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
+	L["Enable in Sanctuaries"] = true;
+	L["Toggles detection of players in sanctuaries"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "zhCN", false);
@@ -115,6 +117,8 @@ if L then
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
 --	L["Save data gathered in cities"] = true;
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
+--	L["Enable in Sanctuaries"] = true;
+--	L["Toggles detection of players in sanctuaries"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "deDE", false);
@@ -172,6 +176,8 @@ if L then
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
 --	L["Save data gathered in cities"] = true;
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
+--	L["Enable in Sanctuaries"] = true;
+--	L["Toggles detection of players in sanctuaries"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "frFR", false);
@@ -227,6 +233,8 @@ if L then
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
 --	L["Save data gathered in cities"] = true;
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
+--	L["Enable in Sanctuaries"] = true;
+--	L["Toggles detection of players in sanctuaries"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "koKR", false);
@@ -282,6 +290,8 @@ if L then
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
 --	L["Save data gathered in cities"] = true;
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
+--	L["Enable in Sanctuaries"] = true;
+--	L["Toggles detection of players in sanctuaries"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "esES", false);
@@ -335,6 +345,8 @@ if L then
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
 --	L["Save data gathered in cities"] = true;
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
+--	L["Enable in Sanctuaries"] = true;
+--	L["Toggles detection of players in sanctuaries"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "ruRU", false);
@@ -392,6 +404,8 @@ if L then
 --	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true;
 --	L["Save data gathered in cities"] = true;
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
+--	L["Enable in Sanctuaries"] = true;
+--	L["Toggles detection of players in sanctuaries"] = true;
 end
 
 VANASKOS = { };

@@ -131,15 +131,16 @@ local function CreateWarnFrame()
 	warnFrame:SetToplevel(true);
 	warnFrame:SetMovable(true);
 	warnFrame:SetFrameStrata("LOW");
-	warnFrame:EnableMouse(true);
 	if(VanasKoSWarnFrame.db.profile.WarnFrameBorder) then
 		VanasKoS_WarnFrame:SetBackdrop( {
 			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
 					insets = { left = 5, right = 4, top = 5, bottom = 5 },
 		});
+		warnFrame:EnableMouse(true);
 	else
 		VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
+		warnFrame:EnableMouse(false);
 	end
 	-- set the default backdrop color
 	local r, g, b, a = GetColor("DefaultBGColor");
@@ -447,8 +448,10 @@ local function RegisterConfiguration()
 								edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
 								insets = { left = 5, right = 4, top = 5, bottom = 5 },
 							});
+							warnFrame:EnableMouse(true);
 						else
 							VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
+							warnFrame:EnableMouse(false);
 						end
 						VanasKoSWarnFrame:Update();
 					end,

@@ -378,7 +378,7 @@ local SKMClassTranslate = {BC["Druid"], BC["Hunter"], BC["Mage"], BC["Paladin"],
 
 local function SKMGetZoneName(ZoI)
 	if (ZoI ~= nil) then
-		return BZ[SKMZoneTranslate[ZoI]];
+		return SKMZoneTranslate[ZoI];
 	end
 	return nil;
 end

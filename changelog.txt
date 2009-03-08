@@ -6,6 +6,7 @@ Release Changelog for VanasKoS
 - Fixed bugs in chat Modifications
 - Fixed bug preventing use of other addon's Shared Media sound files
 - Fixed fade-in/out issues in warn frame during combat
+- Fixed bug enabling/locking the additional reason window
 - Made blizzoptionsframe name more unique
 - Added data cache back to warnframe so class icons show up
 - Standardized embedded libraries

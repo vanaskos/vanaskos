@@ -361,14 +361,16 @@ local function HideButton(buttonNr)
 end
 
 local function HideWarnFrame()
-	if (not InCombatLockdown()) then
-		warnFrame:Hide();
+	if(not InCombatLockdown() and warnFrame:IsVisible()) then
+		UIFrameFadeOut(warnFrame, 0.1, 1.0, 0.0);
+		warnFrame.fadeInfo.finishedFunc = function() if(not InCombatLockdown()) then warnFrame:Hide(); end; end
 	end
 end
 
 local function ShowWarnFrame()
-	if (not InCombatLockdown()) then
+	if(not InCombatLockdown() and not warnFrame:IsVisible()) then
 		warnFrame:Show();
+		UIFrameFadeIn(warnFrame, 0.1, 0.0, 1.0);
 	end
 end
 
@@ -962,21 +964,12 @@ function VanasKoSWarnFrame:Update()
 	if(self.db.profile.Enabled) then
 		if(self.db.profile.HideIfInactive) then
 			if((counter > 0 and self.db.profile.GrowUp == false) or (counter < (self.db.profile.WARN_BUTTONS - 1) and self.db.profile.GrowUp == true)) then
-				if(not warnFrame:IsVisible()) then
-					UIFrameFadeIn(warnFrame, 0.1, 0.0, 1.0);
-					ShowWarnFrame();
-				end
+				ShowWarnFrame();
 			else
-				if(warnFrame:IsVisible()) then
-					UIFrameFadeOut(warnFrame, 0.1, 1.0, 0.0);
-					warnFrame.fadeInfo.finishedFunc = HideWarnFrame;
-				end
+				HideWarnFrame();
 			end
 		else
-			if(not warnFrame:IsVisible()) then
-				UIFrameFadeIn(warnFrame, 0.1, 0.0, 1.0);
-				ShowWarnFrame();
-			end
+			ShowWarnFrame();
 		end
 	else
 		HideWarnFrame();

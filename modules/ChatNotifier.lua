@@ -145,31 +145,12 @@ local VanasKoS = VanasKoS;
 
 local function SetLookup(enable)
 	if(enable) then
-		if(not VanasKoSChatNotifier:IsHooked("UnitPopup_OnClick")) then
-			VanasKoSChatNotifier:SecureHook("UnitPopup_OnClick");
-			if(not UnitPopupButtons) then
-				return;
-			end
-
-			UnitPopupButtons["VANASKOS_LOOKUP"] = { text = L["Lookup in VanasKoS"], dist = 0 };
-
-			tinsert(UnitPopupMenus["FRIEND"], "VANASKOS_LOOKUP");
---			VanasKoSChatNotifier:SecureHook("UnitPopup_ShowMenu");
---			VanasKoSChatNotifier:SecureHook("UnitPopup_HideButtons");
+		if(not VanasKoSChatNotifier:IsHooked("UnitPopup_ShowMenu")) then
+			VanasKoSChatNotifier:SecureHook("UnitPopup_ShowMenu");
 		end
 	else
-		if(VanasKoSChatNotifier:IsHooked("UnitPopup_OnClick")) then
-			VanasKoSChatNotifier:Unhook("UnitPopup_OnClick");
-			if(UnitPopupButtons and UnitPopupButtons["VANASKOS_LOOKUP"]) then
-				UnitPopupButtons["VANASKOS_LOOKUP"] = nil;
-
-				for k,v in pairs(UnitPopupMenus["FRIEND"]) do
-					if(v == "VANASKOS_LOOKUP") then
-						UnitPopupMenus["FRIEND"][k] = nil;
-						break;
-					end
-				end
-			end
+		if(VanasKoSChatNotifier:IsHooked("UnitPopup_ShowMenu")) then
+			VanasKoSChatNotifier:Unhook("UnitPopup_ShowMenu");
 		end
 	end
 end
@@ -273,31 +254,34 @@ function VanasKoSChatNotifier:OnDisable()
 	end
 end
 
---[[
 function VanasKoSChatNotifier:UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
-end
-
-function VanasKoSChatNotifier:UnitPopup_HideButtons()
-end
-]]
-function VanasKoSChatNotifier:UnitPopup_OnClick()
-	local dropdownFrame = getglobal(UIDROPDOWNMENU_INIT_MENU);
-	if(not dropdownFrame) then
+	if(which ~= "FRIEND") then
 		return;
 	end
-	local name = dropdownFrame.name;
-	if(not name) then
+
+	-- Only create menus for the top level
+	if (UIDROPDOWNMENU_MENU_LEVEL > 1) then
 		return;
 	end
-	local button = this.value;
 
-	if(button == "VANASKOS_LOOKUP") then
-		local data, list = VanasKoS:IsOnList(nil, dropdownFrame.name);
-		if(list ~= nil) then
-			VanasKoS:Print(format(L["Name: %s is on List: %s - Reason: %s"], dropdownFrame.name, VanasKoS:GetListNameByShortName(list), data.reason or ""));
-		else
-			VanasKoS:Print(format(L["No entry for %s"], dropdownFrame.name));
-		end
+	local info = UIDropDownMenu_CreateInfo();
+	info.text = L["Lookup in VanasKoS"];
+	info.value = "VANASKOS_LOOKUP";
+	info.owner = which;
+	info.func = VanasKoSChatNotifier_UnitPopup_OnClick;
+	info.arg1 = name;
+	info.notCheckable = 1;
+	UIDropDownMenu_AddButton(info);
+end
+
+function VanasKoSChatNotifier_UnitPopup_OnClick(self, name)
+	assert(name);
+
+	local data, list = VanasKoS:IsOnList(nil, name);
+	if(list ~= nil) then
+		VanasKoS:Print(format(L["Player: %s is on List: %s - Reason: %s"], name, VanasKoS:GetListNameByShortName(list), data.reason or ""));
+	else
+		VanasKoS:Print(format(L["No entry for %s"], name));
 	end
 end
 

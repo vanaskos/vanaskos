@@ -39,6 +39,7 @@ if L then
 	L["Notify in Sanctuary"] = true;
 	L["Additional Reason Window"] = true;
 	L["Locked"] = true;
+	L["Show Anchor"] = true;
 
 	L["Sound on KoS detection"] = true;
 	L["Sound on enemy detection"] = true;
@@ -71,6 +72,7 @@ if L then
 	L["Notify in Sanctuary"] = "In friedlichen Gebieten benachrichtigen";
 	L["Additional Reason Window"] = "Extra Grund Fenster";
 	L["Locked"] = "Sperren";
+	--L["Show Anchor"] = true;
 
 	L["Notify only on my KoS-Targets"] = "Nur meine KoS-Ziele benachrichtigen";
 	L["Sound on KoS detection"] = "Audio Benachrichtigung bei KoS";
@@ -103,6 +105,7 @@ if L then
 --	L["Notify in Sanctuary"] = true;
 	L["Additional Reason Window"] = "Fenêtre additionnelle de raison";
 	L["Locked"] = "Verrouill\195\169";
+	--L["Show Anchor"] = true;
 
 	L["Sound on KoS detection"] = "Son de d\195\169tection KoS";
 	L["Notification Interval (seconds)"] = "Intervalle entre notifications (secondes)";
@@ -134,6 +137,7 @@ if L then
 --	L["Notify in Sanctuary"] = true;
 	L["Additional Reason Window"] = "이유창 추가";
 	L["Locked"] = "고정";
+	--L["Show Anchor"] = true;
 
 	L["Sound on KoS detection"] = "KoS 발견 효과음";
 	L["Notification Interval (seconds)"] = "알림 간격(초)";
@@ -166,6 +170,7 @@ if L then
 --	L["Notify in Sanctuary"] = true;
 	L["Additional Reason Window"] = "Ventana adicional de Razón";
 	L["Locked"] = "Bloqueado";
+	--L["Show Anchor"] = true;
 
 	L["Sound on KoS detection"] = "Sonido al detectar KoS";
 	L["Notification Interval (seconds)"] = "Intervalo de notificación (segundos)";
@@ -197,6 +202,7 @@ if L then
 --	L["Notify in Sanctuary"] = true;
 	L["Additional Reason Window"] = "Дополнительное окно Причин";
 	L["Locked"] = "Зафиксировано";
+	--L["Show Anchor"] = true;
 
 	L["Sound on KoS detection"] = "Звук при обнаружении KoS";
 	L["Notification Interval (seconds)"] = "Интевал Уведомлений (в секундах)";
@@ -210,76 +216,72 @@ L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Notifier", false);
 
 local notifyAllowed = true;
 local flashNotifyFrame = nil;
+local reasonFrame = nil
 
-function VanasKoSNotifier:UpdateAndCreateReasonFrame()
-	if(self.db.profile.notifyExtraReasonFrameEnabled) then
-		local reasonFrame = nil;
-		if(VanasKoS_Notifier_ReasonFrame ~= nil) then
-			reasonFrame = VanasKoS_Notifier_ReasonFrame;
-		else
-			reasonFrame = CreateFrame("Frame", "VanasKoS_Notifier_ReasonFrame");
-		end
-		reasonFrame:SetWidth(300);
-		reasonFrame:SetHeight(13);
-		reasonFrame:SetPoint("CENTER");
-		reasonFrame:SetMovable(true);
-		reasonFrame:SetToplevel(true);
+function VanasKoSNotifier:CreateReasonFrame()
+	reasonFrame = CreateFrame("Frame", "VanasKoS_Notifier_ReasonFrame");
+	reasonFrame:SetWidth(300);
+	reasonFrame:SetHeight(13);
+	reasonFrame:SetPoint("CENTER");
+	reasonFrame:SetMovable(true);
+	reasonFrame:SetToplevel(true);
 
-		local background = nil;
-		if(VanasKoS_Notifier_ReasonFrame_Background ~= nil) then
-			background = VanasKoS_Notifier_ReasonFrame_Background;
-		end
+	reasonFrame.background = reasonFrame:CreateTexture("VanasKoS_Notifier_ReasonFrame_Background", "BACKGROUND");
+	reasonFrame.background:SetAllPoints();
+	reasonFrame.background:SetTexture(1.0, 1.0, 1.0, 0.5);
 
-		if(not self.db.profile.notifyExtraReasonFrameLocked) then
-			if(background == nil) then
-				background = reasonFrame:CreateTexture("VanasKoS_Notifier_ReasonFrame_Background", "BACKGROUND");
-			end
+	reasonFrame.text = reasonFrame:CreateFontString("VanasKoS_Notifier_ReasonFrame_Text", "OVERLAY");
+	-- only set the left point, so texts longer than reasonFrame:GetWidth() will show
+	reasonFrame.text:SetPoint("LEFT", reasonFrame, "LEFT", 0, 0);
+	reasonFrame.text:SetJustifyH("LEFT");
+	reasonFrame.text:SetFontObject("GameFontNormalSmall");
+	reasonFrame.text:SetTextColor(1.0, 0.0, 1.0);
 
-			background:SetAllPoints();
-			background:SetTexture(1.0, 1.0, 1.0, 0.5);
-		else
-			if(background) then
-				background:SetAlpha(0);
-			end
-		end
+	reasonFrame:RegisterForDrag("leftbutton");
+	reasonFrame:SetScript("OnDragStart", function() reasonFrame:StartMoving(); end);
+	reasonFrame:SetScript("OnDragStart", function() reasonFrame:StartMoving(); end);
+	reasonFrame:SetScript("OnDragStop", function() reasonFrame:StopMovingOrSizing(); end);
+	reasonFrame.background:SetAlpha(0.0);
 
-		local text = nil;
-		if(VanasKoS_Notifier_ReasonFrame_Text ~= nil) then
-			text = VanasKoS_Notifier_ReasonFrame_Text;
-		else
-			text = reasonFrame:CreateFontString("VanasKoS_Notifier_ReasonFrame_Text", "OVERLAY");
-		end
-
-		-- only set the left point, so texts longer than reasonFrame:GetWidth() will show
-		text:SetPoint("LEFT", reasonFrame, "LEFT", 0, 0);
-		text:SetJustifyH("LEFT");
-		text:SetFontObject("GameFontNormalSmall");
-
-		if(not self.db.profile.notifyExtraReasonFrameLocked) then
-			text:SetTextColor(1.0, 0.0, 1.0);
-			text:SetText(self:GetKoSString(nil, "Guild", "MyReason", UnitName("player"), nil, "GuildKoS Reason", UnitName("player"), nil));
-		end
-
-		reasonFrame:EnableMouse(true);
-		reasonFrame:RegisterForDrag("LeftButton");
-		reasonFrame:SetScript("OnDragStart", function()
-									if(not VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked) then
-										reasonFrame:StartMoving();
-									end
-							end);
-		reasonFrame:SetScript("OnDragStart", function()
-									if(not VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked) then
-										reasonFrame:StartMoving();
-									end
-							end);
-		reasonFrame:SetScript("OnDragStop",
-								function()
-									reasonFrame:StopMovingOrSizing();
-								end);
+	if (self.db.profile.notifyExtraReasonFrameLocked) then
+		reasonFrame:EnableMouse(false);
 	else
-		if(VanasKoS_Notifier_ReasonFrame ~= nil) then
-			VanasKoS_Notifier_ReasonFrame:Hide();
-		end
+		reasonFrame:EnableMouse(true);
+	end
+
+	if (self.db.profile.notifyExtraReasonFrameEnabled) then
+		reasonFrame:Show();
+	else
+		reasonFrame:Hide();
+	end
+end
+
+function VanasKoSNotifier:EnableReasonFrame(enable)
+	self.db.profile.notifyExtraReasonFrameEnabled = enable;
+	if (enable) then
+		reasonFrame:Show();
+	else
+		reasonFrame:Hide();
+	end
+end
+
+function VanasKoSNotifier:LockReasonFrame(lock)
+	self.db.profile.notifyExtraReasonFrameLocked = lock;
+	if (lock) then
+		reasonFrame:EnableMouse(false);
+	else
+		reasonFrame:EnableMouse(true);
+	end
+end
+
+function VanasKoSNotifier:ShowAnchorReasonFrame(show)
+	reasonFrame.showanchor = show;
+	if (show) then
+		reasonFrame.background:SetAlpha(1.0);
+		reasonFrame.text:SetText(self:GetKoSString(nil, "Guild", "MyReason", UnitName("player"), nil, "GuildKoS Reason", UnitName("player"), nil));
+	else
+		reasonFrame.background:SetAlpha(0.0);
+		reasonFrame.text:SetText("");
 	end
 end
 
@@ -345,7 +347,7 @@ function VanasKoSNotifier:OnInitialize()
 	texture:SetAllPoints(); -- important! gets set in the blizzard xml stuff implicit, while we have to do it explicit with .lua
 	flashNotifyFrame:Hide();
 
-	self:UpdateAndCreateReasonFrame();
+	self:CreateReasonFrame();
 
 	local configOptions = {
 		type = 'group',
@@ -464,7 +466,7 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Enabled"],
 				desc = L["Enabled"],
 				order = 14,
-				set = function(frame, v) VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled = v; VanasKoSNotifier:UpdateAndCreateReasonFrame(); end,
+				set = function(frame, v) VanasKoSNotifier:EnableReasonFrame(v); end,
 				get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled; end,
 			},
 			extrareasonframelocked = {
@@ -472,9 +474,18 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Locked"],
 				desc = L["Locked"],
 				order = 15,
-				set = function(frame, v) VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked = v; VanasKoSNotifier:UpdateAndCreateReasonFrame(); end,
+				set = function(frame, v) VanasKoSNotifier:LockReasonFrame(v); end,
 				get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked; end,
 			},
+			extrareasonframeshowanchor = {
+				type = 'toggle',
+				name = L["Show Anchor"],
+				desc = L["Show Anchor"],
+				order = 16,
+				set = function(frame, v) VanasKoSNotifier:ShowAnchorReasonFrame(v); end,
+				get = function() return reasonFrame.showanchor; end,
+
+			}
 		},
 	};
 

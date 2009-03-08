@@ -32,6 +32,15 @@ RegisterTranslations("enUS", function() return {
 	["Reset Position"] = true,
 --	["Angle"] = true,
 --	["Distance"] = true,
+--
+	["Show information"] = true,
+	["Show Warning Frame Infos as Text and Tooltip"] = true,
+	["Last Attackers"] = true,
+	["%s ago"] = true,
+	
+	["Click to toggle the Main Window"] = true,
+	
+	["Nearby People"] = true,
 } end);
 
 RegisterTranslations("deDE", function() return {
@@ -49,6 +58,14 @@ RegisterTranslations("deDE", function() return {
 	["Reset Position"] = "Position zurücksetzen",
 --	["Angle"] = "Winkel",
 --	["Distance"] = "Abstand",
+--
+	--["Show information"] = true,
+	["Show Warning Frame Infos as Text and Tooltip"] = "Warn-Fenster Infos als Text und Tooltip anzeigen",
+	["Last Attackers"] = "Die letzten Angreifer",
+	
+	["Click to toggle the Main Window"] = "Klicken um Hauptfenster zu zeigen/verstecken",
+	
+	["Nearby People"] = "Nahe Spieler",
 } end);
 
 RegisterTranslations("frFR", function() return {
@@ -66,6 +83,15 @@ RegisterTranslations("frFR", function() return {
 	["Reset Position"] = "Remettre à zéro la position",
 --	["Angle"] = "Angle",
 --	["Distance"] = "Distance",
+--
+	--["Show information"] = true,
+	["Show Warning Frame Infos as Text and Tooltip"] = "Afficher les infos de la fenêtre d'avertissement",
+	["Last Attackers"] = "Derniers attaquants",
+	["%s ago"] = "Il y'a %s",
+	
+	["Click to toggle the Main Window"] = "Clique pour afficher/cacher la fenêtre principale",
+	
+	["Nearby People"] = "Personnes voisines",
 } end);
 
 RegisterTranslations("koKR", function() return {
@@ -83,6 +109,15 @@ RegisterTranslations("koKR", function() return {
 	["Reset Position"] = "위치 초기화",
 --	["Angle"] = "각도",
 --	["Distance"] = "거리",
+--
+	--["Show information"] = true,
+	["Show Warning Frame Infos as Text and Tooltip"] = "텍스트와 툴팁으로 경고창 정보 표시",
+	["Last Attackers"] = "마지막 공격자",
+	["%s ago"] = "%s 이전",
+	
+	["Click to toggle the Main Window"] = "메인창을 열거나 닫으려면 클릭하세요.",
+	
+	["Nearby People"] = "근처에 있는 사람",
 } end);
 
 RegisterTranslations("esES", function() return {
@@ -100,6 +135,15 @@ RegisterTranslations("esES", function() return {
 	["Reset Position"] = "Reestablecer Posición",
 --	["Angle"] = "Ángulo",
 --	["Distance"] = "Distancia",
+--
+	--["Show information"] = true,
+	--["Show Warning Frame Infos as Text and Tooltip"] = true,
+	--["Last Attackers"] = true,
+	--["%s ago"] = true,
+	--["Click to toggle the Main Window"] = true,
+	
+	--["Nearby People"] = true,
+
 } end);
 
 RegisterTranslations("ruRU", function() return {
@@ -117,9 +161,17 @@ RegisterTranslations("ruRU", function() return {
 	["Reset Position"] = "Сбросить расположение",
 --	["Angle"] = "Угол",
 --	["Distance"] = "Расстояние",
+--
+	--["Show information"] = true,
+	["Show Warning Frame Infos as Text and Tooltip"] = "Показывать KoS/Врагов/Друзей на панели FuBar",
+	["Last Attackers"] = "Последние напавшие",
+	["%s ago"] = "%s назад",
+	["Click to toggle the Main Window"] = "Щёлкните, чтобы открыть главное окно VanasKoS",
+	
+	["Nearby People"] = "Ближайшие игроки",
 } end);
 
-VanasKoSMinimapButton = VanasKoS:NewModule("MinimapButton");
+VanasKoSMinimapButton = VanasKoS:NewModule("MinimapButton", "AceEvent-3.0", "AceTimer-3.0");
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_MinimapButton", false);
 
@@ -132,9 +184,10 @@ local Broker = ldb:NewDataObject("VanasKoS", {
 	icon = "Interface\\Icons\\Ability_Parry",
 	OnClick = function(frame, button) VanasKoSMinimapButton:OnClick(button); end,
 	OnTooltipShow = function(tt)
-			tt:AddLine("VanasKoS");
+			VanasKoSMinimapButton:OnTooltipShow(tt);
 		end
 });
+local tooltip = nil;
 
 local minimapOptions = {
 	{
@@ -185,6 +238,7 @@ function VanasKoSMinimapButton:OnInitialize()
 		profile = {
 			Enabled = true,
 			Moved = false,
+			ShowWarnFrameInfoText = true,
 			button = {
 			},
 		}
@@ -206,6 +260,21 @@ function VanasKoSMinimapButton:OnInitialize()
 					order = 1,
 					set = function(frame, v) VanasKoSMinimapButton.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("MinimapButton"); end,
 					get = function() return VanasKoS:GetModule("MinimapButton").enabledState; end,
+				},
+				showInfo = {
+					type = 'toggle',
+					name = L["Show information"],
+					desc = L["Show Warning Frame Infos as Text and Tooltip"],
+					order = 2,
+					set = function(frame, v)
+						VanasKoSMinimapButton.db.profile.ShowWarnFrameInfoText = v;
+						if (v) then
+							VanasKoSMinimapButton:EnableWarnFrameText();
+						else
+							VanasKoSMinimapButton:EnableWarnFrameText();
+						end
+					end,
+					get = function() return VanasKoSMinimapButton.db.profile.ShowWarnFrameInfoText; end,
 				},
 --[[				reset = {
 					type = 'execute',
@@ -239,7 +308,6 @@ function VanasKoSMinimapButton:OnInitialize()
 
 	minimapOptions[1].text = VANASKOS.NAME .. " " .. VANASKOS.VERSION;
 	icon:Hide(self.name);
-	
 	self:SetEnabledState(self.db.profile.Enabled);
 end
 
@@ -298,9 +366,147 @@ end
 
 function VanasKoSMinimapButton:OnEnable()
 	icon:Show(self.name);
+	if(self.db.profile.ShowWarnFrameInfoText) then
+		self:EnableWarnFrameText();
+		if(timer == nil) then
+			timer = self:ScheduleRepeatingTimer("UpdateList", 1);
+		end
+	end
 end
 
 function VanasKoSMinimapButton:OnDisable()
 	icon:Hide(self.name);
+	self:CancelAllTimers();
+	if(self.db.profile.ShowWarnFrameInfoText) then
+		self:DisableWarnFrameText();
+	end
 end
 
+local showWarnFrameInfoText = false;
+
+function VanasKoSMinimapButton:EnableWarnFrameText()
+	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
+	showWarnFrameInfoText = true;
+	self:UpdateMyText();
+end
+
+function VanasKoSMinimapButton:DisableWarnFrameText()
+	self:UnregisterMessage("VanasKoS_Player_Detected");
+	showWarnFrameInfoText = false;
+	Broker.text = nil;
+end
+
+local NOTIFYTIMERINTERVAL = 60;
+local nearbyKoS = { };
+local nearbyEnemies = { };
+local nearbyFriendly = { };
+local nearbyKoSCount = 0;
+local nearbyEnemyCount = 0;
+local nearbyFriendlyCount = 0;
+
+function VanasKoSMinimapButton:Player_Detected(message, data)
+	assert(data.name ~= nil);
+
+	local name = data.name:trim():lower();
+	local faction = data.faction;
+
+	-- exclude unknown entitity entries
+	if(name == UNKNOWNLOWERCASE) then
+		return;
+	end
+
+	if(name == nil or showWarnFrameInfoText == false) then
+		return;
+	end
+
+	if(faction == "kos") then
+		if(not nearbyKoS[name]) then
+			nearbyKoSCount = nearbyKoSCount + 1;
+		end
+		nearbyKoS[name] = time();
+	elseif(faction == "enemy") then
+		if(not nearbyEnemies[name]) then
+			nearbyEnemyCount = nearbyEnemyCount + 1;
+		end
+		nearbyEnemies[name] = time();
+	elseif(faction == "friendly") then
+		if(not nearbyFriendly[name]) then
+			nearbyFriendlyCount = nearbyFriendlyCount + 1;
+		end
+		nearbyFriendly[name] = time();
+	else
+		return;
+	end
+	self:UpdateMyText();
+end
+
+
+function VanasKoSMinimapButton:RemovePlayer(name)
+	if (nearbyKoS[name]) then
+		nearbyKoS[name] = nil;
+		nearbyKoSCount = nearbyKoSCount - 1;
+	end
+	if (nearbyEnemies[name]) then
+		nearbyEnemies[name] = nil;
+		nearbyEnemyCount = nearbyEnemyCount - 1;
+	end
+	if (nearbyFriendly[name]) then
+		nearbyFriendly[name] = nil;
+		nearbyFriendlyCount = nearbyFriendlyCount - 1;
+	end
+	self:UpdateMyText();
+end
+
+local text = "";
+
+function VanasKoSMinimapButton:UpdateMyText()
+	Broker.text = "|cffff00ff" .. nearbyKoSCount .. "|r |cffff0000" .. nearbyEnemyCount .. "|r |cff00ff00" .. nearbyFriendlyCount .. "|r";
+end
+
+function VanasKoSMinimapButton:OnTooltipShow(tt)
+	local list = VanasKoSPvPDataGatherer:GetDamageFromArray();
+
+	tt:AddLine(VANASKOS.NAME);
+	if (#list > 0) then
+		tt:AddLine(L["Last Attackers"] .. ":", 1.0, 1.0, 1.0);
+						
+		for k,v in pairs(list) do
+			tt:AddDoubleLine(v[1], format(L["%s ago"], SecondsToTime(time() - v[2])), 1.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+		end
+	end
+	
+	
+	if(showWarnFrameInfoText and (nearbyKoSCount + nearbyEnemyCount + nearbyFriendlyCount) > 0) then
+		tt:AddLine(L["Nearby People"] .. ":", 1.0, 1.0, 1.0);
+		for k,v in pairs(nearbyKoS) do
+			tt:AddLine(string.Capitalize(k), 1.0, 0.0, 1.0);
+		end
+		for k,v in pairs(nearbyEnemies) do
+			tt:AddLine(string.Capitalize(k), 1.0, 0.0, 0.0);
+		end
+		for k,v in pairs(nearbyFriendly) do
+			tt:AddLine(string.Capitalize(k), 0.0, 1.0, 0.0);
+		end
+	end
+end
+
+function VanasKoSMinimapButton:UpdateList()
+	local t = time();
+	for k, v in pairs(nearbyKoS) do
+		if(t-v > 60) then
+			self:RemovePlayer(k);
+		end
+	end
+	for k, v in pairs(nearbyEnemies) do
+		if(t-v > 10) then
+			self:RemovePlayer(k);
+		end
+	end
+	for k, v in pairs(nearbyFriendly) do
+		if(t-v > 10) then
+			self:RemovePlayer(k);
+		end
+	end
+	
+	VanasKoSWarnFrame:Update();
+end

@@ -208,10 +208,11 @@ function VanasKoSImporter:OnInitialize()
 end
 
 function VanasKoSImporter:OnEnable()
-	zoneContinentZoneID[1] = {GetMapZones(1)};
-	zoneContinentZoneID[2] = {GetMapZones(2)};
-	zoneContinentZoneID[3] = {GetMapZones(3)};
-	zoneContinentZoneID[4] = {GetMapZones(4)};
+	continents = {GetMapContinents()};
+	for i, name in ipairs(continents) do
+		zoneContinentZoneID[i] = {GetMapZones(i)};
+		zoneContinentZoneID[i][0] = name;
+	end
 
 	self:ConvertFromOldVanasKoSList();
 end
@@ -277,7 +278,12 @@ function VanasKoSImporter:ConvertFromOldVanasKoSList()
 	for player, event in pairs(pvplog) do
 		for timestamp, data in pairs(event) do
 			if (data.zoneid and data.continent) then
-				pvplog[player][timestamp].zone = zoneContinentZoneID[data.continent][data.zoneid];
+				if (not zoneContinentZoneID[data.continent] or not zoneContinentZoneID[data.continent][data.zoneid]) then
+					VanasKoS:Print("pvplog: Invalid continent:" .. data.continent .. " zoneid:" .. data.zoneid);
+					pvplog[player][timestamp].zone = "UNKNOWN";
+				else
+					pvplog[player][timestamp].zone = zoneContinentZoneID[data.continent][data.zoneid];
+				end
 				pvplog[player][timestamp].zoneid = nil;
 				pvplog[player][timestamp].continent = nil;
 			end
@@ -286,7 +292,12 @@ function VanasKoSImporter:ConvertFromOldVanasKoSList()
 
 	for player, data in pairs(datalist) do
 		if (data.zoneid and data.continent) then
-			datalist[player].zone = zoneContinentZoneID[data.continent][data.zoneid];
+			if (not zoneContinentZoneID[data.continent] or not zoneContinentZoneID[data.continent][data.zoneid]) then
+				VanasKoS:Print("playerdata: Invalid continent:" .. data.continent .. " zoneid:" .. data.zoneid);
+				pvplog[player][timestamp].zone = "UNKNOWN";
+			else
+				pvplog[player][timestamp].zone = zoneContinentZoneID[data.continent][data.zoneid];
+			end
 			datalist[player].zoneid = nil;
 			datalist[player].continent = nil;
 		end

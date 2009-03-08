@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+4.00c beta
+- Fixed bug importing kills with zoneid=0
+
 4.00b beta
 - Importer bugfixes
 - Portrait Context menu bugfixes

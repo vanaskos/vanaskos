@@ -184,9 +184,10 @@ function VanasKoSDataGatherer:CleanupPlayerDataDatabase()
 	local pkos = VanasKoS:GetList("PLAYERKOS");
 	local hl = VanasKoS:GetList("HATELIST");
 	local nl = VanasKoS:GetList("NICELIST");
+	local ps = VanasKoS:GetList("PVPSTATS");
 	
 	for k, v in pairs(playerDataList) do
-		if(not (pkos[k] or hl[k] or nl[k])) then -- entry isn't in any of these lists.
+		if(not (pkos[k] or hl[k] or nl[k] or ps[k])) then -- entry isn't in any of these lists.
 			wipe(playerDataList[k]);
 			playerDataList[k] = nil;
 		end

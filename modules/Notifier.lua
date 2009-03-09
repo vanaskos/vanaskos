@@ -543,7 +543,7 @@ function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 	end
 
 	-- add pvp stats line if turned on and data is available
-	if(self.db.profile.notifyShowPvPStats) then
+	if(UnitIsEnemy("mouseover", "player") and self.db.profile.notifyShowPvPStats) then
 		local data = VanasKoS:IsOnList("PVPSTATS", name);
 		local playerdata = VanasKoS:IsOnList("PLAYERDATA", name);
 

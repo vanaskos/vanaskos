@@ -59,6 +59,7 @@ if L then
 	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 	L["Enable in Sanctuaries"] = true;
 	L["Toggles detection of players in sanctuaries"] = true;
+	L["_Reason Unknown_"] = "No reason given";
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "zhCN", false);
@@ -119,6 +120,7 @@ if L then
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 --	L["Enable in Sanctuaries"] = true;
 --	L["Toggles detection of players in sanctuaries"] = true;
+--	L["_Reason Unknown_"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "deDE", false);
@@ -178,6 +180,7 @@ if L then
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 --	L["Enable in Sanctuaries"] = true;
 --	L["Toggles detection of players in sanctuaries"] = true;
+--	L["_Reason Unknown_"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "frFR", false);
@@ -235,6 +238,7 @@ if L then
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 --	L["Enable in Sanctuaries"] = true;
 --	L["Toggles detection of players in sanctuaries"] = true;
+--	L["_Reason Unknown_"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "koKR", false);
@@ -292,6 +296,7 @@ if L then
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 --	L["Enable in Sanctuaries"] = true;
 --	L["Toggles detection of players in sanctuaries"] = true;
+--	L["_Reason Unknown_"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "esES", false);
@@ -347,6 +352,7 @@ if L then
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 --	L["Enable in Sanctuaries"] = true;
 --	L["Toggles detection of players in sanctuaries"] = true;
+--	L["_Reason Unknown_"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "ruRU", false);
@@ -406,6 +412,7 @@ if L then
 --	L["Toggles if data from players gathered in cities should be (temporarily) saved."] = true;
 --	L["Enable in Sanctuaries"] = true;
 --	L["Toggles detection of players in sanctuaries"] = true;
+--	L["_Reason Unknown_"] = true;
 end
 
 VANASKOS = { };

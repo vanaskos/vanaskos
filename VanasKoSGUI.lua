@@ -137,10 +137,7 @@ function VanasKoSGUI:OnInitialize()
 			EasyMenu(showOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
 		end);
 	
-	VanasKoSListFrameConfigurationButton:SetScript("OnClick", function()
-			InterfaceOptionsFrame_OpenToCategory(configFrameInner); -- open any inner config frame first (causes list to expand)
-			InterfaceOptionsFrame_OpenToCategory(VanasKoSGUI.configFrame);
-		end);
+	VanasKoSListFrameConfigurationButton:SetScript("OnClick", function() VanasKoSGUI:OpenConfigWindow(); end);
 
 	self:RegisterMessage("VanasKoS_List_Added", "InitializeDropDowns");
 	
@@ -182,6 +179,12 @@ function VanasKoSGUI:OnInitialize()
 									VanasKoSFrame:StopMovingOrSizing();
 									VanasKoSGUI.db.profile.GUIMoved = true;
 								end);
+end
+
+function VanasKoSGUI:OpenConfigWindow()
+	-- open any inner config frame first (causes list to expand)
+	InterfaceOptionsFrame_OpenToCategory(configFrameInner);
+	InterfaceOptionsFrame_OpenToCategory(VanasKoSGUI.configFrame);
 end
 
 function VanasKoSGUI:InitializeDropDowns()

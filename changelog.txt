@@ -1,5 +1,9 @@
 Release Changelog for VanasKoS
 
+alpha:
+- Added "seen" count
+- Added back the kadd command
+
 4.00c beta
 - Fixed bug importing kills with zoneid=0
 

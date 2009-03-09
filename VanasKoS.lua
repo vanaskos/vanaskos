@@ -233,15 +233,13 @@ function VanasKoS:AddEntryFromTarget(list, args)
 	end
 end
 
-function VanasKoS:AddEntryByName(list, playername)
-	local reason = "";
-
+function VanasKoS:AddEntryByName(list, playername, reason)
 	VanasKoSGUI:ShowList(list);
 
-	if(playername == "") then
+	if(playername == nil or playername == "") then
 		StaticPopup_Show("VANASKOS_ADD_ENTRY");
 	else
-		if(reason == "") then
+		if(reason == nil or reason == "") then
 			VANASKOS.LastNameEntered = playername;
 			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
 		else

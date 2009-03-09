@@ -100,10 +100,22 @@ function VanasKoSCommandLineHandler:AddKoSPlayer(arg0, args)
 		else
 			listName = "PLAYERKOS";
 		end
+	elseif (UnitIsPlayer("target")) then
+		-- also allow the currently targeted player to be added (to KOS by default)
 	else
 		return print_kadd_usage();
 	end
 
+	if(name == nil and UnitIsPlayer("target")) then
+		if(listName == nil) then
+			listName = "PLAYERKOS"; -- no argument given
+		end
+		
+		VanasKoS:AddEntryFromTarget(listName, nil);
+		
+		return;
+	end
+	
 	if (listName == nil or name == nil) then
 		return print_kadd_usage();
 	end

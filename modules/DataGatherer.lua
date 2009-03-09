@@ -239,6 +239,9 @@ end
 function VanasKoSDataGatherer:UpdateLastSeen(name)
 	local lname = name:lower();
 	if(playerDataList[lname] ~= nil) then
+		if (time() - (playerDataList[lname].lastseen or 0) > 300) then
+			playerDataList[lname].seen = (playerDataList[lname].seen or 0) + 1;
+		end
 		playerDataList[lname].lastseen = time();
 	end
 end

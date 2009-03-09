@@ -46,7 +46,7 @@ if L then
 	L["Notification Interval (seconds)"] = true;
 	L["Enabled"]  = true;
 	L["None"] = true;
-	L["wins: %d - losses: %d"] = "wins: |cff00ff00%d|r losses: |cffff0000%d|r";
+	L["seen: %d - wins: %d - losses: %d"] = "seen: |cffffffff%d|r wins: |cff00ff00%d|r losses: |cffff0000%d|r";
 	L["Show PvP-Stats in Tooltip"] = true;
 end
 
@@ -79,7 +79,7 @@ if L then
 	L["Notification Interval (seconds)"] = "Benachrichtigungs Interval (Sekunden)";
 	L["Enabled"] = "Aktiviert";
 	L["None"] = "Keiner";
-	L["wins: %d - losses: %d"] = "gewonnen: |cff00ff00%d|r verloren: |cffff0000%d|r";
+	L["seen: %d - wins: %d - losses: %d"] = "seen: |cffffffff%d|r gewonnen: |cff00ff00%d|r verloren: |cffff0000%d|r";
 	L["Show PvP-Stats in Tooltip"] = "Anzeigen von PvP-Statistiken im Tooltip";
 end
 
@@ -111,7 +111,7 @@ if L then
 	L["Notification Interval (seconds)"] = "Intervalle entre notifications (secondes)";
 	L["Enabled"] = "Actif";
 	L["None"] = "Aucun";
-	L["wins: %d - losses: %d"] = "victoires: |cff00ff00%d|r d\195\169faites: |cffff0000%d|r";
+	L["seen: %d - wins: %d - losses: %d"] = "seen: |cffffffff%d|r victoires: |cff00ff00%d|r d\195\169faites: |cffff0000%d|r";
 	L["Show PvP-Stats in Tooltip"] = "Afficher PvP-Stats dans le Tooltip";
 end
 
@@ -143,7 +143,7 @@ if L then
 	L["Notification Interval (seconds)"] = "알림 간격(초)";
 	L["Enabled"]  = "사용";
 	L["None"] = "없음";
-	L["wins: %d - losses: %d"] = "승: |cff00ff00%d|r 패: |cffff0000%d|r";
+	L["seen: %d - wins: %d - losses: %d"] = "seen: |cffffffff%d|r 승: |cff00ff00%d|r 패: |cffff0000%d|r";
 	L["Show PvP-Stats in Tooltip"] = "툴팁에 PvP-현황 표시";
 end
 
@@ -176,7 +176,7 @@ if L then
 	L["Notification Interval (seconds)"] = "Intervalo de notificación (segundos)";
 	L["Enabled"]  = "Activado";
 	L["None"] = "Ninguno";
-	L["wins: %d - losses: %d"] = "ganados: |cff00ff00%d|r perdidos: |cffff0000%d|r";
+	L["seen: %d - wins: %d - losses: %d"] = "seen: |cffffffff%d|r ganados: |cff00ff00%d|r perdidos: |cffff0000%d|r";
 	L["Show PvP-Stats in Tooltip"] = "Mostrar las estadísticas de JcJ en el tooltip";
 end
 
@@ -208,7 +208,7 @@ if L then
 	L["Notification Interval (seconds)"] = "Интевал Уведомлений (в секундах)";
 	L["Enabled"]  = "Включено";
 	L["None"] = "Нет";
-	L["wins: %d - losses: %d"] = "побед: |cff00ff00%d|r поражений: |cffff0000%d|r";
+	L["seen: %d - wins: %d - losses: %d"] = "seen: |cffffffff%d|r побед: |cff00ff00%d|r поражений: |cffff0000%d|r";
 	L["Show PvP-Stats in Tooltip"] = "Показывать PvP-статистику в Тултипе";
 end
 
@@ -545,9 +545,10 @@ function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 	-- add pvp stats line if turned on and data is available
 	if(self.db.profile.notifyShowPvPStats) then
 		local data = VanasKoS:IsOnList("PVPSTATS", name);
+		local playerdata = VanasKoS:IsOnList("PLAYERDATA", name);
 
-		if(data) then
-			tooltip:AddLine(format(L["wins: %d - losses: %d"], data.wins or 0, data.losses or 0));
+		if(data or playerdata) then
+			tooltip:AddLine(format(L["seen: %d - wins: %d - losses: %d"], (playerdata and playerdata.seen) or 0, (data and data.wins) or 0, (data and data.losses) or 0));
 		end
 	end
 

@@ -181,10 +181,10 @@ function VanasKoSDataGatherer:OnDisable()
 end
 
 function VanasKoSDataGatherer:CleanupPlayerDataDatabase()
-	local pkos = VanasKoS:GetList("PLAYERKOS");
-	local hl = VanasKoS:GetList("HATELIST");
-	local nl = VanasKoS:GetList("NICELIST");
-	local ps = VanasKoS:GetList("PVPSTATS");
+	local pkos = VanasKoS:GetList("PLAYERKOS") or {};
+	local hl = VanasKoS:GetList("HATELIST") or {};
+	local nl = VanasKoS:GetList("NICELIST") or {};
+	local ps = VanasKoS:GetList("PVPSTATS") or {};
 	
 	for k, v in pairs(playerDataList) do
 		if(not (pkos[k] or hl[k] or nl[k] or ps[k])) then -- entry isn't in any of these lists.

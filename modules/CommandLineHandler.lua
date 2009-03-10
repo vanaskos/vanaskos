@@ -111,18 +111,9 @@ function VanasKoSCommandLineHandler:AddKoSPlayer(arg0, args)
 
 	if(not name) then
 		VanasKoS:AddEntryFromTarget(listName, nil);
-		
-		return;
 	else
-
+		VanasKoS:AddEntryByName(listName, name, reason);
 	end
-	
-	if (listName == nil or name == nil) then
-		return print_kadd_usage();
-	end
-
-	
-	VanasKoS:AddEntryByName(listName, name, reason);
 end
 
 local function printKoSUsage(name)

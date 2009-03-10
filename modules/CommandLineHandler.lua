@@ -50,6 +50,10 @@ local function getTaggedToken(args)
 		end
 	end
 
+	if (token == "") then
+		token = nil;
+	end
+
 	return token, args, tagged;
 end
 
@@ -61,7 +65,10 @@ local function kaddRetrieveArgs(args)
 	local isGuild = nil;
 
 	cmd, args, tagged = getTaggedToken(args);
-	if (cmd ~= nil and cmd ~= "help" and cmd ~= "?" and cmd ~= "hate" and cmd ~= "nice" and cmd ~= "kos") then
+	if (cmd == nil) then
+		cmd = "kos"
+		return kos;
+	elseif (cmd ~= "help" and cmd ~= "?" and cmd ~= "hate" and cmd ~= "nice" and cmd ~= "kos") then
 		name = cmd;
 		cmd = "kos";
 		if (tagged) then
@@ -94,26 +101,20 @@ function VanasKoSCommandLineHandler:AddKoSPlayer(arg0, args)
 			return;
 		end
 		listName = "NICELIST";
-	elseif (cmd == "kos") then
+	else --if (cmd == "kos") then
 		if (isGuild) then
 			listName = "GUILDKOS";
 		else
 			listName = "PLAYERKOS";
 		end
-	elseif (UnitIsPlayer("target")) then
-		-- also allow the currently targeted player to be added (to KOS by default)
-	else
-		return print_kadd_usage();
 	end
 
-	if(name == nil and UnitIsPlayer("target")) then
-		if(listName == nil) then
-			listName = "PLAYERKOS"; -- no argument given
-		end
-		
+	if(not name) then
 		VanasKoS:AddEntryFromTarget(listName, nil);
 		
 		return;
+	else
+
 	end
 	
 	if (listName == nil or name == nil) then

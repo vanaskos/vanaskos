@@ -5,13 +5,21 @@
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_CommandLineHandler", "enUS", true);
 if L then
-	L["Usage: /%s [<type>] <name> [<reason>]"] = true;
-	L["<type>   -- hate, nice, kos"] = true;
-	L["<name>   -- Name of player or guild, enclose guild in <> (eg: /kadd kos <the guild>)"] = true;
-	L["<reason> -- Reason for adding player or guild"] = true;
+	L["KADD_DESC"] = "Adds a player or <guild> to your kos/hate/nice list";
+	L["KADD_USAGE %s"] = "Usage: /%s [list] [name] [reason]";
+	L["KADD_TYPE"]  = "list -- hate, nice, kos";
+	L["KADD_NAME"]  = "name or <guild name>  -- Name of player or <guild name>";
+	L["KADD_REASON"] = "reason -- Reason for adding player or <guild>";
 
-	L["Usage: /%s [<cmd>] [<args>]"] = true;
-	L["<cmd> -- config, add"] = true;
+	L["CONFIG_DESC"] = "Open the configuration window";
+	L["CONFIG_USAGE %s"] = "Usage: /%s";
+
+	L["MENU_DESC"] = "Open the main KoS list window";
+	L["MENU_USAGE %s"] = "Usage: /%s";
+
+	L["KOS_DESC %s"] = "VanasKoS CLI. Try /%s cmd help";
+	L["KOS_USAGE %s"] = "Usage: /%s [cmd] [args ...]";
+	L["KOS_CMD"] = "cmd -- menu, config, add";
 end
 
 L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_CommandLineHandler", false);
@@ -20,14 +28,7 @@ VanasKoSCommandLineHandler = VanasKoS:NewModule("CommandLineHandler");
 function VanasKoSCommandLineHandler:OnEnable()
 	VanasKoS:RegisterChatCommand("kos", function(args) VanasKoSCommandLineHandler:KoS("kos", args); end );
 	VanasKoS:RegisterChatCommand("vanaskos", function(args) VanasKoSCommandLineHandler:KoS("vanaskos", args); end );
-	VanasKoS:RegisterChatCommand("kadd", function(args) VanasKoSCommandLineHandler:AddKoSPlayer("kadd", args) end);
-end
-
-local function printKaddUsage(name)
-	VanasKoS:Print(format(L["Usage: /%s [<type>] <name> [<reason>]"], name));
-	VanasKoS:Print(L["<type>   -- hate, nice, kos"]);
-	VanasKoS:Print(L["<name>   -- Name of player or guild, enclose guild in <> (eg: /kadd kos <the guild>)"]);
-	VanasKoS:Print(L["<reason> -- Reason for adding player or guild"]);
+	VanasKoS:RegisterChatCommand("kadd", function(args) VanasKoSCommandLineHandler:KoSAdd("kadd", args) end);
 end
 
 local function getTaggedToken(args)
@@ -82,12 +83,20 @@ local function kaddRetrieveArgs(args)
 	return cmd, name, reason, isGuild;
 end
 
-function VanasKoSCommandLineHandler:AddKoSPlayer(arg0, args)
+local function printKaddUsage(name)
+	VanasKoS:Print(format(L["KADD_USAGE %s"], name));
+	VanasKoS:Print(L["KADD_TYPE"]);
+	VanasKoS:Print(L["KADD_NAME"]);
+	VanasKoS:Print(L["KADD_REASON"]);
+end
+
+function VanasKoSCommandLineHandler:KoSAdd(arg0, args)
 	local listName = nil;
 
 	local cmd, name, reason, isGuild = kaddRetrieveArgs(args);
 
 	if (cmd == "help" or cmd == "?") then
+		VanasKoS:Print(L["KADD_DESC"]);
 		return printKaddUsage(arg0);
 	elseif (cmd == "hate") then
 		if (isGuild) then
@@ -101,7 +110,7 @@ function VanasKoSCommandLineHandler:AddKoSPlayer(arg0, args)
 			return;
 		end
 		listName = "NICELIST";
-	else --if (cmd == "kos") then
+	else
 		if (isGuild) then
 			listName = "GUILDKOS";
 		else
@@ -116,21 +125,52 @@ function VanasKoSCommandLineHandler:AddKoSPlayer(arg0, args)
 	end
 end
 
+local function printConfigUsage(name)
+	VanasKoS:Print(format(L["CONFIG_USAGE %s"], name));
+end
+
+function VanasKoSCommandLineHandler:KoSConfig(arg0, args)
+	local cmd, args = getTaggedToken(args);
+
+	if (cmd == "help" or cmd == "?") then
+		VanasKoS:Print(L["CONFIG_DESC"]);
+		printConfigUsage(arg0);
+	else
+		VanasKoSGUI:OpenConfigWindow();
+	end
+end
+
+local function printMenuUsage(name)
+	VanasKoS:Print(format(L["MENU_USAGE %s"], name));
+end
+
+function VanasKoSCommandLineHandler:KoSMenu(arg0, args)
+	local cmd, args = getTaggedToken(args);
+
+	if (cmd == "help" or cmd == "?") then
+		VanasKoS:Print(L["MENU_DESC"]);
+		printMenuUsage(arg0);
+	else
+		VanasKoS:ToggleMenu();
+	end
+end
+
 local function printKoSUsage(name)
-	VanasKoS:Print(format(L["Usage: /%s [<cmd>] [<args>]"], name));
-	VanasKoS:Print(L["<cmd> -- config, add"]);
+	VanasKoS:Print(format(L["KOS_USAGE %s"], name));
+	VanasKoS:Print(L["KOS_CMD"]);
 end
 
 function VanasKoSCommandLineHandler:KoS(arg0, args)
 	local cmd, args = getTaggedToken(args);
 
-	if (cmd == "config") then
-		VanasKoSGUI:OpenConfigWindow();
-	elseif (cmd == "add") then
-		VanasKoSCommandLineHandler:AddKoSPlayer(arg0 .. " add", args)
-	elseif (cmd == "help") then
+	if (cmd == "help" or cmd == "?") then
+		VanasKoS:Print(format(L["KOS_DESC %s"], arg0));
 		printKoSUsage(arg0);
+	elseif (cmd == "config") then
+		self:KoSConfig(arg0 .. " config", args)
+	elseif (cmd == "add") then
+		self:KoSAdd(arg0 .. " add", args)
 	else
-		VanasKoS:ToggleMenu();
+		self:KoSMenu(arg0 .. " menu", args)
 	end
 end

@@ -15,7 +15,6 @@
 ## X-Category: Battlegrounds/PvP
 ## X-AceForum: http://www.wowace.com/forums/index.php?topic=3938.0
 ## X-License: CreativeCommons-Attribution-NonCommercial-ShareAlike-2.5
-## X-Donate: PayPal:boredvana AT gmail DOT com
 
 #@no-lib-strip@
 Libs\LibStub\LibStub.lua

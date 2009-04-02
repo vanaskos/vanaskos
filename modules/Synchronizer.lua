@@ -22,19 +22,22 @@ if L then
 	L["Adds a Share Group to the list"] = true;
 	L["Remove Share Group"] = true;
 	L["Removes the selected Share Group from the list"] = true;
+
+	L["Interval"] = true;
+	L["Sets the number of minutes between sending lists"] = true;
+	L["Sending lists to guild"] = true;
 end
 
 
 VanasKoSSynchronizer = VanasKoS:NewModule("Synchronizer", "AceComm-3.0", "AceTimer-3.0");
 
- L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Synchronizer", false);
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Synchronizer", false);
 
- local SEND_TO_GUILD_INTERVAL = 3600;
- 
 local module = VanasKoSSynchronizer;
 local core = VanasKoS;
 
 local configOptions = nil;
+local startupTimer = nil;
 
 local function RegisterConfiguration()
 	configOptions = {
@@ -148,18 +151,36 @@ local function RegisterConfiguration()
 				set = function(frame, v) 
 							VanasKoSSynchronizer.db.profile.GuildSharingEnabled = v; 
 							if(v) then 
-								VanasKoSSynchronizer:StartGuildSync(); 
+								VanasKoSSynchronizer:StartGuildSync(true); 
 							else 
 								VanasKoSSynchronizer:StopGuildSync(); 
 							end
 						end,
 				get = function() return VanasKoSSynchronizer.db.profile.GuildSharingEnabled; end,
 			},
+			interval = {
+				type = 'range',
+				name = L["Interval"],
+				desc = L["Sets the number of minutes between sending lists"],
+				order = 2,
+				get = function() return VanasKoSSynchronizer.db.profile.GuildSharingInterval end;
+				set = function(frame, v)
+						if(v >= 10) then
+							VanasKoSSynchronizer.db.profile.GuildSharingInterval = v;
+							VanasKoSSynchronizer:StopGuildSync();
+							VanasKoSSynchronizer:StartGuildSync(false); 
+						end
+					end,
+				min = 10,
+				max = 120,
+				step = 1,
+				isPercent = false,
+			},
 			liststoshare = {
 				type = "multiselect",
 				name = L["Lists to share with guild"],
 				desc = L["Select the lists you want to share with your guild."],
-				order = 2,
+				order = 3,
 				get = function(frame, key) 
 						return VanasKoSSynchronizer.db.profile.GuildShareLists[key];
 					end,
@@ -223,6 +244,7 @@ function module:OnInitialize()
 		profile = {
 			Enabled = true,
 			GuildSharingEnabled = false,
+			GuildSharingInterval = 60,
 			GuildShareLists = {
 				['PLAYERKOS'] = true,
 				['GUILDKOS'] = true,
@@ -248,83 +270,98 @@ end
 function module:OnEnable()
 	self:RegisterCommunicationChannels();
 	if(self.db.profile.GuildSharingEnabled) then
-		self:ScheduleTimer("StartGuildSync", 30);
-	end
+	startupTimer = self:ScheduleTimer("StartGuildSync", 30, true);
+end
 end
 
 function module:OnDisable()
-	self:UnregisterAllComm();
+self:UnregisterAllComm();
 end
 
 function module:GetShareGroupTable()
-	local tbl = { };
-	for k, v in pairs(self.db.realm.synchronizer.ShareChannels) do
-		tbl[k] = k;
-	end
-	
-	return tbl;
+local tbl = { };
+for k, v in pairs(self.db.realm.synchronizer.ShareChannels) do
+	tbl[k] = k;
+end
+
+return tbl;
 end
 
 local AceSerializer = LibStub("AceSerializer-3.0");
 
-local function GetSerializedString(command, list)
-	-- VanasKoS Version, Protocol Version
-	return AceSerializer:Serialize(VANASKOS.VERSION, 1, command, VanasKoSSynchronizer.db.realm.synchronizer.mainchar, list);
+local function GetSerializedString(command, listName, list)
+-- VanasKoS Version, Protocol Version
+return AceSerializer:Serialize(VANASKOS.VERSION, 1, command, VanasKoSSynchronizer.db.realm.synchronizer.mainchar, listName, list);
 end
 
 local function DeserializeString(serializedString)
-	local result, vanasKoSVersion, protocolVersion, command, mainchar, list = AceSerializer:Deserialize(serializedString);
-	if(protocolVersion ~= 1) then
-		return false, "Unknown protocol version";
-	end
-	if(type(listName) ~= "string") then
-		return false, "Invalid listName";
-	end
-	if(type(list) == "table") then
-		return false, "Invalid list";
-	end
-	
-	return true, vanasKoSVersion, protocolVersion, command, mainchar, list;
+local result, vanasKoSVersion, protocolVersion, command, mainchar, listName, list = AceSerializer:Deserialize(serializedString);
+if(protocolVersion ~= 1) then
+	return false, format("Unknown protocol version '%s'", protocolVersion);
+end
+if(type(listName) ~= "string") then
+	return false, "Invalid listName (%s)", type(listName);
+end
+if(type(list) ~= "table") then
+	return false, format("Invalid list (%s)", type(list));
+end
+
+return true, vanasKoSVersion, protocolVersion, command, mainchar, listName, list;
 end
 
 local listsToShare = {"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"};
 
+-- /script VanasKoSSynchronizer:SendListsToGuild()
 function module:SendListsToGuild()
-	for index, listName in pairs(listsToShare) do
-		if(self.db.profile.GuildShareLists[listName]) then
-			--[[  TODO:REEnable for releases
-			if(not IsInGuild()) then
-				return;
-			end]]
-			local shareList = self:GetListToShare(listName);
-			-- sl = setlist
-			self:SendCommMessage("VanasKoS", GetSerializedString("sl", shareList), "WHISPER", "Vanae", "BULK");
-		end
+	if(not IsInGuild()) then
+		return;
 	end
+VanasKoS:Print(L["Sending lists to guild"]);
+
+for index, listName in pairs(listsToShare) do
+	if(self.db.profile.GuildShareLists[listName]) then
+		local shareList = self:GetListToShare(listName);
+		-- sl = setlist
+		self:SendCommMessage("VanasKoS", GetSerializedString("sl", listName, shareList), "GUILD", nil, "BULK");
+	end
+end
 end
 
 local sendList = { };
 function module:GetListToShare(listName)
-	local list = VanasKoS:GetList(listName);
-	wipe(sendList);
-	for k, v in pairs(list) do
+local list = VanasKoS:GetList(listName);
+wipe(sendList);
+for k, v in pairs(list) do
+	if (not v.owner or v.owner == "") then
 		sendList[k] = {
 			['reason'] = v.reason;
 			['creator'] = v.creator;
-		};
-	end
+		}
+	end;
+end
+
+return sendList;
 end
 
 local guildSyncTimer = nil;
 
-function module:StartGuildSync()
-	self:SendListsToGuild();
-	guildSyncTimer = self:ScheduleRepeatingTimer("SendListsToGuild", SEND_TO_GUILD_INTERVAL);
+function module:StartGuildSync(sendNow)
+	if(sendNow == true) then
+		self:SendListsToGuild();
+	end
+	guildSyncTimer = self:ScheduleRepeatingTimer("SendListsToGuild", self.db.profile.GuildSharingInterval * 60);
 end
 
 function module:StopGuildSync()
-	self:CancelTimer(guildSyncTimer);
-	guildSyncTimer = nil;
+	if (startupTimer ~= nil) then
+		self:CancelTimer(startupTimer);
+		startupTimer = nil;
+	end
+
+	if (guildSyncTimer ~= nil) then
+		self:CancelTimer(guildSyncTimer);
+		guildSyncTimer = nil;
+	end
 end
 
 function module:RegisterCommunicationChannels()
@@ -334,11 +371,13 @@ end
 local moppelkotze = false;
 
 function module:OnCommReceived(prefix, text, distribution, sender)
-	local result, vanasKoSVersion, protocolVersion, command, mainchar, list = DeserializeString(text);
+	local result, vanasKoSVersion, protocolVersion, command, mainchar, listName, list = DeserializeString(text);
 	if(not result) then
 		-- TODO: Log
+--		VanasKoS:Print(format("Invalid comm from %s: %s", sender, vanasKoSVersion));
 		return;
 	end
+--	VanasKoS:Print(format("CommReceived from %s ver:%s pv:%s cmd:%s mc:%s", sender, vanasKoSVersion, protocolVersion, command, mainchar));
 	if(VanasKoS:IsVersionNewer(vanasKoSVersion)) then
 		if(not moppelkotze) then
 			VanasKoS:Print("A newer version of VanasKoS is available. Please upgrade!");
@@ -347,58 +386,61 @@ function module:OnCommReceived(prefix, text, distribution, sender)
 	end
 	
 	if(command == "sl") then
-		self:ProcessList(distribution, sender, mainchar, list);
+		self:ProcessList(distribution, sender, mainchar, listName, list);
 	end
 end
 
-function module:ProcessList(distribution, sender, mainchar, receivedList)
+function module:ProcessList(distribution, sender, mainchar, listName, receivedList)
 	local synctime = time();
-	for listname, list in pairs(receivedList) do
-		local destList = VanasKoS:GetList(listname);
-		if(destList ~= nil) then
-			-- create and update all entries on the list
-			for k,v in pairs(list) do
-				local name = k:lower();
-				if(destList[name] and
-					(destList[name].owner == nil or
-					destList[name].owner == "")) then
-					-- i already created the kos entry, don't touch it
-				else
-					if(v.owner == nil or v.owner == "") then
-						v.owner = sender:lower();
-					end
-					if(v.creator == nil or v.creator == "") then
-						v.creator = sender:lower();
-					end
+--	VanasKoS:Print(format("Processing list %s from %s (%s)", listName, sender, mainchar));
+--	local destList = VanasKoS:GetList(listName);
+	if(destList == nil) then
+--		VanasKoS:Print(format("Invalid list (%s)", listName));
+		return;
+	end
 
-					if(destList[name]) then
-						destList[name].reason = v.reason;
-						destList[name].sender = sender:lower();
-						destList[name].creator = v.creator:lower();
-						destList[name].owner = mainchar;
-						destList[name].lastupdated = synctime;
-					else
-						destList[name] = { ["reason"] = v.reason,
-											["sender"] = sender:lower(),
-											["creator"] = v.creator:lower(),
-											["owner"] = owner:lower(),
-											["lastupdated"] = synctime };
-					end
-					if(destList[name].created == nil) then
-						destList[name].created = synctime;
-					end
-				end
+	-- create and update all entries on the list
+	for k,v in pairs(receivedList) do
+		local name = k:lower();
+--		VanasKoS:Print("    Received " .. name)
+		if(destList[name] ~= nil and
+			(destList[name].owner == nil or destList[name].owner == "")) then
+			-- I already created the kos entry, don't touch it
+--			VanasKoS:Print("      " .. name .. " already on list")
+		else
+--			VanasKoS:Print("      Adding")
+			if(v.owner == nil or v.owner == "") then
+				v.owner = sender:lower();
+			end
+			if(v.creator == nil or v.creator == "") then
+				v.creator = sender:lower();
 			end
 
-			-- delete old from that owner  that werent just synced
-			for k,v in pairs(destList) do
-				if(v.owner ~= nil and
-					v.owner:lower() == owner:lower() and
-					(not v.lastupdated or
-						(v.lastupdated and v.lastupdated ~= synctime))) then
-					destList[k] = nil
-				end
+			if(destList[name]) then
+				destList[name].reason = v.reason;
+				destList[name].sender = sender:lower();
+				destList[name].creator = v.creator:lower();
+				destList[name].owner = mainchar;
+				destList[name].lastupdated = synctime;
+			else
+				destList[name] = { ["reason"] = v.reason,
+						["sender"] = sender:lower(),
+						["creator"] = v.creator:lower(),
+						["owner"] = owner:lower(),
+						["lastupdated"] = synctime };
 			end
+			if(destList[name].created == nil) then
+				destList[name].created = synctime;
+			end
+		end
+	end
+
+	-- delete old entries from this owner that werent just synced
+	for k,v in pairs(destList) do
+		if(v.owner and v.owner:lower() == mainchar and
+			(not v.lastupdated or (v.lastupdated and v.lastupdated ~= synctime))) then
+--			VanasKoS:Print("    Removing old entry")
+			destList[k] = nil
 		end
 	end
 end

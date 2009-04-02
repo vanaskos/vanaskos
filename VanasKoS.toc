@@ -11,7 +11,7 @@
 ## SavedVariablesPerCharacter: VanasKoSDBPC
 ## OptionalDeps: Ace3, LibSharedMedia-3.0, LibBabble-Zone-3.0, LibBabble-Class-3.0, LibBabble-Race-3.0, LibTourist-3.0, LibGraph-2.0, LibDBIcon-1.0
 ## X-eMail: boredvana@gmail.com
-## X-Date: 2009-03-08
+## X-Date: 2009-04-02
 ## X-Category: Battlegrounds/PvP
 ## X-AceForum: http://www.wowace.com/forums/index.php?topic=3938.0
 ## X-License: CreativeCommons-Attribution-NonCommercial-ShareAlike-2.5
@@ -63,7 +63,7 @@ modules\WarnFrame.lua
 modules\MinimapButton.lua
 modules\CommandLineHandler.lua
 modules\FriendsFrameDocker.lua
-#modules\Synchronizer.lua
+modules\Synchronizer.lua
 modules\PortraitContextMenu.lua
 modules\LastSeenList.lua
 modules\PvPStats.lua

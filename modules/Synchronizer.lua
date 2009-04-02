@@ -313,18 +313,22 @@ local listsToShare = {"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"};
 
 -- /script VanasKoSSynchronizer:SendListsToGuild()
 function module:SendListsToGuild()
+	if (startupTimer ~= nil) then
+		startupTimer = nil;
+	end
+
 	if(not IsInGuild()) then
 		return;
 	end
-VanasKoS:Print(L["Sending lists to guild"]);
+	VanasKoS:Print(L["Sending lists to guild"]);
 
-for index, listName in pairs(listsToShare) do
-	if(self.db.profile.GuildShareLists[listName]) then
-		local shareList = self:GetListToShare(listName);
-		-- sl = setlist
-		self:SendCommMessage("VanasKoS", GetSerializedString("sl", listName, shareList), "GUILD", nil, "BULK");
+	for index, listName in pairs(listsToShare) do
+		if(self.db.profile.GuildShareLists[listName]) then
+			local shareList = self:GetListToShare(listName);
+			-- sl = setlist
+			self:SendCommMessage("VanasKoS", GetSerializedString("sl", listName, shareList), "GUILD", nil, "BULK");
+		end
 	end
-end
 end
 
 local sendList = { };
@@ -377,6 +381,12 @@ function module:OnCommReceived(prefix, text, distribution, sender)
 --		VanasKoS:Print(format("Invalid comm from %s: %s", sender, vanasKoSVersion));
 		return;
 	end
+
+	-- Ignore messages from self
+	if(not sender or sender == UnitName("player")) then
+		return
+	end
+
 --	VanasKoS:Print(format("CommReceived from %s ver:%s pv:%s cmd:%s mc:%s", sender, vanasKoSVersion, protocolVersion, command, mainchar));
 	if(VanasKoS:IsVersionNewer(vanasKoSVersion)) then
 		if(not moppelkotze) then
@@ -393,7 +403,7 @@ end
 function module:ProcessList(distribution, sender, mainchar, listName, receivedList)
 	local synctime = time();
 --	VanasKoS:Print(format("Processing list %s from %s (%s)", listName, sender, mainchar));
---	local destList = VanasKoS:GetList(listName);
+	local destList = VanasKoS:GetList(listName);
 	if(destList == nil) then
 --		VanasKoS:Print(format("Invalid list (%s)", listName));
 		return;
@@ -408,7 +418,7 @@ function module:ProcessList(distribution, sender, mainchar, listName, receivedLi
 			-- I already created the kos entry, don't touch it
 --			VanasKoS:Print("      " .. name .. " already on list")
 		else
---			VanasKoS:Print("      Adding")
+--			VanasKoS:Print("      not on my list")
 			if(v.owner == nil or v.owner == "") then
 				v.owner = sender:lower();
 			end
@@ -417,16 +427,18 @@ function module:ProcessList(distribution, sender, mainchar, listName, receivedLi
 			end
 
 			if(destList[name]) then
+--				VanasKoS:Print("      	Updating")
 				destList[name].reason = v.reason;
 				destList[name].sender = sender:lower();
 				destList[name].creator = v.creator:lower();
-				destList[name].owner = mainchar;
+				destList[name].owner = mainchar:lower();
 				destList[name].lastupdated = synctime;
 			else
+--				VanasKoS:Print("      	Adding")
 				destList[name] = { ["reason"] = v.reason,
 						["sender"] = sender:lower(),
 						["creator"] = v.creator:lower(),
-						["owner"] = owner:lower(),
+						["owner"] = mainchar:lower(),
 						["lastupdated"] = synctime };
 			end
 			if(destList[name].created == nil) then
@@ -437,7 +449,7 @@ function module:ProcessList(distribution, sender, mainchar, listName, receivedLi
 
 	-- delete old entries from this owner that werent just synced
 	for k,v in pairs(destList) do
-		if(v.owner and v.owner:lower() == mainchar and
+		if(v.owner and v.owner:lower() == mainchar:lower() and
 			(not v.lastupdated or (v.lastupdated and v.lastupdated ~= synctime))) then
 --			VanasKoS:Print("    Removing old entry")
 			destList[k] = nil

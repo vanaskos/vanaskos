@@ -19,6 +19,19 @@ if L then
 	L["Draws PvP events on map for all characters"] = true;
 	L["Dynamic Zoom"] = true;
 	L["Redraws points based on Cartographer3 zoom level"] = true;
+	L["Show Icons"] = true;
+	L["Toggle showing individual icons or simple dots"] = true;
+	L["Tooltips"] = true;
+	L["Show tooltips when hovering over PvP event icons"] = true;
+	L["Dots"] = true;
+	L["Size"] = true;
+	L["Size of dots"] = true;
+	L["Loss"] = true;
+	L["Sets the loss color and opacity"] = true;
+	L["Win"] = true
+	L["Sets the win color and opacity"] = true;
+	L["Reset"] = true;
+	L["Reset dots to default"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "deDE", false);
@@ -37,6 +50,19 @@ if L then
 	--L["Draws PvP events on map for all characters"] = true;
 	--L["Dynamic Zoom"] = true;
 	--L["Redraws points based on Cartographer3 zoom level"] = true;
+	--L["Show Icons"] = true;
+	--L["Toggle showing individual icons or simple dots"] = true;
+	--L["Tooltips"] = true;
+	--L["Show tooltips when hovering over PvP event icons"] = true;
+	--L["Dots"] = true;
+	--L["Size"] = true;
+	--L["Size of dots"] = true;
+	--L["Loss"] = true;
+	--L["Sets the loss color and opacity"] = true;
+	--L["Win"] = true
+	--L["Sets the win color and opacity"] = true;
+	--L["Reset"] = true;
+	--L["Reset dots to default"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "frFR", false);
@@ -55,6 +81,19 @@ if L then
 	--L["Draws PvP events on map for all characters"] = true;
 	--L["Dynamic Zoom"] = true;
 	--L["Redraws points based on Cartographer3 zoom level"] = true;
+	--L["Show Icons"] = true;
+	--L["Toggle showing individual icons or simple dots"] = true;
+	--L["Tooltips"] = true;
+	--L["Show tooltips when hovering over PvP event icons"] = true;
+	--L["Dots"] = true;
+	--L["Size"] = true;
+	--L["Size of dots"] = true;
+	--L["Loss"] = true;
+	--L["Sets the loss color and opacity"] = true;
+	--L["Win"] = true
+	--L["Sets the win color and opacity"] = true;
+	--L["Reset"] = true;
+	--L["Reset dots to default"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "koKR", false);
@@ -73,6 +112,19 @@ if L then
 	--L["Draws PvP events on map for all characters"] = true;
 	--L["Dynamic Zoom"] = true;
 	--L["Redraws points based on Cartographer3 zoom level"] = true;
+	--L["Show Icons"] = true;
+	--L["Toggle showing individual icons or simple dots"] = true;
+	--L["Tooltips"] = true;
+	--L["Show tooltips when hovering over PvP event icons"] = true;
+	--L["Dots"] = true;
+	--L["Size"] = true;
+	--L["Size of dots"] = true;
+	--L["Loss"] = true;
+	--L["Sets the loss color and opacity"] = true;
+	--L["Win"] = true
+	--L["Sets the win color and opacity"] = true;
+	--L["Reset"] = true;
+	--L["Reset dots to default"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "esES", false);
@@ -91,6 +143,26 @@ if L then
 	--L["Draws PvP events on map for all characters"] = true;
 	--L["Dynamic Zoom"] = true;
 	--L["Redraws points based on Cartographer3 zoom level"] = true;
+	--L["Show Icons"] = true;
+	--L["Toggle showing individual icons or simple dots"] = true;
+	--L["Tooltips"] = true;
+	--L["Show tooltips when hovering over PvP event icons"] = true;
+	--L["Dots"] = true;
+	--L["Size"] = true;
+	--L["Size of dots"] = true;
+	--L["Loss"] = true;
+	--L["Sets the loss color and opacity"] = true;
+	--L["Win"] = true
+	--L["Sets the win color and opacity"] = true;
+	--L["Dots"] = true;
+	--L["Size"] = true;
+	--L["Size of dots"] = true;
+	--L["Loss"] = true;
+	--L["Sets the loss color and opacity"] = true;
+	--L["Win"] = true
+	--L["Sets the win color and opacity"] = true;
+	--L["Reset"] = true;
+	--L["Reset dots to default"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "ruRU", false);
@@ -109,6 +181,19 @@ if L then
 	--L["Draws PvP events on map for all characters"] = true;
 	--L["Dynamic Zoom"] = true;
 	--L["Redraws points based on Cartographer3 zoom level"] = true;
+	--L["Show Icons"] = true;
+	--L["Toggle showing individual icons or simple dots"] = true;
+	--L["Tooltips"] = true;
+	--L["Show tooltips when hovering over PvP event icons"] = true;
+	--L["Dots"] = true;
+	--L["Size"] = true;
+	--L["Size of dots"] = true;
+	--L["Loss"] = true;
+	--L["Sets the loss color and opacity"] = true;
+	--L["Win"] = true
+	--L["Sets the win color and opacity"] = true;
+	--L["Reset"] = true;
+	--L["Reset dots to default"] = true;
 end
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_EventMap", true);
@@ -120,30 +205,53 @@ local Cartographer3_Data = nil;
 local zoneContinentZoneID = {};
 VanasKoSEventMap.POIGRIDALIGN = 16;
 VanasKoSEventMap.ICONSIZE = 16;
+VanasKoSEventMap.DOTSIZE = 16;
 VanasKoSEventMap.lastzoom = 20;
 VanasKoSEventMap.lastzone = "";
 VanasKoSEventMap.lastcontinent = "";
 
 
-local function POI_Resize(self)
-	self:SetWidth(VanasKoSEventMap.ICONSIZE);
-	self:SetHeight(VanasKoSEventMap.ICONSIZE);
+local function GetColor(which)
+	return VanasKoSEventMap.db.profile[which .. "R"], VanasKoSEventMap.db.profile[which .. "G"], VanasKoSEventMap.db.profile[which .. "B"], VanasKoSEventMap.db.profile[which .. "A"];
 end
 
-local function POI_OnShow(self, id)
-	self:Resize(self);
+local function SetColor(which, r, g, b, a)
+	VanasKoSEventMap.db.profile[which .. "R"] = r;
+	VanasKoSEventMap.db.profile[which .. "G"] = g;
+	VanasKoSEventMap.db.profile[which .. "B"] = b;
+	VanasKoSEventMap.db.profile[which .. "A"] = a;
+
+	VanasKoSEventMap:RedrawMap();
 end
 
-local function POI_OnEnter(self, id)
+function VanasKoSEventMap:POI_Resize(frame)
+	if (self.db.profile.icons) then
+		frame:SetWidth(self.ICONSIZE);
+		frame:SetHeight(self.ICONSIZE);
+	else
+		frame:SetWidth(self.DOTSIZE);
+		frame:SetHeight(self.DOTSIZE);
+	end
+end
+
+function VanasKoSEventMap:POI_OnShow(frame, id)
+	frame:Resize(frame);
+end
+
+function VanasKoSEventMap:POI_OnEnter(frame, id)
+	if (not self.db.profile.showTooltip) then
+		return
+	end
+
 	local x = WorldMapButton:GetCenter();
 	local anchor = "ANCHOR_RIGHT";
-	if (x < self.x) then
+	if (x < frame.x) then
 		anchor = "ANCHOR_LEFT";
 	end
 	WorldMapTooltip:ClearLines();
-	WorldMapTooltip:SetOwner(self, anchor);
+	WorldMapTooltip:SetOwner(frame, anchor);
 	WorldMapTooltip:AddLine(format(L["PvP Encounter"]));
-	for i,v in ipairs(self.event) do
+	for i,v in ipairs(frame.event) do
 		local player = "";
 		if (v.myname) then
 			player = player .. v.myname;
@@ -183,26 +291,25 @@ local function POI_OnEnter(self, id)
 	WorldMapTooltip:Show();
 end
 
-
-local function POI_OnLeave(self, id)
+function VanasKoSEventMap:POI_OnLeave(frame, id)
 	WorldMapTooltip:Hide();
 end
 
-local function VanasKoSEventMap_CreatePOI(x, y)
-	local POI = CreateFrame("Button", "VanasKoSEventMapPOI"..VanasKoSEventMap.POICnt, WorldMapButton);
-	local id = VanasKoSEventMap.POICnt + 1;
+function VanasKoSEventMap:CreatePOI(x, y)
+	local POI = CreateFrame("Button", "VanasKoSEventMapPOI"..self.POICnt, WorldMapButton);
+	local id = self.POICnt + 1;
 	POI:SetWidth(16);
 	POI:SetHeight(16);
 	POI:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	POI:SetToplevel(true);
 
-	POI.Resize = POI_Resize;
-	POI:SetScript("OnEnter", POI_OnEnter);
-	POI:SetScript("OnLeave", POI_OnLeave);
-	POI:SetScript("OnClick", POI_OnClick);
-	POI:SetScript("OnShow", POI_OnShow)
-	POI.x = floor(x/VanasKoSEventMap.POIGRIDALIGN) * VanasKoSEventMap.POIGRIDALIGN;
-	POI.y = floor(y/VanasKoSEventMap.POIGRIDALIGN) * VanasKoSEventMap.POIGRIDALIGN;
+	POI.Resize = function(frame) VanasKoSEventMap:POI_Resize(frame, id); end;
+	POI:SetScript("OnEnter", function(frame, id) VanasKoSEventMap:POI_OnEnter(frame, id); end);
+	POI:SetScript("OnLeave", function(frame, id) VanasKoSEventMap:POI_OnLeave(frame, id); end);
+	POI:SetScript("OnClick", function(frame, id) VanasKoSEventMap:POI_OnClick(frame, id); end);
+	POI:SetScript("OnShow", function(frame, id) VanasKoSEventMap:POI_OnShow(frame, id); end)
+	POI.x = floor(x/self.POIGRIDALIGN) * self.POIGRIDALIGN;
+	POI.y = floor(y/self.POIGRIDALIGN) * self.POIGRIDALIGN;
 	POI.score = 0;
 	POI.event = {};
 	POI:Hide();
@@ -211,44 +318,46 @@ local function VanasKoSEventMap_CreatePOI(x, y)
 	tex:SetAllPoints();
 	tex:SetPoint("CENTER", 0, 0);
 
-	VanasKoSEventMap.POIList[id] = POI;
+	self.POIList[id] = POI;
 
-	if (not VanasKoSEventMap.POIGrid[POI.x]) then
-		VanasKoSEventMap.POIGrid[POI.x] = {[POI.y] = POI};
+	if (not self.POIGrid[POI.x]) then
+		self.POIGrid[POI.x] = {[POI.y] = POI};
 	else
-		VanasKoSEventMap.POIGrid[POI.x][POI.y] = POI;
+		self.POIGrid[POI.x][POI.y] = POI;
 	end
-	VanasKoSEventMap.POICnt = VanasKoSEventMap.POICnt + 1;
+	self.POICnt = self.POICnt + 1;
 
-	return VanasKoSEventMap.POIList[id];
+	return self.POIList[id];
 end
 
-local function VanasKoSEventMap_GetPOI(x, y)
-	local xAlign = floor(x/VanasKoSEventMap.POIGRIDALIGN) * VanasKoSEventMap.POIGRIDALIGN;
-	local yAlign = floor(y/VanasKoSEventMap.POIGRIDALIGN) * VanasKoSEventMap.POIGRIDALIGN;
+function VanasKoSEventMap:GetPOI(x, y)
+	local xAlign = floor(x/self.POIGRIDALIGN) * self.POIGRIDALIGN;
+	local yAlign = floor(y/self.POIGRIDALIGN) * self.POIGRIDALIGN;
 	
-	if (VanasKoSEventMap.POIGrid[xAlign] and
-	    VanasKoSEventMap.POIGrid[xAlign][yAlign]) then
-		return VanasKoSEventMap.POIGrid[xAlign][yAlign];
+	if (self.POIGrid[xAlign] and
+	    self.POIGrid[xAlign][yAlign]) then
+		return self.POIGrid[xAlign][yAlign];
 	end
 
-	VanasKoSEventMap.POIUsed = VanasKoSEventMap.POIUsed + 1;
-	if (VanasKoSEventMap.POIUsed <= VanasKoSEventMap.POICnt) then
-		local POI = VanasKoSEventMap.POIList[VanasKoSEventMap.POIUsed];
+	self.POIUsed = self.POIUsed + 1;
+	if (self.POIUsed <= self.POICnt) then
+		local POI = self.POIList[self.POIUsed];
 		POI.x = xAlign;
 		POI.y = yAlign;
-		if (not VanasKoSEventMap.POIGrid[xAlign]) then
-			VanasKoSEventMap.POIGrid[xAlign] = {[yAlign] = POI};
+		if (not self.POIGrid[xAlign]) then
+			self.POIGrid[xAlign] = {[yAlign] = POI};
 		else
-			VanasKoSEventMap.POIGrid[xAlign][yAlign] = POI;
+			self.POIGrid[xAlign][yAlign] = POI;
 		end
 		return POI;
 	end
 
-	return VanasKoSEventMap_CreatePOI(x, y);
+	return self:CreatePOI(x, y);
 end
 
-local function drawPOI(POI)
+function VanasKoSEventMap:drawPOI(POI)
+	local alpha = 1;
+
 	-- sanity check
 	if (POI == nil) then
 		return;
@@ -257,12 +366,40 @@ local function drawPOI(POI)
 	POI:Hide();
 	POI:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", POI.x, POI.y);
 	POI:SetFrameLevel(WorldMapPlayer:GetFrameLevel() - 1);
-	if (POI.score < 0) then
-		POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\loss");
-	elseif (POI.score > 0) then
-		POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\win");
+	if (not self.db.profile.icons) then
+		POI:SetNormalTexture(nil);
+		POI:SetBackdrop({bgFile = "Interface\\Addons\\VanasKoS\\Artwork\\dot"});
 	else
-		POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\tie");
+		POI:SetBackdrop({});
+		POI:SetBackdropColor(0, 0, 0, 0);
+	end
+
+	if (POI.score < 0) then
+		if (self.db.profile.icons) then
+			POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\loss");
+		else
+			local r, g, b, a = GetColor("LossBGColor");
+			a = min(a * #POI.event, 1);
+			POI:SetBackdropColor(r, g, b, a);
+		end
+	elseif (POI.score > 0) then
+		if (self.db.profile.icons) then
+			POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\win");
+		else
+			local r, g, b, a = GetColor("WinBGColor");
+			a = min(a * #POI.event, 1);
+			POI:SetBackdropColor(r, g, b, a);
+		end
+	else
+		if (self.db.profile.icons) then
+			POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\tie");
+		else
+			local rl, gl, bl, al = GetColor("LossBGColor");
+			local rw, gw, bw, aw = GetColor("WinBGColor");
+			local rt, gt, bt, at = rl + rw, gl + gw, bl + bw, al + aw;
+			local r, g, b, a = r / min(r, g, b), g / max(r, g, b), b / max(r, g, b), max(a * #POI.event, 1);
+			POI:SetBackdropColor(1, 1, 0, a);
+		end
 	end
 	POI:Resize();
 	POI:Enable();
@@ -270,7 +407,7 @@ local function drawPOI(POI)
 end
 
 
-local function CreatePoints(enemyIdx)
+function VanasKoSEventMap:CreatePoints(enemyIdx)
 	local i = 0;
 	local pvplog = VanasKoS:GetList("PVPLOG");
 	local lastEnemy = nil;
@@ -282,10 +419,10 @@ local function CreatePoints(enemyIdx)
 
 	for enemy, etable in next, pvplog, enemyIdx do
 		for time, event in pairs(etable) do
-			if (event.zone and event.zone == zoneName and (VanasKoSEventMap.db.profile.drawAlts or event.myname == myname)) then
+			if (event.zone and event.zone == zoneName and (self.db.profile.drawAlts or event.myname == myname)) then
 				local x = event.posX * WorldMapDetailFrame:GetWidth();
 				local y = -event.posY * WorldMapDetailFrame:GetHeight();
-				local POI = VanasKoSEventMap_GetPOI(x, y);
+				local POI = self:GetPOI(x, y);
 				if (event.type == "loss") then
 					POI.score = POI.score - 1;
 				elseif (event.type == "win") then
@@ -300,24 +437,24 @@ local function CreatePoints(enemyIdx)
 							mylevel = event.mylevel,
 							enemylevel = event.enemylevel,
 							});
-				drawPOI(POI);
+				self:drawPOI(POI);
 			end
 			i = i + 1;
 		end
 
-		if (i >= VanasKoSEventMap.db.profile.drawPoints) then
+		if (i >= self.db.profile.drawPoints) then
 			lastEnemy = enemy;
 			break;
 		end
 	end
 
 	if (lastEnemy ~= nil) then
-		VanasKoSEventMap:ScheduleTimer(CreatePoints, VanasKoSEventMap.db.profile.drawDelay, lastEnemy);
+		self:ScheduleTimer("CreatePoints", self.db.profile.drawDelay, lastEnemy);
 	end
 end
 
-local function ClearEventMap()
-	for i,POI in ipairs(VanasKoSEventMap.POIList) do
+function VanasKoSEventMap:ClearEventMap()
+	for i,POI in ipairs(self.POIList) do
 		POI:Hide();
 		POI.show = nil;
 		POI.score = 0;
@@ -325,25 +462,31 @@ local function ClearEventMap()
 		POI.x = 0;
 		POI.y = 0;
 	end
-	wipe(VanasKoSEventMap.POIGrid);
-	VanasKoSEventMap.POIUsed = 0;
-	VanasKoSEventMap:CancelAllTimers();
+	wipe(self.POIGrid);
+	self.POIUsed = 0;
+	self:CancelAllTimers();
 end
 
-local function UpdatePOI()
+function VanasKoSEventMap:RedrawMap()
+	self.lastzone = "nowhere";
+	self.lastcontinent = "nowhere";
+	self:UpdatePOI();
+end
+
+function VanasKoSEventMap:UpdatePOI()
 	local continent = GetCurrentMapContinent();
 	local zone = GetCurrentMapZone();
 
 	-- Only draw if the zone has changed
-	if (VanasKoSEventMap.lastzone == zone and VanasKoSEventMap.lastcontinent == continent) then
+	if (self.lastzone == zone and self.lastcontinent == continent) then
 		return
 	end
-	VanasKoSEventMap.lastzone = zone;
-	VanasKoSEventMap.lastcontinent = continent;
+	self.lastzone = zone;
+	self.lastcontinent = continent;
 
-	ClearEventMap();
+	self:ClearEventMap();
 
-	CreatePoints(nil);
+	self:CreatePoints(nil);
 end
 
 function VanasKoSEventMap:OnInitialize()
@@ -355,6 +498,21 @@ function VanasKoSEventMap:OnInitialize()
 				drawDelay = 0.05,
 				drawAlts = true,
 				dynamicZoom = true,
+				showTooltip = true,
+				icons = true,
+				dotsize = 16,
+				dotloss = {1, 0, 0, .2},
+				dotwin = {0, 1, 0, .2},
+
+				LossBGColorR = 1.0,
+				LossBGColorG = 0.0,
+				LossBGColorB = 0.0,
+				LossBGColorA = 0.5,
+
+				WinBGColorR = 0.0,
+				WinBGColorG = 1.0,
+				WinBGColorB = 0.0,
+				WinBGColorA = 0.5,
 			},
 		}
 	);
@@ -369,7 +527,11 @@ function VanasKoSEventMap:OnInitialize()
 				name = L["Enabled"],
 				desc = L["Enabled"],
 				order = 1,
-				set = function(frame, v) VanasKoSEventMap.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("EventMap"); end,
+				set = function(frame, v)
+					VanasKoSEventMap.db.profile.Enabled = v;
+					VanasKoS:ToggleModuleActive("EventMap");
+					VanasKoS:RedrawMap();
+				end,
 				get = function() return VanasKoSEventMap.db.profile.Enabled; end,
 			},
 			drawAlts = {
@@ -377,7 +539,7 @@ function VanasKoSEventMap:OnInitialize()
 				name = L["Draw Alts"],
 				desc = L["Draws PvP events on map for all characters"],
 				order = 2,
-				set = function(frame, v) VanasKoSEventMap.db.profile.drawAlts = v; VanasKoSEventMap.lastzone=""; UpdatePOI(); end,
+				set = function(frame, v) VanasKoSEventMap.db.profile.drawAlts = v; VanasKoSEventMap:RedrawMap(); end,
 				get = function() return VanasKoSEventMap.db.profile.drawAlts; end,
 			},
 			dynamicZoom = {
@@ -388,17 +550,92 @@ function VanasKoSEventMap:OnInitialize()
 				set = function(frame, v) VanasKoSEventMap.db.profile.dynamicZoom = v; end,
 				get = function() return VanasKoSEventMap.db.profile.dynamicZoom; end,
 			},
+			icons = {
+				type = 'toggle',
+				name = L["Show Icons"],
+				desc = L["Toggle showing individual icons or simple dots"],
+				order = 4,
+				set = function(frame, v)
+						VanasKoSEventMap.db.profile.icons = v;
+						if (v) then
+							VanasKoSEventMap.POIGRIDALIGN = VanasKoSEventMap.ICONSIZE;
+						else
+							VanasKoSEventMap.POIGRIDALIGN = 1;
+						end
+						VanasKoSEventMap:RedrawMap();
+					end,
+				get = function() return VanasKoSEventMap.db.profile.icons; end,
+			},
+			showTooltip = {
+				type = 'toggle',
+				name = L["Tooltips"],
+				desc = L["Show tooltips when hovering over PvP event icons"],
+				order = 5,
+				set = function(frame, v) VanasKoSEventMap.db.profile.showTooltip = v; end,
+				get = function() return VanasKoSEventMap.db.profile.showTooltip; end,
+			},
+			dotoptions = {
+				type = 'header',
+				name = L["Dots"],
+				desc = L["Dots"],
+				order = 6,
+			},
+			dotsize = {
+				type = 'range',
+				name = L["Size"],
+				desc = L["Size of dots"],
+				order = 7,
+				set = function(frame, v)
+					VanasKoSEventMap.db.profile.dotsize = v;
+					VanasKoSEventMap.DOTSIZE = v;
+					VanasKoSEventMap:RedrawMap(); end,
+				get = function() return VanasKoSEventMap.db.profile.dotsize; end,
+				min = 4,
+				max = 18,
+				step = 1,
+			},
+			lossBackgroundColor = {
+				type = 'color',
+				name = L["Loss"],
+				desc = L["Sets the loss color and opacity"],
+				order = 8,
+				set = function(frame, r, g, b, a) SetColor("LossBGColor", r, g, b, a); end,
+				get = function() return GetColor("LossBGColor"); end,
+				hasAlpha = true
+			},
+			winBackgroundColor = {
+				type = 'color',
+				name = L["Win"],
+				desc = L["Sets the win color and opacity"],
+				order = 9,
+				set = function(frame, r, g, b, a) SetColor("WinBGColor", r, g, b, a); end,
+				get = function() return GetColor("WinBGColor"); end,
+				hasAlpha = true
+			},
+			dotreset = {
+				type = 'execute',
+				name = L["Reset"],
+				desc = L["Reset dots to default"],
+				order = 10,
+				func = function()
+						SetColor("LossBGColor", 1.0, 0.0, 0.0, 0.5);
+						SetColor("WinBGColor", 0.0, 1.0, 0.0, 0.5);
+						VanasKoSEventMap.db.profile.dotsize = 16;
+						VanasKoSEventMap.DOTSIZE = 16;
+					end,
+			},
+
 			performanceHeader = {
 				type = 'header',
 				name = L["Performance"],
 				desc = L["Performance"],
-				order = 4,
+				order = 11,
 			},
 			drawPoints = {
 				type = 'range',
 				name = L["Events Processed"],
 				desc = L["Number of events to process at a time"],
-				order = 5,
+				order = 12,
 				set = function(frame, v) VanasKoSEventMap.db.profile.drawPoints = v; end,
 				get = function() return VanasKoSEventMap.db.profile.drawPoints; end,
 				min = 1,
@@ -410,7 +647,7 @@ function VanasKoSEventMap:OnInitialize()
 				type = 'range',
 				name = L["Process Delay"],
 				desc = L["Delay between processing the next set of events"],
-				order = 6,
+				order = 13,
 				set = function(frame, v) VanasKoSEventMap.db.profile.drawDelay = v; end,
 				get = function() return VanasKoSEventMap.db.profile.drawDelay; end,
 				min = 0,
@@ -440,14 +677,15 @@ function VanasKoSEventMap:ReadjustCamera(...)
 	if (Cartographer3_Data and Cartographer3_Data.cameraZoom > 20) then
 		zoom = Cartographer3_Data.cameraZoom;
 	end
-	VanasKoSEventMap.ICONSIZE = 20 * 16 / zoom;
+	self.ICONSIZE = 20 * 16 / zoom;
 	]]
 
 	local zoom = WorldMapFrame:GetScale();
 	if (WorldMapFrame:GetScale() < 1) then
 		zoom = 1;
 	end
-	VanasKoSEventMap.ICONSIZE = 16 / zoom;
+	self.ICONSIZE = 16 / zoom;
+	self.DOTSIZE = self.db.profile.dotsize / zoom;
 
 	if (self.lastzoom == zoom) then
 		return;
@@ -455,23 +693,38 @@ function VanasKoSEventMap:ReadjustCamera(...)
 	self.lastzoom = zoom;
 
 	if (self.db.profile.dynamicZoom == true) then
-		VanasKoSEventMap.POIGRIDALIGN = VanasKoSEventMap.ICONSIZE;
+		if (self.db.profile.icons) then
+			self.POIGRIDALIGN = self.ICONSIZE;
+		else
+			self.POIGRIDALIGN = 1;
+		end
 		-- redraw all the points based on new zoom
 		self.lastzone = "";
-		UpdatePOI();
+		self:UpdatePOI();
 	else
 		-- Resize all points
-		for i,POI in ipairs(VanasKoSEventMap.POIList) do
+		for i,POI in ipairs(self.POIList) do
 			POI:Resize();
 		end
 	end
 end
 
+function VanasKoSEventMap:WORLD_MAP_UPDATE()
+	self:UpdatePOI();
+end
+
 function VanasKoSEventMap:OnEnable()
-	self:RegisterEvent("WORLD_MAP_UPDATE", UpdatePOI);
+	self:RegisterEvent("WORLD_MAP_UPDATE");
 	if (Cartographer3) then
 		Cartographer3_Data = Cartographer3.Data;
 		self:RawHook(Cartographer3.Utils, "ReadjustCamera");
+	end
+
+	self.DOTSIZE = self.db.profile.dotsize;
+	if (self.db.profile.icons) then
+		self.POIGRIDALIGN = self.ICONSIZE;
+	else
+		self.POIGRIDALIGN = 1;
 	end
 end
 

@@ -19,6 +19,11 @@ function VanasKoS:ToggleModuleActive(moduleStr)
 	end
 end
 
+function VanasKoS:ModuleEnabled(moduleStr)
+	local module = self:GetModule(moduleStr, false);
+	return module:IsEnabled();
+end
+
 --[[----------------------------------------------------------------------
   ACE Functions
 ------------------------------------------------------------------------]]

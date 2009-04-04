@@ -273,6 +273,9 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 			owner = string.Capitalize(value.owner);
 		end
 		local displayname = string.Capitalize(key);
+		if(value.wanted == true) then
+			displayname = "|cffff0000" .. displayname .. "|r";
+		end
 		if(data and data.level and data.race and data.class) then
 			buttonText1:SetText(format(L["%s  Level %s %s %s %s"], displayname, data.level, data.race, data.class, owner));
 		else
@@ -354,7 +357,7 @@ function VanasKoSDefaultLists:RemoveEntry(listname, name)
 	local list = VanasKoS:GetList(listname);
 	if(list and list[name]) then
 		list[name] = nil;
-		self:SendMessage("VanasKoS_List_Entry_Removed", list, name);
+		self:SendMessage("VanasKoS_List_Entry_Removed", listname, name);
 	end
 end
 
@@ -410,6 +413,22 @@ local function ListButtonOnRightClickMenu()
 			end
 		}
 	};
+
+	if(VANASKOS.showList == "PLAYERKOS"and VanasKoS:ModuleEnabled("DistributedTracker")) then
+		tinsert(menuItems, {
+			text = L["Wanted"],
+			func = function()
+					local list = VanasKoS:GetList("PLAYERKOS");
+					if (not list[entry].wanted) then
+						list[entry].wanted = true;
+					else
+						list[entry].wanted = nil;
+					end
+					VanasKoSGUI:Update();
+				end,
+			checked = function() return value.wanted; end,
+		});
+	end
 
 	EasyMenu(menuItems, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
 end

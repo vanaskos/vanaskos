@@ -308,8 +308,14 @@ function VanasKoSEventMap:CreatePOI(x, y)
 	POI:SetScript("OnLeave", function(frame, id) VanasKoSEventMap:POI_OnLeave(frame, id); end);
 	POI:SetScript("OnClick", function(frame, id) VanasKoSEventMap:POI_OnClick(frame, id); end);
 	POI:SetScript("OnShow", function(frame, id) VanasKoSEventMap:POI_OnShow(frame, id); end)
-	POI.x = floor(x/self.POIGRIDALIGN) * self.POIGRIDALIGN;
-	POI.y = floor(y/self.POIGRIDALIGN) * self.POIGRIDALIGN;
+	if (self.db.profile.icons) then
+		POI.x = floor(x/self.POIGRIDALIGN) * self.POIGRIDALIGN;
+		POI.y = floor(y/self.POIGRIDALIGN) * self.POIGRIDALIGN;
+	else
+		POI.x = x;
+		POI.y = y;
+	end
+
 	POI.score = 0;
 	POI.event = {};
 	POI:Hide();
@@ -331,25 +337,35 @@ function VanasKoSEventMap:CreatePOI(x, y)
 end
 
 function VanasKoSEventMap:GetPOI(x, y)
-	local xAlign = floor(x/self.POIGRIDALIGN) * self.POIGRIDALIGN;
-	local yAlign = floor(y/self.POIGRIDALIGN) * self.POIGRIDALIGN;
-	
-	if (self.POIGrid[xAlign] and
-	    self.POIGrid[xAlign][yAlign]) then
-		return self.POIGrid[xAlign][yAlign];
-	end
+	if (self.db.profile.icons) then
+		local xAlign = floor(x/self.POIGRIDALIGN) * self.POIGRIDALIGN;
+		local yAlign = floor(y/self.POIGRIDALIGN) * self.POIGRIDALIGN;
 
-	self.POIUsed = self.POIUsed + 1;
-	if (self.POIUsed <= self.POICnt) then
-		local POI = self.POIList[self.POIUsed];
-		POI.x = xAlign;
-		POI.y = yAlign;
-		if (not self.POIGrid[xAlign]) then
-			self.POIGrid[xAlign] = {[yAlign] = POI};
-		else
-			self.POIGrid[xAlign][yAlign] = POI;
+		if (self.POIGrid[xAlign] and
+		    self.POIGrid[xAlign][yAlign]) then
+			return self.POIGrid[xAlign][yAlign];
 		end
-		return POI;
+
+		self.POIUsed = self.POIUsed + 1;
+		if (self.POIUsed <= self.POICnt) then
+			local POI = self.POIList[self.POIUsed];
+			POI.x = xAlign;
+			POI.y = yAlign;
+			if (not self.POIGrid[xAlign]) then
+				self.POIGrid[xAlign] = {[yAlign] = POI};
+			else
+				self.POIGrid[xAlign][yAlign] = POI;
+			end
+			return POI;
+		end
+	else
+		self.POIUsed = self.POIUsed + 1;
+		if (self.POIUsed <= self.POICnt) then
+			local POI = self.POIList[self.POIUsed];
+			POI.x = x;
+			POI.y = y;
+			return POI;
+		end
 	end
 
 	return self:CreatePOI(x, y);
@@ -378,27 +394,20 @@ function VanasKoSEventMap:drawPOI(POI)
 		if (self.db.profile.icons) then
 			POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\loss");
 		else
-			local r, g, b, a = GetColor("LossBGColor");
-			a = min(a * #POI.event, 1);
-			POI:SetBackdropColor(r, g, b, a);
+			POI:SetBackdropColor(GetColor("LossColor"));
 		end
 	elseif (POI.score > 0) then
 		if (self.db.profile.icons) then
 			POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\win");
 		else
-			local r, g, b, a = GetColor("WinBGColor");
-			a = min(a * #POI.event, 1);
-			POI:SetBackdropColor(r, g, b, a);
+			POI:SetBackdropColor(GetColor("WinColor"));
 		end
 	else
 		if (self.db.profile.icons) then
 			POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\tie");
 		else
-			local rl, gl, bl, al = GetColor("LossBGColor");
-			local rw, gw, bw, aw = GetColor("WinBGColor");
-			local rt, gt, bt, at = rl + rw, gl + gw, bl + bw, al + aw;
-			local r, g, b, a = r / min(r, g, b), g / max(r, g, b), b / max(r, g, b), max(a * #POI.event, 1);
-			POI:SetBackdropColor(1, 1, 0, a);
+			-- Hmmm this shouldn't have happened...
+			POI:SetBackdropColor(0, 0, 0, 0);
 		end
 	end
 	POI:Resize();
@@ -504,15 +513,15 @@ function VanasKoSEventMap:OnInitialize()
 				dotloss = {1, 0, 0, .2},
 				dotwin = {0, 1, 0, .2},
 
-				LossBGColorR = 1.0,
-				LossBGColorG = 0.0,
-				LossBGColorB = 0.0,
-				LossBGColorA = 0.5,
+				LossColorR = 1.0,
+				LossColorG = 0.0,
+				LossColorB = 0.0,
+				LossColorA = 0.5,
 
-				WinBGColorR = 0.0,
-				WinBGColorG = 1.0,
-				WinBGColorB = 0.0,
-				WinBGColorA = 0.5,
+				WinColorR = 0.0,
+				WinColorG = 1.0,
+				WinColorB = 0.0,
+				WinColorA = 0.5,
 			},
 		}
 	);
@@ -557,11 +566,7 @@ function VanasKoSEventMap:OnInitialize()
 				order = 4,
 				set = function(frame, v)
 						VanasKoSEventMap.db.profile.icons = v;
-						if (v) then
-							VanasKoSEventMap.POIGRIDALIGN = VanasKoSEventMap.ICONSIZE;
-						else
-							VanasKoSEventMap.POIGRIDALIGN = 1;
-						end
+						VanasKoSEventMap.POIGRIDALIGN = VanasKoSEventMap.ICONSIZE;
 						VanasKoSEventMap:RedrawMap();
 					end,
 				get = function() return VanasKoSEventMap.db.profile.icons; end,
@@ -599,8 +604,8 @@ function VanasKoSEventMap:OnInitialize()
 				name = L["Loss"],
 				desc = L["Sets the loss color and opacity"],
 				order = 8,
-				set = function(frame, r, g, b, a) SetColor("LossBGColor", r, g, b, a); end,
-				get = function() return GetColor("LossBGColor"); end,
+				set = function(frame, r, g, b, a) SetColor("LossColor", r, g, b, a); end,
+				get = function() return GetColor("LossColor"); end,
 				hasAlpha = true
 			},
 			winBackgroundColor = {
@@ -608,8 +613,8 @@ function VanasKoSEventMap:OnInitialize()
 				name = L["Win"],
 				desc = L["Sets the win color and opacity"],
 				order = 9,
-				set = function(frame, r, g, b, a) SetColor("WinBGColor", r, g, b, a); end,
-				get = function() return GetColor("WinBGColor"); end,
+				set = function(frame, r, g, b, a) SetColor("WinColor", r, g, b, a); end,
+				get = function() return GetColor("WinColor"); end,
 				hasAlpha = true
 			},
 			dotreset = {
@@ -618,8 +623,8 @@ function VanasKoSEventMap:OnInitialize()
 				desc = L["Reset dots to default"],
 				order = 10,
 				func = function()
-						SetColor("LossBGColor", 1.0, 0.0, 0.0, 0.5);
-						SetColor("WinBGColor", 0.0, 1.0, 0.0, 0.5);
+						SetColor("LossColor", 1.0, 0.0, 0.0, 0.5);
+						SetColor("WinColor", 0.0, 1.0, 0.0, 0.5);
 						VanasKoSEventMap.db.profile.dotsize = 16;
 						VanasKoSEventMap.DOTSIZE = 16;
 					end,
@@ -693,11 +698,8 @@ function VanasKoSEventMap:ReadjustCamera(...)
 	self.lastzoom = zoom;
 
 	if (self.db.profile.dynamicZoom == true) then
-		if (self.db.profile.icons) then
-			self.POIGRIDALIGN = self.ICONSIZE;
-		else
-			self.POIGRIDALIGN = 1;
-		end
+		self.POIGRIDALIGN = self.ICONSIZE;
+
 		-- redraw all the points based on new zoom
 		self.lastzone = "";
 		self:UpdatePOI();
@@ -721,11 +723,7 @@ function VanasKoSEventMap:OnEnable()
 	end
 
 	self.DOTSIZE = self.db.profile.dotsize;
-	if (self.db.profile.icons) then
-		self.POIGRIDALIGN = self.ICONSIZE;
-	else
-		self.POIGRIDALIGN = 1;
-	end
+	self.POIGRIDALIGN = self.ICONSIZE;
 end
 
 function VanasKoSEventMap:OnDisable()

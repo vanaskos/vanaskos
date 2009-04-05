@@ -18,7 +18,7 @@ if L then
 	L["Draw Alts"] = true;
 	L["Draws PvP events on map for all characters"] = true;
 	L["Dynamic Zoom"] = true;
-	L["Redraws points based on Cartographer3 zoom level"] = true;
+	L["Redraws icons based on Cartographer3 zoom level"] = true;
 	L["Show Icons"] = true;
 	L["Toggle showing individual icons or simple dots"] = true;
 	L["Tooltips"] = true;
@@ -49,7 +49,7 @@ if L then
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
 	--L["Dynamic Zoom"] = true;
-	--L["Redraws points based on Cartographer3 zoom level"] = true;
+	--L["Redraws icons based on Cartographer3 zoom level"] = true;
 	--L["Show Icons"] = true;
 	--L["Toggle showing individual icons or simple dots"] = true;
 	--L["Tooltips"] = true;
@@ -80,7 +80,7 @@ if L then
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
 	--L["Dynamic Zoom"] = true;
-	--L["Redraws points based on Cartographer3 zoom level"] = true;
+	--L["Redraws icons based on Cartographer3 zoom level"] = true;
 	--L["Show Icons"] = true;
 	--L["Toggle showing individual icons or simple dots"] = true;
 	--L["Tooltips"] = true;
@@ -111,7 +111,7 @@ if L then
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
 	--L["Dynamic Zoom"] = true;
-	--L["Redraws points based on Cartographer3 zoom level"] = true;
+	--L["Redraws icons based on Cartographer3 zoom level"] = true;
 	--L["Show Icons"] = true;
 	--L["Toggle showing individual icons or simple dots"] = true;
 	--L["Tooltips"] = true;
@@ -142,7 +142,7 @@ if L then
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
 	--L["Dynamic Zoom"] = true;
-	--L["Redraws points based on Cartographer3 zoom level"] = true;
+	--L["Redraws icons based on Cartographer3 zoom level"] = true;
 	--L["Show Icons"] = true;
 	--L["Toggle showing individual icons or simple dots"] = true;
 	--L["Tooltips"] = true;
@@ -180,7 +180,7 @@ if L then
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
 	--L["Dynamic Zoom"] = true;
-	--L["Redraws points based on Cartographer3 zoom level"] = true;
+	--L["Redraws icons based on Cartographer3 zoom level"] = true;
 	--L["Show Icons"] = true;
 	--L["Toggle showing individual icons or simple dots"] = true;
 	--L["Tooltips"] = true;
@@ -536,11 +536,7 @@ function VanasKoSEventMap:OnInitialize()
 				name = L["Enabled"],
 				desc = L["Enabled"],
 				order = 1,
-				set = function(frame, v)
-					VanasKoSEventMap.db.profile.Enabled = v;
-					VanasKoS:ToggleModuleActive("EventMap");
-					VanasKoS:RedrawMap();
-				end,
+				set = function(frame, v) VanasKoS:ToggleModuleActive("EventMap"); end,
 				get = function() return VanasKoSEventMap.db.profile.Enabled; end,
 			},
 			drawAlts = {
@@ -554,7 +550,7 @@ function VanasKoSEventMap:OnInitialize()
 			dynamicZoom = {
 				type = 'toggle',
 				name = L["Dynamic Zoom"],
-				desc = L["Redraws points based on Cartographer3 zoom level"],
+				desc = L["Redraws icons based on Cartographer3 zoom level"],
 				order = 3,
 				set = function(frame, v) VanasKoSEventMap.db.profile.dynamicZoom = v; end,
 				get = function() return VanasKoSEventMap.db.profile.dynamicZoom; end,
@@ -697,7 +693,7 @@ function VanasKoSEventMap:ReadjustCamera(...)
 	end
 	self.lastzoom = zoom;
 
-	if (self.db.profile.dynamicZoom == true) then
+	if (self.db.profile.dynamicZoom == true and self.db.profile.icons) then
 		self.POIGRIDALIGN = self.ICONSIZE;
 
 		-- redraw all the points based on new zoom
@@ -728,5 +724,8 @@ end
 
 function VanasKoSEventMap:OnDisable()
 	self:UnregisterEvent("WORLD_MAP_UPDATE");
-	ClearEventMap();
+	if (Cartographer3) then
+		self:Unhook(Cartographer3.Utils, "ReadjustCamera");
+	end
+	self:ClearEventMap();
 end

@@ -273,23 +273,53 @@ function VanasKoSImporter:ConvertFromOldVanasKoSList()
 		end
 	end
 
-	--convert continent/id zone information to zone only
+	--convert continent/id zone information to zone only and
+	-- upgrade to new format
 	local pvplog = VanasKoS:GetList("PVPLOG");
-	for player, event in pairs(pvplog) do
-		for timestamp, data in pairs(event) do
-			if (data.zoneid and data.continent) then
-				if (not zoneContinentZoneID[data.continent] or not zoneContinentZoneID[data.continent][data.zoneid]) then
-					VanasKoS:Print("pvplog: Invalid continent:" .. data.continent .. " zoneid:" .. data.zoneid);
-					pvplog[player][timestamp].zone = "UNKNOWN";
-				else
-					pvplog[player][timestamp].zone = zoneContinentZoneID[data.continent][data.zoneid];
+	if (not (pvplog.player and pvplog.zone and pvplog.event)) then
+		local playerlog = {};
+		local zonelog = {};
+		local eventlog = {};
+		for player, event in pairs(pvplog) do
+			for timestamp, data in pairs(event) do
+				local zone = data.zone or "UNKNOWN";
+				if (data.zoneid and data.continent) then
+					if (not zoneContinentZoneID[data.continent] or not zoneContinentZoneID[data.continent][data.zoneid]) then
+						VanasKoS:Print("pvplog: Invalid continent:" .. data.continent .. " zoneid:" .. data.zoneid);
+					else
+						zone = zoneContinentZoneID[data.continent][data.zoneid];
+					end
 				end
-				pvplog[player][timestamp].zoneid = nil;
-				pvplog[player][timestamp].continent = nil;
+				tinsert(eventlog, {['enemyname'] = player,
+							['time'] = timestamp,
+							['myname'] = data['myname'],
+							['mylevel'] = data['mylevel'],
+							['enemylevel'] = data['enemylevel'],
+							['type'] = data['type'],
+							['zone']  = zone,
+							['posX'] = data['posX'],
+							['posY'] = data['posY'],
+						});
+
+				if (not zonelog[zone]) then
+					zonelog[zone] = {};
+				end
+				tinsert(zonelog[zone], #eventlog);
+
+				if (not playerlog[player]) then
+					playerlog[player] = {};
+				end
+				tinsert(playerlog[player], #eventlog);
 			end
 		end
+		wipe(pvplog);
+
+		pvplog.event = eventlog;
+		pvplog.player = playerlog;
+		pvplog.zone = zonelog;
 	end
 
+	--convert continent/id zone information to zone only
 	for player, data in pairs(datalist) do
 		if (data.zoneid and data.continent) then
 			if (not zoneContinentZoneID[data.continent] or not zoneContinentZoneID[data.continent][data.zoneid]) then

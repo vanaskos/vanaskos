@@ -10,20 +10,20 @@ if L then
 	L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	L["PvP Encounter"] = true;
-	L["Performance"] = true;
-	L["Events Processed"] = true;
-	L["Number of events to process at a time"] = true;
-	L["Process Delay"] = true;
-	L["Delay between processing the next set of events"] = true;
 	L["Draw Alts"] = true;
 	L["Draws PvP events on map for all characters"] = true;
+	L["Drawing mode"] = true;
+	L["Toggle showing individual icons or simple dots"] = true;
+	L["Icons"] = true;
+	L["Colored dots"] = true;
+	L["Tooltips"] = true;
+	L["Show tooltips when hovering over PvP events"] = true;
+
+	L["Icon Options"] = true;
 	L["Dynamic Zoom"] = true;
 	L["Redraws icons based on Cartographer3 zoom level"] = true;
-	L["Show Icons"] = true;
-	L["Toggle showing individual icons or simple dots"] = true;
-	L["Tooltips"] = true;
-	L["Show tooltips when hovering over PvP event icons"] = true;
-	L["Dots"] = true;
+
+	L["Dot Options"] = true;
 	L["Size"] = true;
 	L["Size of dots"] = true;
 	L["Loss"] = true;
@@ -41,20 +41,20 @@ if L then
 	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
-	--L["Performance"] = true;
-	--L["Events Processed"] = true;
-	--L["Number of events to process at a time"] = true;
-	--L["Process Delay"] = true;
-	--L["Delay between processing the next set of events"] = true;
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
+	--L["Drawing mode"] = true;
+	--L["Toggle showing individual icons or simple dots"] = true;
+	--L["Icons"] = true;
+	--L["Colored dots"] = true;
+	--L["Tooltips"] = true;
+	--L["Show tooltips when hovering over PvP events"] = true;
+
+	--L["Icon Options"] = true;
 	--L["Dynamic Zoom"] = true;
 	--L["Redraws icons based on Cartographer3 zoom level"] = true;
-	--L["Show Icons"] = true;
-	--L["Toggle showing individual icons or simple dots"] = true;
-	--L["Tooltips"] = true;
-	--L["Show tooltips when hovering over PvP event icons"] = true;
-	--L["Dots"] = true;
+
+	--L["Dot Options"] = true;
 	--L["Size"] = true;
 	--L["Size of dots"] = true;
 	--L["Loss"] = true;
@@ -72,20 +72,20 @@ if L then
 	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
-	--L["Performance"] = true;
-	--L["Events Processed"] = true;
-	--L["Number of events to process at a time"] = true;
-	--L["Process Delay"] = true;
-	--L["Delay between processing the next set of events"] = true;
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
+	--L["Drawing mode"] = true;
+	--L["Toggle showing individual icons or simple dots"] = true;
+	--L["Icons"] = true;
+	--L["Colored dots"] = true;
+	--L["Tooltips"] = true;
+	--L["Show tooltips when hovering over PvP events"] = true;
+
+	--L["Icon Options"] = true;
 	--L["Dynamic Zoom"] = true;
 	--L["Redraws icons based on Cartographer3 zoom level"] = true;
-	--L["Show Icons"] = true;
-	--L["Toggle showing individual icons or simple dots"] = true;
-	--L["Tooltips"] = true;
-	--L["Show tooltips when hovering over PvP event icons"] = true;
-	--L["Dots"] = true;
+
+	--L["Dot Options"] = true;
 	--L["Size"] = true;
 	--L["Size of dots"] = true;
 	--L["Loss"] = true;
@@ -103,20 +103,20 @@ if L then
 	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
-	--L["Performance"] = true;
-	--L["Events Processed"] = true;
-	--L["Number of events to process at a time"] = true;
-	--L["Process Delay"] = true;
-	--L["Delay between processing the next set of events"] = true;
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
+	--L["Drawing mode"] = true;
+	--L["Toggle showing individual icons or simple dots"] = true;
+	--L["Icons"] = true;
+	--L["Colored dots"] = true;
+	--L["Tooltips"] = true;
+	--L["Show tooltips when hovering over PvP events"] = true;
+
+	--L["Icon Options"] = true;
 	--L["Dynamic Zoom"] = true;
 	--L["Redraws icons based on Cartographer3 zoom level"] = true;
-	--L["Show Icons"] = true;
-	--L["Toggle showing individual icons or simple dots"] = true;
-	--L["Tooltips"] = true;
-	--L["Show tooltips when hovering over PvP event icons"] = true;
-	--L["Dots"] = true;
+
+	--L["Dot Options"] = true;
 	--L["Size"] = true;
 	--L["Size of dots"] = true;
 	--L["Loss"] = true;
@@ -134,27 +134,20 @@ if L then
 	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
-	--L["Performance"] = true;
-	--L["Events Processed"] = true;
-	--L["Number of events to process at a time"] = true;
-	--L["Process Delay"] = true;
-	--L["Delay between processing the next set of events"] = true;
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
+	--L["Drawing mode"] = true;
+	--L["Toggle showing individual icons or simple dots"] = true;
+	--L["Icons"] = true;
+	--L["Colored dots"] = true;
+	--L["Tooltips"] = true;
+	--L["Show tooltips when hovering over PvP events"] = true;
+
+	--L["Icon Options"] = true;
 	--L["Dynamic Zoom"] = true;
 	--L["Redraws icons based on Cartographer3 zoom level"] = true;
-	--L["Show Icons"] = true;
-	--L["Toggle showing individual icons or simple dots"] = true;
-	--L["Tooltips"] = true;
-	--L["Show tooltips when hovering over PvP event icons"] = true;
-	--L["Dots"] = true;
-	--L["Size"] = true;
-	--L["Size of dots"] = true;
-	--L["Loss"] = true;
-	--L["Sets the loss color and opacity"] = true;
-	--L["Win"] = true
-	--L["Sets the win color and opacity"] = true;
-	--L["Dots"] = true;
+
+	--L["Dot Options"] = true;
 	--L["Size"] = true;
 	--L["Size of dots"] = true;
 	--L["Loss"] = true;
@@ -172,20 +165,20 @@ if L then
 	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
 	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
 	--L["PvP Encounter"] = true;
-	--L["Performance"] = true;
-	--L["Events Processed"] = true;
-	--L["Number of events to process at a time"] = true;
-	--L["Process Delay"] = true;
-	--L["Delay between processing the next set of events"] = true;
 	--L["Draw Alts"] = true;
 	--L["Draws PvP events on map for all characters"] = true;
+	--L["Drawing mode"] = true;
+	--L["Toggle showing individual icons or simple dots"] = true;
+	--L["Icons"] = true;
+	--L["Colored dots"] = true;
+	--L["Tooltips"] = true;
+	--L["Show tooltips when hovering over PvP events"] = true;
+
+	--L["Icon Options"] = true;
 	--L["Dynamic Zoom"] = true;
 	--L["Redraws icons based on Cartographer3 zoom level"] = true;
-	--L["Show Icons"] = true;
-	--L["Toggle showing individual icons or simple dots"] = true;
-	--L["Tooltips"] = true;
-	--L["Show tooltips when hovering over PvP event icons"] = true;
-	--L["Dots"] = true;
+
+	--L["Dot Options"] = true;
 	--L["Size"] = true;
 	--L["Size of dots"] = true;
 	--L["Loss"] = true;
@@ -200,6 +193,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_EventMap", true);
 
 VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0");
 
+local VanasIconFrame = nil;
 local VanasKoSEventMap = VanasKoSEventMap;
 local Cartographer3_Data = nil;
 local zoneContinentZoneID = {};
@@ -243,6 +237,7 @@ function VanasKoSEventMap:POI_OnEnter(frame, id)
 		return
 	end
 
+	local pvplog = VanasKoS:GetList("PVPLOG");
 	local x = WorldMapButton:GetCenter();
 	local anchor = "ANCHOR_RIGHT";
 	if (x < frame.x) then
@@ -251,21 +246,22 @@ function VanasKoSEventMap:POI_OnEnter(frame, id)
 	WorldMapTooltip:ClearLines();
 	WorldMapTooltip:SetOwner(frame, anchor);
 	WorldMapTooltip:AddLine(format(L["PvP Encounter"]));
-	for i,v in ipairs(frame.event) do
+	for i, eventIdx in ipairs(frame.event) do
+		local event = pvplog.event[eventIdx];
 		local player = "";
-		if (v.myname) then
-			player = player .. v.myname;
+		if (event.myname) then
+			player = player .. event.myname;
 		end
-		if (v.mylevel) then
-			player = player .. " (" .. v.mylevel .. ")";
+		if (event.mylevel) then
+			player = player .. " (" .. event.mylevel .. ")";
 		end
 
-		local playerdata = VanasKoS:GetPlayerData(v.enemy);
-		local enemy = (playerdata and playerdata.displayname) or string.Capitalize(v.enemy);
-		local enemyNote = v.enemylevel or "";
+		local playerdata = VanasKoS:GetPlayerData(event.enemyname);
+		local enemy = (playerdata and playerdata.displayname) or string.Capitalize(event.enemyname);
+		local enemyNote = event.enemylevel or "";
 
 		if (playerdata) then
-			enemy = playerdata.displayname or string.Capitalize(v.enemy);
+			enemy = playerdata.displayname or string.Capitalize(event.enemyname);
 			if (playerdata.guild) then
 				enemy = enemy .. " <" .. playerdata.guild .. ">";
 			end
@@ -281,10 +277,10 @@ function VanasKoSEventMap:POI_OnEnter(frame, id)
 			enemy = enemy .. " (" .. enemyNote .. ")";
 		end
 
-		if (v.type == "loss") then
-			WorldMapTooltip:AddLine(format(L["%s - %s killed by %s"], date("%c", v.time), player, enemy));
-		elseif (v.type == "win") then
-			WorldMapTooltip:AddLine(format(L["%s - %s killed %s"], date("%c", v.time), player, enemy));
+		if (event.type == "loss") then
+			WorldMapTooltip:AddLine(format(L["%s - %s killed by %s"], date("%c", event.time), player, enemy));
+		elseif (event.type == "win") then
+			WorldMapTooltip:AddLine(format(L["%s - %s killed %s"], date("%c", event.time), player, enemy));
 		end
 	end
 	
@@ -296,7 +292,7 @@ function VanasKoSEventMap:POI_OnLeave(frame, id)
 end
 
 function VanasKoSEventMap:CreatePOI(x, y)
-	local POI = CreateFrame("Button", "VanasKoSEventMapPOI"..self.POICnt, WorldMapButton);
+	local POI = CreateFrame("Button", "VanasKoSEventMapPOI"..self.POICnt, VanasIconFrame);
 	local id = self.POICnt + 1;
 	POI:SetWidth(16);
 	POI:SetHeight(16);
@@ -306,8 +302,11 @@ function VanasKoSEventMap:CreatePOI(x, y)
 	POI.Resize = function(frame) VanasKoSEventMap:POI_Resize(frame, id); end;
 	POI:SetScript("OnEnter", function(frame, id) VanasKoSEventMap:POI_OnEnter(frame, id); end);
 	POI:SetScript("OnLeave", function(frame, id) VanasKoSEventMap:POI_OnLeave(frame, id); end);
-	POI:SetScript("OnClick", function(frame, id) VanasKoSEventMap:POI_OnClick(frame, id); end);
+--	POI:SetScript("OnClick", function(frame, id) VanasKoSEventMap:POI_OnClick(frame, id); end);
 	POI:SetScript("OnShow", function(frame, id) VanasKoSEventMap:POI_OnShow(frame, id); end)
+	POI:SetBackdrop({bgFile = "Interface\\Addons\\VanasKoS\\Artwork\\dot"});
+
+	POI:SetBackdropColor(0, 0, 0, 0);
 	if (self.db.profile.icons) then
 		POI.x = floor(x/self.POIGRIDALIGN) * self.POIGRIDALIGN;
 		POI.y = floor(y/self.POIGRIDALIGN) * self.POIGRIDALIGN;
@@ -318,11 +317,6 @@ function VanasKoSEventMap:CreatePOI(x, y)
 
 	POI.score = 0;
 	POI.event = {};
-	POI:Hide();
-
-	local tex = POI:CreateTexture("VanasKoSEventMapPOI" .. id .. "Texture");
-	tex:SetAllPoints();
-	tex:SetPoint("CENTER", 0, 0);
 
 	self.POIList[id] = POI;
 
@@ -384,51 +378,48 @@ function VanasKoSEventMap:drawPOI(POI)
 	POI:SetFrameLevel(WorldMapPlayer:GetFrameLevel() - 1);
 	if (not self.db.profile.icons) then
 		POI:SetNormalTexture(nil);
-		POI:SetBackdrop({bgFile = "Interface\\Addons\\VanasKoS\\Artwork\\dot"});
 	else
-		POI:SetBackdrop({});
 		POI:SetBackdropColor(0, 0, 0, 0);
 	end
 
 	if (POI.score < 0) then
 		if (self.db.profile.icons) then
-			POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\loss");
+			POI:SetNormalTexture("Interface\\Addons\\VanasKoS\\Artwork\\loss");
 		else
 			POI:SetBackdropColor(GetColor("LossColor"));
 		end
 	elseif (POI.score > 0) then
 		if (self.db.profile.icons) then
-			POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\win");
+			POI:SetNormalTexture("Interface\\Addons\\VanasKoS\\Artwork\\win");
 		else
 			POI:SetBackdropColor(GetColor("WinColor"));
 		end
 	else
 		if (self.db.profile.icons) then
-			POI:SetNormalTexture("Interface\\AddOns\\VanasKoS\\Artwork\\tie");
+			POI:SetNormalTexture("Interface\\Addons\\VanasKoS\\Artwork\\tie");
 		else
 			-- Hmmm this shouldn't have happened...
 			POI:SetBackdropColor(0, 0, 0, 0);
 		end
 	end
 	POI:Resize();
-	POI:Enable();
 	POI:Show();
 end
 
 
 function VanasKoSEventMap:CreatePoints(enemyIdx)
-	local i = 0;
 	local pvplog = VanasKoS:GetList("PVPLOG");
-	local lastEnemy = nil;
-	local continent = GetCurrentMapContinent();
 	local zoneid = GetCurrentMapZone();
-	local myname = UnitName("player");
-	local zones = {GetMapZones(continent)};
+	local zones = {GetMapZones(GetCurrentMapContinent())};
 	local zoneName = zones and zones[zoneid];
 
-	for enemy, etable in next, pvplog, enemyIdx do
-		for time, event in pairs(etable) do
-			if (event.zone and event.zone == zoneName and (self.db.profile.drawAlts or event.myname == myname)) then
+	if (pvplog.zone[zoneName]) then
+--		local i = 0;
+		local myname = UnitName("player");
+		local zonelog = pvplog.zone[zoneName] or {};
+		for idx = enemyIdx, #zonelog do
+			local event = pvplog.event[zonelog[idx]];
+			if (self.db.profile.drawAlts or event.myname == myname) then
 				local x = event.posX * WorldMapDetailFrame:GetWidth();
 				local y = -event.posY * WorldMapDetailFrame:GetHeight();
 				local POI = self:GetPOI(x, y);
@@ -439,27 +430,18 @@ function VanasKoSEventMap:CreatePoints(enemyIdx)
 				end
 				POI.show = true;
 
-				table.insert(POI.event, {time = time,
-							enemy = enemy,
-							myname = event.myname,
-							type = event.type,
-							mylevel = event.mylevel,
-							enemylevel = event.enemylevel,
-							});
+				table.insert(POI.event, zonelog[idx]);
 				self:drawPOI(POI);
 			end
-			i = i + 1;
-		end
-
-		if (i >= self.db.profile.drawPoints) then
-			lastEnemy = enemy;
-			break;
+--			i = i + 1;
+--			if (i >= self.db.profile.drawPoints) then
+--				self:ScheduleTimer("CreatePoints", self.db.profile.drawDelay, idx + 1);
+--				break;
+--			end
 		end
 	end
 
-	if (lastEnemy ~= nil) then
-		self:ScheduleTimer("CreatePoints", self.db.profile.drawDelay, lastEnemy);
-	end
+	VanasIconFrame:Show();
 end
 
 function VanasKoSEventMap:ClearEventMap()
@@ -474,6 +456,7 @@ function VanasKoSEventMap:ClearEventMap()
 	wipe(self.POIGrid);
 	self.POIUsed = 0;
 	self:CancelAllTimers();
+	VanasIconFrame:Hide();
 end
 
 function VanasKoSEventMap:RedrawMap()
@@ -494,8 +477,7 @@ function VanasKoSEventMap:UpdatePOI()
 	self.lastcontinent = continent;
 
 	self:ClearEventMap();
-
-	self:CreatePoints(nil);
+	self:CreatePoints(1);
 end
 
 function VanasKoSEventMap:OnInitialize()
@@ -503,8 +485,6 @@ function VanasKoSEventMap:OnInitialize()
 		{
 			profile = {
 				Enabled = true,
-				drawPoints = 50,
-				drawDelay = 0.05,
 				drawAlts = true,
 				dynamicZoom = true,
 				showTooltip = true,
@@ -547,45 +527,52 @@ function VanasKoSEventMap:OnInitialize()
 				set = function(frame, v) VanasKoSEventMap.db.profile.drawAlts = v; VanasKoSEventMap:RedrawMap(); end,
 				get = function() return VanasKoSEventMap.db.profile.drawAlts; end,
 			},
-			dynamicZoom = {
-				type = 'toggle',
-				name = L["Dynamic Zoom"],
-				desc = L["Redraws icons based on Cartographer3 zoom level"],
-				order = 3,
-				set = function(frame, v) VanasKoSEventMap.db.profile.dynamicZoom = v; end,
-				get = function() return VanasKoSEventMap.db.profile.dynamicZoom; end,
-			},
 			icons = {
-				type = 'toggle',
-				name = L["Show Icons"],
+				type = 'select',
+				name = L["Drawing mode"],
 				desc = L["Toggle showing individual icons or simple dots"],
-				order = 4,
+				order = 3,
+				values = {L["Icons"], L["Colored dots"]},
 				set = function(frame, v)
-						VanasKoSEventMap.db.profile.icons = v;
+						VanasKoSEventMap.db.profile.icons = (v == 1);
 						VanasKoSEventMap.POIGRIDALIGN = VanasKoSEventMap.ICONSIZE;
 						VanasKoSEventMap:RedrawMap();
 					end,
-				get = function() return VanasKoSEventMap.db.profile.icons; end,
+				get = function() return (VanasKoSEventMap.db.profile.icons and 1) or 2; end
 			},
 			showTooltip = {
 				type = 'toggle',
 				name = L["Tooltips"],
-				desc = L["Show tooltips when hovering over PvP event icons"],
-				order = 5,
+				desc = L["Show tooltips when hovering over PvP events"],
+				order = 4,
 				set = function(frame, v) VanasKoSEventMap.db.profile.showTooltip = v; end,
 				get = function() return VanasKoSEventMap.db.profile.showTooltip; end,
 			},
+			iconoptions = {
+				type = 'header',
+				name = L["Icon Options"],
+				desc = L["Icon Options"],
+				order = 10,
+			},
+			dynamicZoom = {
+				type = 'toggle',
+				name = L["Dynamic Zoom"],
+				desc = L["Redraws icons based on Cartographer3 zoom level"],
+				order = 11,
+				set = function(frame, v) VanasKoSEventMap.db.profile.dynamicZoom = v; end,
+				get = function() return VanasKoSEventMap.db.profile.dynamicZoom; end,
+			},
 			dotoptions = {
 				type = 'header',
-				name = L["Dots"],
-				desc = L["Dots"],
-				order = 6,
+				name = L["Dot Options"],
+				desc = L["Dot Options"],
+				order = 20,
 			},
 			dotsize = {
 				type = 'range',
 				name = L["Size"],
 				desc = L["Size of dots"],
-				order = 7,
+				order = 21,
 				set = function(frame, v)
 					VanasKoSEventMap.db.profile.dotsize = v;
 					VanasKoSEventMap.DOTSIZE = v;
@@ -599,7 +586,7 @@ function VanasKoSEventMap:OnInitialize()
 				type = 'color',
 				name = L["Loss"],
 				desc = L["Sets the loss color and opacity"],
-				order = 8,
+				order = 22,
 				set = function(frame, r, g, b, a) SetColor("LossColor", r, g, b, a); end,
 				get = function() return GetColor("LossColor"); end,
 				hasAlpha = true
@@ -608,7 +595,7 @@ function VanasKoSEventMap:OnInitialize()
 				type = 'color',
 				name = L["Win"],
 				desc = L["Sets the win color and opacity"],
-				order = 9,
+				order = 23,
 				set = function(frame, r, g, b, a) SetColor("WinColor", r, g, b, a); end,
 				get = function() return GetColor("WinColor"); end,
 				hasAlpha = true
@@ -617,7 +604,7 @@ function VanasKoSEventMap:OnInitialize()
 				type = 'execute',
 				name = L["Reset"],
 				desc = L["Reset dots to default"],
-				order = 10,
+				order = 24,
 				func = function()
 						SetColor("LossColor", 1.0, 0.0, 0.0, 0.5);
 						SetColor("WinColor", 0.0, 1.0, 0.0, 0.5);
@@ -625,44 +612,17 @@ function VanasKoSEventMap:OnInitialize()
 						VanasKoSEventMap.DOTSIZE = 16;
 					end,
 			},
-
-			performanceHeader = {
-				type = 'header',
-				name = L["Performance"],
-				desc = L["Performance"],
-				order = 11,
-			},
-			drawPoints = {
-				type = 'range',
-				name = L["Events Processed"],
-				desc = L["Number of events to process at a time"],
-				order = 12,
-				set = function(frame, v) VanasKoSEventMap.db.profile.drawPoints = v; end,
-				get = function() return VanasKoSEventMap.db.profile.drawPoints; end,
-				min = 1,
-				max = 500,
-				step = 1,
-				isPercent = false,
-			},
-			drawDelay = {
-				type = 'range',
-				name = L["Process Delay"],
-				desc = L["Delay between processing the next set of events"],
-				order = 13,
-				set = function(frame, v) VanasKoSEventMap.db.profile.drawDelay = v; end,
-				get = function() return VanasKoSEventMap.db.profile.drawDelay; end,
-				min = 0,
-				max = 1,
-				step = .01,
-				isPercent = false,
-			},
 		}
 	});
 	self.POICnt = 0;
 	self.POIUsed = 0;
 	self.POIList = {};
 	self.POIGrid = {};
-	
+
+	VanasIconFrame = CreateFrame("Frame", "VanasKoSMapDetails", WorldMapDetailFrame);
+	VanasIconFrame:SetAllPoints(WorldMapDetailFrame);
+	VanasIconFrame:SetFrameLevel(WorldMapDetailFrame:GetFrameLevel() - 1);
+
 	self:SetEnabledState(self.db.profile.Enabled);
 end
 

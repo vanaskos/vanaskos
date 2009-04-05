@@ -132,17 +132,12 @@ function VanasKoSPvPStats:OnEnable()
 			[0] = { L["All Characters (Realm)"], "ALLCHARS" },
 		}
 
-		local list = VanasKoS:GetList("PVPLOG");
+		local pvplog = VanasKoS:GetList("PVPLOG") or {};
 
 		local twinks = { };
-		if(list == nil) then
-			list = { };
-		end
-		for name,values in pairs(list) do
-			for timestamp, data in pairs(values) do
-				if(data.myname) then
-					twinks[data.myname] = true;
-				end
+		for idx, event in ipairs(pvplog.event or {}) do
+			if(event.myname) then
+				twinks[event.myname] = true;
 			end
 		end
 		for k,v in pairs(twinks) do
@@ -224,17 +219,15 @@ function VanasKoSPvPStats:UpdateStatsPie()
 	local wins = 0;
 	local losses = 0;
 
-	for name,values in pairs(pvplog) do
-		for timestamp, data in pairs(values) do
-			if( (timeSpanStart == nil or timestamp >= timeSpanStart) and
-				(timeSpanEnd == nil or timestamp <= timeSpanEnd)) then
+	for idx,event in ipairs(pvplog.event) do
+		if( (timeSpanStart == nil or event.time >= timeSpanStart) and
+			(timeSpanEnd == nil or event.time <= timeSpanEnd)) then
 
-				if(not selectedCharacter or data.myname == selectedCharacter) then
-					if(data.type == 'win') then
-						wins = wins + 1;
-					elseif(data.type == 'loss') then
-						losses = losses + 1;
-					end
+			if(not selectedCharacter or data.myname == selectedCharacter) then
+				if(data.type == 'win') then
+					wins = wins + 1;
+				elseif(data.type == 'loss') then
+					losses = losses + 1;
 				end
 			end
 		end

@@ -521,16 +521,17 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 
 	local pvplog = VanasKoS:GetList("PVPLOG");
 	if(pvplog) then
-		pvplog = pvplog[selectedPlayer];
-		if(pvplog) then
+		local playerlog = pvplog.player[selectedPlayer];
+		if(playerlog) then
 			tooltip:AddLine("|cffffffff" .. L["PvP Encounter:"] .. "|r");
 			local i = 0;
-			for k,v in VanasKoSGUI:pairsByKeys(pvplog, nil, nil) do -- sorted from old to new
-				if(v.type and v.zone and v.myname) then
-					if(v.type == 'win') then
-						tooltip:AddLine(format(L["%s: Win in %s (%s)"], date("%c", k), v.zone, v.myname));
+			for k,eventIdx in ipairs(playerlog) do
+				local event = pvplog.event[eventIdx];
+				if(event.type and event.zone and event.myname) then
+					if(event.type == 'win') then
+						tooltip:AddLine(format(L["%s: Win in %s (%s)"], date("%c", k), event.zone, event.myname));
 					else
-						tooltip:AddLine(format(L["%s: Loss in %s (%s)"], date("%c", k), v.zone, v.myname));
+						tooltip:AddLine(format(L["%s: Loss in %s (%s)"], date("%c", k), event.zone, event.myname));
 					end
 				end
 				i = i + 1;

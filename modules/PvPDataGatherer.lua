@@ -335,19 +335,28 @@ function VanasKoSPvPDataGatherer:AddEntry(list, name, data)
 			listVar[name].losses = listVar[name].losses + data.losses;
 		end
 	elseif(list == "PVPLOG") then
-		local listVar = VanasKoS:GetList("PVPLOG");
-		if(listVar[name] == nil) then
-			listVar[name] = { };
+		local pvplog = VanasKoS:GetList("PVPLOG");
+		tinsert(pvplog.event, {['enemyname'] = name,
+					['time'] = data['time'],
+					['myname'] = data['myname'],
+					['mylevel'] = data['mylevel'],
+					['enemylevel'] = data['enemylevel'],
+					['type'] = data['type'],
+					['zone']  = data['zone'],
+					['posX'] = data['posX'],
+					['posY'] = data['posY']
+				});
+
+		if (not pvplog.zone[zone]) then
+			pvplog.zone[zone] = {}
 		end
-		listVar[name][data['time']] = {
-						['myname'] = data['myname'],
-						['mylevel'] = data['mylevel'],
-						['enemylevel'] = data['enemylevel'],
-						['type'] = data['type'],
-						['zone']  = data['zone'],
-						['posX'] = data['posX'],
-						['posY'] = data['posY']
-						};
+		tinsert(pvplog.zone[zone], #pvplog.event);
+
+		if (not pvplog.player[name]) then
+			pvplog.player[name] = {}
+		end
+		tinsert(pvplog.player[name], #pvplog.event);
+
 		return true;
 	end
 	return true;

@@ -59,7 +59,7 @@ modules\ChatNotifier.lua
 modules\Notifier.lua
 modules\WarnFrame_localization.lua
 modules\WarnFrame.lua
-#modules\DistributedTracker.lua
+modules\DistributedTracker.lua
 modules\MinimapButton.lua
 modules\CommandLineHandler.lua
 modules\FriendsFrameDocker.lua

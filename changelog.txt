@@ -3,7 +3,10 @@ Release Changelog for VanasKoS
 alpha:
 - Added "seen" count
 - Added back the kadd command
-- Reenabled guild synchronization
+- Enabled guild synchronization
+- Enabled guild distributed tracking
+- Performance improvements to the pvp eventmap
+- Add colored dot mode to the eventmap
 
 4.00c beta
 - Fixed bug importing kills with zoneid=0

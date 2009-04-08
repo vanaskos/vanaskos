@@ -16,7 +16,7 @@ externals:
 	Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta-r741/AceConsole-3.0
 	Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Beta-r741/AceConfig-3.0
 	Libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/tags/2/LibSharedMedia-3.0
-	Libs/LibBabble-Zone-3.0: svn://svn.wowace.com/wow/libbabble-zone-3-0/mainline/tags/3.0-release13
+	Libs/LibBabble-Zone-3.0: svn://svn.wowace.com/wow/libbabble-zone-3-0/mainline/tags/3.0-release14
 	Libs/LibBabble-Race-3.0: svn://svn.wowace.com/wow/libbabble-race-3-0/mainline/tags/3.0-release04
 	Libs/LibBabble-Class-3.0: svn://svn.wowace.com/wow/libbabble-class-3-0/mainline/tags/3.0-weekly03
 	Libs/LibGraph-2.0: svn://svn.wowace.com/wow/libgraph-2-0/mainline/tags/v2.0/LibGraph-2.0

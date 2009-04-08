@@ -457,7 +457,7 @@ function VanasKoSTracker:GetList(list)
 end
 
 function VanasKoSTracker:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2)
-	if(list ~= "WANTED") then
+	if(list ~= "WANTED" or value == nil) then
 		return nil;
 	end
 	buttonText1:SetText(string.Capitalize(key));
@@ -612,6 +612,7 @@ function VanasKoSTracker:SendPosition(receiver, locatedPlayer)
 		return true;
 	else
 	]]
+		GuildRoster();
 		for i=1, GetNumGuildMembers(1) do
 			local name, rank, rankIndex, level, class, zoneGuild, note, officernote, online, status = GetGuildRosterInfo(i);
 			if(name ~= nil and name:lower() == receiver:lower() and online) then

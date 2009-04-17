@@ -347,10 +347,12 @@ function VanasKoSPvPDataGatherer:AddEntry(list, name, data)
 					['posY'] = data['posY']
 				});
 
-		if (not pvplog.zone[zone]) then
-			pvplog.zone[zone] = {}
+		if (data['zone']) then
+			if (not pvplog.zone[data['zone']]) then
+				pvplog.zone[data['zone']] = {}
+			end
+			tinsert(pvplog.zone[data['zone']], #pvplog.event);
 		end
-		tinsert(pvplog.zone[zone], #pvplog.event);
 
 		if (not pvplog.player[name]) then
 			pvplog.player[name] = {}

@@ -2,6 +2,9 @@ Release Changelog for VanasKoS
 
 alpha:
 
+4.01a beta:
+- Fixed bug in PvPDataGatherer
+
 4.01 beta:
 - Added "seen" count
 - Added back the kadd command

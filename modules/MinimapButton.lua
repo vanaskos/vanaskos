@@ -258,7 +258,7 @@ function VanasKoSMinimapButton:OnInitialize()
 					name = L["Enabled"],
 					desc = L["Enabled"],
 					order = 1,
-					set = function(frame, v) VanasKoSMinimapButton.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("MinimapButton"); end,
+					set = function(frame, v) VanasKoS:ToggleModuleActive("MinimapButton"); end,
 					get = function() return VanasKoS:GetModule("MinimapButton").enabledState; end,
 				},
 				showInfo = {
@@ -365,6 +365,7 @@ function VanasKoSMinimapButton:OnClick()
 end
 
 function VanasKoSMinimapButton:OnEnable()
+	self.db.profile.button.hide = nil;
 	icon:Show(self.name);
 	if(self.db.profile.ShowWarnFrameInfoText) then
 		self:EnableWarnFrameText();
@@ -375,6 +376,7 @@ function VanasKoSMinimapButton:OnEnable()
 end
 
 function VanasKoSMinimapButton:OnDisable()
+	self.db.profile.button.hide = true;
 	icon:Hide(self.name);
 	self:CancelAllTimers();
 	if(self.db.profile.ShowWarnFrameInfoText) then

@@ -2,6 +2,9 @@ Release Changelog for VanasKoS
 
 alpha:
 
+4.01b beta:
+- Fixed bug always showing the minimap button on startup even if disabled
+
 4.01a beta:
 - Fixed bug in PvPDataGatherer
 

@@ -1,6 +1,8 @@
 Release Changelog for VanasKoS
 
 alpha:
+4.01c beta:
+- fixed a bug where old data was imported incorrectly
 
 4.01b beta:
 - Fixed bug always showing the minimap button on startup even if disabled

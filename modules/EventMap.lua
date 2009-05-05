@@ -413,7 +413,7 @@ function VanasKoSEventMap:CreatePoints(enemyIdx)
 	local zones = {GetMapZones(GetCurrentMapContinent())};
 	local zoneName = zones and zones[zoneid];
 
-	if (pvplog.zone[zoneName]) then
+	if (pvplog and pvplog.zone[zoneName]) then
 --		local i = 0;
 		local myname = UnitName("player");
 		local zonelog = pvplog.zone[zoneName] or {};

@@ -167,7 +167,7 @@ function VanasKoSDefaultLists:OnInitialize()
 		self.db.realm.nicelist = VanasKoS.db.realm.nicelist;
 		VanasKoS.db.realm.nicelist = nil;
 	end ]]
-
+--[[
 	if(VanasKoSDB.namespaces.DefaultLists.realms) then
 		for k,v in pairs(VanasKoSDB.namespaces.DefaultLists.realms) do
 			if(string.find(k, GetRealmName()) ~= nil) then
@@ -185,7 +185,7 @@ function VanasKoSDefaultLists:OnInitialize()
 				end
 			end
 		end
-	end
+	end]]
 	
 	-- register lists this modules provides at the core
 	VanasKoS:RegisterList(1, "PLAYERKOS", L["Player KoS"], self);

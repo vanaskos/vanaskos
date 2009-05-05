@@ -32,6 +32,8 @@ if L then
 	L["Opium PvP Stats"] = true;
 	L["SKMap KoS"] = true;
 	L["SKMap PvP Stats"] = true;
+	L["Old VanasKoS"] = true;
+	L["Imports Data from old VanasKoS"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "deDE", false);
@@ -58,6 +60,8 @@ if L then
 	L["Opium PvP Stats"] = "Opium PvP Stats";
 	L["SKMap KoS"] = "SKMap KoS";
 	L["SKMap PvP Stats"] = "SKMap PvP Stats";
+--	L["Old VanasKoS"] = true;
+--	L["Imports Data from old VanasKoS"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "frFR", false);
@@ -84,6 +88,8 @@ if L then
 	--L["Opium PvP Stats"] = true;
 	--L["SKMap KoS"] = true;
 	--L["SKMap PvP Stats"] = true;
+--	L["Old VanasKoS"] = true;
+--	L["Imports Data from old VanasKoS"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "koKR", false);
@@ -110,6 +116,8 @@ if L then
 	--L["Opium PvP Stats"] = true;
 	--L["SKMap KoS"] = true;
 	--L["SKMap PvP Stats"] = true;
+--	L["Old VanasKoS"] = true;
+--	L["Imports Data from old VanasKoS"] = true;
 end
 
 
@@ -137,6 +145,8 @@ if L then
 	--L["Opium PvP Stats"] = true;
 	--L["SKMap KoS"] = true;
 	--L["SKMap PvP Stats"] = true;
+--	L["Old VanasKoS"] = true;
+--	L["Imports Data from old VanasKoS"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Importer", "ruRU", false);
@@ -163,6 +173,8 @@ if L then
 	--L["Opium PvP Stats"] = true;
 	--L["SKMap KoS"] = true;
 	--L["SKMap PvP Stats"] = true;
+--	L["Old VanasKoS"] = true;
+--	L["Imports Data from old VanasKoS"] = true;
 end
 
 L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Importer", true);
@@ -203,6 +215,12 @@ function VanasKoSImporter:OnInitialize()
 				desc = L["Imports PvP Stats Data from Shim's Kill Map"],
 				func = function() VanasKoSImporter:FromSKMapPvPStats(); end
 			},
+			oldvanaskos = {
+				type = "execute",
+				name = L["Old VanasKoS"],
+				desc = L["Imports Data from old VanasKoS"],
+				func = function() VanasKoSImporter:FromOldVanasKoS(); end
+			},
 		}
 	});
 end
@@ -218,6 +236,45 @@ function VanasKoSImporter:OnEnable()
 end
 
 function VanasKoSImporter:OnDisable()
+end
+
+local function importListSafe(src, dest) 
+	if(not src or not dest) then
+		return;
+	end
+	
+	for k,v in pairs(src) do
+		if(not dest[k]) then
+			dest[k] = src[k];
+			VanasKoS:Print("import " .. k);
+		end
+	end
+end
+
+function VanasKoSImporter:FromOldVanasKoS()
+	if(VanasKoSDB.namespaces.DefaultLists.realms) then
+		for k,v in pairs(VanasKoSDB.namespaces.DefaultLists.realms) do
+			if(string.find(k, GetRealmName()) ~= nil) then
+				if(v.koslist and v.koslist.players) then
+					importListSafe(v.koslist.players, VanasKoSDefaultLists.db.realm.koslist.players);
+					v.koslist.players = nil;
+				end
+				if(v.koslist and v.koslist.guilds) then
+					importListSafe(v.koslist.guilds, VanasKoSDefaultLists.db.realm.koslist.guilds);
+					v.koslist.guilds = nil;
+				end
+				v.koslist = nil;
+				if(v.hatelist and v.hatelist.players) then
+					importListSafe(v.hatelist.players, VanasKoSDefaultLists.db.realm.hatelist.players);
+					v.hatelist = nil;
+				end
+				if(v.nicelist and v.nicelist.players) then
+					importListSafe(v.nicelist.players, VanasKoSDefaultLists.db.realm.nicelist.players);
+					v.nicelist = nil;
+				end
+			end
+		end
+	end
 end
 
 function VanasKoSImporter:ConvertFromOldVanasKoSList()

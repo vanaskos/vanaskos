@@ -223,11 +223,13 @@ function VanasKoSPvPStats:UpdateStatsPie()
 		if( (timeSpanStart == nil or event.time >= timeSpanStart) and
 			(timeSpanEnd == nil or event.time <= timeSpanEnd)) then
 
-			if(not selectedCharacter or data.myname == selectedCharacter) then
-				if(data.type == 'win') then
-					wins = wins + 1;
-				elseif(data.type == 'loss') then
-					losses = losses + 1;
+			if(not selectedCharacter or event.myname == selectedCharacter) then
+				if(event ~= nil) then
+					if(event.type == 'win') then
+						wins = wins + 1;
+					elseif(event.type == 'loss') then
+						losses = losses + 1;
+					end
 				end
 			end
 		end

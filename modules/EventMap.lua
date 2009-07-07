@@ -203,7 +203,7 @@ VanasKoSEventMap.DOTSIZE = 16;
 VanasKoSEventMap.lastzoom = 20;
 VanasKoSEventMap.lastzone = "";
 VanasKoSEventMap.lastcontinent = "";
-
+local trackedPlayers = { };
 
 local function GetColor(which)
 	return VanasKoSEventMap.db.profile[which .. "R"], VanasKoSEventMap.db.profile[which .. "G"], VanasKoSEventMap.db.profile[which .. "B"], VanasKoSEventMap.db.profile[which .. "A"];
@@ -376,6 +376,15 @@ function VanasKoSEventMap:drawPOI(POI)
 	POI:Hide();
 	POI:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", POI.x, POI.y);
 	POI:SetFrameLevel(WorldMapPlayer:GetFrameLevel() - 1);
+	
+	if(POI.trackedPlayer) then
+		POI:SetNormalTexture("Interface\\Addons\\VanasKoS\\Artwork\\win");
+		--POI:SetBackdropColor(GetColor("LossColor"));
+		POI:Resize();
+		POI:Show();
+		return;
+	end
+	
 	if (not self.db.profile.icons) then
 		POI:SetNormalTexture(nil);
 	else
@@ -406,8 +415,42 @@ function VanasKoSEventMap:drawPOI(POI)
 	POI:Show();
 end
 
+function VanasKoSEventMap:TrackPlayer(playername, continent, zone, posX, posY)
+	--VanasKoS:Print(format("%s %d %d %f %f", playername, continent, zone, posX, posY));
+	local playerData = trackedPlayers[playername:lower()];
+	if(playerData == nil) then
+		playerData = {
+			['continent'] = continent,
+			['zone'] = zone,
+			['posX'] = posX,
+			['posY'] = posY,
+			['lastseen'] = time()
+		};
+		trackedPlayers[playername:lower()] = playerData;
+	end
+	
+	self:RedrawMap();
+end
+
+function VanasKoSEventMap:CreateTrackingPoints()
+	for k, v in pairs(trackedPlayers) do
+		if(v.continent ~= GetCurrentMapContinent() or v.zone ~= GetCurrentMapZone()) then
+			--VanasKoS:Print(format("break %d %d %d %d", v.continent, v.zone, GetCurrentMapContinent(), GetCurrentMapZone()));
+		else 
+			local x = v.posX * WorldMapDetailFrame:GetWidth();
+			local y = -v.posY * WorldMapDetailFrame:GetHeight();
+			local POI = self:GetPOI(x, y);
+
+			POI.trackedPlayer = true;
+			POI.show = true;
+			self:drawPOI(POI);
+		end
+	end
+end
 
 function VanasKoSEventMap:CreatePoints(enemyIdx)
+	self:CreateTrackingPoints();
+
 	local pvplog = VanasKoS:GetList("PVPLOG");
 	local zoneid = GetCurrentMapZone();
 	local zones = {GetMapZones(GetCurrentMapContinent())};

@@ -2,7 +2,7 @@
 ## Title: Vanas|cffff0000KoS|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS
-## Version: 4.01c-$Rev$
+## Version: 4.10beta1-$Rev$
 ## Notes: KoS-Management Tool
 ## Notes-esES: Herramienta de gestión de KoS (Matar al Ver)
 ## Notes-zhCN: 仇敌管理工具，中文官方版本由Taburiss汉化

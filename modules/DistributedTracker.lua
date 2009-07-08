@@ -11,9 +11,10 @@ local VanasKoS = VanasKoS;
 local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable();
 local BZR = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable();
 
+-- TODO: Cleanup Localizations
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "enUS", true);
 if L then
-	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = true;
+	L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true;
 	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = true;
 	L["Ok"] = true;
 	L["Cancel"] = true;
@@ -44,7 +45,7 @@ end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "deDE", false);
 if L then
-	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Position von Player %s empfangen (%d, %d in %s) von %s - Grund: %s";
+	L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = "Karten-Position von Player %s aktualisiert (%d, %d in %s) von %s - Grund: %s";
 	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%%s in %s bei %d, %d (%s) - Cartographer Notiz erstellen?";
 	L["Ok"] = "Ok";
 	L["Cancel"] = "Abbrechen";
@@ -75,7 +76,8 @@ end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "frFR", false);
 if L then
-	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Position du joueur %s (%d, %d \195\128 %s) re\195\167u de %s - Raison: %s";
+-- L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true,
+--	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Position du joueur %s (%d, %d \195\128 %s) re\195\167u de %s - Raison: %s";
 	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s in %s at %d, %d (%s) - Cr\195\169er une note avec \"Cartographer\" ?";
 	L["Ok"] = "Ok";
 	L["Cancel"] = "Annuler";
@@ -106,7 +108,7 @@ end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "koKR", false);
 if L then
---	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = true;
+-- L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true,
 --	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = true;
 	L["Ok"] = "확인";
 	L["Cancel"] = "취소";
@@ -137,7 +139,8 @@ end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "esES", false);
 if L then
-	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Posición del Jugador %s (%d, %d in %s) recibida desde %s - Razón: %s";
+-- L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true,
+--	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Posición del Jugador %s (%d, %d in %s) recibida desde %s - Razón: %s";
 	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s en %s en %d, %d (%s) - ¿Crear Nota de Cartographer?";
 	L["Ok"] = "Aceptar";
 	L["Cancel"] = "Cancelar";
@@ -168,7 +171,8 @@ end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "ruRU", false);
 if L then
-	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Расположение игрока %s (%d, %d в %s) получено от %s - Причина: %s";
+-- L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true,
+--	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Расположение игрока %s (%d, %d в %s) получено от %s - Причина: %s";
 	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s в %s по %d, %d (%s) - Создать метку в Картографе?";
 	L["Ok"] = "Ok";
 	L["Cancel"] = "Отмена";
@@ -200,35 +204,16 @@ end
 L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_DistributedTracker", false);
 local AceSerializer = LibStub("AceSerializer-3.0");
 
-
--- time span for announcing the kos list
-local PUBLISH_REPEAT_TIME = 600;
---local PUBLISH_GLOBAL_REPEAT_TIME = 1800;
-local POSITION_UPDATE = "pu";
-local WANTED_LIST = "wl";
-
--- time span after a koslist was received, until the kos-list gets purged
-local LIST_PURGE_TIME = 610;
--- global custom channel
---local GCHANNEL = "VanasKoS";
-
-local watchList = { };
-local wantedList = { };
-local zoneNames = nil;
-local tooltip = nil;
+local tempNameList = { };
 
 function VanasKoSTracker:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("DistributedTracker", 
-			{
-				profile = {
-					Enabled = true,
---					PublishToGlobal = true,
-					PublishToGuild = true,
---					PublishToZone = true,
-				},
-			}
+		{
+			profile = {
+				Enabled = true,
+			},
+		}
 	);
-	
 	
 	VanasKoSGUI:AddConfigOption("DistributedTracking", {
 			type = 'group',
@@ -243,614 +228,313 @@ function VanasKoSTracker:OnInitialize()
 					set = function(frame, v) VanasKoS:ToggleModuleActive("DistributedTracker"); end,
 					get = function() return VanasKoS:ModuleEnabled("DistributedTracker"); end,
 				},
-				--[[
-				publishglobal = {
-					type = 'toggle',
-					name = L["Global Tracking"],
-					desc = L["Global Tracking"],
-					order = 2,
-					set = function(v) VanasKoSTracker.db.profile.publishToGlobal = v; end,
-					get = function() return VanasKoSTracker.db.profile.publishToGlobal; end,
-				},
-				]]
-				publishguild = {
-					type = 'toggle',
-					name = L["Tracking via Guild"],
-					desc = L["Tracking via Guild"],
-					order = 3,
-					set = function(v) VanasKoSTracker.db.profile.PublishToGuild = v; end,
-					get = function() return VanasKoSTracker.db.profile.PublishToGuild; end,
-				},
-				--[[
-				publishzone = {
-					type = 'toggle',
-					name = L["Tracking via Zone"],
-					desc = L["Tracking via Zone"],
-					order = 4,
-					set = function(v) VanasKoSTracker.db.profile.PublishToZone = v; end,
-					get = function() return VanasKoSTracker.db.profile.PublishToZone; end,
-				},
-				]]
 			},
 		});
 end
 
--- TODO: Merge with communication from synchronizer
 function VanasKoSTracker:OnEnable()
 	if(not self.db.profile.Enabled) then
 		return;
 	end
 
-	self:RegisterComm("VanasKoS");
-
-	VanasKoS:RegisterList(5, "WANTED", L["Wanted"], self);
-	VanasKoSGUI:RegisterList("WANTED", self);
-
-	--[[
-	if(self.db.profile.publishToGlobal) then
-		self:ScheduleRepeatingTimer(self.PublishGlobalList, PUBLISH_GLOBAL_REPEAT_TIME, self);
-	end
-	]]
-
 	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
-	self:ScheduleRepeatingTimer("PublishList", PUBLISH_REPEAT_TIME);
-	self:ScheduleRepeatingTimer("PurgeList", 60);
-	tooltip = VanasKoSDefaultLists.tooltipFrame;
+	self:RegisterMessage("VanasKoS_Zone_Changed", "Zone_Changed");
+	self:ScheduleTimer("StartCrbTracking", 5);
 end
 
 function VanasKoSTracker:OnDisable()
-	self:UnregisterAllComm();
 	self:UnregisterAllMessages();
 	self:CancelAllTimers();
-
-	VanasKoSGUI:UnregisterList("WANTED");
-	VanasKoS:UnregisterList("WANTED");
-end
-
-local function GetSerializedPositionString(locatedPlayer, posX, posY, zone)
-	local data = {
-		["version"] = 1,
-		["player"] = locatedPlayer,
-		["posX"] = posX,
-		["posY"] = posY,
-		["zone"] = zone,
-	};
-	return AceSerializer:Serialize(VANASKOS.VERSION, 1, POSITION_UPDATE, data);
-end
-
-local function GetSerializedWantedString(list)
-	local data = {
-		["version"] = 1,
-		["list"] = list,
-	};
-	return AceSerializer:Serialize(VANASKOS.VERSION, 1, WANTED_LIST, data);
-end
-
-local function DeserializeString(serializedString)
-	local result, vanasKoSVersion, protocolVersion, command, data = AceSerializer:Deserialize(serializedString);
-	if(protocolVersion ~= 1) then
-		return false, format("Unknown protocol version '%s'", protocolVersion or "nil");
-	end
-	if(type(command) ~= "string") then
-		return false, format("Invalid command format (%s)", type(command));
-	end
-	if(type(data) ~= "table") then
-		return false, format("Invalid command format (%s)", type(command));
-	end
-
-	if(command == POSITION_UPDATE) then
-		if(data.version == nil or data.version ~= 1) then
-			return false, format("Unknown position update version '%s'", data.version or "nil");
-		end
-		if(data.player == nil or type(data.player) ~= "string") then
-			return false, format("Invalid player format (%s)", type(data.player));
-		end
-		if(data.posX == nil or type(data.posX) ~= "number") then
-			return false, format("Invalid posX format (%s)", type(data.posX));
-		end
-		if(data.posY == nil or type(data.posY) ~= "number") then
-			return false, format("Invalid posY format (%s)", type(data.posY));
-		end
-		if(data.zone == nil or type(data.zone) ~= "string") then
-			return false, format("Invalid zone format (%s)", type(data.zone));
-		end
-	elseif(command == WANTED_LIST) then
-		if(data.version == nil or data.version ~= 1) then
-			return false, format("Unknown wanted list version '%s'", data.version or "nil");
-		end
-		if(data.list == nil or type(data.list) ~= "table") then
-			return false, format("Invalid list (%s)", type(data.list));
-		end
-	else
-		return false, format("Unknown command '%s'", command);
-	end
-
-	return true, vanasKoSVersion, protocolVersion, command, data;
-end
-
-function VanasKoSTracker:OnCommReceived(prefix, text, distribution, sender)
-	local result, vanasKoSVersion, protocolVersion, command, data = DeserializeString(text);
-	if(not result) then
-		if(VANASKOS.DEBUG == 1) then
-			VanasKoS:Print(format("Tracker: Invalid comm from %s: %s", sender, vanasKoSVersion));
-		end
-		return;
-	end
-
-	if(VANASKOS.DEBUG == 1) then
-		VanasKoS:Print(format("Tracker: CommReceived from %s ver:%s pv:%s cmd:%s", sender, vanasKoSVersion, protocolVersion, command));
-	end
-
-	-- Ignore messages from self
-	if(not sender or sender == UnitName("player")) then
-		return
-	end
-
-	if(VanasKoS:IsVersionNewer(vanasKoSVersion)) then
-		if(not VANASKOS.NewVersionNotice) then
-			VanasKoS:Print("A newer version of VanasKoS is available. Please upgrade!");
-			VANASKOS.NewVersionNotice = true;
-		end
-	end
-	
-	if(command == POSITION_UPDATE) then
-		self:PositionUpdateReceived(distribution, sender, data.player, data.posX, data.posY, data.zone);
-	elseif(command == WANTED_LIST) then
-		self:ListMessageReceived(distribution, sender, data.list);
-	end
-end
-
-function VanasKoSTracker:AddEntry(listname, name, data)
-	if (not data.sender or listname ~= "WANTED") then
-		return
-	end
-
-	local wantedName = name:lower();
-
-	if (not wantedList[wantedName]) then
-		wantedList[wantedName] = {
-			["wantedby"] = {
-				[data.sender] = {},
-			},
-			["count"] = 1,
-			["addtime"] = time();
-		};
-
-		self:SendMessage("VanasKoS_List_Entry_Added", listname, wantedName, data);
-	elseif (not wantedList[wantedName].wantedby[data.sender]) then
-		wantedList[wantedName].wantedby[data.sender] = {};
-		wantedList[wantedName].count = wantedList[wantedName].count + 1;
-		wantedList[wantedName].addtime = time();
-	else
-		wantedList[wantedName].wantedby[data.sender].blocked = nil;
-	end
-
-	watchList[data.sender] = time();
-
-	if (VANASKOS.DEBUG == 1) then
-		VanasKoS:Print(format("  %s WANTED by %d players", wantedName, wantedList[wantedName].count));
-	end
-end
-
-function VanasKoSTracker:RemoveEntry(listname, name)
-	if (listname ~= "WANTED") then
-		return
-	end
-
-	wantedList[player] = nil;
-	self:SendMessage("VanasKoS_List_Entry_Removed", listname, name);
-end
-
-function VanasKoSTracker:IsOnList(listname, name)
-	local list = VanasKoS:GetList(listname);
-	if(list and list[name]) then
-		return list[name];
-	end
-end
-
-function VanasKoSTracker:GetList(list)
-	if(list == "WANTED") then
-		return wantedList;
-	else
-		return nil;
-	end
-end
-
-function VanasKoSTracker:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2)
-	if(list ~= "WANTED" or value == nil) then
-		return nil;
-	end
-	buttonText1:SetText(string.Capitalize(key));
-	buttonText2:SetText(format(L["Wanted by %s players"], value.count));
-	button:Show();
-end
-
-function VanasKoSTracker:ShowList(list)
-	if(list == "WANTED") then
---		VanasKoSListFrameSyncButton:Disable();
-		VanasKoSListFrameChangeButton:Disable();
-		VanasKoSListFrameAddButton:Disable();
-		VanasKoSListFrameRemoveButton:Disable();
-	end
-end
-
-function VanasKoSTracker:HideList(list)
-	if(list == "WANTED") then
---		VanasKoSListFrameSyncButton:Enable();
-		VanasKoSListFrameChangeButton:Enable();
-		VanasKoSListFrameAddButton:Enable();
-		VanasKoSListFrameRemoveButton:Enable();
-	end
-end
-
-function VanasKoSTracker:ListMessageReceived(distribution, sender, playerlist)
-	if (VANASKOS.DEBUG == 1) then
-		VanasKoS:Print("Receiving wanted list from %s", sender);
-	end
-
-	for player, data in pairs(playerlist) do
-		VanasKoS:AddEntry("WANTED", player, {["sender"] = sender})
-	end
-
-	VanasKoSGUI:Update();
-end
-
-function VanasKoSTracker:PurgeList()
-	for watcher, senttime in pairs(watchList) do
-		if(time() - senttime > LIST_PURGE_TIME) then
-			watchList[watcher] = nil;
-			for player, data in pairs(wantedList) do
-				if(data.wantedby[watcher]) then
-					data.count = data.count - 1;
-					data.wantedby[watcher] = nil;
-				end
-				if(data.count == 0) then
-					wipe(wantedList[player]);
-					wantedList[player] = nil;
-				end
-			end
-		end
-	end
-
-	VanasKoSGUI:Update();
-end
-
-function VanasKoSTracker:PositionUpdateReceived(distribution, sender, playername, posX, posY, zone)
-	if(VANASKOS.DEBUG == 1) then
-		VanasKoS:Print("received", sender, distribution, playername, posX, posY, zone);
-	end
-
-	if(sender == nil) then
-		return;
-	end
-	if( not (distribution == "WHISPER") or not (type(playername) == "string")) then
-		VanasKoS:Print("Invalid Message from", sender, "DEBUG", distribution, playername, posX, posY, zone);
-		return;
-	end
-
-	local data = VanasKoS:IsOnList("PLAYERKOS", playername);
-
-	if(not data or not data.wanted) then
-		return;
-	end
-
-	if(posX == nil) then
-		posX = 0.0;
-	end
-	if(posY == nil) then
-		posY = 0.0;
-	end
-	if(zone == nil) then
-		zonename = UNKNOWN;
-	else
-		assert(BZ[zone]);
-		zonename = BZ[zone];
-	end
-
-	VanasKoS:Print(format(L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"], string.Capitalize(playername), posX*100, posY*100, zonename, string.Capitalize(sender), data.reason));
-	if(Cartographer_Notes or Cartographer3_Notes or Cartographer3_Waypoints) then
-		local dialog = StaticPopup_Show("VANASKOS_TRACKER_ADD_NOTE");
-		if(dialog) then
-			dialog.kossender = string.Capitalize(sender);
-			dialog.kosname = string.Capitalize(playername);
-			dialog.koszone = zonename;
-			dialog.kosPosX = posX;
-			dialog.kosPosY = posY;
-
-			getglobal(dialog:GetName() .. "Text"):SetText(format(L["%s in %s at %d, %d (%s) - Create Cartographer Note?"], string.Capitalize(playername), zonename, posX*100, posY*100, string.Capitalize(sender)));
-		end
-	end
 end
 
 function VanasKoSTracker:Player_Detected(message, data)
-	assert(data.name ~= nil);
+	assert(data and data.name ~= nil);
 
-	local locatedPlayer = data.name:lower();
-
-	if(wantedList[locatedPlayer] and not VanasKoSDataGatherer:IsInSanctuary()) then
-		for watcher, data in pairs(wantedList[locatedPlayer].wantedby) do
-			if(not data.blocked) then
-				local result = self:SendPosition(watcher, locatedPlayer);
-				if(VANASKOS.DEBUG == 1) then
-					if(result) then
-						VanasKoS:Print("Position of", locatedPlayer, "sent for", watcher);
-					else
-						VanasKoS:Print("Position of", locatedPlayer, "failed to sent for", watcher);
-					end
-				end
-				data.blocked = true;
-			end
-		end
-	end
-
-	VanasKoSGUI:Update();
+	tempNameList[data.name] = time();
 end
 
-function VanasKoSTracker:SendPosition(receiver, locatedPlayer)
-	local zonename = GetRealZoneText();
-	local posX, posY = GetPlayerMapPosition("player");
+-- crb stuff
 
-	if(receiver == nil) then
-		VanasKoS:Print("receiver is nil! WTF?!");
-		return;
-	end
-
-	if(VANASKOS.DEBUG == 1) then
-		VanasKoS:Print(format("SendPosition of %s (%s:%s,%s) to %s", locatedPlayer, zonename, posX, posY, receiver));
-	end
-
-	local zone = nil;
-	if (zonename) then
-		assert(BZR[zonename]);
-		zone = BZR[zonename];
-	end
-
-	--[[
-	if(self:IsUserInChannel(receiver, "ZONE") or
-		self:IsUserInChannel(receiver, "CUSTOM", GCHANNEL)) then
-		self:SendCommMessage("VanasKoS", GetSerializedPositionString(locatedPlayer, posX, posY, zone) "WHISPER", receiver);
-		return true;
-	else
-	]]
-		GuildRoster();
-		for i=1, GetNumGuildMembers(1) do
-			local name, rank, rankIndex, level, class, zoneGuild, note, officernote, online, status = GetGuildRosterInfo(i);
-			if(name ~= nil and name:lower() == receiver:lower() and online) then
-				if(VANASKOS.DEBUG == 1) then
-					VanasKoS:Print(format("  Sending to ", receiver));
-				end
-
-				self:SendCommMessage("VanasKoS", GetSerializedPositionString(locatedPlayer, posX, posY, zone), "WHISPER", receiver);
-				return true;
-			end
-		end
-	--[[
-	end
-	]]
-	return false;
-end
-
-
---[[
-function VanasKoSTracker:PublishGlobalList()
-	local list = VanasKoS:GetList("PLAYERKOS");
-	if(list == nil) then
-		return;
-	end
-
-	local newList = { };
-	local entries = 0;
-
-	for k,v in pairs(list) do
-		if(v.wanted) then
-			newList[k] = { ['reason'] = v.reason };
-			entries = entries + 1;
-		end
-	end
-
-	if(entries == 0) then
-		return;
-	end
-
-	self:SendCommMessage("VanasKoS", GetSerializedWantedString(newList), "CUSTOM", GCHANNEL);
+local function GetCurrentCrbZoneName() 
+	local continent = GetCurrentMapContinent();
+	local zone = GetCurrentMapZone();
 	
-	if(VANASKOS.DEBUG == 1) then
-		VanasKoS:Print("[DEBUG]: Global List published - Entries:", entries);
+	if(continent == nil or zone == nil or continent == 0 or continent > 4) then
+		return nil;
 	end
+	
+	local channelNumber = continent * 1000 + zone;
+	return channelNumber;
 end
-]]
 
+local function GetCurrentCrbZoneChannelName() 
+	local channelNr = GetCurrentCrbZoneName();
+	if(channelNr == nil) then
+		return nil;
+	end
+	
+	local name = "CrbZ" .. channelNr .. "I" .. 1;
+	return name;
+end
 
--- /script VanasKoSTracker:PublishList()
-function VanasKoSTracker:PublishList()
-	local list = { };
-	local count = 0;
-	local kosList = VanasKoS:GetList("PLAYERKOS");
-	for k,v in pairs(kosList) do
-		if(v.wanted) then
-			list[k] = v;
-			count = count + 1;
+local function leaveCrbChannels(exceptChannel)
+	local channels = { GetChannelList(); }
+	local alreadyInChannel = false;
+	
+	if(channels ~= nil) then
+		for i=1, #channels do
+			local nr, name = GetChannelName(channels[i]);
+			if(name ~= nil) then
+				if(name ~= exceptChannel and string.match(name, "^Crb")) then
+					LeaveChannelByName(name);
+				end
+				
+				if(name == exceptChannel) then
+					alreadyInChannel = true;
+				end
+			end
+			
+			i = i + 1;
 		end
 	end
+	
+	return alreadyInChannel;
+end
+
+
+local changeZoneTimer;
+
+function VanasKoSTracker:Zone_Changed(zone)
+	self:CancelTimer(changeZoneTimer);
+	changeZonetimer = self:ScheduleTimer("ChangeZone", 10);
+end
+
+function VanasKoSTracker:ChangeZone()
+	if(Nx) then
+		return;
+	end
+	
+	local channelName = GetCurrentCrbZoneChannelName();
+	
+	if(leaveCrbChannels(channelName)) then
+		return;
+	end
+	
+	JoinChannelByName(channelName);
+end
+
+function VanasKoSTracker:SendSeenPeople()
+	local count = 0;
+	local playerStr = "";
+	for k, v in pairs(tempNameList) do
+		local toAdd = format("%2x%s!", 0, k);
+		if((#playerStr + #toAdd) > 200) then
+			break;
+		end
+		playerStr = playerStr .. toAdd;
+		tempNameList[k] = nil;
+		count = count + 1;
+	end
+	
 	if(count == 0) then
 		return;
 	end
-
-	if(self.db.profile.PublishToGuild and IsInGuild()) then
-		if(VANASKOS.DEBUG == 1) then
-			VanasKoS:Print("Publish wanted list to guild");
-		end
-		self:SendCommMessage("VanasKoS", GetSerializedWantedString(list), "GUILD", nil, "BULK");
+	
+	local mapAndZone = GetCurrentMapContinent() * 1000 + GetCurrentMapZone();
+	if(mapAndZone <= 0 or mapAndZone >= 5000) then
+		return; -- todo: implement
 	end
-
-	--[[
-	if(self.db.profile.PublishToZone) then
-		self:SendCommMessage(self.commPrefix, GetSerializedWantedString(list), "ZONE");
-	end
-	]]
-end
-
-
-local entry, value;
-
-local function ListButtonOnRightClickMenu()
-	local x, y = GetCursorPosition();
-	local uiScale = UIParent:GetEffectiveScale();
-	local menuItems = {
-		{
-			text = string.Capitalize(entry),
-			isTitle = true,
-		},
-		{
-			text = L["Add to Player KoS"],
-			func = function()
-						VanasKoS:RemoveEntry(VANASKOS.showList, entry);
-						VanasKoS:AddEntry("PLAYERKOS", entry, value);
-					end,
-		},
-		{
-			text = L["Add to Hatelist"],
-			func = function()
-						VanasKoS:RemoveEntry(VANASKOS.showList, entry);
-						VanasKoS:AddEntry("HATELIST", entry, value);
-					end
-		},
-		{
-			text = L["Add to Nicelist"],
-			func = function()
-						VanasKoS:RemoveEntry(VANASKOS.showList, entry);
-						VanasKoS:AddEntry("NICELIST", entry, value);
-					end
-		},
-	};
-
-	EasyMenu(menuItems, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
-end
-
-function VanasKoSTracker:ListButtonOnClick(button, frame)
-	local id = frame:GetID();
-	entry, value = VanasKoSGUI:GetListEntryForID(id);
-	if(id == nil or entry == nil) then
+	
+	local posX, posY = GetPlayerMapPosition("player");
+	if(posX == 0 or posY == 0) then
 		return;
 	end
-	if(button == "LeftButton") then
-		if(IsShiftKeyDown()) then
-			local name;
 
-			if(not value) then
+	local myHealthPerc = ((not UnitIsDeadOrGhost("player") and UnitHealth("player")) or 0)/UnitHealthMax("player")*20;
+	if(myHealthPerc > 0) then
+		myHealthPerc = max(myHealthPerc, 1);
+	end
+	myHealthPerc = floor(myHealthPerc + 0.5);
+	
+	local str = format("p%4x%3x%3x%c%c%s", mapAndZone, min(posX, .999)*0xfff, min(posY, .999)*0xfff, myHealthPerc + 48, 4+35, playerStr);
+	-- VanasKoS:Print(str);
+	--[[arg2 = "Vana";
+	arg1 = str;
+	arg9 = GetCurrentCrbZoneChannelName();
+	self:ChannelMessage();]]
+	local number = GetChannelName(GetCurrentCrbZoneChannelName());
+	if(number == nil or number == 0) then
+		return;
+	end
+	
+	SendChatMessage(str, "CHANNEL", nil, number);
+end
+
+local function checkForKoS(name, continent, zone, posX, posY)
+	local koslist = VanasKoS:GetList("PLAYERKOS");
+	if(koslist[name:lower()]) then
+		local zones = { GetMapZones(continent) };
+		VanasKoS:Print(format(L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"], name, posX, posY, zones[zone], koslist[name:lower()].reason));
+		VanasKoSEventMap:TrackPlayer(name, continent, zone, posX/100, posY/100);
+	end
+end
+
+local targetInfo = { };
+
+function VanasKoSTracker:ChannelMessage()
+	if(strsub(arg9, 1, 3) ~= "Crb") then
+		return;
+	end
+	
+	local sender = arg2;
+	
+	if(sender == UnitName("player")) then
+		return;
+	end
+	
+	local msg = arg1;
+	if(strfind(msg,"\1")) then
+		msg = gsub(msg,"\1", "|")
+	end
+
+	local id = strbyte(msg, 0);
+	if(id ~= tonumber('p')) then
+		return;
+	end
+	
+	if(#msg < 11) then
+		return;
+	end
+	
+	local continentAndZone = tonumber(strsub(msg, 2, 5), 16);
+	local continent = floor(continentAndZone / 1000);
+	local zone = continentAndZone % 1000;
+	if(continentAndZone == nil or continentAndZone ~= GetCurrentCrbZoneName()) then
+		return;
+	end
+
+	local posX = (tonumber(strsub(msg, 6, 8), 16) * 100) / 0xfff;
+	local posY = (tonumber(strsub(msg, 9, 11), 16) * 100) / 0xfff;
+	local healthPerc =(((strbyte(msg, 12) or 48) - 48) * 100) / 20;
+	local flags = (strbyte(msg, 13) or 35) - 35;
+	
+	--VanasKoS:Print(format("%s %d %f %f %d %d", sender, continentAndZone, posX, posY, healthPerc, flags));
+	
+	--[[ flags: 
+			1 = player is in combat, 
+			16 = unknown
+			
+			32 = player has a target (affects message),  targetString ~= ""
+			8 = quest stuff, queststuff ~= ""
+			4 = contains recently seen players, punklist ~= ""
+			
+			targetString = type, level, class, health, length of name, name
+				everything 1 char in hex - except for name
+			
+			quest stuff = 9 bytes (if included)
+			
+			punklist = [level, name, !]+
+				level = 1 byte hex
+			
+			message (offset 14 to end):
+				"targetString, queststuff, punklist"
+			]]
+	local str = strsub(msg, 14, #msg);
+	
+	local offset = 14;
+	
+	if(bit.band(flags, 16) > 0) then
+			VanasKoS:Print("16  abort");
+		return;
+	elseif(bit.band(flags, 32) > 0) then -- player has a target
+		targetInfo.type = strbyte(msg, offset) - 35;
+		offset = offset + 1;
+		targetInfo.level = strbyte(msg, offset) - 35;
+		offset = offset + 1;
+		targetInfo.class = strbyte(msg, offset) - 35;
+		offset = offset + 1;
+		targetInfo.health = strbyte(msg, offset) - 35;
+		offset = offset + 1;
+		local len = strbyte(msg, offset) - 35;
+		offset = offset + 1;
+		targetInfo.name = strsub(msg, offset, offset+len-1);
+		offset = 19 + len;
+		
+		if(targetInfo.type == 2) then-- 1 = friendly, 2 = player, 3=enemy, 4= elite, 5 = other
+			checkForKoS(targetInfo.name, continent, zone, posX, posY);
+		end
+	else
+		targetInfo.name = nil;
+	end
+	
+	local count = 0;
+	if(bit.band(flags, 8) > 0) then -- quest stuff
+		local queststuff = strsub(msg, offset);
+		if #queststuff < 7 then
+			VanasKoS:Print("queststuff abort");
+			return;
+		else 
+			count = strbyte(queststuff, 7) - 35;
+			if(#msg>=7+count*2) then
+				offset = offset + 7 + 2*count;
+			else
 				return;
 			end
-
-			name = string.Capitalize(entry);
-
-			local str = nil;
-			if(value.owner) then
-				str = format(L["[%s] %s (%s) - Reason: %s"], value.owner, name, VanasKoSGUI:GetListName(VANASKOS.showList), value.reason);
-			else
-				str = format(L["%s (%s) - Reason: %s"], name, VanasKoSGUI:GetListName(VANASKOS.showList), value.reason);
-			end
-			if(DEFAULT_CHAT_FRAME.editBox and str) then
-				if(DEFAULT_CHAT_FRAME.editBox:IsVisible()) then
-					DEFAULT_CHAT_FRAME.editBox:SetText(DEFAULT_CHAT_FRAME.editBox:GetText() .. str .. " ");
-				end
-			end
 		end
+	end
+	
+	--VanasKoS:Print(format("%d %d, posX: %f posY: %f %d target: %s | %s", flags, count, posX, posY, healthPerc, targetInfo.name or "", strsub(msg, offset)));
+	if(bit.band(flags, 4) > 0) then -- contains recently seen players
+		offset = offset + 1;
+		--VanasKoS:Print(strsub(msg, offset));
+		local punksWithLevel = { strsplit("!", strsub(msg, offset)) };
+		for n,v in ipairs(punksWithLevel) do
+			local level = tonumber(strsub(v, 1, 2), 16);
+			if(level == nil) then
+				break;
+			end
+			
+			local name = strsub(v, 3);
+			if(level >= 255) then
+				name = strsub(v, 9);
+				level = 0;
+			end
+			
+			--VanasKoS:Print(format("name: %s", name));
+			checkForKoS(name, continent, zone, posX, posY);
+		end
+	end
+	--VanasKoS:Print("---");
+	
+end
+
+function VanasKoSTracker:StopCrbTracking() 
+	self:UnregisterEvent("CHAT_MSG_CHANNEL");
+
+	if(Nx) then
+		return; -- todo 
+	end
+
+	leaveCrbChannels(nil);
+end
+
+function VanasKoSTracker:StartCrbTracking()
+	self:ScheduleRepeatingTimer("SendSeenPeople", 10);
+	self:RegisterEvent("CHAT_MSG_CHANNEL", "ChannelMessage");
+	
+	if(Nx) then
+		return; -- todo 
+	end
+	
+	local channelName = GetCurrentCrbZoneChannelName();
+	
+	if(leaveCrbChannels(channelName)) then
 		return;
 	end
-
-	ListButtonOnRightClickMenu();
-end
-
-
-local selectedPlayer, selectedPlayerData = nil;
-
-function VanasKoSTracker:UpdateMouseOverFrame()
-	if(not selectedPlayer) then
-		tooltip:AddLine("----");
-		return;
-	end
 	
-	-- name
-	local pdatalist = VanasKoS:GetList("PLAYERDATA")[selectedPlayer];
-	tooltip:AddLine(string.Capitalize(selectedPlayer));
-	
-	-- guild, level, race, class, zone, lastseen
-	if(pdatalist) then
-		if(pdatalist['guild']) then
-			local text = "<|cffffffff" .. pdatalist['guild'] .. "|r>";
-			if(pdatalist['guildrank']) then
-				text = text .. " (" .. pdatalist['guildrank'] .. ")";
-			end
-			tooltip:AddLine(text);
-		end
-		if(pdatalist['level'] and pdatalist['race'] and pdatalist['class']) then
-			tooltip:AddLine(format(L['Level %s %s %s'], pdatalist['level'], pdatalist['race'], pdatalist['class']));
-		end
-		if(pdatalist['zone'] and pdatalist['lastseen']) then
-			tooltip:AddLine(format(L['Last seen at %s in %s'], date("%x", pdatalist['lastseen']), pdatalist['zone']));
-		end
-	end
-
-	-- infos about creator, sender, owner, last updated
-	if(selectedPlayerData) then
-		if(selectedPlayerData['owner']) then
-			tooltip:AddLine(format(L['Owner: %s'], selectedPlayerData['owner']));
-		end
-
-		if(selectedPlayerData['creator']) then
-			tooltip:AddLine(format(L['Creator: %s'], selectedPlayerData['creator']));
-		end
-
-		if(selectedPlayerData['created']) then
-			tooltip:AddLine(format(L['Created: %s'], date("%x", selectedPlayerData['created'])));
-		end
-
-		if(selectedPlayerData['sender']) then
-			tooltip:AddLine(format(L['Received from: %s'], selectedPlayerData['sender']));
-		end
-
-		if(selectedPlayerData['lastupdated']) then
-			tooltip:AddLine(format(L['Last updated: %s'], date("%x", selectedPlayerData['lastupdated'])));
-		end
-	end
-
-	local wantedList = VanasKoS:GetList("WANTED")[selectedPlayer];
-	if(wantedList) then
-		tooltip:AddLine(format(L['Wanted by:']));
-		for watcher, data in pairs(wantedList.wantedby) do
-			tooltip:AddLine(watcher .. ((data.blocked and "*") or ""));
-		end
-	end
+	JoinChannelByName(channelName);
 end
 
-function VanasKoSTracker:ShowTooltip()
-	tooltip:ClearLines();
-	tooltip:SetOwner(VanasKoSListFrame, "ANCHOR_CURSOR");
-	tooltip:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -30);
-	tooltip:SetPoint("BOTTOMLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -390);
-	
-	self:UpdateMouseOverFrame();
-	tooltip:Show();
-end
-
-function VanasKoSTracker:HideTooltip()
-	tooltip:Hide();
-end
-
-function VanasKoSTracker:ListButtonOnEnter(button, frame)
-	self:SetSelectedPlayerData(VanasKoSGUI:GetListEntryForID(frame:GetID()));
-	
-	self:ShowTooltip();
-end
-
-function VanasKoSTracker:ListButtonOnLeave(button, frame)
-	self:HideTooltip();
-end
-
-function VanasKoSTracker:SetSelectedPlayerData(selPlayer, selPlayerData)
-	selectedPlayer = selPlayer;
-	selectedPlayerData = selPlayerData;
-end
 
 -- Taken straight from Cartographer3_Notes, I don't know why this had no interface
 -- already.

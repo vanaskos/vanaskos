@@ -237,15 +237,26 @@ function VanasKoSEventMap:POI_OnEnter(frame, id)
 		return
 	end
 
-	local pvplog = VanasKoS:GetList("PVPLOG");
 	local x = WorldMapButton:GetCenter();
 	local anchor = "ANCHOR_RIGHT";
 	if (x < frame.x) then
 		anchor = "ANCHOR_LEFT";
 	end
+
+	if(frame.trackedPlayer) then
+		WorldMapTooltip:ClearLines();
+		WorldMapTooltip:SetOwner(frame, anchor);
+		local name = frame.playerName;
+		WorldMapTooltip:AddLine(format("Tracking: %s (%s)", name, SecondsToTime(time()-trackedPlayers[name:lower()].lastseen)));
+		WorldMapTooltip:Show();
+		return;
+	end
+	
 	WorldMapTooltip:ClearLines();
 	WorldMapTooltip:SetOwner(frame, anchor);
 	WorldMapTooltip:AddLine(format(L["PvP Encounter"]));
+
+	local pvplog = VanasKoS:GetList("PVPLOG");
 	for i, eventIdx in ipairs(frame.event) do
 		local event = pvplog.event[eventIdx];
 		local player = "";
@@ -378,8 +389,8 @@ function VanasKoSEventMap:drawPOI(POI)
 	POI:SetFrameLevel(WorldMapPlayer:GetFrameLevel() - 1);
 	
 	if(POI.trackedPlayer) then
-		POI:SetNormalTexture("Interface\\Addons\\VanasKoS\\Artwork\\win");
-		--POI:SetBackdropColor(GetColor("LossColor"));
+		POI:SetNormalTexture(nil);
+		POI:SetBackdropColor(GetColor("LossColor"));
 		POI:Resize();
 		POI:Show();
 		return;
@@ -443,6 +454,8 @@ function VanasKoSEventMap:CreateTrackingPoints()
 
 			POI.trackedPlayer = true;
 			POI.show = true;
+			POI.playerName = k;
+			
 			self:drawPOI(POI);
 		end
 	end

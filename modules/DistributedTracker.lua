@@ -407,9 +407,13 @@ function VanasKoSTracker:ChannelMessage()
 	end
 	
 	local continentAndZone = tonumber(strsub(msg, 2, 5), 16);
+	if(continentAndZone == nil) then
+		return;
+	end
 	local continent = floor(continentAndZone / 1000);
 	local zone = continentAndZone % 1000;
-	if(continentAndZone == nil or continentAndZone ~= GetCurrentCrbZoneName()) then
+	
+	if(continentAndZone ~= GetCurrentCrbZoneName()) then
 		return;
 	end
 

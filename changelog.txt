@@ -1,6 +1,18 @@
 Release Changelog for VanasKoS
 
 alpha:
+4.11:
+- Updated version number for 3.2 patch
+- Updated libraries to latest tagged versions
+- Distributed tracking bugfix
+
+4.10beta1:
+- Add distributed tracking
+- Fixed PvPStats
+
+4.01:
+- Increased maxLetters for dialogs
+
 4.01c beta:
 - fixed a bug where old data was imported incorrectly
 

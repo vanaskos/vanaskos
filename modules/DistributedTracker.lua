@@ -11,197 +11,61 @@ local VanasKoS = VanasKoS;
 local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable();
 local BZR = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable();
 
--- TODO: Cleanup Localizations
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "enUS", true);
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "enUS", true, VANASKOS.DEBUG)
 if L then
-	L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true;
-	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = true;
-	L["Ok"] = true;
-	L["Cancel"] = true;
-	L["Distributed Tracking"] = true;
-	L["Enabled"] = true;
-	L["Wanted List"] = true;
-	L["Wanted"] = true;
-	L["Tracking via Guild"] = true;
-	L["Tracking via Zone"] = true;
-	L["Wanted by %s players"] = true;
-	L["Found multiple matches for zone '%s': %s"] = true;
-	L["No match was found for zone '%s'"] = true;
-
-	L["Level %s %s %s"] = "Level |cffffffff%s %s %s|r";
-	L["Last seen at %s in %s"] = "Last seen at |cff00ff00%s|r |cffffffffin|r |cff00ff00%s|r|r";
-	L["Owner: %s"] = "Owner: |cffffffff%s|r";
-	L["Creator: %s"] = "Creator: |cffffffff%s|r";
-	L["Created: %s"] = "Created: |cffffffff%s|r";
-	L["Received from: %s"] = "Received from: |cffffffff%s|r";
-	L["Last updated: %s"] = "Last updated: |cffffffff%s|r";
-
-	L["Add to Player KoS"] = true;
-	L["Add to Hatelist"] = true;
-	L["Add to Nicelist"] = true;
-
-	L['Wanted by:'] = "|cffffffffWanted by:|r";
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/DistributedTracker")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "deDE", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "frFR")
 if L then
-	L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = "Karten-Position von Player %s aktualisiert (%d, %d in %s) von %s - Grund: %s";
-	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%%s in %s bei %d, %d (%s) - Cartographer Notiz erstellen?";
-	L["Ok"] = "Ok";
-	L["Cancel"] = "Abbrechen";
-	L["Distributed Tracking"] = "Verteiltes Suchen";
-	L["Enabled"] = "Aktiviert";
-	L["Wanted List"] = "Gesucht-Liste";
-	L["Wanted"] = "Gesucht";
-	L["Tracking via Guild"] = "Verteilte Suche mit Gilde";
-	L["Tracking via Zone"] = "Verteilte Suche in Zone";
---	L["Wanted by %s players"] = true;
---	L["Found multiple matches for zone '%s': %s"] = true;
---	L["No match was found for zone '%s'"] = true;
-
-	L["Level %s %s %s"] = "Level |cffffffff%s %s %s|r";
-	L["Last seen at %s in %s"] = "Zuletzt gesehen am |cff00ff00%s|r |cffffffffin|r |cff00ff00%s|r|r";
-	L["Owner: %s"] = "Eigentümer: |cffffffff%s|r";
-	L["Creator: %s"] = "Ersteller: |cffffffff%s|r";
-	L["Created: %s"] = "Erstellt am: |cffffffff%s|r";
-	L["Received from: %s"] = "Erhalten von: |cffffffff%s|r";
-	L["Last updated: %s"] = "Zuletzt geändert: |cffffffff%s|r";
-
-	L["Add to Player KoS"] = "Auf Spieler-KoS Liste verschieben";
-	L["Add to Hatelist"] = "Auf Hassliste verschieben";
-	L["Add to Nicelist"] = "Auf Nette-Leute-Liste verschieben";
-
---	L['Wanted by:'] = "|cffffffffWanted by:|r";
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/DistributedTracker")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "frFR", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "deDE")
 if L then
--- L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true,
---	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Position du joueur %s (%d, %d \195\128 %s) re\195\167u de %s - Raison: %s";
-	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s in %s at %d, %d (%s) - Cr\195\169er une note avec \"Cartographer\" ?";
-	L["Ok"] = "Ok";
-	L["Cancel"] = "Annuler";
-	L["Distributed Tracking"] = "R\195\169partition des informations KoS";
-	L["Enabled"] = "Actif";
-	L["Wanted List"] = "Liste Wanted";
-	L["Wanted"] = "Wanted";
-	L["Tracking via Guild"] = "Tracking via la guilde";
-	L["Tracking via Zone"] = "Tracking la zone";
---	L["Wanted by %s players"] = true;
---	L["Found multiple matches for zone '%s': %s"] = true;
---	L["No match was found for zone '%s'"] = true;
-
-	L["Level %s %s %s"] = "Level |cffffffff%s %s %s|r";
-	L["Last seen at %s in %s"] = "Dernièrement vu le |cff00ff00%s|r |cffffffffà|r |cff00ff00%s|r|r";
-	L["Owner: %s"] = "Propriétaire: |cffffffff%s|r";
-	L["Creator: %s"] = "Créateur: |cffffffff%s|r";
-	L["Created: %s"] = "Créé: |cffffffff%s|r";
-	L["Received from: %s"] = "Reçu de: |cffffffff%s|r";
-	L["Last updated: %s"] = "Dernière mise à jour: |cffffffff%s|r";
-
-	L["Add to Player KoS"] = "Déplacer vers Joueur KoS";
-	L["Add to Hatelist"] = "Déplacer vers Liste noire";
-	L["Add to Nicelist"] = "Déplacer vers Liste blanche";
-
---	L['Wanted by:'] = "|cffffffffWanted by:|r";
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/DistributedTracker")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "koKR", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "koKR")
 if L then
--- L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true,
---	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = true;
-	L["Ok"] = "확인";
-	L["Cancel"] = "취소";
-	L["Distributed Tracking"] = "분산 추적";
-	L["Enabled"] = "사용";
-	L["Wanted List"] = "수배 목록";
-	L["Wanted"] = "수배";
-	L["Tracking via Guild"] = "길드 내 추적";
-	L["Tracking via Zone"] = "지역 내 추적";
---	L["Wanted by %s players"] = true;
---	L["Found multiple matches for zone '%s': %s"] = true;
---	L["No match was found for zone '%s'"] = true
-
-	L["Level %s %s %s"] = "레벨 |cffffffff%s %s %s |r";
-	L["Last seen at %s in %s"] = "|cff00ff00%s|r 마지막 발견 |cff00ff00%s|r |cffffffff내|r|r";
-	L["Owner: %s"] = "소유자: |cffffffff%s|r";
-	L["Creator: %s"] = "작성자: |cffffffff%s|r";
-	L["Created: %s"] = "작성: |cffffffff%s|r";
-	L["Received from: %s"] = "수신: |cffffffff%s|r";
-	L["Last updated: %s"] = "마지막 갱신: |cffffffff%s|r";
-
-	L["Add to Player KoS"] = "플레이어 KoS로 이동";
-	L["Add to Hatelist"] = "악인명부로 이동";
-	L["Add to Nicelist"] = "호인명부로 이동";
-
---	L['Wanted by:'] = "|cffffffffWanted by:|r";
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/DistributedTracker")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "esES", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "esMX")
 if L then
--- L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true,
---	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Posición del Jugador %s (%d, %d in %s) recibida desde %s - Razón: %s";
-	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s en %s en %d, %d (%s) - ¿Crear Nota de Cartographer?";
-	L["Ok"] = "Aceptar";
-	L["Cancel"] = "Cancelar";
-	L["Distributed Tracking"] = "Rastreo Distribuido";
-	L["Enabled"] = "Activado";
-	L["Wanted List"] = "Lista de Se Busca";
-	L["Wanted"] = "Se Busca";
-	L["Tracking via Guild"] = "Rastrear vía Hermandad";
-	L["Tracking via Zone"] = "Rastrear vía Zona";
---	L["Wanted by %s players"] = true;
---	L["Found multiple matches for zone '%s': %s"] = true;
---	L["No match was found for zone '%s'"] = true;
-
-	L["Level %s %s %s"] = "Nivel |cffffffff%s %s %s|r";
-	L["Last seen at %s in %s"] = "Visto por última vez el |cff00ff00%s|r |cffffffffen|r |cff00ff00%s|r|r";
-	L["Owner: %s"] = "Propietario: |cffffffff%s|r";
-	L["Creator: %s"] = "Creador: |cffffffff%s|r";
-	L["Created: %s"] = "Creado: |cffffffff%s|r";
-	L["Received from: %s"] = "Recibido desde: |cffffffff%s|r";
-	L["Last updated: %s"] = "Última actualización: |cffffffff%s|r";
-
-	L["Add to Player KoS"] = "Mover a Jugador KoS";
-	L["Add to Hatelist"] = "Mover a Odiados";
-	L["Add to Nicelist"] = "Mover a Simpáticos";
-
---	L['Wanted by:'] = "|cffffffffWanted by:|r";
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/DistributedTracker")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_DistributedTracker", "ruRU", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "ruRU")
 if L then
--- L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true,
---	L["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Расположение игрока %s (%d, %d в %s) получено от %s - Причина: %s";
-	L["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s в %s по %d, %d (%s) - Создать метку в Картографе?";
-	L["Ok"] = "Ok";
-	L["Cancel"] = "Отмена";
-	L["Distributed Tracking"] = "Распределенное слежение";
-	L["Enabled"] = "Включено";
-	L["Wanted List"] = "Список розыска";
-	L["Wanted"] = "Розыск";
-	L["Tracking via Guild"] = "Следить по гильдии";
-	L["Tracking via Zone"] = "Следить по локации";
---	L["Wanted by %s players"] = true;
---	L["Found multiple matches for zone '%s': %s"] = true;
---	L["No match was found for zone '%s'"] = true;
---
-	L["Level %s %s %s"] = "Уровень |cffffffff%s %s %s|r";
-	L["Last seen at %s in %s"] = "Замечен |cff00ff00%s|r |cffffffffв|r |cff00ff00%s|r|r";
-	L["Owner: %s"] = "Владелец: |cffffffff%s|r";
-	L["Creator: %s"] = "Создал: |cffffffff%s|r";
-	L["Created: %s"] = "Создано: |cffffffff%s|r";
-	L["Received from: %s"] = "Получено от: |cffffffff%s|r";
-	L["Last updated: %s"] = "Обновлено: |cffffffff%s|r";
-
-	L["Add to Player KoS"] = "Переместить к KoS-игрокам";
-	L["Add to Hatelist"] = "Переместить в список ненавистных";
-	L["Add to Nicelist"] = "Переместить в список хороших";
-
---	L['Wanted by:'] = "|cffffffffWanted by:|r";
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/DistributedTracker")@
 end
 
-L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_DistributedTracker", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/DistributedTracker")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/DistributedTracker")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/DistributedTracker")@
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DistributedTracker", false);
 local AceSerializer = LibStub("AceSerializer-3.0");
 
 local tempNameList = { };

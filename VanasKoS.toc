@@ -50,14 +50,12 @@ VanasKoS.lua
 GUICreate.lua
 VanasKoSGUI.lua
 
-modules\DefaultLists_localization.lua
 modules\DefaultLists.lua
 modules\PvPDataGatherer.lua
 modules\DataGatherer.lua
 modules\Importer.lua
 modules\ChatNotifier.lua
 modules\Notifier.lua
-modules\WarnFrame_localization.lua
 modules\WarnFrame.lua
 modules\DistributedTracker.lua
 modules\MinimapButton.lua

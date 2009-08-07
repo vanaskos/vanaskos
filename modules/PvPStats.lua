@@ -3,60 +3,61 @@
 Displays Stats about PvP in a window
 ------------------------------------------------------------------------]]
 
-local function RegisterTranslations(locale, translationfunction)
-	local defaultLocale = false;
-	if(locale == "enUS") then
-		defaultLocale = true;
-	end
-	
-	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_PvPStats", locale, defaultLocale);
-	if liblocale then
-		for k, v in pairs(translationfunction()) do
-			liblocale[k] = v;
-		end
-	end
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "enUS", true, VANASKOS.DEBUG)
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/PvPStats")@
 end
 
-RegisterTranslations("enUS", function() return {
-	["PvP Stats"] = true,
-	["Show/Hide"] = true,
-	["All Time"] = true,
-	["Last 24 hours"] = true,
-	["Last Week"] = true,
-	["Last Month"] = true,
-	["All Characters (Realm)"] = true,
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "frFR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/PvPStats")@
+end
 
-	["Wins: %d (%f)"] = "Wins: |cff00ff00%d|r (%.1f%%)";
-	["Losses: %d (%f)"] = "Losses: |cffff0000%d|r (%.1f%%)";
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "deDE")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/PvPStats")@
+end
 
-RegisterTranslations("koKR", function() return {
-	["PvP Stats"] = "PvP 현황",
-	["Show/Hide"] = "표시/숨김",
-	["All Time"] = "모든 시간",
-	["Last 24 hours"] = "마지막 24 시간",
-	["Last Week"] = "마지막 주",
-	["Last Month"] = "마지막 월",
-	["All Characters (Realm)"] = "모든 케릭터 (서버)",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "koKR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/PvPStats")@
+end
 
-	["Wins: %d (%f)"] = "승: |cff00ff00%d|r (%.1f%%)";
-	["Losses: %d (%f)"] = "패: |cffff0000%d|r (%.1f%%)";
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "esMX")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/PvPStats")@
+end
 
-RegisterTranslations("ruRU", function() return {
-	["PvP Stats"] = "Статистика PvP",
-	["Show/Hide"] = "Показать/Скрыть",
-	["All Time"] = "Все время",
-	["Last 24 hours"] = "Последние 24 часа",
-	["Last Week"] = "Последняя неделя",
-	["Last Month"] = "Последний месяц",
-	["All Characters (Realm)"] = "Все персонажи (мир)",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "ruRU")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/PvPStats")@
+end
 
-	["Wins: %d (%f)"] = "Побед: |cff00ff00%d|r (%.1f%%)";
-	["Losses: %d (%f)"] = "Поражений: |cffff0000%d|r (%.1f%%)";
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/PvPStats")@
+end
 
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_PvPStats", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/PvPStats")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/PvPStats")@
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/PvPStats", false);
 
 VanasKoSPvPStats = VanasKoS:NewModule("PvPStats");
 

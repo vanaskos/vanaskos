@@ -3,12 +3,66 @@
 Creates the WarnFrame to alert of nearby KoS, Hostile and Friendly
 ------------------------------------------------------------------------]]
 
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "enUS", true, VANASKOS.DEBUG)
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/WarnFrame")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "frFR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/WarnFrame")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "deDE")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/WarnFrame")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "koKR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/WarnFrame")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "esMX")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/WarnFrame")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "ruRU")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/WarnFrame")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/WarnFrame")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/WarnFrame")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/WarnFrame")@
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/WarnFrame", false);
+
 VanasKoSWarnFrame = VanasKoS:NewModule("WarnFrame", "AceEvent-3.0", "AceTimer-3.0");
 
 local VanasKoSWarnFrame = VanasKoSWarnFrame;
 local VanasKoS = VanasKoS;
-
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_WarnFrame", false);
 
 local warnFrame = nil;
 local warnButtonsOOC = nil;

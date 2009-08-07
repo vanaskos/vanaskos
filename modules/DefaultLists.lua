@@ -6,7 +6,61 @@ local VanasKoSGUI = VanasKoSGUI;
 
 local tooltip = nil;
 
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_DefaultLists", false);
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "enUS", true, VANASKOS.DEBUG)
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/DefaultLists")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "frFR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/DefaultLists")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "deDE")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/DefaultLists")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "koKR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/DefaultLists")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "esMX")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/DefaultLists")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "ruRU")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/DefaultLists")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/DefaultLists")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/DefaultLists")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/DefaultLists")@
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DefaultLists", false);
 
 -- sort functions
 

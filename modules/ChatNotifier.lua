@@ -3,140 +3,61 @@
 modifies the ChatMessage if a player speaks whom is on your hatelist
 ------------------------------------------------------------------------]]
 
-local function RegisterTranslations(locale, translationfunction)
-	local defaultLocale = false;
-	if(locale == "enUS") then
-		defaultLocale = true;
-	end
-	
-	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_ChatNotifier", locale, defaultLocale);
-	if liblocale then
-		for k, v in pairs(translationfunction()) do
-			liblocale[k] = v;
-		end
-	end
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "enUS", true, VANASKOS.DEBUG)
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/ChatNotifier")@
 end
 
-RegisterTranslations("enUS", function() return {
---	["[HateList: %s] %s"] = true,
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "frFR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/ChatNotifier")@
+end
 
-	["Chat Modifications"] = true,
-	["Modifies the Chat Window for Hate/Nicelist Entries."] = true,
-	["Enabled"] = true,
-	["Hatelist Color"] = true,
-	["Sets the Foreground Color for Hatelist Entries"] = true,
-	["Nicelist Color"] = true,
-	["Sets the Foreground Color for Nicelist Entries"] = true,
-	["Modify only my Entries"] = true,
-	["Modifies the Chat only for your Entries"] = true,
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "deDE")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/ChatNotifier")@
+end
 
-	["Lookup in VanasKoS"] = true,
-	["Add Lookup in VanasKoS"] = true,
-	["Modifies the Chat Context Menu to add a \"Lookup in VanasKoS\" option."] = true,
-	["Player: %s is on List: %s - Reason: %s"] = "Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r",
-	["No entry for %s"] = "No entry for |cff00ff00%s|r",
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "koKR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/ChatNotifier")@
+end
 
-RegisterTranslations("deDE", function() return {
---	["[HateList: %s] %s"] = "[Hassliste: %s] %s",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "esMX")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/ChatNotifier")@
+end
 
-	["Chat Modifications"] = "Chat Modifikationen",
-	["Modifies the Chat Window for Hate/Nicelist Entries."] = "Modifiziert das Chatfenster Spieler auf der Hass- und Nette-Leuteliste",
-	["Enabled"] = "Aktiviert",
-	["Hatelist Color"] = "Farbe für Hassliste",
-	["Sets the Foreground Color for Hatelist Entries"] = "Setzt die Vordergrundfarbe für Einträge der Hassliste",
-	["Nicelist Color"] = "Farbe für Nette-Leuteliste",
-	["Sets the Foreground Color for Nicelist Entries"] = "Setzt die Hintergrundfarbe für Einträge der Nette-Leuteliste",
-	["Modifies the Chat only for your Entries"] = "Nur für meine Einträge Chat ändern",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "ruRU")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/ChatNotifier")@
+end
 
-	["Lookup in VanasKoS"] = "In VanasKoS suchen",
-	["Add Lookup in VanasKoS"] = "In VanasKoS suchen hinzufügen",
-	["Modifies the Chat Context Menu to add a \"Lookup in VanasKoS\" option."] = "Fügt die Suche in VanasKoS zum Context Menu hinzu",
-	["Player: %s is on List: %s - Reason: %s"] = "Spieler: |cff00ff00%s|r ist auf Liste: |cff00ff00%s|r - Grund: |cff00ff00%s|r",
-	["No entry for %s"] = "Kein Eintrag für |cff00ff00%s|r",
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/ChatNotifier")@
+end
 
-RegisterTranslations("frFR", function() return {
---	["[HateList: %s] %s"] = "[Liste noire: %s] %s",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/ChatNotifier")@
+end
 
-	["Chat Modifications"] = "Modifications du chat",
-	["Modifies the Chat Window for Hate/Nicelist Entries."] = "Modifie la fenêtre du chat pour les entrées des listes blanche/noire",
-	["Enabled"] = "Actif",
-	["Hatelist Color"] = "Couleur pour liste noire",
-	["Sets the Foreground Color for Hatelist Entries"] = "Choisir la couleur de texte pour les entrées de la liste noire",
-	["Nicelist Color"] = "Couleur pour liste blanche",
-	["Sets the Foreground Color for Nicelist Entries"] = "Choisir la couleur de texte pour les entrées de la liste blanche",
-	["Modify only my Entries"] = "Modifier seulement mes entrées",
-	["Modifies the Chat only for your Entries"] = "Modifie le chat seulement pour vos entrées",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/ChatNotifier")@
+end
 
---	["Lookup in VanasKoS"] = true,
---	["Add Lookup in VanasKoS"] = true,
---	["Modifies the Chat Context Menu to add a \"Lookup in VanasKoS\" option."] = true,
---	["Player: %s is on List: %s - Reason: %s"] = "Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r",
---	["No entry for %s"] = "No entry for |cff00ff00%s|r",
-} end);
-
-RegisterTranslations("koKR", function() return {
---	["[HateList: %s] %s"] = "[악인명부: %s] %s",
-
-	["Chat Modifications"] = "대화창 변경",
-	["Modifies the Chat Window for Hate/Nicelist Entries."] = "악인/호인에 대해 대화창을 변경합니다.",
-	["Enabled"] = "사용",
-	["Hatelist Color"] = "악인명부 색상",
-	["Sets the Foreground Color for Hatelist Entries"] = "싫어하는 사람에 대한 전경 색상을 설정합니다.",
-	["Nicelist Color"] = "호인명부 색상",
-	["Sets the Foreground Color for Nicelist Entries"] = "좋아하는 사람에 대한 전경 색상을 설정합니다.",
-	["Modify only my Entries"] = "내 명부만 변경",
-	["Modifies the Chat only for your Entries"] = "당신의 명부에 대한 대화만 변경합니다.",
-
---	["Lookup in VanasKoS"] = true,
---	["Add Lookup in VanasKoS"] = true,
---	["Modifies the Chat Context Menu to add a \"Lookup in VanasKoS\" option."] = true,
---	["Player: %s is on List: %s - Reason: %s"] = "Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r",
---	["No entry for %s"] = "No entry for |cff00ff00%s|r",
-} end);
-
-RegisterTranslations("esES", function() return {
---	["[HateList: %s] %s"] = "[Odiados: %s] %s",
-
-	["Chat Modifications"] = "Modificaciones de Chat",
-	["Modifies the Chat Window for Hate/Nicelist Entries."] = "Modifica la ventana de chat para las entradas de Simpáticos/Odiados",
-	["Enabled"] = "Activado",
-	["Hatelist Color"] = "Color de Odiados",
-	["Sets the Foreground Color for Hatelist Entries"] = "Establece el color de las entradas de Odiados",
-	["Nicelist Color"] = "Color de Simpáticos",
-	["Sets the Foreground Color for Nicelist Entries"] = "Establece el color de las entradas de Simpáticos",
-	["Modify only my Entries"] = "Modificar sólo mis entradas",
-	["Modifies the Chat only for your Entries"] = "Modifica el chat sólo para tus entradas",
-
---	["Lookup in VanasKoS"] = true,
---	["Add Lookup in VanasKoS"] = true,
---	["Modifies the Chat Context Menu to add a \"Lookup in VanasKoS\" option."] = true,
---	["Player: %s is on List: %s - Reason: %s"] = "Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r",
---	["No entry for %s"] = "No entry for |cff00ff00%s|r",
-} end);
-
-RegisterTranslations("ruRU", function() return {
---	["[HateList: %s] %s"] = "[Список ненавистных: %s] %s",
-
-	["Chat Modifications"] = "Модификации чата",
-	["Modifies the Chat Window for Hate/Nicelist Entries."] = "Вносит изменения в окно чата для записей из списка ненавистных/хороших.",
-	["Enabled"] = "Включено",
-	["Hatelist Color"] = "Цвет списка ненавистных",
-	["Sets the Foreground Color for Hatelist Entries"] = "Задает цвет для записей из списка ненавистных",
-	["Nicelist Color"] = "Цвет списка хороших",
-	["Sets the Foreground Color for Nicelist Entries"] = "Задает цвет для записей из списка хороших",
-	["Modify only my Entries"] = "Модифицировать только для моих",
-	["Modifies the Chat only for your Entries"] = "Модифицирует чат только для записей, сделанных мной",
-
-	["Lookup in VanasKoS"] = "Проверить в VanasKoS",
-	["Add Lookup in VanasKoS"] = "Добавить проверку в меню",
-	["Modifies the Chat Context Menu to add a \"Lookup in VanasKoS\" option."] = "Добавляет в контекстное меню пункт \"Проверить в Vanas KoS\"",
-	["Player: %s is on List: %s - Reason: %s"] = "Игрок: |cff00ff00%s|r в Списке: |cff00ff00%s|r - Причина: |cff00ff00%s|r",
-	["No entry for %s"] = "Записей с |cff00ff00%s|r не найдено",
-} end);
-
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_ChatNotifier", false);
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/ChatNotifier", false);
 
 VanasKoSChatNotifier = VanasKoS:NewModule("ChatNotifier", "AceHook-3.0");
 

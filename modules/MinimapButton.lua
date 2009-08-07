@@ -3,177 +3,64 @@
 Creates a MinimapButton with a menu for VanasKoS
 ------------------------------------------------------------------------]]
 
-local function RegisterTranslations(locale, translationfunction)
-	local defaultLocale = false;
-	if(locale == "enUS") then
-		defaultLocale = true;
-	end
-	
-	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_MinimapButton", locale, defaultLocale);
-	if liblocale then
-		for k, v in pairs(translationfunction()) do
-			liblocale[k] = v;
-		end
-	end
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "enUS", true, VANASKOS.DEBUG)
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/MinimapButton")@
 end
 
-RegisterTranslations("enUS", function() return {
-	["Main Window"] = true,
-	["Warning Window"] = true,
-	["Add Player to KoS"] = true,
-	["Add Guild to KoS"] = true,
-	["Add Player to Hatelist"] = true,
-	["Add Player to Nicelist"] = true,
-	["Add Attacker to KoS"] = true,
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "frFR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/MinimapButton")@
+end
 
-	["Minimap Button"] = true,
-	["Enabled"] = true,
-	["Locked"] = true,
-	["Reset Position"] = true,
---	["Angle"] = true,
---	["Distance"] = true,
---
-	["Show information"] = true,
-	["Show Warning Frame Infos as Text and Tooltip"] = true,
-	["Last Attackers"] = true,
-	["%s ago"] = true,
-	
-	["Click to toggle the Main Window"] = true,
-	
-	["Nearby People"] = true,
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "deDE")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/MinimapButton")@
+end
 
-RegisterTranslations("deDE", function() return {
-	["Main Window"] = "Programmfenster",
-	["Warning Window"] = "Warnfenster",
-	["Add Player to KoS"] = "Spieler zur KoS-Liste hinzufuegen",
-	["Add Guild to KoS"] = "Gilde zur KoS-Liste hinzufuegen",
-	["Add Player to Hatelist"] = "Spieler zur Hassliste hinzufuegen",
-	["Add Player to Nicelist"] = "Spieler zur Nette-Leuteliste hinzufuegen",
-	["Add Attacker to KoS"] = "Angreifer zur KoS-Liste hinzufügen",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "koKR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/MinimapButton")@
+end
 
-	["Minimap Button"] = "Minimap Button",
-	["Enabled"] = "Aktiviert",
-	["Locked"] = "Sperren",
-	["Reset Position"] = "Position zurücksetzen",
---	["Angle"] = "Winkel",
---	["Distance"] = "Abstand",
---
-	--["Show information"] = true,
-	["Show Warning Frame Infos as Text and Tooltip"] = "Warn-Fenster Infos als Text und Tooltip anzeigen",
-	["Last Attackers"] = "Die letzten Angreifer",
-	
-	["Click to toggle the Main Window"] = "Klicken um Hauptfenster zu zeigen/verstecken",
-	
-	["Nearby People"] = "Nahe Spieler",
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "esMX")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/MinimapButton")@
+end
 
-RegisterTranslations("frFR", function() return {
-	["Main Window"] = "Fen\195\170tre principale",
-	["Warning Window"] = "Fen\195\170tre d'avertissement",
-	["Add Player to KoS"] = "Ajouter un joueur KoS",
-	["Add Guild to KoS"] = "Ajouter une guilde KoS",
-	["Add Player to Hatelist"] = "Ajouter un joueur \195\160 la liste noire",
-	["Add Player to Nicelist"] = "Ajouter un joueur \195\160 la liste blanche",
-	["Add Attacker to KoS"] = "Ajouter un attaquant en KoS",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "ruRU")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/MinimapButton")@
+end
 
-	["Minimap Button"] = "Bouton Minicarte",
-	["Enabled"] = "Actif",
-	["Locked"] = "Verrouill\195\169",
-	["Reset Position"] = "Remettre à zéro la position",
---	["Angle"] = "Angle",
---	["Distance"] = "Distance",
---
-	--["Show information"] = true,
-	["Show Warning Frame Infos as Text and Tooltip"] = "Afficher les infos de la fenêtre d'avertissement",
-	["Last Attackers"] = "Derniers attaquants",
-	["%s ago"] = "Il y'a %s",
-	
-	["Click to toggle the Main Window"] = "Clique pour afficher/cacher la fenêtre principale",
-	
-	["Nearby People"] = "Personnes voisines",
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/MinimapButton")@
+end
 
-RegisterTranslations("koKR", function() return {
-	["Main Window"] = "메인창",
-	["Warning Window"] = "경고창",
-	["Add Player to KoS"] = "KoS에 플레이어 추가",
-	["Add Guild to KoS"] = "KoS에 길드 추가",
-	["Add Player to Hatelist"] = "악인명부에 플레이어 추가",
-	["Add Player to Nicelist"] = "호인명부에 플레이어 추가",
-	["Add Attacker to KoS"] = "KoS에 공격자 추가",
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/MinimapButton")@
+end
 
-	["Minimap Button"] = "미니맵 버튼",
-	["Enabled"] = "사용",
-	["Locked"] = "고정",
-	["Reset Position"] = "위치 초기화",
---	["Angle"] = "각도",
---	["Distance"] = "거리",
---
-	--["Show information"] = true,
-	["Show Warning Frame Infos as Text and Tooltip"] = "텍스트와 툴팁으로 경고창 정보 표시",
-	["Last Attackers"] = "마지막 공격자",
-	["%s ago"] = "%s 이전",
-	
-	["Click to toggle the Main Window"] = "메인창을 열거나 닫으려면 클릭하세요.",
-	
-	["Nearby People"] = "근처에 있는 사람",
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/MinimapButton")@
+end
 
-RegisterTranslations("esES", function() return {
-	["Main Window"] = "Ventana Principal",
-	["Warning Window"] = "Ventana de Aviso",
-	["Add Player to KoS"] = "Añadir Jugador a KoS",
-	["Add Guild to KoS"] = "Añadir Hermandad a KoS",
-	["Add Player to Hatelist"] = "Añadir Jugador a Odiados",
-	["Add Player to Nicelist"] = "Añadir Jugador a Simpáticos",
-	["Add Attacker to KoS"] = "Añadir Atacante a KoS",
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/MinimapButton", false);
 
-	["Minimap Button"] = "Botón del Minimapa",
-	["Enabled"] = "Activado",
-	["Locked"] = "Bloqueado",
-	["Reset Position"] = "Reestablecer Posición",
---	["Angle"] = "Ángulo",
---	["Distance"] = "Distancia",
---
-	--["Show information"] = true,
-	--["Show Warning Frame Infos as Text and Tooltip"] = true,
-	--["Last Attackers"] = true,
-	--["%s ago"] = true,
-	--["Click to toggle the Main Window"] = true,
-	
-	--["Nearby People"] = true,
-
-} end);
-
-RegisterTranslations("ruRU", function() return {
-	["Main Window"] = "Главное окно",
-	["Warning Window"] = "Окно предупреждений",
-	["Add Player to KoS"] = "Добавить игрока в KoS",
-	["Add Guild to KoS"] = "Добавить гильдию в KoS",
-	["Add Player to Hatelist"] = "Добавить игрока в Ненавистных",
-	["Add Player to Nicelist"] = "Добавить игрока в Хороших",
-	["Add Attacker to KoS"] = "Добавить атакующего в KoS",
-
-	["Minimap Button"] = "Кнопка на миникарте",
-	["Enabled"] = "Включено",
-	["Locked"] = "Зафиксировать",
-	["Reset Position"] = "Сбросить расположение",
---	["Angle"] = "Угол",
---	["Distance"] = "Расстояние",
---
-	--["Show information"] = true,
-	["Show Warning Frame Infos as Text and Tooltip"] = "Показывать KoS/Врагов/Друзей на панели FuBar",
-	["Last Attackers"] = "Последние напавшие",
-	["%s ago"] = "%s назад",
-	["Click to toggle the Main Window"] = "Щёлкните, чтобы открыть главное окно VanasKoS",
-	
-	["Nearby People"] = "Ближайшие игроки",
-} end);
 
 VanasKoSMinimapButton = VanasKoS:NewModule("MinimapButton", "AceEvent-3.0", "AceTimer-3.0");
-
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_MinimapButton", false);
 
 local attackerMenu = { };
 

@@ -3,100 +3,65 @@
 Gathers PvP Wins and Losses
 ---------------------------------------------------------------------------------------------]]
 
-local function RegisterTranslations(locale, translationfunction)
-	local defaultLocale = false;
-	if(locale == "enUS") then
-		defaultLocale = true;
-	end
-	
-	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_PvPDataGatherer", locale, defaultLocale);
-	if liblocale then
-		for k, v in pairs(translationfunction()) do
-			liblocale[k] = v;
-		end
-	end
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "enUS", true, VANASKOS.DEBUG)
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/PortraitContextMenu")@
 end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "frFR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "deDE")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "koKR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "esMX")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "ruRU")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/PortraitContextMenu", false);
 
 VanasKoSPvPDataGatherer = VanasKoS:NewModule("PvPDataGatherer", "AceEvent-3.0");
 local VanasKoSPvPDataGatherer = VanasKoSPvPDataGatherer;
 local VanasKoS = VanasKoS;
-
-RegisterTranslations("enUS", function() return {
-	["PvP Data Gathering"] = true,
-	["Enabled"] = true,
-	["PvP Stats"] = true,
-	["wins: %d - losses: %d"] = "wins: |cff00ff00%d|r losses: |cffff0000%d|r",
-	["PvP Win versus %s registered."] = true,
-	["PvP Loss versus %s registered."] = true,
-	["Show Messages when a PvP Win/Loss is registered"] = true,
-	["by name"] = true,
-	["sort by name"] = true,
-	["by encounters"] = true,
-	["sort by most PVP encounters"] = true,
-	["by wins"] = true, 
-	["sort by most wins"] = true,
-	["by losses"] = true, 
-	["sort by most losses"] = true,
-	["by score"] = true, 
-	["sort by most wins to losses"] = true,
-} end);
-
-RegisterTranslations("deDE", function() return {
-	["PvP Data Gathering"] = "PvP Daten sammeln",
-	["Enabled"] = "Aktiviert",
-	["PvP Stats"] = "PvP Statistik",
-	["wins: %d - losses: %d"] = "gewonnen: |cff00ff00%d|r verloren: |cffff0000%d|r",
-	["PvP Win versus %s registered."] = "PvP Sieg gegen %s registriert.",
-	["PvP Loss versus %s registered."] = "PvP Verlust gegen %s registriert.",
-	["Show Messages when a PvP Win/Loss is registered"] = true,
---	["by name"] = true,
---	["sort by name"] = true,
---	["by encounters"] = true,
---	["sort by most PVP encounters"] = true,
---	["by wins"] = true, 
---	["sort by most wins"] = true,
---	["by losses"] = true, 
---	["sort by most losses"] = true,
---	["by score"] = true, 
---	["sort by most wins to losses"] = true,
-} end);
-
-RegisterTranslations("frFR", function() return {
-	["PvP Data Gathering"] = "Rassemblement de donn\195\169es PvP",
-	["Enabled"] = "actif",
-	["PvP Stats"] = "PvP Stats",
-	["wins: %d - losses: %d"] = "victoires: |cff00ff00%d|r d\195\169faites: |cffff0000%d|r",
-} end);
-
-RegisterTranslations("koKR", function() return {
-	["PvP Data Gathering"] = "PvP 데이터 수집",
-	["Enabled"] = "사용",
-	["PvP Stats"] = "PvP 현황",
-	["wins: %d - losses: %d"] = "승: |cff00ff00%d|r 패: |cffff0000%d|r",
-	["PvP Win versus %s registered."] = "%s에 대한 PvP 승리가 기록되었습니다.",
-	["PvP Loss versus %s registered."] = "%s에 대한 PvP 패배가 기록되었습니다.",
-	["Show Messages when a PvP Win/Loss is registered"] = "PvP 승/패 기록 시 메세지를 표시합니다.",
-} end);
-
-RegisterTranslations("esES", function() return {
-	["PvP Data Gathering"] = "Recolección de Datos JcJ",
-	["Enabled"] = "Activado",
-	["PvP Stats"] = "Estadísticas JcJ",
-	["wins: %d - losses: %d"] = "ganados: |cff00ff00%d|r perdidos: |cffff0000%d|r",
-} end);
-
-RegisterTranslations("ruRU", function() return {
-	["PvP Data Gathering"] = "Сбор PvP-статистики",
-	["Enabled"] = "Включено",
-	["PvP Stats"] = "Статистика PvP ",
-	["wins: %d - losses: %d"] = "побед: |cff00ff00%d|r поражений: |cffff0000%d|r",
-	["PvP Win versus %s registered."] = "PvP побед над %s.",
-	["PvP Loss versus %s registered."] = "PvP поражений от %s.",
-	["Show Messages when a PvP Win/Loss is registered"] = "Сообщать о зарегистрированной PvP победе/поражении",
-} end);
-
-
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_PvPDataGatherer", false);
 
 -- sort functions
 

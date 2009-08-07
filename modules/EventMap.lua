@@ -3,193 +3,61 @@
 Displays PvP Events on World Map
 ------------------------------------------------------------------------]]
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "enUS", true);
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "enUS", true, VANASKOS.DEBUG)
 if L then
-	L["Enabled"] = true;
-	L["PvP Event Map"] = true;
-	L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
-	L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
-	L["PvP Encounter"] = true;
-	L["Draw Alts"] = true;
-	L["Draws PvP events on map for all characters"] = true;
-	L["Drawing mode"] = true;
-	L["Toggle showing individual icons or simple dots"] = true;
-	L["Icons"] = true;
-	L["Colored dots"] = true;
-	L["Tooltips"] = true;
-	L["Show tooltips when hovering over PvP events"] = true;
-
-	L["Icon Options"] = true;
-	L["Dynamic Zoom"] = true;
-	L["Redraws icons based on Cartographer3 zoom level"] = true;
-
-	L["Dot Options"] = true;
-	L["Size"] = true;
-	L["Size of dots"] = true;
-	L["Loss"] = true;
-	L["Sets the loss color and opacity"] = true;
-	L["Win"] = true
-	L["Sets the win color and opacity"] = true;
-	L["Reset"] = true;
-	L["Reset dots to default"] = true;
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/EventMap")@
 end
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "deDE", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "frFR")
 if L then
-	L["Enabled"] = "Aktiviert";
-	--L["PvP Event Map"] = true;
-	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
-	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
-	--L["PvP Encounter"] = true;
-	--L["Draw Alts"] = true;
-	--L["Draws PvP events on map for all characters"] = true;
-	--L["Drawing mode"] = true;
-	--L["Toggle showing individual icons or simple dots"] = true;
-	--L["Icons"] = true;
-	--L["Colored dots"] = true;
-	--L["Tooltips"] = true;
-	--L["Show tooltips when hovering over PvP events"] = true;
-
-	--L["Icon Options"] = true;
-	--L["Dynamic Zoom"] = true;
-	--L["Redraws icons based on Cartographer3 zoom level"] = true;
-
-	--L["Dot Options"] = true;
-	--L["Size"] = true;
-	--L["Size of dots"] = true;
-	--L["Loss"] = true;
-	--L["Sets the loss color and opacity"] = true;
-	--L["Win"] = true
-	--L["Sets the win color and opacity"] = true;
-	--L["Reset"] = true;
-	--L["Reset dots to default"] = true;
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/EventMap")@
 end
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "frFR", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "deDE")
 if L then
-	L["Enabled"] = "actif";
-	--L["PvP Event Map"] = true;
-	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
-	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
-	--L["PvP Encounter"] = true;
-	--L["Draw Alts"] = true;
-	--L["Draws PvP events on map for all characters"] = true;
-	--L["Drawing mode"] = true;
-	--L["Toggle showing individual icons or simple dots"] = true;
-	--L["Icons"] = true;
-	--L["Colored dots"] = true;
-	--L["Tooltips"] = true;
-	--L["Show tooltips when hovering over PvP events"] = true;
-
-	--L["Icon Options"] = true;
-	--L["Dynamic Zoom"] = true;
-	--L["Redraws icons based on Cartographer3 zoom level"] = true;
-
-	--L["Dot Options"] = true;
-	--L["Size"] = true;
-	--L["Size of dots"] = true;
-	--L["Loss"] = true;
-	--L["Sets the loss color and opacity"] = true;
-	--L["Win"] = true
-	--L["Sets the win color and opacity"] = true;
-	--L["Reset"] = true;
-	--L["Reset dots to default"] = true;
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/EventMap")@
 end
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "koKR", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "koKR")
 if L then
-	L["Enabled"] = "사용";
-	--L["PvP Event Map"] = true;
-	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
-	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
-	--L["PvP Encounter"] = true;
-	--L["Draw Alts"] = true;
-	--L["Draws PvP events on map for all characters"] = true;
-	--L["Drawing mode"] = true;
-	--L["Toggle showing individual icons or simple dots"] = true;
-	--L["Icons"] = true;
-	--L["Colored dots"] = true;
-	--L["Tooltips"] = true;
-	--L["Show tooltips when hovering over PvP events"] = true;
-
-	--L["Icon Options"] = true;
-	--L["Dynamic Zoom"] = true;
-	--L["Redraws icons based on Cartographer3 zoom level"] = true;
-
-	--L["Dot Options"] = true;
-	--L["Size"] = true;
-	--L["Size of dots"] = true;
-	--L["Loss"] = true;
-	--L["Sets the loss color and opacity"] = true;
-	--L["Win"] = true
-	--L["Sets the win color and opacity"] = true;
-	--L["Reset"] = true;
-	--L["Reset dots to default"] = true;
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/EventMap")@
 end
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "esES", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "esMX")
 if L then
-	L["Enabled"] = "Activado";
-	--L["PvP Event Map"] = true;
-	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
-	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
-	--L["PvP Encounter"] = true;
-	--L["Draw Alts"] = true;
-	--L["Draws PvP events on map for all characters"] = true;
-	--L["Drawing mode"] = true;
-	--L["Toggle showing individual icons or simple dots"] = true;
-	--L["Icons"] = true;
-	--L["Colored dots"] = true;
-	--L["Tooltips"] = true;
-	--L["Show tooltips when hovering over PvP events"] = true;
-
-	--L["Icon Options"] = true;
-	--L["Dynamic Zoom"] = true;
-	--L["Redraws icons based on Cartographer3 zoom level"] = true;
-
-	--L["Dot Options"] = true;
-	--L["Size"] = true;
-	--L["Size of dots"] = true;
-	--L["Loss"] = true;
-	--L["Sets the loss color and opacity"] = true;
-	--L["Win"] = true
-	--L["Sets the win color and opacity"] = true;
-	--L["Reset"] = true;
-	--L["Reset dots to default"] = true;
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/EventMap")@
 end
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_EventMap", "ruRU", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "ruRU")
 if L then
-	L["Enabled"] = "Включено";
-	--L["PvP Event Map"] = true;
-	--L["%s - %s killed by %s"] = "|cffff0000%s: %s killed by %s|r";
-	--L["%s - %s killed %s"] = "|cff00ff00%s: %s killed %s|r";
-	--L["PvP Encounter"] = true;
-	--L["Draw Alts"] = true;
-	--L["Draws PvP events on map for all characters"] = true;
-	--L["Drawing mode"] = true;
-	--L["Toggle showing individual icons or simple dots"] = true;
-	--L["Icons"] = true;
-	--L["Colored dots"] = true;
-	--L["Tooltips"] = true;
-	--L["Show tooltips when hovering over PvP events"] = true;
-
-	--L["Icon Options"] = true;
-	--L["Dynamic Zoom"] = true;
-	--L["Redraws icons based on Cartographer3 zoom level"] = true;
-
-	--L["Dot Options"] = true;
-	--L["Size"] = true;
-	--L["Size of dots"] = true;
-	--L["Loss"] = true;
-	--L["Sets the loss color and opacity"] = true;
-	--L["Win"] = true
-	--L["Sets the win color and opacity"] = true;
-	--L["Reset"] = true;
-	--L["Reset dots to default"] = true;
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/EventMap")@
 end
 
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_EventMap", true);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/EventMap")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/EventMap")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/EventMap")@
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/EventMap", false);
 
 VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0");
 

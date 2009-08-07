@@ -3,63 +3,61 @@
 modifies the TargetPortrait to add context menu options for adding targets to lists
 ------------------------------------------------------------------------]]
 
-local function RegisterTranslations(locale, translationfunction)
-	local defaultLocale = false;
-	if(locale == "enUS") then
-		defaultLocale = true;
-	end
-	
-	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_PortraitContextMenu", locale, defaultLocale);
-	if liblocale then
-		for k, v in pairs(translationfunction()) do
-			liblocale[k] = v;
-		end
-	end
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "enUS", true, VANASKOS.DEBUG)
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/PortraitContextMenu")@
 end
 
-RegisterTranslations("enUS", function() return {
-	["Add to %s"] = true,
-	["Context Menu"] = true,
-	["Add Context Menu to Player Portrait"] = true,
-	["Enabled"] = true,
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "frFR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
 
-RegisterTranslations("deDE", function() return {
-	["Add to %s"] = "Zu %s hinzufügen",
-	["Context Menu"] = "Kontext Menu",
-	["Add Context Menu to Player Portrait"] = "Kontext Menu zum Spieler Portrait hinzufügen",
-	["Enabled"] = "Aktiviert",
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "deDE")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
 
-RegisterTranslations("frFR", function() return {
-	["Add to %s"] = "Ajouter - %s",
---	["Context Menu"] = "menu de contexte",
-	["Add Context Menu to Player Portrait"] = "Ajouter un menu de contexte au portrait du joueur",
-	["Enabled"] = "Actif",
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "koKR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
 
-RegisterTranslations("koKR", function() return {
-	["Add to %s"] = "%s에 추가",
---	["Context Menu"] = true,
-	["Add Context Menu to Player Portrait"] = "플레이어 초상화에 메뉴 추가",
-	["Enabled"] = "사용",
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "esMX")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
 
-RegisterTranslations("esES", function() return {
-	["Add to %s"] = "Añadir a %s",
---	["Context Menu"] = "mennú contextual",
-	["Add Context Menu to Player Portrait"] = "Añadir menú contextual a retrato del jugador",
-	["Enabled"] = "Activado",
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "ruRU")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
 
-RegisterTranslations("ruRU", function() return {
-	["Add to %s"] = "Добавить в %s",
---	["Context Menu"] = "Контекстное меню",
-	["Add Context Menu to Player Portrait"] = "Контекстное меню на портрете игрока",
-	["Enabled"] = "Добавлять",
-} end);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
 
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_PortraitContextMenu", false);
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/PortraitContextMenu", false);
 
 VanasKoSPortraitContextMenu = VanasKoS:NewModule("PortraitContextMenu", "AceHook-3.0");
 local VanasKoSPortraitContextMenu = VanasKoSPortraitContextMenu;

@@ -1,52 +1,63 @@
-local function RegisterTranslations(locale, translationfunction)
-	local defaultLocale = false;
-	if(locale == "enUS") then
-		defaultLocale = true;
-	end
-	
-	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_FriendsFrameDocker", locale, defaultLocale);
-	if liblocale then
-		for k, v in pairs(translationfunction()) do
-			liblocale[k] = v;
-		end
-	end
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "enUS", true, VANASKOS.DEBUG)
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/FriendsFrameDocker")@
 end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "frFR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/FriendsFrameDocker")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "deDE")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/FriendsFrameDocker")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "koKR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/FriendsFrameDocker")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "esMX")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/FriendsFrameDocker")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "ruRU")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/FriendsFrameDocker")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/FriendsFrameDocker")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/FriendsFrameDocker")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/FriendsFrameDocker")@
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/FriendsFrameDocker", false);
 
 local VanasKoSFriendsFrameDocker = VanasKoS:NewModule("FriendsFrameDocker", "AceHook-3.0");
 
-RegisterTranslations("enUS", function() return {
-	["Dock into Friends Frame"] = true,
-	["Enabled"] = true,
-} end);
-
-RegisterTranslations("deDE", function() return {
-	["Dock into Friends Frame"] = "In das Freunde Fenster einbinden",
-	["Enabled"] = "Aktiviert",
-} end);
-
-RegisterTranslations("frFR", function() return {
-	["Dock into Friends Frame"] = "Onglet dans la liste d'amis",
-	["Enabled"] = "Actif",
-} end);
-
-RegisterTranslations("koKR", function() return {
-	["Dock into Friends Frame"] = "친구목록에 적용",
-	["Enabled"] = "사용",
-} end);
-
-RegisterTranslations("esES", function() return {
-	["Dock into Friends Frame"] = "Acoplar a la ventana de Amigos",
-	["Enabled"] = "Activado",
-} end);
-
-RegisterTranslations("ruRU", function() return {
-	["Dock into Friends Frame"] = "Прикрепить к окну Друзей",
-	["Enabled"] = "Включено",
-} end);
-
 local TabID = 5;
 
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_FriendsFrameDocker", false);
 local frame = nil;
 
 function VanasKoSFriendsFrameDocker:OnInitialize()

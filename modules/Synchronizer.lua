@@ -1,37 +1,60 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_Synchronizer", "enUS", true);
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "enUS", true, VANASKOS.DEBUG)
 if L then
-	L["Sharing"] = true;
-	L["Sharing - Guild"] = true;
-	L["Sharing - Group"] = true;
-	L["Lists to share with guild"] = true;
-	L["Select the lists you want to share with your guild."] = true;
-	L["Options to share your lists with other people"] = true;
-	L["Options to share lists with groups"] = true;
-	
-	L["Enabled"] = true;
-	L["Enables/Disables the sharing module"] = true;
-	L["Guild Sharing"] = true;
-	L["Guild Sharing Options"] = true;
-	L["Enables/Disables sharing lists with the guild"] = true;
-	L["Lists in which you can put people from whom you want or do not want to receive data"] = true;
-	L["Accept/Ignore-Lists"] = true;
-	L["Share Groups"] = true;
-	L["Groups with whom I share"] = true;
-
-	L["Add Share Group"] = true;
-	L["Adds a Share Group to the list"] = true;
-	L["Remove Share Group"] = true;
-	L["Removes the selected Share Group from the list"] = true;
-
-	L["Interval"] = true;
-	L["Sets the number of minutes between sending lists"] = true;
-	L["Sending lists to guild"] = true;
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/Synchronizer")@
 end
 
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "frFR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/Synchronizer")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "deDE")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/Synchronizer")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "koKR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/Synchronizer")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "esMX")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/Synchronizer")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "ruRU")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/Synchronizer")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/Synchronizer")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/Synchronizer")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/Synchronizer")@
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/Synchronizer", false);
 
 VanasKoSSynchronizer = VanasKoS:NewModule("Synchronizer", "AceComm-3.0", "AceTimer-3.0");
-
-L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_Synchronizer", false);
 
 local VanasKoSSynchronizer = VanasKoSSynchronizer;
 local core = VanasKoS;

@@ -3,20 +3,61 @@
 Keeps track of recently seen players
 ------------------------------------------------------------------------]]
 
-
-local function RegisterTranslations(locale, translationfunction)
-	local defaultLocale = false;
-	if(locale == "enUS") then
-		defaultLocale = true;
-	end
-	
-	local liblocale = LibStub("AceLocale-3.0"):NewLocale("VanasKoS_LastSeenList", locale, defaultLocale);
-	if liblocale then
-		for k, v in pairs(translationfunction()) do
-			liblocale[k] = v;
-		end
-	end
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "enUS", true, VANASKOS.DEBUG)
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/LastSeenList")@
 end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "frFR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/LastSeenList")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "deDE")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/LastSeenList")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "koKR")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/LastSeenList")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "esMX")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/LastSeenList")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "ruRU")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/LastSeenList")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "zhCN")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/LastSeenList")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "esES")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/LastSeenList")@
+end
+
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "zhTW")
+if L then
+-- auto generated from wowace translation app
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/LastSeenList")@
+end
+
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/LastSeenList", false);
 
 VanasKoSLastSeenList = VanasKoS:NewModule("LastSeenList", "AceEvent-3.0");
 
@@ -24,73 +65,6 @@ local VanasKoSLastSeenList = VanasKoSLastSeenList;
 local VanasKoS = VanasKoS;
 
 local lastseenlist = { };
-
-RegisterTranslations("enUS", function() return {
-	["Last seen"] = true,
-	["by last seen"] = true,
-	["sort by last seen"] = true,
-	["0 Secs ago"] = true,
-	["%s ago"] = true,
-	["never seen"] = true,
-
-	["Add to Player KoS"]  = true,
-	["Add to Hatelist"]  = true,
-	["Add to Nicelist"]  = true,
-
-	["Last Seen List"] = true,
-	["Enabled"] = true,
-} end);
-
-RegisterTranslations("deDE", function() return {
-	["Last seen"] = "Zuletzt gesehen",
-	["by last seen"] = "nach zuletzt gesehen",
-	["sort by last seen"] = "sortieren nach wann zuletzt gesehen",
-	["0 Secs ago"] = "Vor 0 Sekunden",
-	["%s ago"] = "Vor %s",
-	["never seen"] = "noch nicht gesehen",
-
-	["Add to Player KoS"]  = "Zur KoS Liste hinzufügen",
-	["Add to Hatelist"]  = "Zur Hassliste hinzufügen",
-	["Add to Nicelist"]  = "Zur Nette-Leute-Liste hinzufügen",
-
-	["Last Seen List"] = "Zuletzt gesehen Liste",
-	["Enabled"] = "Aktiviert",
-} end);
-
-RegisterTranslations("frFR", function() return {
-} end);
-
-RegisterTranslations("koKR", function() return {
-	["Last seen"] = "마지막 발견",
-	["by last seen"] = "마지막 발견에 의해",
-	["sort by last seen"] = "마지막 발견에 의한 정렬",
-	["0 Secs ago"] = "0초 이전",
-	["%s ago"] = "%s 이전",
-
-	["Add to Player KoS"]  = "플레이어 KoS에 추가",
-	["Add to Hatelist"]  = "악인명부에 추가",
-	["Add to Nicelist"]  = "호인명부에 추가",
-} end);
-
-RegisterTranslations("esES", function() return {
-} end);
-
-RegisterTranslations("ruRU", function() return {
-	["Last seen"] = "Последние встречи",
-	["by last seen"] = "по последней встрече",
-	["sort by last seen"] = "сортировать по последней встрече",
-	["0 Secs ago"] = "0 сек. назад",
-	["%s ago"] = "%s назад",
-
-	["Add to Player KoS"]  = "Добавить к KoS-игрокам",
-	["Add to Hatelist"]  = "Добавить к списку ненавистных",
-	["Add to Nicelist"]  = "Добавить к списку хороших",
-
-	["Last Seen List"] = "Последние встречи",
-	["Enabled"] = "Включено",
-} end);
-
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_LastSeenList", false);
 
 -- sort current lastseen
 local function SortByLastSeen(val1, val2)

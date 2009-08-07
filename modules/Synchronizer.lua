@@ -161,7 +161,7 @@ local function RegisterConfiguration()
 	};
 	VanasKoSGUI:AddConfigOption("VanasKoS-Synchronizer", configOptions);
 	
-	local DL = LibStub("AceLocale-3.0"):GetLocale("VanasKoS_DefaultLists", false);
+	local DL = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DefaultLists", false);
 	
 	VanasKoSGUI:AddConfigOption("Synchronizer-Guild", {
 		type = "group",

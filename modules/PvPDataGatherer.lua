@@ -3,61 +3,61 @@
 Gathers PvP Wins and Losses
 ---------------------------------------------------------------------------------------------]]
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "enUS", true, VANASKOS.DEBUG)
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "enUS", true, VANASKOS.DEBUG)
 if L then
 -- auto generated from wowace translation app
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/PortraitContextMenu")@
+--@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/PvPDataGatherer")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "frFR")
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "frFR")
 if L then
 -- auto generated from wowace translation app
---@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+--@localization(locale="frFR", format="lua_additive_table", namespace="VanasKoS/PvPDataGatherer")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "deDE")
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "deDE")
 if L then
 -- auto generated from wowace translation app
---@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+--@localization(locale="deDE", format="lua_additive_table", namespace="VanasKoS/PvPDataGatherer")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "koKR")
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "koKR")
 if L then
 -- auto generated from wowace translation app
---@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+--@localization(locale="koKR", format="lua_additive_table", namespace="VanasKoS/PvPDataGatherer")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "esMX")
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "esMX")
 if L then
 -- auto generated from wowace translation app
---@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+--@localization(locale="esMX", format="lua_additive_table", namespace="VanasKoS/PvPDataGatherer")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "ruRU")
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "ruRU")
 if L then
 -- auto generated from wowace translation app
---@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+--@localization(locale="ruRU", format="lua_additive_table", namespace="VanasKoS/PvPDataGatherer")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "zhCN")
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "zhCN")
 if L then
 -- auto generated from wowace translation app
---@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+--@localization(locale="zhCN", format="lua_additive_table", namespace="VanasKoS/PvPDataGatherer")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "esES")
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "esES")
 if L then
 -- auto generated from wowace translation app
---@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+--@localization(locale="esES", format="lua_additive_table", namespace="VanasKoS/PvPDataGatherer")@
 end
 
-L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "zhTW")
+L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "zhTW")
 if L then
 -- auto generated from wowace translation app
---@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/PortraitContextMenu")@
+--@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS/PvPDataGatherer")@
 end
 
-L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/PortraitContextMenu", false);
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/PvPDataGatherer", false);
 
 VanasKoSPvPDataGatherer = VanasKoS:NewModule("PvPDataGatherer", "AceEvent-3.0");
 local VanasKoSPvPDataGatherer = VanasKoSPvPDataGatherer;

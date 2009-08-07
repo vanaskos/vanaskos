@@ -1,6 +1,12 @@
 -- Definitions based on Locales
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "enUS", true)
+VANASKOS = { };
+VANASKOS.DEBUG = false;
+--@debug@
+VANASKOS.DEBUG = true;
+--@end-debug@
+
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "enUS", true, VANASKOS.DEBUG)
 if L then
 -- auto generated from wowace translation app
 --@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS")@
@@ -54,7 +60,7 @@ if L then
 --@localization(locale="zhTW", format="lua_additive_table", namespace="VanasKoS")@
 end
 
-VANASKOS = { };
+L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS", false);
 
 VANASKOS.NAME = "VanasKoS";
 VANASKOS.COMMANDS = {"/kos"; "/vkos"; "/vanaskos"};
@@ -62,15 +68,8 @@ VANASKOS.VERSION = "0"; -- filled later
 VANASKOS.LastNameEntered = "";
 VANASKOS.AUTHOR = "Vane of EU-Aegwynn";
 
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS", false);
-
 BINDING_HEADER_VANASKOS_HEADER = L["Vanas KoS"];
 BINDING_NAME_VANASKOS_TEXT_TOGGLE_MENU = L["Toggle Menu"];
 BINDING_NAME_VANASKOS_TEXT_ADD_PLAYER = L["Add KoS Player"];
 
-VANASKOS.DEBUG = false;
---@debug@
-VANASKOS.DEBUG = true;
---@end-debug@
 VANASKOS.NewVersionNotice = nil;
-

@@ -9,9 +9,9 @@
 ## DefaultState: Enabled
 ## SavedVariables: VanasKoSDB
 ## SavedVariablesPerCharacter: VanasKoSDBPC
-## OptionalDeps: Ace3, LibSharedMedia-3.0, LibBabble-Zone-3.0, LibBabble-Class-3.0, LibBabble-Race-3.0, LibTourist-3.0, LibGraph-2.0, LibDBIcon-1.0
+## OptionalDeps: Ace3, LibSharedMedia-3.0, LibBabble-Zone-3.0, LibBabble-Class-3.0, LibBabble-Race-3.0, LibTourist-3.0, LibGraph-2.0, LibDBIcon-1.0, LibLevelGuess-1.0
 ## X-eMail: boredvana@gmail.com
-## X-Date: 2009-08-03
+## X-Date: 2009-08-06
 ## X-Category: Battlegrounds/PvP
 ## X-AceForum: http://www.wowace.com/forums/index.php?topic=3938.0
 ## X-License: CreativeCommons-Attribution-NonCommercial-ShareAlike-2.5

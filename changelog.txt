@@ -1,7 +1,7 @@
 Release Changelog for VanasKoS
 
 alpha:
-4.11:
+4.11 beta:
 - Updated version number for 3.2 patch
 - Updated libraries to latest tagged versions
 - Distributed tracking bugfix

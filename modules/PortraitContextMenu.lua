@@ -72,21 +72,7 @@ function VanasKoSPortraitContextMenu:OnInitialize()
 		}
 	});
 
-	VanasKoSGUI:AddConfigOption("VanasKoS-PortraitContextMenu",
-		{
-			type = 'group',
-			name = L["Context Menu"],
-			desc = L["Add Context Menu to Player Portrait"],
-			args = {
-				enabled = {
-					type = 'toggle',
-					name = L["Enabled"],
-					desc = L["Enabled"],
-					set = function(frame, v) VanasKoSPortraitContextMenu.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("PortraitContextMenu", v); end,
-					get = function() return VanasKoSPortraitContextMenu.db.profile.Enabled; end,
-				}
-			}
-		});
+	VanasKoSGUI:AddModuleToggle("PortraitContextMenu", L["Context Menu"]);
 	self:SetEnabledState(self.db.profile.Enabled);
 end
 

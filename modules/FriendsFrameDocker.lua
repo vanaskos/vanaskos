@@ -67,21 +67,7 @@ function VanasKoSFriendsFrameDocker:OnInitialize()
 		}
 	});
 
-	VanasKoSGUI:AddConfigOption("VanasKoS-FriendsFrameDocker",
-		{
-			type = 'group',
-			name = L["Dock into Friends Frame"],
-			desc = L["Dock into Friends Frame"],
-			args = {
-				enabled = {
-					type = 'toggle',
-					name = L["Enabled"],
-					desc = L["Enabled"],
-					set = function(frame, v) VanasKoSFriendsFrameDocker.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("FriendsFrameDocker"); end,
-					get = function() return VanasKoSFriendsFrameDocker.db.profile.Enabled; end,
-				}
-			}
-		});
+	VanasKoSGUI:AddModuleToggle("FriendsFrameDocker", L["Dock into Friends Frame"]);
 
 	self:SetEnabledState(self.db.profile.Enabled);
 end

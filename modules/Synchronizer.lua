@@ -65,115 +65,27 @@ local SHARE_LIST = "sl";
 
 
 local function RegisterConfiguration()
-	configOptions = {
+	local DL = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DefaultLists", false);
+	
+	VanasKoSGUI:AddModuleToggle("Synchronizer", L["Sharing"]);
+	VanasKoSGUI:AddConfigOption("Synchronizer", {
 		type = 'group',
 		name = L["Sharing"],
 		desc = L["Options to share your lists with other people"],
 		childGroups = "tab",
 		args = {
-			enabled = {
-				type = "toggle",
-				name = L["Enabled"],
-				desc = L["Enables/Disables the sharing module"],
-				order = 1,
-				set = function(frame, v) VanasKoS:ToggleModuleActive("Synchronizer"); end,
-				get = function() return VanasKoSSynchronizer.enabledState end,
-			},
-			--[[listoptionsheader = {
-				type = "header",
-				name = L["Accept/Ignore-Lists"],
-				desc = L["Lists in which you can put people from whom you want or do not want to receive data"],
-				order = 2,
-			},
-			acceptgroup = {
+			guild = {
 				type = "group",
-				name = "Accept",
-				childGroups = "tab",
-				order = 3;
-				args = { 
-					playerkos  = {
-						type = "group",
-						name = "Player KoS",
-						desc = "Players from whom to accept/ignore Player KoS entries",
-						order = 3,
-						args = { },
-					},
-					guildkos  = {
-						type = "group",
-						name = "Guild KoS",
-						desc = "Players from whom to accept/ignore Guild KoS entries",
-						order = 4,
-						args = { },
-					},
-					hatelist  = {
-						type = "group",
-						name = "Hatelist",
-						desc = "Players from whom to accept/ignore Hatelist entries",
-						order = 5,
-						args = { },
-					},
-					nicelist  = {
-						type = "group",
-						name = "Nicelist",
-						desc = "Players from whom to accept/ignore Nicelist entries",
-						order = 6,
-						args = { },
-					},
-				}
-			},
-			ignoregroup = {
-				type = "group",
-				name = "Ignore",
-				childGroups = "tab",
-				order = 4;
-				args = { 
-					playerkos  = {
-						type = "group",
-						name = "Player KoS",
-						desc = "Players from whom to accept/ignore Player KoS entries",
-						order = 3,
-						args = { },
-					},
-					guildkos  = {
-						type = "group",
-						name = "Guild KoS",
-						desc = "Players from whom to accept/ignore Guild KoS entries",
-						order = 4,
-						args = { },
-					},
-					hatelist  = {
-						type = "group",
-						name = "Hatelist",
-						desc = "Players from whom to accept/ignore Hatelist entries",
-						order = 5,
-						args = { },
-					},
-					nicelist  = {
-						type = "group",
-						name = "Nicelist",
-						desc = "Players from whom to accept/ignore Nicelist entries",
-						order = 6,
-						args = { },
-					},
-				}
-			},]]
-		},
-	};
-	VanasKoSGUI:AddConfigOption("VanasKoS-Synchronizer", configOptions);
-	
-	local DL = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DefaultLists", false);
-	
-	VanasKoSGUI:AddConfigOption("Synchronizer-Guild", {
-		type = "group",
-		name = L["Sharing - Guild"],
-		desc = L["Guild Sharing Options"],
-		args = {
-			enabled = {
-				type = "toggle",
-				name = L["Guild Sharing"],
-				desc = L["Enables/Disables sharing lists with the guild"],
+				name = L["Guild"],
+				desc = L["Guild Sharing Options"],
 				order = 1,
-				set = function(frame, v) 
+				args = {
+					enabled = {
+						type = "toggle",
+						name = L["Guild Sharing"],
+						desc = L["Enables/Disables sharing lists with the guild"],
+						order = 1,
+						set = function(frame, v) 
 							VanasKoSSynchronizer.db.profile.GuildSharingEnabled = v; 
 							if(v) then 
 								VanasKoSSynchronizer:StartGuildSync(true); 
@@ -181,78 +93,152 @@ local function RegisterConfiguration()
 								VanasKoSSynchronizer:StopGuildSync(); 
 							end
 						end,
-				get = function() return VanasKoSSynchronizer.db.profile.GuildSharingEnabled; end,
-			},
-			interval = {
-				type = 'range',
-				name = L["Interval"],
-				desc = L["Sets the number of minutes between sending lists"],
-				order = 2,
-				get = function() return VanasKoSSynchronizer.db.profile.GuildSharingInterval end;
-				set = function(frame, v)
-						if(v >= 10) then
-							VanasKoSSynchronizer.db.profile.GuildSharingInterval = v;
-							VanasKoSSynchronizer:StopGuildSync();
-							VanasKoSSynchronizer:StartGuildSync(false); 
-						end
-					end,
-				min = 10,
-				max = 120,
-				step = 1,
-				isPercent = false,
-			},
-			liststoshare = {
-				type = "multiselect",
-				name = L["Lists to share with guild"],
-				desc = L["Select the lists you want to share with your guild."],
-				order = 3,
-				get = function(frame, key) 
-						return VanasKoSSynchronizer.db.profile.GuildShareLists[key];
-					end,
-				set = function(frame, key, value) VanasKoSSynchronizer.db.profile.GuildShareLists[key] = value end,
-				
-				values = {
-						["PLAYERKOS"] = DL["Player KoS"],
-						["GUILDKOS"] = DL["Guild KoS"],
-						["HATELIST"] = DL["Hatelist"],
-						["NICELIST"] = DL["Nicelist"],
+						get = function() return VanasKoSSynchronizer.db.profile.GuildSharingEnabled; end,
 					},
-			}
+					interval = {
+						type = 'range',
+						name = L["Interval"],
+						desc = L["Sets the number of minutes between sending lists"],
+						order = 2,
+						get = function() return VanasKoSSynchronizer.db.profile.GuildSharingInterval end;
+						set = function(frame, v)
+							if(v >= 10) then
+								VanasKoSSynchronizer.db.profile.GuildSharingInterval = v;
+								VanasKoSSynchronizer:StopGuildSync();
+								VanasKoSSynchronizer:StartGuildSync(false); 
+							end
+						end,
+						min = 10,
+						max = 120,
+						step = 1,
+						isPercent = false,
+					},
+					liststoshare = {
+						type = "multiselect",
+						name = L["Lists to share with guild"],
+						desc = L["Select the lists you want to share with your guild."],
+						order = 3,
+						get = function(frame, key) return VanasKoSSynchronizer.db.profile.GuildShareLists[key]; end,
+						set = function(frame, key, value) VanasKoSSynchronizer.db.profile.GuildShareLists[key] = value end,
+							
+						values = {
+							["PLAYERKOS"] = DL["Player KoS"],
+							["GUILDKOS"] = DL["Guild KoS"],
+							["HATELIST"] = DL["Hatelist"],
+							["NICELIST"] = DL["Nicelist"],
+						},
+					},
+				},
+			},
+			--[[
+			sharinggroup = {
+				type = "group",
+				name = L["Group"],
+				desc = L["Options to share lists with groups"],
+				order = 2,
+				args = {
+					lists = {
+						type = "select",
+						name = L["Share Groups"],
+						desc = L["Groups with whom I share"],
+						order = 1,
+						set = function(frame, v) end,
+						get = function() end,
+						values = function() return VanasKoSSynchronizer:GetShareGroupTable(); end,
+					},
+					optionsheader = {
+						type = "header",
+						name = "",
+					},
+					addgroup = {
+						type = "execute",
+						name = L["Add Share Group"],
+						desc = L["Adds a Share Group to the list"],
+						func = function(frame) end,
+					},
+					removegroup = {
+						type = "execute",
+						name = L["Remove Share Group"],
+						desc = L["Removes the selected Share Group from the list"],
+						func = function(frame) end,
+					},
+				},
+			},
+			acceptgroup = {
+				type = "group",
+				name = "Accept",
+				childGroups = "tab",
+				order = 3,
+				args = { 
+					playerkos  = {
+						type = "group",
+						name = "Player KoS",
+						desc = "Players from whom to accept/ignore Player KoS entries",
+						order = 3,
+						args = { },
+					},
+					guildkos  = {
+						type = "group",
+						name = "Guild KoS",
+						desc = "Players from whom to accept/ignore Guild KoS entries",
+						order = 4,
+						args = { },
+					},
+					hatelist  = {
+						type = "group",
+						name = "Hatelist",
+						desc = "Players from whom to accept/ignore Hatelist entries",
+						order = 5,
+						args = { },
+					},
+					nicelist  = {
+						type = "group",
+						name = "Nicelist",
+						desc = "Players from whom to accept/ignore Nicelist entries",
+						order = 6,
+						args = { },
+					},
+				},
+			},
+			ignoregroup = {
+				type = "group",
+				name = "Ignore",
+				childGroups = "tab",
+				order = 4,
+				args = { 
+					playerkos  = {
+						type = "group",
+						name = "Player KoS",
+						desc = "Players from whom to accept/ignore Player KoS entries",
+						order = 3,
+						args = { },
+					},
+					guildkos  = {
+						type = "group",
+						name = "Guild KoS",
+						desc = "Players from whom to accept/ignore Guild KoS entries",
+						order = 4,
+						args = { },
+					},
+					hatelist  = {
+						type = "group",
+						name = "Hatelist",
+						desc = "Players from whom to accept/ignore Hatelist entries",
+						order = 5,
+						args = { },
+					},
+					nicelist  = {
+						type = "group",
+						name = "Nicelist",
+						desc = "Players from whom to accept/ignore Nicelist entries",
+						order = 6,
+						args = { },
+					},
+				},
+			},
+			]]
 		},
 	});
-	--[[
-	VanasKoSGUI:AddConfigOption("Synchronizer-Group", {
-		type = "group",
-		name = L["Sharing - Group"],
-		desc = L["Options to share lists with groups"],
-		args = {
-			lists = {
-				type = "select",
-				name = L["Share Groups"],
-				desc = L["Groups with whom I share"],
-				order = 1,
-				set = function(frame, v) end,
-				get = function() end,
-				values = function() return VanasKoSSynchronizer:GetShareGroupTable(); end,
-			},
-			optionsheader = {
-				type = "header",
-				name = "",
-			},
-			addgroup = {
-				type = "execute",
-				name = L["Add Share Group"],
-				desc = L["Adds a Share Group to the list"],
-				func = function(frame) end,
-			},
-			removeroup = {
-				type = "execute",
-				name = L["Remove Share Group"],
-				desc = L["Removes the selected Share Group from the list"],
-				func = function(frame) end,
-			},
-		},
-	});]]
 end
 
 function VanasKoSSynchronizer:OnInitialize()

@@ -97,21 +97,7 @@ function VanasKoSLastSeenList:OnInitialize()
 	VanasKoSGUI:RegisterSortOption({"LASTSEEN"}, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen)
 	VanasKoSGUI:SetDefaultSortFunction({"LASTSEEN"}, SortByLastSeen);
 
-	VanasKoSGUI:AddConfigOption("VanasKoS-LastSeenList", {
-			type = 'group',
-			name = L["Last Seen List"],
-			desc = L["Last Seen List"],
-			args = {
-				enabled = {
-					type = 'toggle',
-					name = L["Enabled"],
-					desc = L["Enabled"],
-					order = 1,
-					set = function(v) VanasKoSLastSeenList.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("LastSeenList"); end,
-					get = function() return VanasKoSLastSeenList.db.profile.Enabled end,
-				}
-			}
-		});
+	VanasKoSGUI:AddModuleToggle("LastSeenList", L["Last Seen List"]);
 end
 
 function VanasKoSLastSeenList:OnEnable()

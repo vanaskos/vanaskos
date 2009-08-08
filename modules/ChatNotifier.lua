@@ -109,24 +109,16 @@ function VanasKoSChatNotifier:OnInitialize()
 		}
 	});
 
-	VanasKoSGUI:AddConfigOption("VanasKoS-ChatNotifier", {
+	self.configOptions = {
 		type = 'group',
 		name = L["Chat Modifications"],
 		desc = L["Modifies the Chat Window for Hate/Nicelist Entries."],
 		args = {
-			enabled = {
-				type = 'toggle',
-				name = L["Enabled"],
-				desc = L["Enabled"],
-				order = 1,
-				set = function(frame, v) VanasKoSChatNotifier.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("ChatNotifier"); end,
-				get = function() return VanasKoS:GetModule("ChatNotifier").enabledState; end,
-			},
 			hateListColor = {
 				type = 'color',
 				name = L["Hatelist Color"],
 				desc = L["Sets the Foreground Color for Hatelist Entries"],
-				order = 2,
+				order = 1,
 				get = function() return GetColor("HateListColor") end,
 				set = function(frame, r, g, b, a) SetColor("HateListColor", r, g, b); VanasKoSChatNotifier:Update(); end,
 				hasAlpha = false,
@@ -135,7 +127,7 @@ function VanasKoSChatNotifier:OnInitialize()
 				type = 'color',
 				name = L["Nicelist Color"],
 				desc = L["Sets the Foreground Color for Nicelist Entries"],
-				order = 3,
+				order = 2,
 				get = function() return GetColor("NiceListColor") end,
 				set = function(frame, r, g, b, a) SetColor("NiceListColor", r, g, b); VanasKoSChatNotifier:Update(); end,
 				hasAlpha = false,
@@ -144,7 +136,7 @@ function VanasKoSChatNotifier:OnInitialize()
 				type = 'toggle',
 				name = L["Modify only my Entries"],
 				desc = L["Modifies the Chat only for your Entries"],
-				order = 4,
+				order = 3,
 				set = function(frame, v) VanasKoSChatNotifier.db.profile.OnlyMyEntries = v; end,
 				get = function() return VanasKoSChatNotifier.db.profile.OnlyMyEntries; end,
 			},
@@ -157,7 +149,10 @@ function VanasKoSChatNotifier:OnInitialize()
 				get = function() return VanasKoSChatNotifier.db.profile.AddLookupEntry; end,
 			},
 		}
-	});
+	};
+
+	VanasKoSGUI:AddModuleToggle("ChatNotifier", L["Chat Modifications"])
+	VanasKoSGUI:AddConfigOption("ChatNotifier", self.configOptions);
 	
 	self:SetEnabledState(self.db.profile.Enabled);
 end

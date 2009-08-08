@@ -79,21 +79,7 @@ function VanasKoSTracker:OnInitialize()
 		}
 	);
 	
-	VanasKoSGUI:AddConfigOption("DistributedTracking", {
-			type = 'group',
-			name = L["Distributed Tracking"],
-			desc = L["Distributed Tracking"],
-			args = {
-				enabled = {
-					type = 'toggle',
-					name = L["Enabled"],
-					desc = L["Enabled"],
-					order = 1,
-					set = function(frame, v) VanasKoS:ToggleModuleActive("DistributedTracker"); end,
-					get = function() return VanasKoS:ModuleEnabled("DistributedTracker"); end,
-				},
-			},
-		});
+	VanasKoSGUI:AddModuleToggle("DistributedTracker", L["Distributed Tracking"]);
 end
 
 function VanasKoSTracker:OnEnable()

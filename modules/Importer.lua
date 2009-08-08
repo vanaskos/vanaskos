@@ -65,48 +65,74 @@ VanasKoSImporter = VanasKoS:NewModule("Importer", "AceEvent-3.0");
 local zoneContinentZoneID = {};
 
 function VanasKoSImporter:OnInitialize()
-	VanasKoSGUI:AddConfigOption("VanasKoS-Importer", {
+	VanasKoSGUI:AddConfigOption("Importer", {
 		type = "group",
 		name = L["Import Data"],
 		desc = L["Imports KoS Data from other KoS tools"],
 		args = {
+			vanaskos_header = {
+				order = 1,
+				type = "header",
+				name = L["Old VanasKoS"],
+			},
+			oldvanaskos = {
+				order = 2,
+				type = "execute",
+				name = L["Old VanasKoS"],
+				desc = L["Imports Data from old VanasKoS"],
+				func = function() VanasKoSImporter:FromOldVanasKoS(); end
+			},
+			ubotd_header = {
+				order = 3,
+				type = "header",
+				name = L["Ultimate Book of the Dead"],
+			},
 			ubotd = {
+				order = 4,
 				type = "execute",
 				name = L["UBotD KoS"],
 				desc = L["Imports KoS Data from Ultimate Book of the Dead"],
 				func = function() VanasKoSImporter:FromUBotD(); end
 			},
+			opium_header = {
+				order = 5,
+				type = "header",
+				name = L["Opium KoS"],
+			},
 			opium = {
+				order = 6,
 				type = "execute",
 				name = L["Opium KoS"],
 				desc = L["Imports KoS Data from Opium"],
 				func = function() VanasKoSImporter:FromOpium(); end
 			},
 			opiumpvpstats = {
+				order = 7,
 				type = "execute",
 				name = L["Opium PvP Stats"],
 				desc = L["Imports PvP Stats Data from Opium"],
 				func = function() VanasKoSImporter:FromOpiumPvPStats(); end
 			},
+			skmap_header = {
+				order = 8,
+				type = "header",
+				name = L["Shim's Kill Map"],
+			},
 			skmap = {
+				order = 9,
 				type = "execute",
 				name = L["SKMap KoS"],
 				desc = L["Imports KoS Data from Shim's Kill Map"],
 				func = function() VanasKoSImporter:FromSKMap(); end
 			},
 			skmappvpstats = {
+				order = 10,
 				type = "execute",
 				name = L["SKMap PvP Stats"],
 				desc = L["Imports PvP Stats Data from Shim's Kill Map"],
 				func = function() VanasKoSImporter:FromSKMapPvPStats(); end
 			},
-			oldvanaskos = {
-				type = "execute",
-				name = L["Old VanasKoS"],
-				desc = L["Imports Data from old VanasKoS"],
-				func = function() VanasKoSImporter:FromOldVanasKoS(); end
-			},
-		}
+		},
 	});
 end
 

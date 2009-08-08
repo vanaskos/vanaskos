@@ -17,6 +17,70 @@ local listHandler = { };
 VanasKoSGUI.dropDownFrame = nil;
 
 local configFrameInner = nil;
+VanasKoSGUI.numConfigOptions = 8;
+VanasKoSConfigOptions = {
+	name = "VanasKoS",
+	type = "group",
+	args = {
+		help = {
+			type = "description",
+			order = 1,
+			name = GetAddOnMetadata("VanasKoS", "Notes"),
+		},
+		version = {
+			type = "description",
+			order = 2,
+			name = L["Version: "] .. VANASKOS.VERSION,
+		},
+		performanceheader = {
+			type = "header",
+			order = 3,
+			name = L["Performance"],
+		},
+		combatlog = {
+			type = "toggle",
+			order = 4,
+			name = L["Use Combat Log"],
+			desc = L["Toggles if the combatlog should be used to detect nearby player (Needs UI-Reload)"],
+			get = function() return VanasKoSDataGatherer.db.profile.UseCombatLog; end,
+			set = function(frame, v) VanasKoSDataGatherer.db.profile.UseCombatLog = v; end,
+		},
+		playerdatastore = {
+			type = "toggle",
+			order = 5,
+			name = L["Permanent Player-Data-Storage"],
+			desc = L["Toggles if the data about players (level, class, etc) should be saved permanently."],
+			get = function() return VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently; end,
+			set = function(frame, v) VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently = v; end,
+		},
+		gatherincities = {
+			type = "toggle",
+			order = 6,
+			name = L["Save data gathered in cities"],
+			desc = L["Toggles if data from players gathered in cities should be (temporarily) saved."],
+			get = function() return VanasKoSDataGatherer.db.profile.GatherInCities; end,
+			set = function(frame, v) VanasKoSDataGatherer.db.profile.GatherInCities = v; end,
+		},
+		enableinsanctuary = {
+			type = "toggle",
+			order = 7,
+			name = L["Enable in Sanctuaries"],
+			desc = L["Toggles detection of players in sanctuaries"],
+			get = function() return VanasKoSDataGatherer.db.profile.EnableInSanctuary; end,
+			set = function(frame, v) VanasKoSDataGatherer.db.profile.EnableInSanctuary = v; VanasKoSDataGatherer:UpdateZone(); end,
+		},
+		modules = {
+			type = "multiselect",
+			order = 8,
+			name = L["Enabled modules"],
+			desc = L["Enable/Disable modules"],
+			get = function(frame, k) return VanasKoS:GetModule(k).enabledState; end,
+			set = function(frame, k, v) VanasKoS:ToggleModuleActive(k); end,
+			values = {},
+		}
+	}
+	
+};
 
 function VanasKoSGUI:AddConfigOption(name, option)
 	if(not self.ConfigurationOptions) then
@@ -28,13 +92,21 @@ function VanasKoSGUI:AddConfigOption(name, option)
 	end
 	
 	self.ConfigurationOptions.args[name] = option;
-	
---[[	for k,v in pairs(self.ConfigurationOptions.args) do
-		AceConfig:RegisterOptionsTable(k, self.ConfigurationOptions.args[k]);
-		AceConfigDialog:AddToBlizOptions(k, self.ConfigurationOptions.args[k].name, "VanasKoS");
-	end ]]
-	AceConfig:RegisterOptionsTable(name, option);
-	configFrameInner = AceConfigDialog:AddToBlizOptions(name, option.name, "VanasKoS")
+	AceConfig:RegisterOptionsTable("VanasKoS/" .. name, self.ConfigurationOptions.args[name]);
+	configFrameInner = AceConfigDialog:AddToBlizOptions("VanasKoS/" .. name, option.name, "VanasKoS")
+end
+
+function VanasKoSGUI:AddMainMenuConfigOptions(optionTable)
+	local first = self.numConfigOptions
+	for k, v in pairs(optionTable) do
+		v.order = first + (v.order or 1)
+		VanasKoSConfigOptions.args[k] = v
+		self.numConfigOptions = self.numConfigOptions + 1
+	end
+end
+
+function VanasKoSGUI:AddModuleToggle(moduleName, text)
+	VanasKoSConfigOptions.args.modules.values[moduleName] = text;
 end
 
 function VanasKoSGUI:GetListName(listid)
@@ -72,60 +144,7 @@ function VanasKoSGUI:OnInitialize()
 	
 	UIPanelWindows["VanasKoSFrame"] = { area = "left", pushable = 1, whileDead = 1 };
 
-	AceConfig:RegisterOptionsTable("VanasKoS", {
-		name = "VanasKoS",
-		type = "group",
-		args = {
-			help = {
-				type = "description",
-				order = 1,
-				name = GetAddOnMetadata("VanasKoS", "Notes"),
-			},
-			version = {
-				type = "description",
-				order = 2,
-				name = L["Version: "] .. VANASKOS.VERSION,
-			},
-			performanceheader = {
-				type = "header",
-				order = 3,
-				name = L["Performance"],
-			},
-			combatlog = {
-				type = "toggle",
-				order = 4,
-				name = L["Use Combat Log"],
-				desc = L["Toggles if the combatlog should be used to detect nearby player (Needs UI-Reload)"],
-				get = function() return VanasKoSDataGatherer.db.profile.UseCombatLog; end,
-				set = function(frame, v) VanasKoSDataGatherer.db.profile.UseCombatLog = v; end,
-			},
-			playerdatastore = {
-				type = "toggle",
-				order = 5,
-				name = L["Permanent Player-Data-Storage"],
-				desc = L["Toggles if the data about players (level, class, etc) should be saved permanently."],
-				get = function() return VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently; end,
-				set = function(frame, v) VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently = v; end,
-			},
-			gatherincities = {
-				type = "toggle",
-				order = 6,
-				name = L["Save data gathered in cities"],
-				desc = L["Toggles if data from players gathered in cities should be (temporarily) saved."],
-				get = function() return VanasKoSDataGatherer.db.profile.GatherInCities; end,
-				set = function(frame, v) VanasKoSDataGatherer.db.profile.GatherInCities = v; end,
-			},
-			enableinsanctuary = {
-				type = "toggle",
-				order = 7,
-				name = L["Enable in Sanctuaries"],
-				desc = L["Toggles detection of players in sanctuaries"],
-				get = function() return VanasKoSDataGatherer.db.profile.EnableInSanctuary; end,
-				set = function(frame, v) VanasKoSDataGatherer.db.profile.EnableInSanctuary = v; VanasKoSDataGatherer:UpdateZone(); end,
-			}
-			
-		},
-	});
+	AceConfig:RegisterOptionsTable("VanasKoS", VanasKoSConfigOptions);
 
 	self.configFrame = AceConfigDialog:AddToBlizOptions("VanasKoS", "VanasKoS");
 	
@@ -141,27 +160,27 @@ function VanasKoSGUI:OnInitialize()
 
 	self:RegisterMessage("VanasKoS_List_Added", "InitializeDropDowns");
 	
-	self:AddConfigOption("GUI", {
-		type = 'group',
-		name = "GUI",
-		desc = "Main GUI Options",
-		args = {
-			locked = { 
-				type = 'toggle',
-				name = L["Locked"],
-				desc = L["Locks the Main Window"],
-				order = 1,
-				set = function() VanasKoSGUI.db.profile.GUILocked = not VanasKoSGUI.db.profile.GUILocked; end,
-				get = function() return VanasKoSGUI.db.profile.GUILocked; end,
-			},
-			reset = {
-				type = 'execute',
-				name = L["Reset Position"],
-				desc = L["Resets the Position of the Main Window"],
-				order = 2,
-				func = function() VanasKoSGUI.db.profile.GUIMoved = false; HideUIPanel(VanasKoSFrame); ShowUIPanel(VanasKoSFrame); end,
-			}
+	self:AddMainMenuConfigOptions({
+		gui_header = {
+			type = "header",
+			order = 1,
+			name = L["GUI"],
 		},
+		gui_locked = { 
+			type = 'toggle',
+			name = L["Locked"],
+			desc = L["Locks the Main Window"],
+			order = 2,
+			set = function() VanasKoSGUI.db.profile.GUILocked = not VanasKoSGUI.db.profile.GUILocked; end,
+			get = function() return VanasKoSGUI.db.profile.GUILocked; end,
+		},
+		gui_reset = {
+			type = 'execute',
+			name = L["Reset Position"],
+			desc = L["Resets the Position of the Main Window"],
+			order = 3,
+			func = function() VanasKoSGUI.db.profile.GUIMoved = false; HideUIPanel(VanasKoSFrame); ShowUIPanel(VanasKoSFrame); end,
+		}
 	});
 	
 	VanasKoSListFrameSearchBox:SetScript("OnTextChanged", function() VanasKoSGUI:SetFilterText(this:GetText()) end);

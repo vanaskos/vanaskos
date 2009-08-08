@@ -91,6 +91,10 @@ local minimapOptions = {
 		func = function() VanasKoS:ToggleModuleActive("WarnFrame"); VanasKoSWarnFrame:Update(); end,
 		checked = function() return VanasKoS:GetModule("WarnFrame").enabledState; end,
 	},
+	{
+		text = L["Configuration"],
+		func = function() VanasKoSGUI:OpenConfigWindow(); end,
+	},
 --[[	{
 		text = L["Locked"],
 		func = function() VanasKoSWarnFrame.db.profile.Locked = not VanasKoSWarnFrame.db.profile.Locked; end,
@@ -128,6 +132,7 @@ function VanasKoSMinimapButton:OnInitialize()
 			ShowWarnFrameInfoText = true,
 			button = {
 			},
+			ReverseButtons = false,
 		}
 	});
 
@@ -135,64 +140,66 @@ function VanasKoSMinimapButton:OnInitialize()
 
 	icon:Register(self.name, Broker, self.db.profile.button);
 	
-	VanasKoSGUI:AddConfigOption("VanasKoS-MinimapButton", {
-			type = 'group',
-			name = L["Minimap Button"],
-			desc = L["Minimap Button"],
-			args = {
-				enabled = {
-					type = 'toggle',
-					name = L["Enabled"],
-					desc = L["Enabled"],
-					order = 1,
-					set = function(frame, v) VanasKoS:ToggleModuleActive("MinimapButton"); end,
-					get = function() return VanasKoS:GetModule("MinimapButton").enabledState; end,
-				},
-				showInfo = {
-					type = 'toggle',
-					name = L["Show information"],
-					desc = L["Show Warning Frame Infos as Text and Tooltip"],
-					order = 2,
-					set = function(frame, v)
-						VanasKoSMinimapButton.db.profile.ShowWarnFrameInfoText = v;
-						if (v) then
-							VanasKoSMinimapButton:EnableWarnFrameText();
-						else
-							VanasKoSMinimapButton:EnableWarnFrameText();
-						end
-					end,
-					get = function() return VanasKoSMinimapButton.db.profile.ShowWarnFrameInfoText; end,
-				},
+	self.configOptions = {
+		type = 'group',
+		name = L["Minimap Button"],
+		desc = L["Minimap Button"],
+		args = {
+			showInfo = {
+				type = 'toggle',
+				name = L["Show information"],
+				desc = L["Show Warning Frame Infos as Text and Tooltip"],
+				order = 1,
+				set = function(frame, v)
+					VanasKoSMinimapButton.db.profile.ShowWarnFrameInfoText = v;
+					if (v) then
+						VanasKoSMinimapButton:EnableWarnFrameText();
+					else
+						VanasKoSMinimapButton:EnableWarnFrameText();
+					end
+				end,
+				get = function() return VanasKoSMinimapButton.db.profile.ShowWarnFrameInfoText; end,
+			},
+			reverseButtons = {
+				type = 'toggle',
+				name = L["Reverse Buttons"],
+				desc = L["Reverse action of left/right mouse buttons"],
+				order = 2,
+				set = function(frame, v) VanasKoSMinimapButton.db.profile.ReverseButtons = v; end,
+				get = function() return VanasKoSMinimapButton.db.profile.ReverseButtons; end,
+			},
 --[[				reset = {
-					type = 'execute',
-					name = L["Reset Position"],
-					desc = L["Reset Position"],
-					order = 2,
-					func = function() VanasKoSMinimapButton:ResetPosition(); end,
-				},
-				angle = {
-					type = 'range',
-					name = L["Angle"],
-					desc = L["Angle"],
-					min = 0,
-					max = 360,
-					step = 1,
-					set = function(frame, value) VanasKoSMinimapButton:SetAngle(value); VanasKoSMinimapButton.db.profile.Angle = value; end,
-					get = function() return VanasKoSMinimapButton.db.profile.Angle; end,
-				},
-				distance = {
-					type = 'range',
-					name = L["Distance"],
-					desc = L["Distance"],
-					min = 40,
-					max = 150,
-					step = 1,
-					set = function(frame, value) VanasKoSMinimapButton:SetDist(value); VanasKoSMinimapButton.db.profile.Dist = value; end,
-					get = function() return VanasKoSMinimapButton.db.profile.Dist; end,
-				} ]]--
-			}
-		});
+				type = 'execute',
+				name = L["Reset Position"],
+				desc = L["Reset Position"],
+				order = 2,
+				func = function() VanasKoSMinimapButton:ResetPosition(); end,
+			},
+			angle = {
+				type = 'range',
+				name = L["Angle"],
+				desc = L["Angle"],
+				min = 0,
+				max = 360,
+				step = 1,
+				set = function(frame, value) VanasKoSMinimapButton:SetAngle(value); VanasKoSMinimapButton.db.profile.Angle = value; end,
+				get = function() return VanasKoSMinimapButton.db.profile.Angle; end,
+			},
+			distance = {
+				type = 'range',
+				name = L["Distance"],
+				desc = L["Distance"],
+				min = 40,
+				max = 150,
+				step = 1,
+				set = function(frame, value) VanasKoSMinimapButton:SetDist(value); VanasKoSMinimapButton.db.profile.Dist = value; end,
+				get = function() return VanasKoSMinimapButton.db.profile.Dist; end,
+			} ]]--
+		},
+	};
 
+	VanasKoSGUI:AddModuleToggle("MinimapButton", L["Minimap Button"]);
+	VanasKoSGUI:AddConfigOption("MinimapButton", self.configOptions);
 	minimapOptions[1].text = VANASKOS.NAME .. " " .. VANASKOS.VERSION;
 	icon:Hide(self.name);
 	self:SetEnabledState(self.db.profile.Enabled);
@@ -240,13 +247,29 @@ function VanasKoSMinimapButton:UpdateOptions()
 end
 
 function VanasKoSMinimapButton:OnClick()
+	local rev = self.db.profile.ReverseButtons;
+	local action = nil;
+
 	if(arg1 == "LeftButton" and not IsShiftKeyDown()) then
+		if(self.db.profile.ReverseButtons) then
+			action = "addkos";
+		else
+			action = "menu";
+		end
+	elseif(arg1 == "RightButton") then
+		if(self.db.profile.ReverseButtons) then
+			action = "menu";
+		else
+			action = "addkos";
+		end
+	end
+
+	if (action == "menu") then
 		VanasKoSMinimapButton:UpdateOptions();
 		local x, y = GetCursorPosition();
 		local uiScale = UIParent:GetEffectiveScale();
 		EasyMenu(minimapOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
-	end
-	if(arg1 == "RightButton") then
+	elseif(action == "addkos") then
 		VanasKoS:AddEntryFromTarget("PLAYERKOS");
 	end
 end

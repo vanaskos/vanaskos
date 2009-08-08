@@ -445,25 +445,17 @@ local function UpdateWarnSize()
 	end
 end
 
-local function RegisterConfiguration()
-	VanasKoSGUI:AddConfigOption("VanasKoS-WarnFrame", {
+function VanasKoSWarnFrame:RegisterConfiguration()
+	self.configOptions = {
 		type = 'group',
 		name = L["Warning Window"],
 		desc = L["KoS/Enemy/Friendly Warning Window"],
 		args = {
-			enabled = {
-				type = 'toggle',
-				name = L["Enabled"],
-				desc = L["Enabled"],
-				order = 1,
-				set = function(frame, v) VanasKoS:ToggleModuleActive("WarnFrame"); VanasKoSWarnFrame:Update();end,
-				get = function() return VanasKoSWarnFrame.db.profile.Enabled; end,
-			},
 			locked = {
 				type = 'toggle',
 				name = L["Locked"],
 				desc = L["Locked"],
-				order = 2,
+				order = 1,
 				set = function(frame, v) VanasKoSWarnFrame.db.profile.Locked = v; end,
 				get = function() return VanasKoSWarnFrame.db.profile.Locked; end,
 			},
@@ -471,7 +463,7 @@ local function RegisterConfiguration()
 				type = 'toggle',
 				name = L["Hide if inactive"],
 				desc = L["Hide if inactive"],
-				order = 3,
+				order = 2,
 				set = function(frame, v) VanasKoSWarnFrame.db.profile.HideIfInactive = v; VanasKoSWarnFrame:Update(); end,
 				get = function() return VanasKoSWarnFrame.db.profile.HideIfInactive; end,
 			},
@@ -479,13 +471,13 @@ local function RegisterConfiguration()
 				type = 'range',
 				name = L["Number of lines"],
 				desc = L["Sets the number of entries to display in the Warnframe"],
-				order = 4,
+				order = 3,
 				get = function() return VanasKoSWarnFrame.db.profile.WARN_BUTTONS; end,
 				set = function(frame, v)
-						VanasKoSWarnFrame.db.profile.WARN_BUTTONS = v;
-						UpdateWarnSize();
-						VanasKoSWarnFrame:Update();
-					end,
+					VanasKoSWarnFrame.db.profile.WARN_BUTTONS = v;
+					UpdateWarnSize();
+					VanasKoSWarnFrame:Update();
+				end,
 				min = 1,
 				max = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX,
 				step = 1,
@@ -495,36 +487,36 @@ local function RegisterConfiguration()
 				type = 'toggle',
 				name = L["Show border"],
 				desc = L["Show border"],
-				order = 5,
+				order = 4,
 				set = function(frame, v) 
-						VanasKoSWarnFrame.db.profile.WarnFrameBorder = v;
-						if (v == true) then
-							VanasKoS_WarnFrame:SetBackdrop( {
-								bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-								edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
-								insets = { left = 5, right = 4, top = 5, bottom = 5 },
-							});
-							warnFrame:EnableMouse(true);
-						else
-							VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
-							warnFrame:EnableMouse(false);
-						end
-						VanasKoSWarnFrame:Update();
-					end,
+					VanasKoSWarnFrame.db.profile.WarnFrameBorder = v;
+					if (v == true) then
+						VanasKoS_WarnFrame:SetBackdrop( {
+							bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+							edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
+							insets = { left = 5, right = 4, top = 5, bottom = 5 },
+						});
+						warnFrame:EnableMouse(true);
+					else
+						VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
+						warnFrame:EnableMouse(false);
+					end
+					VanasKoSWarnFrame:Update();
+				end,
 				get = function() return VanasKoSWarnFrame.db.profile.WarnFrameBorder; end,
 			},
 			fontSize = {
 				type = 'range',
 				name = L["Font Size"],
 				desc = L["Sets the size of the font in the Warnframe"],
-				order = 6,
+				order = 5,
 				get = function() return VanasKoSWarnFrame.db.profile.FontSize; end,
 				set = function(frame, v)
-						VanasKoSWarnFrame.db.profile.FontSize = v;
-						CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize);
-						UpdateWarnSize();
-						VanasKoSWarnFrame:Update();
-					end,
+					VanasKoSWarnFrame.db.profile.FontSize = v;
+					CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize);
+					UpdateWarnSize();
+					VanasKoSWarnFrame:Update();
+				end,
 				min = 6,
 				max = 20,
 				step = 1,
@@ -534,7 +526,7 @@ local function RegisterConfiguration()
 				type = 'toggle',
 				name = L["Grow list upwards"],
 				desc = L["Grow list from the bottom of the WarnFrame"],
-				order = 7,
+				order = 6,
 				get = function () return VanasKoSWarnFrame.db.profile.GrowUp; end,
 				set = function (frame, v)
 					VanasKoSWarnFrame.db.profile.GrowUp = v;
@@ -545,14 +537,14 @@ local function RegisterConfiguration()
 				type = 'execute',
 				name = L["Reset Position"],
 				desc= L["Reset Position"],
-				order = 8,
+				order = 7,
 				func = function() VanasKoS_WarnFrame:ClearAllPoints(); VanasKoS_WarnFrame:SetPoint("CENTER"); end,
 			},
 			contentHeader = {
 				type = 'header',
 				name = L["Content"],
 				desc = L["What to show in it"],
-				order = 9,
+				order = 8,
 			},
 			contentShowLevel = {
 				type = 'toggle',
@@ -601,12 +593,12 @@ local function RegisterConfiguration()
 				order = 14,
 				get = function() return VanasKoSWarnFrame.db.profile.ShowClassIcons; end,
 				set = function(frame, v)
-						VanasKoSWarnFrame.db.profile.ShowClassIcons = v;
-						VanasKoSWarnFrame:Update();
-						for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS do
-							setButtonClassIcon(i, nil);
-						end
+					VanasKoSWarnFrame.db.profile.ShowClassIcons = v;
+					VanasKoSWarnFrame:Update();
+					for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS do
+						setButtonClassIcon(i, nil);
 					end
+				end
 			},
 			designHeader = {
 				type = 'header',
@@ -647,14 +639,16 @@ local function RegisterConfiguration()
 				desc = L["Resets all Background Colors to default Settings"],
 				order = 19,
 				func = function()
-							SetColor("MoreHostileBGColor", 1.0, 0.0, 0.0, 0.5);
-							SetColor("MoreAlliedBGColor", 0.0, 1.0, 0.0, 0.5);
-							SetColor("DefaultBGColor", 0.5, 0.5, 1.0, 0.5);
-						end,
+					SetColor("MoreHostileBGColor", 1.0, 0.0, 0.0, 0.5);
+					SetColor("MoreAlliedBGColor", 0.0, 1.0, 0.0, 0.5);
+					SetColor("DefaultBGColor", 0.5, 0.5, 1.0, 0.5);
+				end,
 			},
-		}
-	});
+		},
+	};
 
+	VanasKoSGUI:AddModuleToggle("WarnFrame", L["Warning Window"]);
+	VanasKoSGUI:AddConfigOption("WarnFrame", self.configOptions);
 end
 
 function VanasKoSWarnFrame:OnInitialize()
@@ -711,7 +705,7 @@ function VanasKoSWarnFrame:OnInitialize()
 	buttonData = { };
 
 	CreateWarnFrame();
-	RegisterConfiguration();
+	self:RegisterConfiguration();
 	
 	self:SetEnabledState(self.db.profile.Enabled);
 end

@@ -173,7 +173,6 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 		{
 			profile = {
 				Enabled = true,
-				ShowWinLossMessages = true,
 			},
 			realm = {
 				pvpstats = {
@@ -203,29 +202,7 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 		VanasKoS.db.realm.pvpstats = nil;
 	end]]--
 
-	VanasKoSGUI:AddConfigOption("VanasKoS-PvPDataGathering", {
-			type = 'group',
-			name = L["PvP Data Gathering"],
-			desc = L["PvP Data Gathering"],
-			args = {
-				enabled = {
-					type = 'toggle',
-					name = L["Enabled"],
-					desc = L["Enabled"],
-					order = 1,
-					set = function(frame, v) VanasKoSPvPDataGatherer.db.profile.Enabled = v; VanasKoS:ToggleModuleActive("PvPDataGatherer"); end,
-					get = function() return VanasKoSPvPDataGatherer.db.profile.Enabled end,
-				},
-				showstatusmessages = {
-					type = 'toggle',
-					name = L["Show Messages when a PvP Win/Loss is registered"],
-					desc = L["Show Messages when a PvP Win/Loss is registered"],
-					order = 2,
-					set = function(frame, v) VanasKoSPvPDataGatherer.db.profile.ShowWinLossMessages = v; end,
-					get = function() return VanasKoSPvPDataGatherer.db.profile.ShowWinLossMessages end,
-				},
-			}
-		});
+	VanasKoSGUI:AddModuleToggle("PvPDataGatherer", L["PvP Data Gatherer"]);
 
 	VanasKoS:RegisterList(5, "PVPSTATS", L["PvP Stats"], self);
 	VanasKoS:RegisterList(nil, "PVPLOG", nil, self);

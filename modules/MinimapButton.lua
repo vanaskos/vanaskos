@@ -3,10 +3,28 @@
 Creates a MinimapButton with a menu for VanasKoS
 ------------------------------------------------------------------------]]
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "enUS", true, VANASKOS.DEBUG)
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "enUS", true)
 if L then
--- auto generated from wowace translation app
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/MinimapButton")@
+	L["Add Attacker to KoS"] = true
+	L["Add Guild to KoS"] = true
+	L["Add Player to Hatelist"] = true
+	L["Add Player to KoS"] = true
+	L["Add Player to Nicelist"] = true
+	L["Angle"] = true
+	L["Configuration"] = true
+	L["Distance"] = true
+	L["Last Attackers"] = true
+	L["Locked"] = true
+	L["Main Window"] = true
+	L["Minimap Button"] = true
+	L["Nearby People"] = true
+	L["Reset Position"] = true
+	L["Reverse action of left/right mouse buttons"] = true
+	L["Reverse Buttons"] = true
+	L["%s ago"] = true
+	L["Show information"] = true
+	L["Show Warning Frame Infos as Text and Tooltip"] = true
+	L["Warning Window"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "frFR")

@@ -3,10 +3,16 @@
 Displays Stats about PvP in a window
 ------------------------------------------------------------------------]]
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "enUS", true, VANASKOS.DEBUG)
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "enUS", true)
 if L then
--- auto generated from wowace translation app
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/PvPStats")@
+	L["All Characters (Realm)"] = true
+	L["All Time"] = true
+	L["Last 24 hours"] = true
+	L["Last Month"] = true
+	L["Last Week"] = true
+	L["Losses: |cffff0000%d|r (%.1f%%)"] = true
+	L["PvP Stats"] = true
+	L["Wins: |cff00ff00%d|r (%.1f%%)"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "frFR")

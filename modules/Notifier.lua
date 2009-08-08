@@ -3,10 +3,37 @@
 Notifies the user via Tooltip, Chat and Upper Area of a KoS/other List Target
 ------------------------------------------------------------------------]]
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Notifier", "enUS", true, VANASKOS.DEBUG)
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Notifier", "enUS", true)
 if L then
--- auto generated from wowace translation app
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/Notifier")@
+	L["Additional Reason Window"] = true
+	L["Enabled"] = true
+	L["Enemy Detected:|cffff0000"] = true
+	L["Locked"] = true
+	L["Notification Interval (seconds)"] = true
+	L["Notification in the Chatframe"] = true
+	L["Notification in the Upper Area"] = true
+	L["Notifications"] = true
+	L["Notification through flashing Border"] = true
+	L["Notification through Target Portrait"] = true
+	L["Notify in Sanctuary"] = true
+	L["Notify of any enemy target"] = true
+	L["Notify only on my KoS-Targets"] = true
+	L["seen: |cffffffff%d|r - wins: |cff00ff00%d|r - losses: |cffff0000%d|r"] = true
+	L["Show Anchor"] = true
+	L["Show PvP-Stats in Tooltip"] = true
+	L["Sound on enemy detection"] = true
+	L["Sound on KoS detection"] = true
+
+	L["KoS: %s"]         = true
+	L["KoS (Guild): %s"] = true
+	L["Hatelist: %s"]    = true
+	L["Nicelist: %s"]    = true
+	L["Wanted: %s"]      = true
+	L["%sKos: %s"]         = "|cffff00ff%s's|r KoS: %s"
+	L["%sKoS (Guild): %s"] = "|cffff00ff%s's|r KoS (Guild): %s"
+	L["%sHatelist: %s"]    = "|cffff00ff%s's|r Hatelist: %s"
+	L["%sNicelist: %s"]    = "|cffff00ff%s's|r Nicelist: %s"
+	L["%sWanted: %s"]      = "|cffff00ff%s's|r Wanted: %s"
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Notifier", "frFR")
@@ -423,7 +450,7 @@ function VanasKoSNotifier:UpdateReasonFrame(name, guild)
 			if(hdata and hdata.reason ~= nil) then
 				VanasKoS_Notifier_ReasonFrame_Text:SetTextColor(1.0, 0.0, 0.0, 1.0);
 				if(hdata.creator ~= nil and hdata.owner ~= nil)  then
-					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["|cffff00ff%s's|r Hatelist: %s"], hdata.creator, hdata.reason));
+					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["%sHatelist: %s"], hdata.creator, hdata.reason));
 				else
 					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["Hatelist: %s"], hdata.reason));
 				end
@@ -434,7 +461,7 @@ function VanasKoSNotifier:UpdateReasonFrame(name, guild)
 			if(ndata and ndata.reason ~= nil) then
 				VanasKoS_Notifier_ReasonFrame_Text:SetTextColor(0.0, 1.0, 0.0, 1.0);
 				if(ndata.creator ~= nil and ndata.owner ~= nil)  then
-					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["|cffff00ff%s's|r Nicelist: %s"], ndata.creator, ndata.reason));
+					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["%sNicelist: %s"], ndata.creator, ndata.reason));
 				else
 					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["Nicelist: %s"], ndata.reason));
 				end
@@ -486,9 +513,9 @@ function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, grea
 	if(reason ~= nil) then
 		if(creator ~= nil and owner ~= nil) then
 			if(name == nil) then
-				msg = format(L["|cffff00ff%s's|r KoS: %s"], creator, reason);
+				msg = format(L["%sKoS: %s"], creator, reason);
 			else
-				msg = format(L["|cffff00ff%s's|r KoS: %s"], creator, name .. " (" .. reason .. ")");
+				msg = format(L["%sKoS: %s"], creator, name .. " (" .. reason .. ")");
 			end
 		else
 			if(name == nil) then
@@ -508,9 +535,9 @@ function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, grea
 	else
 		if(creator ~= nil and owner ~= nil) then
 			if(name == nil) then
-				msg = format(L["|cffff00ff%s's|r KoS: %s"], creator, "");
+				msg = format(L["%sKoS: %s"], creator, "");
 			else
-				msg = format(L["|cffff00ff%s's|r KoS: %s"], creator, name);
+				msg = format(L["%sKoS: %s"], creator, name);
 			end
 		else
 			if(name == nil) then

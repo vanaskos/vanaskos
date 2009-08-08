@@ -3,10 +3,43 @@
 Creates the WarnFrame to alert of nearby KoS, Hostile and Friendly
 ------------------------------------------------------------------------]]
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "enUS", true, VANASKOS.DEBUG)
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "enUS", true)
 if L then
--- auto generated from wowace translation app
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/WarnFrame")@
+	L["Configuration"] = true
+	L["Content"] = true
+	L["Default Background Color"] = true
+	L["Design"] = true
+	L["Font Size"] = true
+	L["Grow list from the bottom of the WarnFrame"] = true
+	L["Grow list upwards"] = true
+	L["Hide if inactive"] = true
+	L["How the content is shown"] = true
+	L["KoS/Enemy/Friendly Warning Window"] = true
+	L["Level"] = true
+	L["Locked"] = true
+	L["More Allied than Hostiles Background Color"] = true
+	L["More Hostiles than Allied Background Color"] = true
+	L["No Information Available"] = true
+	L["Number of lines"] = true
+	L["Reset Background Colors"] = true
+	L["Reset Position"] = true
+	L["Resets all Background Colors to default Settings"] = true
+	L["Sets the default Background Color and Opacity"] = true
+	L["Sets the more Allied than Hostiles Background Color and Opacity"] = true
+	L["Sets the more Hostiles than Allied Background Color and Opacity"] = true
+	L["Sets the number of entries to display in the Warnframe"] = true
+	L["Sets the size of the font in the Warnframe"] = true
+	L["Show additional Information on Mouse Over"] = true
+	L["Show border"] = true
+	L["Show class icons"] = true
+	L["Show Friendly Targets"] = true
+	L["Show Hostile Targets"] = true
+	L["Show KoS Targets"] = true
+	L["Show Target Level When Possible"] = true
+	L["Toggles the display of additional Information on Mouse Over"] = true
+	L["Toggles the display of Class icons in the Warnframe"] = true
+	L["Warning Window"] = true
+	L["What to show in it"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "frFR")

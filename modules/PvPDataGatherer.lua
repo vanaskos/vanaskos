@@ -3,10 +3,23 @@
 Gathers PvP Wins and Losses
 ---------------------------------------------------------------------------------------------]]
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "enUS", true, VANASKOS.DEBUG)
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "enUS", true)
 if L then
--- auto generated from wowace translation app
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/PvPDataGatherer")@
+	L["PvP Data Gathering"] = true
+	L["PvP Loss versus %s registered."] = true
+	L["PvP Stats"] = true
+	L["PvP Win versus %s registered."] = true
+	L["by losses"] = true
+	L["sort by most losses"] = true
+	L["by encounters"] = true
+	L["sort by most PVP encounters"] = true
+	L["by wins"] = true
+	L["sort by most wins"] = true
+	L["by score"] = true
+	L["sort by most wins to losses"] = true
+	L["by name"] = true
+	L["sort by name"] = true
+	L["wins: |cff00ff00%d|r - losses: |cffff0000%d|r"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "frFR")

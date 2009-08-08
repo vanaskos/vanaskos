@@ -3,10 +3,18 @@
 Keeps track of recently seen players
 ------------------------------------------------------------------------]]
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "enUS", true, VANASKOS.DEBUG)
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "enUS", true)
 if L then
--- auto generated from wowace translation app
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/LastSeenList")@
+	L["0 Secs ago"] = true
+	L["Add to Hatelist"] = true
+	L["Add to Nicelist"] = true
+	L["Add to Player KoS"] = true
+	L["by last seen"] = true
+	L["Last seen"] = true
+	L["Last Seen List"] = true
+	L["never seen"] = true
+	L["%s ago"] = true
+	L["sort by last seen"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "frFR")

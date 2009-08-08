@@ -11,10 +11,14 @@ local VanasKoS = VanasKoS;
 local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable();
 local BZR = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable();
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "enUS", true, VANASKOS.DEBUG)
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "enUS", true)
 if L then
--- auto generated from wowace translation app
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/DistributedTracker")@
+	L["Cancel"] = true
+	L["Distributed Tracking"] = true
+	L["Found multiple matches for zone '%s': %s"] = true
+	L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true
+	L["No match was found for zone '%s'"] = true
+	L["Ok"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "frFR")

@@ -1,7 +1,6 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "enUS", true, VANASKOS.DEBUG)
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "enUS", true)
 if L then
--- auto generated from wowace translation app
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/FriendsFrameDocker")@
+	L["Dock into Friends Frame"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "frFR")

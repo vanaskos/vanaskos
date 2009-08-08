@@ -3,10 +3,21 @@
 modifies the ChatMessage if a player speaks whom is on your hatelist
 ------------------------------------------------------------------------]]
 
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "enUS", true, VANASKOS.DEBUG)
+local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "enUS", true)
 if L then
--- auto generated from wowace translation app
---@localization(locale="enUS", format="lua_additive_table", same-key-is-true=true, namespace="VanasKoS/ChatNotifier")@
+	L["Add Lookup in VanasKoS"] = true
+	L["Chat Modifications"] = true
+	L["Hatelist Color"] = true
+	L["Lookup in VanasKoS"] = true
+	L["Modifies the Chat Context Menu to add a \"Lookup in VanasKoS\" option."] = true
+	L["Modifies the Chat only for your Entries"] = true
+	L["Modifies the Chat Window for Hate/Nicelist Entries."] = true
+	L["Modify only my Entries"] = true
+	L["Nicelist Color"] = true
+	L["No entry for |cff00ff00%s|r"] = true
+	L["Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r"] = true
+	L["Sets the Foreground Color for Hatelist Entries"] = true
+	L["Sets the Foreground Color for Nicelist Entries"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "frFR")

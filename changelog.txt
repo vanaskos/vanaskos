@@ -2,6 +2,7 @@ Release Changelog for VanasKoS
 
 alpha:
 - Use the wowace/curse auto-generated locale tool
+- Updated ace library
 
 4.11 beta:
 - Updated version number for 3.2 patch

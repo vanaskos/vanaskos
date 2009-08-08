@@ -202,7 +202,7 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 		VanasKoS.db.realm.pvpstats = nil;
 	end]]--
 
-	VanasKoSGUI:AddModuleToggle("PvPDataGatherer", L["PvP Data Gatherer"]);
+	VanasKoSGUI:AddModuleToggle("PvPDataGatherer", L["PvP Data Gathering"]);
 
 	VanasKoS:RegisterList(5, "PVPSTATS", L["PvP Stats"], self);
 	VanasKoS:RegisterList(nil, "PVPLOG", nil, self);

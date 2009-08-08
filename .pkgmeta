@@ -22,4 +22,4 @@ externals:
 	Libs/LibGraph-2.0: svn://svn.wowace.com/wow/libgraph-2-0/mainline/tags/v2.0.1/LibGraph-2.0
 	Libs/LibTourist-3.0: svn://svn.wowace.com/wow/libtourist-3-0/mainline/tags/WoW-3.0-release4
 	Libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
-	Libs/LibLevelGuess-1.0: svn://svn.wowace.com/wow/liblevelguess-1-0/mainline/tags/v0.1
+	Libs/LibLevelGuess-1.0: svn://svn.wowace.com/wow/liblevelguess-1-0/mainline/trunk

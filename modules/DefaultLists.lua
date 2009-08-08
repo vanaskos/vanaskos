@@ -331,9 +331,9 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 			displayname = "|cffff0000" .. displayname .. "|r";
 		end
 		if(data and data.level and data.race and data.class) then
-			buttonText1:SetText(format(L["%s  Level %s %s %s %s"], displayname, data.level, data.race, data.class, owner));
+			buttonText1:SetText(format(L["%s  |cffffffffLevel %s %s %s|r |cffff00ff%s|r"], displayname, data.level, data.race, data.class, owner));
 		else
-			buttonText1:SetText(format(L["%s  %s"], displayname, owner));
+			buttonText1:SetText(format(L["%s  |cffff00ff%s|r"], displayname, owner));
 		end
 		if(data and data.lastseen) then
 			local timespan = SecondsToTime(time() - data.lastseen);
@@ -356,12 +356,8 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 	elseif(VANASKOS.showList == "GUILDKOS") then
 		local guildname = VanasKoS:GetGuildData(key);
 		if(guildname ~= nil and guildname ~= "") then
-			if(value.owner ~= nil and value.owner ~= "") then
-				local owner = string.Capitalize(value.owner);
-				buttonText1:SetText(format(L["%s  %s"], guildname, owner));
-			else
-				buttonText1:SetText(format(L["%s  %s"], guildname, ""));
-			end
+			local owner = (value.owner and string.Capitilize(value.owner)) or ""
+			buttonText1:SetText(format(L["%s  |cffff00ff%s|r"], guildname, owner));
 		else
 			buttonText1:SetText(string.Capitalize(key));
 		end
@@ -546,30 +542,30 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 			tooltip:AddLine(format(L['Level %s %s %s'], pdatalist['level'], pdatalist['race'], pdatalist['class']));
 		end
 		if(pdatalist['zone'] and pdatalist['lastseen']) then
-			tooltip:AddLine(format(L['Last seen at %s in %s'], date("%x", pdatalist['lastseen']), pdatalist['zone']));
+			tooltip:AddLine(format(L['Last seen at |cff00ff00%s|r in |cff00ff00%s|r'], date("%x", pdatalist['lastseen']), pdatalist['zone']));
 		end
 	end
 
 	-- infos about creator, sender, owner, last updated
 	if(selectedPlayerData) then
 		if(selectedPlayerData['owner']) then
-			tooltip:AddLine(format(L['Owner: %s'], selectedPlayerData['owner']));
+			tooltip:AddLine(format(L['Owner: |cffffffff%s|r'], selectedPlayerData['owner']));
 		end
 
 		if(selectedPlayerData['creator']) then
-			tooltip:AddLine(format(L['Creator: %s'], selectedPlayerData['creator']));
+			tooltip:AddLine(format(L['Creator: |cffffffff%s|r'], selectedPlayerData['creator']));
 		end
 
 		if(selectedPlayerData['created']) then
-			tooltip:AddLine(format(L['Created: %s'], date("%x", selectedPlayerData['created'])));
+			tooltip:AddLine(format(L['Created: |cffffffff%s|r'], date("%x", selectedPlayerData['created'])));
 		end
 
 		if(selectedPlayerData['sender']) then
-			tooltip:AddLine(format(L['Received from: %s'], selectedPlayerData['sender']));
+			tooltip:AddLine(format(L['Received from: |cffffffff%s|r'], selectedPlayerData['sender']));
 		end
 
 		if(selectedPlayerData['lastupdated']) then
-			tooltip:AddLine(format(L['Last updated: %s'], date("%x", selectedPlayerData['lastupdated'])));
+			tooltip:AddLine(format(L['Last updated: |cffffffff%s|r'], date("%x", selectedPlayerData['lastupdated'])));
 		end
 	end
 
@@ -583,9 +579,9 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 				local event = pvplog.event[eventIdx];
 				if(event.type and event.zone and event.myname) then
 					if(event.type == 'win') then
-						tooltip:AddLine(format(L["%s: Win in %s (%s)"], date("%c", k), event.zone, event.myname));
+						tooltip:AddLine(format(L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", k), event.zone, event.myname));
 					else
-						tooltip:AddLine(format(L["%s: Loss in %s (%s)"], date("%c", k), event.zone, event.myname));
+						tooltip:AddLine(format(L["%s: |cffff0000Loss|r |cffffffffin %s(|r|cffff00ff%s|r|cffffffff)|r"], date("%c", k), event.zone, event.myname));
 					end
 				end
 				i = i + 1;

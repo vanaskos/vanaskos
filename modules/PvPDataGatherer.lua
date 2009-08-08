@@ -238,7 +238,7 @@ function VanasKoSPvPDataGatherer:RenderButton(list, buttonIndex, button, key, va
 		buttonText1:SetText(string.Capitalize(key));
 		local data = VanasKoS:IsOnList("PVPSTATS", key);
 
-		buttonText2:SetText(format(L["wins: %d - losses: %d"], data.wins or 0, data.losses or 0));
+		buttonText2:SetText(format(L["wins: |cff00ff00%d|r - losses: |cffff0000%d|r"], data.wins or 0, data.losses or 0));
 
 		button:Show();
 	end

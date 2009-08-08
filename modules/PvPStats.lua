@@ -261,6 +261,10 @@ function VanasKoSPvPStats:SetWinLossStatsPie(wins, losses)
 	else
 		statPie:ResetPie();
 	end
+
+	local losspercent = 0.0;
+	local winpercent  = 0.0;
+
 	if(wins+losses > 0) then
 		local losspercent = losses / (wins + losses);
 		if(losspercent == 1) then
@@ -270,12 +274,11 @@ function VanasKoSPvPStats:SetWinLossStatsPie(wins, losses)
 		else
 			statPie:AddPie(losspercent * 100, RED);
 		end
-		text1:SetText(format(L["Wins: %d (%f)"], wins, (1.0-losspercent)*100));
-		text2:SetText(format(L["Losses: %d (%f)"], losses, losspercent*100));
-	else
-		text1:SetText(format(L["Wins: %d (%f)"], 0, 0));
-		text2:SetText(format(L["Losses: %d (%f)"], 0, 0));
+		winpercent = (1.0-losspercent)
 	end
+
+	text1:SetText(format(L["Wins: |cff00ff00%d|r (%.1f%%)"], wins, winpercent*100));
+	text2:SetText(format(L["Losses: |cffff0000%d|r (%.1f%%)"], losses, losspercent*100));
 
 	if(losspercent ~= 0 and losspercent ~= 1) then
 		statPie:CompletePie(GREEN);

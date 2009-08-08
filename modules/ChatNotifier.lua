@@ -195,9 +195,10 @@ function VanasKoSChatNotifier_UnitPopup_OnClick(self, name)
 
 	local data, list = VanasKoS:IsOnList(nil, name);
 	if(list ~= nil) then
-		VanasKoS:Print(format(L["Player: %s is on List: %s - Reason: %s"], name, VanasKoS:GetListNameByShortName(list), data.reason or ""));
+		VanasKoS:Print(format(L["Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r"], 
+				name, VanasKoS:GetListNameByShortName(list), (data.reason or "")));
 	else
-		VanasKoS:Print(format(L["No entry for %s"], name));
+		VanasKoS:Print(format(L["No entry for |cff00ff00%s|r"], name));
 	end
 end
 

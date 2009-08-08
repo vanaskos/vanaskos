@@ -397,7 +397,7 @@ function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 		local playerdata = VanasKoS:IsOnList("PLAYERDATA", name);
 
 		if(data or playerdata) then
-			tooltip:AddLine(format(L["seen: %d - wins: %d - losses: %d"], (playerdata and playerdata.seen) or 0, (data and data.wins) or 0, (data and data.losses) or 0));
+			tooltip:AddLine(format(L["seen: |cffffffff%d|r - wins: |cff00ff00%d|r - losses: |cffff0000%d|r"], (playerdata and playerdata.seen) or 0, (data and data.wins) or 0, (data and data.losses) or 0));
 		end
 	end
 
@@ -423,7 +423,7 @@ function VanasKoSNotifier:UpdateReasonFrame(name, guild)
 			if(hdata and hdata.reason ~= nil) then
 				VanasKoS_Notifier_ReasonFrame_Text:SetTextColor(1.0, 0.0, 0.0, 1.0);
 				if(hdata.creator ~= nil and hdata.owner ~= nil)  then
-					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["%sHatelist: %s"], hdata.creator, hdata.reason));
+					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["|cffff00ff%s's|r Hatelist: %s"], hdata.creator, hdata.reason));
 				else
 					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["Hatelist: %s"], hdata.reason));
 				end
@@ -434,7 +434,7 @@ function VanasKoSNotifier:UpdateReasonFrame(name, guild)
 			if(ndata and ndata.reason ~= nil) then
 				VanasKoS_Notifier_ReasonFrame_Text:SetTextColor(0.0, 1.0, 0.0, 1.0);
 				if(ndata.creator ~= nil and ndata.owner ~= nil)  then
-					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["%sNicelist: %s"], ndata.creator, ndata.reason));
+					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["|cffff00ff%s's|r Nicelist: %s"], ndata.creator, ndata.reason));
 				else
 					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["Nicelist: %s"], ndata.reason));
 				end
@@ -486,9 +486,9 @@ function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, grea
 	if(reason ~= nil) then
 		if(creator ~= nil and owner ~= nil) then
 			if(name == nil) then
-				msg = format(L["%sKoS: %s"], creator, reason);
+				msg = format(L["|cffff00ff%s's|r KoS: %s"], creator, reason);
 			else
-				msg = format(L["%sKoS: %s"], creator, name .. " (" .. reason .. ")");
+				msg = format(L["|cffff00ff%s's|r KoS: %s"], creator, name .. " (" .. reason .. ")");
 			end
 		else
 			if(name == nil) then
@@ -508,9 +508,9 @@ function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, grea
 	else
 		if(creator ~= nil and owner ~= nil) then
 			if(name == nil) then
-				msg = format(L["%sKoS: %s"], creator, "");
+				msg = format(L["|cffff00ff%s's|r KoS: %s"], creator, "");
 			else
-				msg = format(L["%sKoS: %s"], creator, name);
+				msg = format(L["|cffff00ff%s's|r KoS: %s"], creator, name);
 			end
 		else
 			if(name == nil) then

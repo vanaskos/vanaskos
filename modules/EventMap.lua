@@ -157,9 +157,9 @@ function VanasKoSEventMap:POI_OnEnter(frame, id)
 		end
 
 		if (event.type == "loss") then
-			WorldMapTooltip:AddLine(format(L["%s - %s killed by %s"], date("%c", event.time), player, enemy));
+			WorldMapTooltip:AddLine(format(L["|cffff0000%s - %s killed by %s|r"], date("%c", event.time), player, enemy));
 		elseif (event.type == "win") then
-			WorldMapTooltip:AddLine(format(L["%s - %s killed %s"], date("%c", event.time), player, enemy));
+			WorldMapTooltip:AddLine(format(L["|cffff0000%s - %s killed %s|r"], date("%c", event.time), player, enemy));
 		end
 	end
 	

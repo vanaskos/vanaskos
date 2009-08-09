@@ -29,7 +29,7 @@ if L then
 	L["Hatelist: %s"]    = true
 	L["Nicelist: %s"]    = true
 	L["Wanted: %s"]      = true
-	L["%sKos: %s"]         = "|cffff00ff%s's|r KoS: %s"
+	L["%sKoS: %s"]         = "|cffff00ff%s's|r KoS: %s"
 	L["%sKoS (Guild): %s"] = "|cffff00ff%s's|r KoS (Guild): %s"
 	L["%sHatelist: %s"]    = "|cffff00ff%s's|r Hatelist: %s"
 	L["%sNicelist: %s"]    = "|cffff00ff%s's|r Nicelist: %s"

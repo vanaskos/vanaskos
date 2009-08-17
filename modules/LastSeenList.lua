@@ -5,6 +5,7 @@ Keeps track of recently seen players
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "enUS", true)
 if L then
+	L["Name"] = true
 	L["0 Secs ago"] = true
 	L["Add to Hatelist"] = true
 	L["Add to Nicelist"] = true
@@ -15,6 +16,8 @@ if L then
 	L["never seen"] = true
 	L["%s ago"] = true
 	L["sort by last seen"] = true
+	L["by name"] = true
+	L["sort by name"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "frFR")
@@ -74,6 +77,14 @@ local VanasKoS = VanasKoS;
 
 local lastseenlist = { };
 
+-- sorts by index
+local function SortByIndex(val1, val2)
+	return val1 < val2;
+end
+local function SortByIndexReverse(val1, val2)
+	return val1 > val2
+end
+
 -- sort current lastseen
 local function SortByLastSeen(val1, val2)
 	local list = VanasKoSGUI:GetCurrentList();
@@ -86,13 +97,24 @@ local function SortByLastSeen(val1, val2)
 		if(list[val2] ~= nil and list[val2].lastseen ~= nil) then
 			cmp2 = time() - list[val2].lastseen;
 		end
-
-		if(cmp1 < cmp2) then
-			return true;
-		else
-			return false;
-		end
+		return (cmp1 < cmp2);
 	end
+	return false;
+end
+local function SortByLastSeenReverse(val1, val2)
+	local list = VanasKoSGUI:GetCurrentList();
+	if(list ~= nil) then
+		local cmp1 = 2^30;
+		local cmp2 = 2^30;
+		if(list[val1] ~= nil and list[val1].lastseen ~= nil) then
+			cmp1 = time() - list[val1].lastseen;
+		end
+		if(list[val2] ~= nil and list[val2].lastseen ~= nil) then
+			cmp2 = time() - list[val2].lastseen;
+		end
+		return (cmp1 > cmp2);
+	end
+	return false;
 end
 
 function VanasKoSLastSeenList:OnInitialize()
@@ -102,7 +124,8 @@ function VanasKoSLastSeenList:OnInitialize()
 		}
 	});
 
-	VanasKoSGUI:RegisterSortOption({"LASTSEEN"}, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen)
+	VanasKoSGUI:RegisterSortOption({"LASTSEEN"}, "byname", L["by name"], L["sort by name"], SortByIndex, SortByIndexReverse)
+	VanasKoSGUI:RegisterSortOption({"LASTSEEN"}, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen, SortByLastSeenReverse)
 	VanasKoSGUI:SetDefaultSortFunction({"LASTSEEN"}, SortByLastSeen);
 
 	VanasKoSGUI:AddModuleToggle("LastSeenList", L["Last Seen List"]);
@@ -161,7 +184,7 @@ local GREEN = "|cff00ff00";
 local WHITE = "|cffffffff";
 local ORANGE = "|cffff7f00";
 
-function VanasKoSLastSeenList:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2)
+function VanasKoSLastSeenList:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2, buttonText3, buttonText4, buttonText5, buttonText6)
 	if(list == "LASTSEEN") then
 		key = string.Capitalize(key);
 		local listname = select(2, VanasKoS:IsOnList(nil, key));
@@ -191,6 +214,32 @@ function VanasKoSLastSeenList:RenderButton(list, buttonIndex, button, key, value
 		end
 		button:Show();
 	end
+end
+
+function VanasKoSLastSeenList:SetupColumns(list)
+	if(list == "LASTSEEN") then
+		if(not self.group or self.group == 1) then
+			VanasKoSGUI:SetNumColumns(2);
+			VanasKoSGUI:SetColumnWidth(1, 103);
+			VanasKoSGUI:SetColumnWidth(2, 200);
+			VanasKoSGUI:SetColumnName(1, L["Name"]);
+			VanasKoSGUI:SetColumnName(2, L["Last seen"]);
+			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
+			VanasKoSGUI:SetColumnSort(2, SortByLastSeen, SortByLastSeenReverse);
+			VanasKoSGUI:SetColumnType(1, "normal");
+			VanasKoSGUI:SetColumnType(2, "highlight");
+			VanasKoSGUI:HideToggleButton();
+		end
+	end
+end
+
+function VanasKoSLastSeenList:ToggleButtonOnClick(button, frame)
+	local list = VANASKOS.showList;
+	if(list == "LASTSEEN") then
+		self.group = 1
+	end
+	self:SetupColumns(list)
+	VanasKoSGUI:Update();
 end
 
 function VanasKoSLastSeenList:IsOnList(listname, name)

@@ -199,11 +199,12 @@ function VanasKoSPvPStats:OnEnable()
 		frame:Hide();
 	end
 
-	local showOptions = VanasKoSGUI:GetShowButtonOptions();
-	showOptions[#showOptions+1] = {
-		text = L["PvP Stats"],
-		func = function() VanasKoSPvPStats:ToggleAllPvPStats(); end,
-	};
+	local sortButton = CreateFrame("Button", "VanasKoSListFramePvPStatsButton", VanasKoSListFrame, "UIPanelButtonTemplate");
+	sortButton:SetWidth(70);
+	sortButton:SetHeight(17);
+	sortButton:SetPoint("LEFT", getglobal("VanasKoSListFrameSortButton"), "RIGHT", 10, 0);
+	sortButton:SetText(L["PvP Stats"]);
+	sortButton:SetScript("OnClick", function(frame) VanasKoSPvPStats:ToggleAllPvPStats(); end);
 end
 
 function VanasKoSPvPStats:OnDisable()
@@ -279,6 +280,7 @@ function VanasKoSPvPStats:SetWinLossStatsPie(wins, losses)
 			statPie:CompletePie(GREEN);
 		else
 			statPie:AddPie(losspercent * 100, RED);
+			statPie:CompletePie(GREEN);
 		end
 		winpercent = (1.0-losspercent)
 	end

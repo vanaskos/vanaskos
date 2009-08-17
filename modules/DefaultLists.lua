@@ -8,12 +8,22 @@ local tooltip = nil;
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "enUS", true)
 if L then
+	L["Name"] = true
+	L["Guild"] = true
+	L["Lvl"] = true
+	L["Class"] = true
+	L["Reason"] = true
+	L["Last Seen"] = true
+	L["Zone"] = true
+	L["never seen"] = true
 	L["0 Secs"] = true
 	L["by create date"] = true
+	L["by class"] = true
 	L["by creator"] = true
 	L["by last seen"] = true
 	L["by level"] = true
 	L["by name"] = true
+	L["by guild"] = true
 	L["by owner"] = true
 	L["by reason"] = true
 	L["Created: |cffffffff%s|r"] = true
@@ -40,18 +50,22 @@ if L then
 	L["%s  |cffff00ff%s|r"] = true
 	L["%s  |cffffffffLevel %s %s %s|r |cffff00ff%s|r"] = true
 	L["Show only my entries"] = true
+	L["Only my entries"] = true
 	L["%s (last seen: %s ago)"] = true
 	L["%s (never seen)"] = true
+	L["sort by class"] = true
 	L["sort by creator"] = true
 	L["sort by date created"] = true
 	L["sort by last seen"] = true
 	L["sort by level"] = true
 	L["sort by name"] = true
+	L["sort by guild"] = true
 	L["sort by owner"] = true
 	L["sort by reason"] = true
 	L["%s (%s) - Reason: %s"] = true
 	L["[%s] %s (%s) - Reason: %s"] = true
 	L["Wanted"] = true
+	L["Player Info"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "frFR")
@@ -107,122 +121,168 @@ L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DefaultLists", false);
 -- sort functions
 
 -- sorts by index
-local SortByName = nil;
+local function SortByIndex(val1, val2)
+	return val1 < val2;
+end
+local function SortByIndexReverse(val1, val2)
+	return val1 > val2
+end
 
--- sorts from highest to lowest level
+-- sorts from a-z
+local function SortByReason(val1, val2)
+	local list = VanasKoSGUI:GetCurrentList();
+	local str1 = list[val1].reason or L["_Reason Unknown_"];
+	local str2 = list[val2].reason or L["_Reason Unknown_"];
+	return (str1:lower() < str2:lower());
+end
+local function SortByReasonReverse(val1, val2)
+	local list = VanasKoSGUI:GetCurrentList();
+	local str1 = list[val1].reason or L["_Reason Unknown_"];
+	local str2 = list[val2].reason or L["_Reason Unknown_"];
+	return (str1:lower() > str2:lower());
+end
+
+local function SortByCreateDate(val1, val2)
+	local list = VanasKoSGUI:GetCurrentList();
+	local cmp1 = list[val1].created or 2^30;
+	local cmp2 = list[val2].created or 2^30;
+	return (cmp1 > cmp2);
+end
+local function SortByCreateDateReverse(val1, val2)
+	local list = VanasKoSGUI:GetCurrentList();
+	local cmp1 = list[val1].created or 2^30;
+	local cmp2 = list[val2].created or 2^30;
+	return (cmp1 < cmp2);
+end
+
+-- sorts from a-z
+local function SortByCreator(val1, val2)
+	local list = VanasKoSGUI:GetCurrentList();
+	local str1 = list[val1].creator or "";
+	local str2 = list[val2].creator or "";
+	return (str1:lower() < str2:lower());
+end
+local function SortByCreatorReverse(val1, val2)
+	local list = VanasKoSGUI:GetCurrentList();
+	local str1 = list[val1].creator or "";
+	local str2 = list[val2].creator or "";
+	return (str1:lower() > str2:lower());
+end
+
+-- sorts from a-z
+local function SortByOwner(val1, val2)
+	local list = VanasKoSGUI:GetCurrentList();
+	local str1 = list[val1].owner or "";
+	local str2 = list[val2].owner or "";
+	return (str1:lower() < str2:lower());
+end
+local function SortByOwner(val1, val2)
+	local list = VanasKoSGUI:GetCurrentList();
+	local str1 = list[val1].owner or "";
+	local str2 = list[val2].owner or "";
+	return (str1:lower() > str2:lower());
+end
+
+-- sorts from lowest to highest level
 local function SortByLevel(val1, val2)
 	local list = VanasKoS:GetList("PLAYERDATA");
-	if(list ~= nil) then
-		local cmp1 = 0;
-		local cmp2 = 0;
-		if(list[val1] ~= nil and list[val1].level ~= nil) then
-			cmp1 = list[val1].level;
-		end
-		if(list[val2] ~= nil and list[val2].level ~= nil) then
-			cmp2 = list[val2].level;
-		end
-		if(cmp1 > cmp2) then
-			return true;
-		else
-			return false;
-		end
+	if(list) then
+		local lvl1 = list[val1] and (string.gsub(list[val1].level, "+", ".5"));
+		local lvl2 = list[val2] and (string.gsub(list[val2].level, "+", ".5"));
+		return ((tonumber(lvl1) or 0) < (tonumber(lvl2) or 0));
 	end
+	return false;
+end
+local function SortByLevelReverse(val1, val2)
+	local list = VanasKoS:GetList("PLAYERDATA");
+	if(list) then
+		local lvl1 = list[val1] and (string.gsub(list[val1].level, "+", ".5"));
+		local lvl2 = list[val2] and (string.gsub(list[val2].level, "+", ".5"));
+		return ((tonumber(lvl1) or 0) > (tonumber(lvl2) or 0));
+	end
+	return false;
 end
 
 -- sorts from early to later
 local function SortByLastSeen(val1, val2)
 	local list = VanasKoS:GetList("PLAYERDATA");
-	if(list ~= nil) then
-		local cmp1 = 2^30;
-		local cmp2 = 2^30;
-		if(list[val1] ~= nil and list[val1].lastseen ~= nil) then
-			cmp1 = time() - list[val1].lastseen;
-		end
-		if(list[val2] ~= nil and list[val2].lastseen ~= nil) then
-			cmp2 = time() - list[val2].lastseen;
-		end
-
-		if(cmp1 < cmp2) then
-			return true;
-		else
-			return false;
-		end
+	if(list) then
+		local now = time();
+		local cmp1 = list[val1] and list[val1].lastseen and (now - list[val1].lastseen) or 2^30;
+		local cmp2 = list[val2] and list[val2].lastseen and (now - list[val2].lastseen) or 2^30;
+		return (cmp1 < cmp2);
 	end
+	return false;
+end
+local function SortByLastSeenReverse(val1, val2)
+	local list = VanasKoS:GetList("PLAYERDATA");
+	if(list) then
+		local now = time();
+		local cmp1 = list[val1] and list[val1].lastseen and (now - list[val1].lastseen) or 2^30;
+		local cmp2 = list[val2] and list[val2].lastseen and (now - list[val2].lastseen) or 2^30;
+		return (cmp1 > cmp2);
+	end
+	return false;
 end
 
--- sorts from a-Z
-local function SortByReason(val1, val2)
-	local list = VanasKoSGUI:GetCurrentList();
-	local str1 = list[val1].reason;
-	local str2 = list[val2].reason;
-	if(str1 == nil or str1 == "") then
-		str1 = L["_Reason Unknown_"];
+-- sorts from a-z
+local function SortByClass(val1, val2)
+	local list = VanasKoS:GetList("PLAYERDATA");
+	if(list) then
+		local str1 = list[val1] and list[val1].class or "";
+		local str2 = list[val2] and list[val2].class or "";
+		return (str1:lower() < str2:lower());
 	end
-	if(str2 == nil or str2 == "") then
-		str2 = L["_Reason Unknown_"];
+	return false;
+end
+local function SortByClassReverse(val1, val2)
+	local list = VanasKoS:GetList("PLAYERDATA");
+	if(list) then
+		local str1 = list[val1] and list[val1].class or "";
+		local str2 = list[val2] and list[val2].class or "";
+		return (str1:lower() > str2:lower());
 	end
-	if(str1:lower() < str2:lower()) then
-		return true;
-	else
-		return false;
-	end
+	return false;
 end
 
--- sorts from a-Z
-local function SortByCreateDate(val1, val2)
-	local list = VanasKoSGUI:GetCurrentList();
-	if(list ~= nil) then
-		local cmp1 = 2^30;
-		local cmp2 = 2^30;
-		if(list[val1] ~= nil and list[val1].created ~= nil) then
-			cmp1 = list[val1].created;
-		end
-		if(list[val2] ~= nil and list[val2].created ~= nil) then
-			cmp2 = list[val2].created;
-		end
-
-		if(cmp1 > cmp2) then
-			return true;
-		else
-			return false;
-		end
+-- sorts from a-z
+local function SortByGuild(val1, val2)
+	local list = VanasKoS:GetList("PLAYERDATA");
+	if(list) then
+		local str1 = list[val1] and list[val1].guild or "";
+		local str2 = list[val2] and list[val2].guild or "";
+		return (str1:lower() < str2:lower());
 	end
+	return false;
+end
+local function SortByGuildReverse(val1, val2)
+	local list = VanasKoS:GetList("PLAYERDATA");
+	if(list) then
+		local str1 = list[val1] and list[val1].guild or "";
+		local str2 = list[val2] and list[val2].guild or "";
+		return (str1:lower() > str2:lower());
+	end
+	return false;
 end
 
--- sorts from a-Z
-local function SortByCreator(val1, val2)
-	local list = VanasKoSGUI:GetCurrentList();
-	local str1 = list[val1].creator;
-	local str2 = list[val2].creator;
-	if(str1 == nil or str1 == "") then
-		str1 = "";
+-- sorts from a-z
+local function SortByZone(val1, val2)
+	local list = VanasKoS:GetList("PLAYERDATA");
+	if(list) then
+		local str1 = list[val1] and list[val1].zone or "";
+		local str2 = list[val2] and list[val2].zone or "";
+		return (str1:lower() < str2:lower());
 	end
-	if(str2 == nil or str2 == "") then
-		str2 = "";
-	end
-	if(str1:lower() < str2:lower()) then
-		return true;
-	else
-		return false;
-	end
+	return false;
 end
-
--- sorts from a-Z
-local function SortByOwner(val1, val2)
-	local list = VanasKoSGUI:GetCurrentList();
-	local str1 = list[val1].owner;
-	local str2 = list[val2].owner;
-	if(str1 == nil or str1 == "") then
-		str1 = "";
+local function SortByZoneReverse(val1, val2)
+	local list = VanasKoS:GetList("PLAYERDATA");
+	if(list) then
+		local str1 = list[val1] and list[val1].zone or "";
+		local str2 = list[val2] and list[val2].zone or "";
+		return (str1:lower() > str2:lower());
 	end
-	if(str2 == nil or str2 == "") then
-		str2 = "";
-	end
-	if(str1:lower() < str2:lower()) then
-		return true;
-	else
-		return false;
-	end
+	return false;
 end
 
 
@@ -296,29 +356,30 @@ function VanasKoSDefaultLists:OnInitialize()
 	VanasKoSGUI:RegisterList("NICELIST", self);
 
 	-- register sort options for the lists this module provides
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST", "LASTSEEN"}, "byname", L["by name"], L["sort by name"], SortByName)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "HATELIST", "NICELIST" }, "bylevel", L["by level"], L["sort by level"], SortByLevel)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "byreason", L["by reason"], L["sort by reason"], SortByReason)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "HATELIST", "NICELIST"}, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "bycreatedate", L["by create date"], L["sort by date created"], SortByCreateDate)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "bycreator", L["by creator"], L["sort by creator"], SortByCreator)
-	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "byowner", L["by owner"], L["sort by owner"], SortByOwner)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "byname", L["by name"], L["sort by name"], SortByIndex, SortByIndexReverse)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "bycreatedate", L["by create date"], L["sort by date created"], SortByCreateDate, SortByCreateDateReverse)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "bycreator", L["by creator"], L["sort by creator"], SortByCreator, SortByCreatorReverse)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "byreason", L["by reason"], L["sort by reason"], SortByReason, SortByReasonReverse)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, "byowner", L["by owner"], L["sort by owner"], SortByOwner, SortByOwnerReverse)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "HATELIST", "NICELIST"}, "byguild", L["by guild"], L["sort by guild"], SortByGuild, SortByGuildReverse)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "HATELIST", "NICELIST"}, "bylevel", L["by level"], L["sort by level"], SortByLevel, SortByLevelReverse)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "HATELIST", "NICELIST"}, "byclass", L["by class"], L["sort by class"], SortByClass, SortByClassReverse)
+	VanasKoSGUI:RegisterSortOption({"PLAYERKOS", "HATELIST", "NICELIST"}, "bylastseen", L["by last seen"], L["sort by last seen"], SortByLastSeen, SortByLastSeenReverse)
 
-	VanasKoSGUI:SetDefaultSortFunction({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, SortByName);
+	VanasKoSGUI:SetDefaultSortFunction({"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}, SortByIndex);
 
 	-- first sort function is sorting by name
-	VanasKoSGUI:SetSortFunction(SortByName);
+	VanasKoSGUI:SetSortFunction(SortByIndex);
 
 	-- show the PLAYERKOS list after startup
 	VanasKoSGUI:ShowList("PLAYERKOS");
 
-	local showOptions = VanasKoSGUI:GetShowButtonOptions();
-	showOptions[#showOptions+1] = {
-		
-		text = L["Show only my entries"],
-		func = function(frame) VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries = not VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries; VanasKoSGUI:UpdateShownList(); end,
-		checked = function() return VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries; end,
-	};
+	VanasKoSListFrameCheckBox:SetText(L["Only my entries"]);
+	VanasKoSListFrameCheckBox:SetChecked(VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries);
+	VanasKoSListFrameCheckBox:SetScript("OnClick", function(frame)
+			VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries = not VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries;
+			VanasKoSGUI:UpdateShownList();
+		end);
 
 	self.tooltipFrame = CreateFrame("GameTooltip", "VanasKoSDefaultListsTooltip", UIParent, "GameTooltipTemplate");
 	tooltip = self.tooltipFrame;
@@ -359,8 +420,7 @@ function VanasKoSDefaultLists:FilterFunction(key, value, searchBoxText)
 end
 
 
-
-function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2)
+function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2, buttonText3, buttonText4, buttonText5, buttonText6)
 	if(list == "PLAYERKOS" or list == "HATELIST" or list == "NICELIST") then
 		local data = VanasKoS:GetPlayerData(key);
 		-- name, guildrank, guild, level, race, class, gender, zone, lastseen
@@ -372,45 +432,120 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 		if(value.wanted == true) then
 			displayname = "|cffff0000" .. displayname .. "|r";
 		end
-		if(data and data.level and data.race and data.class) then
-			buttonText1:SetText(format(L["%s  |cffffffffLevel %s %s %s|r |cffff00ff%s|r"], displayname, data.level, data.race, data.class, owner));
+		buttonText1:SetText(displayname);
+		if(not self.group or self.group == 1) then
+			buttonText2:SetText(data and data.guild or "");
+			buttonText3:SetText(data and data.level or "");
+			buttonText4:SetText(data and data.class or "");
+			if (data and data.classEnglish) then
+				local classColor = RAID_CLASS_COLORS[data.classEnglish] or NORMAL_FONT_COLOR;
+				buttonText4:SetTextColor(classColor.r, classColor.g, classColor.b);
+			end
+		elseif(self.group == 2) then
+			buttonText2:SetText(value and value.reason or L["_Reason Unknown_"]);
 		else
-			buttonText1:SetText(format(L["%s  |cffff00ff%s|r"], displayname, owner));
-		end
-		if(data and data.lastseen) then
-			local timespan = SecondsToTime(time() - data.lastseen);
-			if(timespan == "") then
-				timespan = L["0 Secs"];
-			end
-
-			if(value.reason) then
-				buttonText2:SetText(format(L["%s (last seen: %s ago)"], string.Capitalize(value.reason), timespan));
+			if(data and data.lastseen) then
+				local timespan = SecondsToTime(time() - data.lastseen);
+				if(timespan == "") then
+					timespan = L["0 Secs"];
+				end
+				buttonText2:SetText(timespan);
 			else
-				buttonText2:SetText(format(L["%s (last seen: %s ago)"], L["_Reason Unknown_"], timespan));
+				buttonText2:SetText(format(L["never seen"], timespan));
 			end
-		else
-			if(value.reason) then
-				buttonText2:SetText(format(L["%s (never seen)"], string.Capitalize(value.reason)));
+			if (data and data.zone) then
+				buttonText3:SetText(data.zone);
 			else
-				buttonText2:SetText(format(L["%s (never seen)"], L["_Reason Unknown_"]));
+				buttonText3:SetText("");
 			end
 		end
-	elseif(VANASKOS.showList == "GUILDKOS") then
+	elseif(list == "GUILDKOS") then
 		local guildname = VanasKoS:GetGuildData(key);
-		if(guildname ~= nil and guildname ~= "") then
-			local owner = (value.owner and string.Capitilize(value.owner)) or ""
-			buttonText1:SetText(format(L["%s  |cffff00ff%s|r"], guildname, owner));
-		else
-			buttonText1:SetText(string.Capitalize(key));
-		end
-		if(value.reason) then
-			buttonText2:SetText(string.Capitalize(value.reason));
-		else
-			buttonText2:SetText(L["_Reason Unknown_"]);
-		end
+		buttonText1:SetText(guildname or string.Capitalize(key));
+		buttonText2:SetText(value and value.reason or L["_Reason Unknown_"]);
+		buttonText3:SetText("");
+		buttonText4:SetText(value.owner and string.Capitalize(value.owner) or "");
 	end
 
 	button:Show();
+end
+
+function VanasKoSDefaultLists:SetupColumns(list)
+	if(list == "PLAYERKOS" or list == "HATELIST" or list == "NICELIST") then
+		if(not self.group or self.group == 1) then
+			VanasKoSGUI:SetNumColumns(4);
+			VanasKoSGUI:SetColumnWidth(1, 83);
+			VanasKoSGUI:SetColumnWidth(2, 100);
+			VanasKoSGUI:SetColumnWidth(3, 32);
+			VanasKoSGUI:SetColumnWidth(4, 92);
+			VanasKoSGUI:SetColumnName(1, L["Name"]);
+			VanasKoSGUI:SetColumnName(2, L["Guild"]);
+			VanasKoSGUI:SetColumnName(3, L["Lvl"]);
+			VanasKoSGUI:SetColumnName(4, L["Class"]);
+			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
+			VanasKoSGUI:SetColumnSort(2, SortByGuild, SortByGuildReverse);
+			VanasKoSGUI:SetColumnSort(3, SortByLevel, SortByLevelReverse);
+			VanasKoSGUI:SetColumnSort(4, SortByClass, SortByClassReverse);
+			VanasKoSGUI:SetColumnType(1, "normal");
+			VanasKoSGUI:SetColumnType(2, "highlight");
+			VanasKoSGUI:SetColumnType(3, "number");
+			VanasKoSGUI:SetColumnType(4, "highlight");
+			VanasKoSGUI:SetToggleButtonText(L["Player Info"]);
+		elseif(self.group == 2) then
+			VanasKoSGUI:SetNumColumns(2);
+			VanasKoSGUI:SetColumnWidth(1, 83);
+			VanasKoSGUI:SetColumnWidth(2, 220);
+			VanasKoSGUI:SetColumnName(1, L["Name"]);
+			VanasKoSGUI:SetColumnName(2, L["Reason"]);
+			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
+			VanasKoSGUI:SetColumnSort(2, SortByReason, SortByReasonReverse);
+			VanasKoSGUI:SetColumnType(1, "normal");
+			VanasKoSGUI:SetColumnType(2, "highlight");
+			VanasKoSGUI:SetToggleButtonText(L["Reason"]);
+		else
+			VanasKoSGUI:SetNumColumns(3);
+			VanasKoSGUI:SetColumnWidth(1, 83);
+			VanasKoSGUI:SetColumnWidth(2, 110);
+			VanasKoSGUI:SetColumnWidth(3, 110);
+			VanasKoSGUI:SetColumnName(1, L["Name"]);
+			VanasKoSGUI:SetColumnName(2, L["Last Seen"]);
+			VanasKoSGUI:SetColumnName(3, L["Zone"]);
+			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
+			VanasKoSGUI:SetColumnSort(2, SortByLastSeen, SortByLastSeenReverse);
+			VanasKoSGUI:SetColumnSort(3, SortByZone, SortByZoneReverse);
+			VanasKoSGUI:SetColumnType(1, "normal");
+			VanasKoSGUI:SetColumnType(2, "highlight");
+			VanasKoSGUI:SetColumnType(3, "highlight");
+			VanasKoSGUI:SetToggleButtonText(L["Last Seen"]);
+		end
+		VanasKoSGUI:ShowToggleButton();
+	elseif(list == "GUILDKOS") then
+		VanasKoSGUI:SetNumColumns(2);
+		VanasKoSGUI:SetColumnWidth(1, 105);
+		VanasKoSGUI:SetColumnWidth(2, 208);
+		VanasKoSGUI:SetColumnName(1, L["Guild"]);
+		VanasKoSGUI:SetColumnName(2, L["Reason"]);
+		VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
+		VanasKoSGUI:SetColumnSort(2, SortByReason, SortByReasonReverse);
+		VanasKoSGUI:SetColumnType(1, "normal");
+		VanasKoSGUI:SetColumnType(2, "highlight");
+		VanasKoSGUI:HideToggleButton();
+	end
+end
+
+function VanasKoSDefaultLists:ToggleButtonOnClick(button, frame)
+	local list = VANASKOS.showList;
+	if(list == "PLAYERKOS" or list == "HATELIST" or list == "NICELIST") then
+		if (not self.group or self.group < 3) then
+			self.group = (self.group or 1) + 1;
+		else
+			self.group = 1
+		end
+	elseif(list == "GUILDKOS") then
+		self.group = 1;
+	end
+	self:SetupColumns(list);
+	VanasKoSGUI:ScrollFrameUpdate()
 end
 
 function VanasKoSDefaultLists:IsOnList(list, name)

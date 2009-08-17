@@ -1,6 +1,8 @@
 Release Changelog for VanasKoS
 
 alpha:
+- Changed appearance of KoS GUI, allowing for easier sorting, and more compact
+  display of information
 - Use the wowace/curse auto-generated locale tool
 - Updated ace library
 

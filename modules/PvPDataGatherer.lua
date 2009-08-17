@@ -5,6 +5,11 @@ Gathers PvP Wins and Losses
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "enUS", true)
 if L then
+	L["Name"] = true
+	L["Win"] = true
+	L["Lost"] = true
+	L["PvP"] = true
+	L["Score"] = true
 	L["PvP Data Gathering"] = true
 	L["PvP Loss versus %s registered."] = true
 	L["PvP Stats"] = true
@@ -79,106 +84,91 @@ local VanasKoS = VanasKoS;
 -- sort functions
 
 -- sorts by index
-local SortByName = nil;
+local function SortByIndex(val1, val2)
+	return val1 < val2;
+end
+local function SortByIndexReverse(val1, val2)
+	return val1 > val2
+end
 
 -- sorts by most pvp encounters
 local function SortByScore(val1, val2)
 	local list = VanasKoS:GetList("PVPSTATS");
-	if (list ~= nil) then
-		local cmp1 = 0;
-		local cmp2 = 0;
-		if (list[val1] ~= nil) then 
-			if (list[val1].wins ~= nil) then
-				cmp1 = cmp1 + list[val1].wins;
-			end
-			if (list[val1].losses ~= nil) then
-				cmp1 = cmp1 - list[val1].losses;
-			end
-		end
-		if (list[val2] ~= nil) then 
-			if (list[val2].wins ~= nil) then
-				cmp2 = cmp2 + list[val2].wins;
-			end
-			if (list[val2].losses ~= nil) then
-				cmp2 = cmp2 - list[val2].losses;
-			end
-		end
-		if (cmp1 > cmp2) then
-			return true;
-		else
-			return false;
-		end
+	if (list) then
+		local cmp1 = list[val1] and ((list[val1].wins or 0) - (list[val1].losses or 0)) or 0;
+		local cmp2 = list[val2] and ((list[val2].wins or 0) - (list[val2].losses or 0)) or 0;
+		return (cmp1 > cmp2);
 	end
+	return false;
+end
+local function SortByScoreReverse(val1, val2)
+	local list = VanasKoS:GetList("PVPSTATS");
+	if (list) then
+		local cmp1 = list[val1] and ((list[val1].wins or 0) - (list[val1].losses or 0)) or 0;
+		local cmp2 = list[val2] and ((list[val2].wins or 0) - (list[val2].losses or 0)) or 0;
+		return (cmp1 < cmp2);
+	end
+	return false;
 end
 
 -- sorts by most pvp encounters
 local function SortByEncounters(val1, val2)
 	local list = VanasKoS:GetList("PVPSTATS");
 	if (list ~= nil) then
-		local cmp1 = 0;
-		local cmp2 = 0;
-		if (list[val1] ~= nil) then 
-			if (list[val1].losses ~= nil) then
-				cmp1 = cmp1 + list[val1].losses;
-			end
-			if (list[val1].wins ~= nil) then
-				cmp1 = cmp1 + list[val1].wins;
-			end
-		end
-		if (list[val2] ~= nil) then 
-			if (list[val2].losses ~= nil) then
-				cmp2 = cmp2 + list[val2].losses;
-			end
-			if (list[val2].wins ~= nil) then
-				cmp2 = cmp2 + list[val2].wins;
-			end
-		end
-		if (cmp1 > cmp2) then
-			return true;
-		else
-			return false;
-		end
+		local cmp1 = list[val1] and ((list[val1].wins or 0) + (list[val1].losses or 0)) or 0;
+		local cmp2 = list[val2] and ((list[val2].wins or 0) + (list[val2].losses or 0)) or 0;
+		return (cmp1 > cmp2);
 	end
+	return false;
+end
+local function SortByEncountersReverse(val1, val2)
+	local list = VanasKoS:GetList("PVPSTATS");
+	if (list ~= nil) then
+		local cmp1 = list[val1] and ((list[val1].wins or 0) + (list[val1].losses or 0)) or 0;
+		local cmp2 = list[val2] and ((list[val2].wins or 0) + (list[val2].losses or 0)) or 0;
+		return (cmp1 < cmp2);
+	end
+	return false;
 end
 
 -- sort by most wins
 local function SortByWins(val1, val2)
 	local list = VanasKoS:GetList("PVPSTATS");
 	if (list ~= nil) then
-		local cmp1 = 0;
-		local cmp2 = 0;
-		if (list[val1] ~= nil and list[val1].wins ~= nil) then
-			cmp1 = list[val1].wins;
-		end
-		if (list[val2] ~= nil and list[val2].wins ~= nil) then
-			cmp2 = list[val2].wins;
-		end
-		if (cmp1 > cmp2) then
-			return true;
-		else
-			return false;
-		end
+		local cmp1 = list[val1] and list[val1].wins or 0;
+		local cmp2 = list[val2] and list[val2].wins or 0;
+		return (cmp1 > cmp2);
 	end
+	return false;
+end
+local function SortByWinsReverse(val1, val2)
+	local list = VanasKoS:GetList("PVPSTATS");
+	if (list ~= nil) then
+		local cmp1 = list[val1] and list[val1].wins or 0;
+		local cmp2 = list[val2] and list[val2].wins or 0;
+		return (cmp1 < cmp2);
+	end
+	return false;
 end
 
 -- sort by most losses
 local function SortByLosses(val1, val2)
 	local list = VanasKoS:GetList("PVPSTATS");
 	if (list ~= nil) then
-		local cmp1 = 0;
-		local cmp2 = 0;
-		if (list[val1] ~= nil and list[val1].losses ~= nil) then
-			cmp1 = list[val1].losses;
-		end
-		if (list[val2] ~= nil and list[val2].losses ~= nil) then
-			cmp2 = list[val2].losses;
-		end
-		if (cmp1 > cmp2) then
-			return true;
-		else
-			return false;
-		end
+		local cmp1 = list[val1] and list[val1].losses or 0;
+		local cmp2 = list[val2] and list[val2].losses or 0;
+		return (cmp1 > cmp2);
 	end
+	return false
+end
+local function SortByLossesReverse(val1, val2)
+	local list = VanasKoS:GetList("PVPSTATS");
+	if (list ~= nil) then
+		local cmp1 = list[val1] and list[val1].losses or 0;
+		local cmp2 = list[val2] and list[val2].losses or 0;
+		return (cmp1 < cmp2);
+	end
+	return false
 end
 
 function VanasKoSPvPDataGatherer:OnInitialize()
@@ -223,11 +213,11 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 	VanasKoSGUI:RegisterList("PVPSTATS", self);
 
 	-- register sort options for the lists this module provides
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byname", L["by name"], L["sort by name"], SortByName);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byscore", L["by score"], L["sort by most wins to losses"], SortByScore);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byencounters", L["by encounters"], L["sort by most PVP encounters"], SortByEncounters);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bywins", L["by wins"], L["sort by most wins"], SortByWins);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bylosses", L["by losses"], L["sort by most losses"], SortByLosses);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byname", L["by name"], L["sort by name"], SortByIndex, SortByIndexReverse);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byscore", L["by score"], L["sort by most wins to losses"], SortByScore, SortByScoreReverse);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byencounters", L["by encounters"], L["sort by most PVP encounters"], SortByEncounters, SortByEncountersReverse);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bywins", L["by wins"], L["sort by most wins"], SortByWins, SortByWinsReverse);
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bylosses", L["by losses"], L["sort by most losses"], SortByLosses, SortByLossesReverse);
 
 	VanasKoSGUI:SetDefaultSortFunction({"PVPSTATS"}, SortByName);
 	
@@ -246,13 +236,23 @@ function VanasKoSPvPDataGatherer:FilterFunction(key, value, searchBoxText)
 	return false;
 end
 
-function VanasKoSPvPDataGatherer:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2)
+function VanasKoSPvPDataGatherer:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2, buttonText3, buttonText4, buttonText5, buttonText6)
 	if(list == "PVPSTATS") then
-		buttonText1:SetText(string.Capitalize(key));
 		local data = VanasKoS:IsOnList("PVPSTATS", key);
+		buttonText1:SetText(string.Capitalize(key));
+		buttonText2:SetText(format("|cff00ff00%d|r", data.wins));
+		buttonText3:SetText(format("|cffff0000%d|r", data.losses));
+		buttonText4:SetText(format("|cffffffff%d|r", data.wins + data.losses));
+		buttonText5:SetText(format("%d", data.wins - data.losses));
 
-		buttonText2:SetText(format(L["wins: |cff00ff00%d|r - losses: |cffff0000%d|r"], data.wins or 0, data.losses or 0));
-
+		-- Could make the colors slightly change based on score
+		if (data.wins > data.losses) then
+			buttonText5:SetTextColor(0, 1, 0);
+		elseif (data.losses > data.wins) then
+			buttonText5:SetTextColor(1, 0, 0);
+		else
+			buttonText5:SetTextColor(1, 1, 0);
+		end
 		button:Show();
 	end
 end
@@ -341,6 +341,44 @@ function VanasKoSPvPDataGatherer:IsOnList(list, name)
 	else
 		return nil;
 	end
+end
+
+function VanasKoSPvPDataGatherer:SetupColumns(list)
+	if(list == "PVPSTATS") then
+		if(not self.group or self.group == 1) then
+			VanasKoSGUI:SetNumColumns(5);
+			VanasKoSGUI:SetColumnWidth(1, 103);
+			VanasKoSGUI:SetColumnWidth(2, 40);
+			VanasKoSGUI:SetColumnWidth(3, 40);
+			VanasKoSGUI:SetColumnWidth(4, 40);
+			VanasKoSGUI:SetColumnWidth(5, 40);
+			VanasKoSGUI:SetColumnName(1, L["Name"]);
+			VanasKoSGUI:SetColumnName(2, L["Win"]);
+			VanasKoSGUI:SetColumnName(3, L["Lost"]);
+			VanasKoSGUI:SetColumnName(4, L["PvP"]);
+			VanasKoSGUI:SetColumnName(5, L["Score"]);
+			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
+			VanasKoSGUI:SetColumnSort(2, SortByWins, SortByWinsReverse);
+			VanasKoSGUI:SetColumnSort(3, SortByLosses, SortByLossesReverse);
+			VanasKoSGUI:SetColumnSort(4, SortByEncounters, SortByEncountersReverse);
+			VanasKoSGUI:SetColumnSort(5, SortByScore, SortByScoreReverse);
+			VanasKoSGUI:SetColumnType(1, "normal");
+			VanasKoSGUI:SetColumnType(2, "number");
+			VanasKoSGUI:SetColumnType(3, "number");
+			VanasKoSGUI:SetColumnType(4, "number");
+			VanasKoSGUI:SetColumnType(5, "number");
+			VanasKoSGUI:HideToggleButton();
+		end
+	end
+end
+
+function VanasKoSPvPDataGatherer:ToggleButtonOnClick(button, frame)
+	local list = VANASKOS.showList;
+	if(list == "PVPSTATS") then
+		self.group = 1
+	end
+	self:SetupColumns(list)
+	VanasKoSGUI:Update();
 end
 
 function VanasKoSPvPDataGatherer:OnDisable()

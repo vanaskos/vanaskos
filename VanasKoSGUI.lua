@@ -118,19 +118,17 @@ function VanasKoSGUI:GetListName(listid)
 	return listid;
 end
 
-local sortOptions = {
+local sortButtonOptions = {
 };
 
-local showOptions = { 
-	{
-		text = L["sort"],
-		hasArrow = true,
-		menuList = menuSortOptions,
-	}
+local sortOptions = { 
 };
 
 
 local defaultSortFunction = {
+};
+
+local defaultRevSortFunction = {
 };
 
 function VanasKoSGUI:OnInitialize()
@@ -150,10 +148,10 @@ function VanasKoSGUI:OnInitialize()
 	
 	self:AddConfigOption("VanasKoS-Profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(VanasKoS.db));
 	
-	VanasKoSListFrameShowButton:SetScript("OnClick", function()
+	VanasKoSListFrameSortButton:SetScript("OnClick", function()
 			local x, y = GetCursorPosition();
 			local uiScale = UIParent:GetEffectiveScale();
-			EasyMenu(showOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
+			EasyMenu(sortButtonOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
 		end);
 	
 	VanasKoSListFrameConfigurationButton:SetScript("OnClick", function() VanasKoSGUI:OpenConfigWindow(); end);
@@ -255,15 +253,15 @@ local VANASKOSFRAME_SUBFRAMES = { "VanasKoSListFrame", "VanasKoSAboutFrame" };
 
 function VanasKoSGUI:UpdateSortOptions()
 	if(sortOptions[VANASKOS.showList]) then
-		showOptions[1].menuList = sortOptions[VANASKOS.showList];
+		sortButtonOptions = sortOptions[VANASKOS.showList];
 	else
-		showOptions[1].menuList = { };
+		sortButtonOptions = { };
 	end
 	
 end
 
-function VanasKoSGUI:GetShowButtonOptions()
-	return showOptions;
+function VanasKoSGUI:GetSortButtonOptions()
+	return sortButtonOptions;
 end
 
 local shownList = nil;
@@ -274,12 +272,7 @@ function VanasKoSGUI:ShowList(list)
 	shownList = VanasKoS:GetList(VANASKOS.showList);
 	
 	self:UpdateSortOptions();
-	
-	if(defaultSortFunction[list] ~= nil) then
-		self:SetSortFunction(defaultSortFunction[list]);
-	else
-		self:SetSortFunction(nil);
-	end
+	self:SetSortFunction(defaultSortFunction[list], defaultRevSortFunction[list]);
 end
 
 -- if the list itself changed
@@ -367,7 +360,7 @@ function VanasKoSGUI:GetSelectedEntryName()
 		local listIndex = 1;
 			
 		if(listVar == nil) then
-			self:GUIHideButtons(1, 10);
+			self:GUIHideButtons(1, VANASKOS.MAX_LIST_BUTTONS);
 			return nil;
 		end
 
@@ -388,7 +381,7 @@ function VanasKoSGUI:GetSelectedButtonNumber()
 			local listIndex = 1;
 			
 			if(listVar == nil) then
-				self:GUIHideButtons(1, 10);
+				self:GUIHideButtons(1, VANASKOS.MAX_LIST_BUTTONS);
 				return nil;
 			end
 
@@ -405,6 +398,18 @@ end
 
 function VanasKoSGUI:RemoveEntry()
 	VanasKoS:RemoveEntry(VANASKOS.showList, VanasKoSGUI:GetSelectedEntryName());
+end
+
+function VanasKoSGUI:ColButton_OnClick(button, frame)
+	PlaySound("igMainMenuOptionCheckBoxOn");
+	self:SetSortFunction(frame.sortFunction, frame.revSortFunction);
+	self:ScrollFrameUpdate();
+end
+
+function VanasKoSGUI:ColButton_OnEnter(button, frame)
+end
+
+function VanasKoSGUI:ColButton_OnLeave(button, frame)
 end
 
 function VanasKoSGUI:ListButton_OnClick(button, frame)
@@ -432,6 +437,24 @@ function VanasKoSGUI:ListButton_OnLeave(button, frame)
 	end
 end
 
+function VanasKoSGUI:ToggleButton_OnClick(button, frame)
+	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleButtonOnClick) then
+		listHandler[VANASKOS.showList]:ToggleButtonOnClick(button, frame);
+	end
+	self:ScrollFrameUpdate();
+end
+
+function VanasKoSGUI:ToggleButton_OnEnter(button, frame)
+	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleButtonOnEnter) then
+		listHandler[VANASKOS.showList]:ToggleButtonOnEnter(button, frame);
+	end
+end
+
+function VanasKoSGUI:ToggleButton_OnLeave(button, frame)
+	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleButtonOnLeave) then
+		listHandler[VANASKOS.showList]:ToggleButtonOnLeave(button, frame);
+	end
+end
 function VanasKoSGUI:GUIHideButtons(minimum, maximum)
 	for i=minimum,maximum,1 do
 		local button = getglobal("VanasKoSListFrameListButton" .. i);
@@ -441,7 +464,7 @@ function VanasKoSGUI:GUIHideButtons(minimum, maximum)
 	end
 end
 
-function VanasKoSGUI:GUIShowButtons(minimum, maximum)
+function VanasKoSGUI:GUISortButtons(minimum, maximum)
 	for i=minimum,maximum,1 do
 		local button = getglobal("VanasKoSListFrameListButton" .. i);
 		button:Show();
@@ -507,11 +530,11 @@ end
 
 -- Registers a Sort Function with name to show up in the sorting options for a list
 -- listNames can be either the internal name of the list (i.e. PLAYERKOS) or a list of internal list names
-function VanasKoSGUI:RegisterSortOption(listNames, sortOptionNameInternal, sortOptionName, sortOptionDesc, sortFunctionNew)
+function VanasKoSGUI:RegisterSortOption(listNames, sortOptionNameInternal, sortOptionName, sortOptionDesc, sortFunctionNew, sortFunctionRev)
 	if(type(listNames) == "string") then
 		listNames = { listNames };
 	end
-	
+
 	for k, listNameInternal in pairs(listNames) do
 		if(not sortOptions[listNameInternal]) then
 			sortOptions[listNameInternal] = { };
@@ -519,32 +542,38 @@ function VanasKoSGUI:RegisterSortOption(listNames, sortOptionNameInternal, sortO
 		sortOptions[listNameInternal][#sortOptions[listNameInternal]+1] = {
 			text = sortOptionName,
 			checked = function()
-					if(VanasKoSGUI:GetCurrentSortFunction() == sortFunctionNew) then
-						return true;
-					end
-					return false;
+					local currentSort = VanasKoSGUI:GetCurrentSortFunction();
+					return (currentSort == sortFunctionNew or currentSort == sortFunctionRev);
 				end,
 			func = function()
-					VanasKoSGUI:SetSortFunction(sortFunctionNew);
+					VanasKoSGUI:SetSortFunction(sortFunctionNew, sortFunctionRev);
 				end,
 		};
 	end
 end
 
-
-function VanasKoSGUI:SetDefaultSortFunction(lists, sortFunc)
+function VanasKoSGUI:SetDefaultSortFunction(lists, sortFunc, revSortFunc)
 	if(type(lists) == "string") then
 		lists = { lists };
 	end
 	for k,v in pairs(lists) do
 		defaultSortFunction[v] = sortFunc;
+		defaultRevSortFunction[v] = revSortFunc;
 	end
 end
 
-local sortFunction = nil;
 
-function VanasKoSGUI:SetSortFunction(sortFunc)
-	sortFunction = sortFunc;
+local sortFunction = nil;
+local reverseSort = nil;
+
+function VanasKoSGUI:SetSortFunction(sortFunc, revSortFunc)
+	if(sortFunction == sortFunc) then
+		sortFunction = revSortFunc;
+	elseif(sortFunction == revSortFunc) then
+		sortFunction = sortFunc;
+	else
+		sortFunction = sortFunc;
+	end
 	
 	self:UpdateShownList();
 end
@@ -575,6 +604,10 @@ function VanasKoSGUI:RegisterList(listName, handlerObject)
 		VanasKoS:Print("Error: No RenderButton method for " .. listName);
 		return;
 	end
+	if(not handlerObject.SetupColumns) then
+		VanasKoS:Print("Error: No SetupColumns method for " .. listName);
+		return;
+	end
 	listHandler[listName] = handlerObject;
 end
 
@@ -598,7 +631,7 @@ function VanasKoSGUI:ScrollFrameUpdate()
 
 	if(listVar == nil) then
 		VANASKOS.selectedEntry = nil;
-		self:GUIHideButtons(1, 10);
+		self:GUIHideButtons(1, VANASKOS.MAX_LIST_BUTTONS);
 		return nil;
 	end
 	
@@ -612,14 +645,24 @@ function VanasKoSGUI:ScrollFrameUpdate()
 		if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ShowList) then
 			listHandler[VANASKOS.showList]:ShowList(VANASKOS.showList);
 		end
+		if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].SetupColumns) then
+			listHandler[VANASKOS.showList]:SetupColumns(VANASKOS.showList);
+		end
 	end
-	
+
 	for k,v in listVar do
  		if((listIndex-1) < listOffset) then
 		else
-			if(buttonIndex <= 10) then
-				local buttonText1 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "ButtonTextName");
-				local buttonText2 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "ButtonTextReason");
+			if(buttonIndex <= VANASKOS.MAX_LIST_BUTTONS) then
+				local buttonText1 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text1");
+				local buttonText2 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text2");
+				local buttonText3 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text3");
+				local buttonText4 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text4");
+				local buttonText5 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text5");
+				local buttonText6 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text6");
+				local buttonText6 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text7");
+				local buttonText6 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text8");
+				local buttonText6 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text9");
 				local button = getglobal("VanasKoSListFrameListButton" .. buttonIndex);
 				button:SetID(listIndex);
 				if(listIndex == VANASKOS.selectedEntry) then
@@ -629,7 +672,7 @@ function VanasKoSGUI:ScrollFrameUpdate()
 				end
 				
 				if(listHandler[VANASKOS.showList] ~= nil) then
-					listHandler[VANASKOS.showList]:RenderButton(VANASKOS.showList, buttonIndex, button, k, v, buttonText1, buttonText2);
+					listHandler[VANASKOS.showList]:RenderButton(VANASKOS.showList, buttonIndex, button, k, v, buttonText1, buttonText2, buttonText3, buttonText4, buttonText5, buttonText6, buttonText7, buttonText8, buttonText9);
 				end
 				
 				buttonIndex = buttonIndex + 1;
@@ -638,8 +681,8 @@ function VanasKoSGUI:ScrollFrameUpdate()
 		listIndex = listIndex + 1;
 	end
 	
-	if(listIndex <= 10) then
-		self:GUIHideButtons(listIndex, 10);
+	if(listIndex <= VANASKOS.MAX_LIST_BUTTONS) then
+		self:GUIHideButtons(listIndex, VANASKOS.MAX_LIST_BUTTONS);
 	end
 	
 	if(listIndex == 1) then
@@ -657,7 +700,7 @@ function VanasKoSGUI:ScrollFrameUpdate()
 
 	-- 34 = Hoehe VanasKoSListFrameListButtonTemplate
 	-- scrollframe, maxnum, to_display, height
-	FauxScrollFrame_Update(VanasKoSListScrollFrame, listIndex-1, 10, 34);
+	FauxScrollFrame_Update(VanasKoSListScrollFrame, listIndex-1, VANASKOS.MAX_LIST_BUTTONS, 34);
 	
 	oldlist = VANASKOS.showList;
 end
@@ -683,12 +726,12 @@ function VanasKoSGUI:Update()
 	if(not VanasKoSFrame:IsVisible()) then
 		return nil;
 	end
-	
 	if(VanasKoSFrame.selectedTab == 1) then
-		VanasKoSFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft");
-		VanasKoSFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight");
-		VanasKoSFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-BotLeft");
-		VanasKoSFrameBottomRight:SetTexture("Interface\\FriendsFrame\\UI-FriendsFrame-BotRight");
+		VanasKoSFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
+		VanasKoSFrameTopRight:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight");
+		--VanasKoSFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotLeft");
+		VanasKoSFrameBottomLeft:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotLeft");
+		VanasKoSFrameBottomRight:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotRight");
 		
 		VanasKoSFrameTitleText:SetText(VANASKOS.NAME .. " - " .. L["Lists"]);
 		self:GUIFrame_ShowSubFrame("VanasKoSListFrame");
@@ -745,6 +788,83 @@ function VanasKoSGUI:Toggle()
 			ShowUIPanel(VanasKoSFrame);
 		end
 	end
+end
+
+function VanasKoSGUI:SetNumColumns(num)
+	for i=1,VANASKOS.MAX_LIST_COLS do
+		local hdr = getglobal("VanasKoSListFrameColButton" .. i);
+		if(i <= num) then
+			hdr:Show();
+		else
+			hdr:Hide();
+		end
+
+		for j=1,VANASKOS.MAX_LIST_BUTTONS do
+			local txt = getglobal("VanasKoSListFrameListButton" .. j .. "Text" .. i);
+			if (i <= num) then
+				txt:Show();
+			else
+				txt:Hide();
+			end
+		end
+	end
+end
+
+function VanasKoSGUI:SetColumnWidth(col, width)
+	getglobal("VanasKoSListFrameColButton" .. col):SetWidth(width);
+	getglobal("VanasKoSListFrameColButton" .. col .. "Middle"):SetWidth(width - 9);
+	for i=1,VANASKOS.MAX_LIST_BUTTONS do
+		getglobal("VanasKoSListFrameListButton" .. i .. "Text" .. col):SetWidth(width - 5);
+	end
+end
+
+function VanasKoSGUI:SetColumnName(col, Name)
+	getglobal("VanasKoSListFrameColButton" .. col):SetText(Name);
+end
+
+function VanasKoSGUI:SetColumnType(col, colType)
+	for i=1,VANASKOS.MAX_LIST_BUTTONS do
+		local frame = getglobal("VanasKoSListFrameListButton" .. i .. "Text" .. col);
+		if frame then
+			if (colType == "normal") then
+				frame:SetFontObject("GameFontNormalSmall");
+				frame:SetJustifyH("LEFT");
+				frame:SetJustifyV("MIDDLE");
+			elseif (colType == "number") then
+				frame:SetFontObject("GameFontHighlightSmall");
+				frame:SetJustifyH("RIGHT");
+				frame:SetJustifyV("MIDDLE");
+			elseif (colType == "highlight") then
+				frame:SetFontObject("GameFontHighlightSmall");
+				frame:SetJustifyH("LEFT");
+				frame:SetJustifyV("MIDDLE");
+			else
+				error("Invalid column type");
+			end
+		end
+	end
+end
+
+function VanasKoSGUI:SetColumnSort(column, sortFunctionNew, sortFunctionRev)
+	if(column) then
+		local colButton = getglobal("VanasKoSListFrameColButton" .. column);
+		if(colButton) then
+			colButton.sortFunction = sortFunctionNew;
+			colButton.revSortFunction = sortFunctionRev;
+		end
+	end
+end
+
+function VanasKoSGUI:SetToggleButtonText(text)
+	VanasKoSListFrameGroupToggleButton:SetText(text);
+end
+
+function VanasKoSGUI:HideToggleButton(text)
+	VanasKoSListFrameGroupToggleButton:Hide();
+end
+
+function VanasKoSGUI:ShowToggleButton(text)
+	VanasKoSListFrameGroupToggleButton:Show();
 end
 
 --[[---------------------------------------------------------------------------------------------------

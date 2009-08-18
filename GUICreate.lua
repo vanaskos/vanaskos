@@ -121,6 +121,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	local chooseListDropDown = CreateFrame("Frame", "VanasKoSFrameChooseListDropDown", VanasKoSListFrame, "UIDropDownMenuTemplate");
 	chooseListDropDown:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPLEFT", 65, -44);
 	VanasKoSFrameChooseListDropDownButton:SetScript("OnClick", function() ToggleDropDownMenu(1, nil, VanasKoSFrameChooseListDropDown, VanasKoSFrameChooseListDropDown, 15, 10); end);
+	UIDropDownMenu_SetWidth(chooseListDropDown, 100, 15)
 
 	local checkButton = CreateFrame("CheckButton", "VanasKoSListFrameCheckBox", VanasKoSListFrame, "UICheckButtonTemplate");
 	local checkButtonText = checkButton:CreateFontString(checkButton:GetName() .. "Text", "BORDER");
@@ -129,7 +130,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	checkButton:SetWidth(20);
 	checkButton:SetHeight(20);
 	checkButton:SetNormalFontObject("GameFontHighlightSmall");
-	checkButton:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 220, -44);
+	checkButton:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 200, -44);
 
 	local addEntryButton = CreateFrame("Button", "VanasKoSListFrameAddButton", VanasKoSListFrame, "UIPanelButtonTemplate");
 	addEntryButton:SetWidth(110);
@@ -298,7 +299,7 @@ function VanasKoSGUICreate:CreateListFrame()
 
 	scrollFrame:SetScript("OnVerticalScroll", 
 							function(frame, offset)
-								FauxScrollFrame_OnVerticalScroll(frame, offset, 34, VanasKoSGUI.ScrollUpdate);
+								FauxScrollFrame_OnVerticalScroll(frame, offset, 16, VanasKoSGUI.ScrollUpdate);
 							end);
 	scrollFrame:SetScript("OnShow", 
 							function() 

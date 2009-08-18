@@ -700,7 +700,7 @@ function VanasKoSGUI:ScrollFrameUpdate()
 
 	-- 34 = Hoehe VanasKoSListFrameListButtonTemplate
 	-- scrollframe, maxnum, to_display, height
-	FauxScrollFrame_Update(VanasKoSListScrollFrame, listIndex-1, VANASKOS.MAX_LIST_BUTTONS, 34);
+	FauxScrollFrame_Update(VanasKoSListScrollFrame, listIndex-1, VANASKOS.MAX_LIST_BUTTONS, 16);
 	
 	oldlist = VANASKOS.showList;
 end

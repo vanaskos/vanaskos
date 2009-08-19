@@ -11,6 +11,8 @@ local VanasKoS = VanasKoS;
 local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable();
 local BZR = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable();
 
+local JOIN_DELAY = 20;
+
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "enUS", true)
 if L then
 	L["Cancel"] = true
@@ -93,7 +95,7 @@ function VanasKoSTracker:OnEnable()
 
 	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
 	self:RegisterMessage("VanasKoS_Zone_Changed", "Zone_Changed");
-	self:ScheduleTimer("StartCrbTracking", 5);
+	self:ScheduleTimer("StartCrbTracking", JOIN_DELAY);
 end
 
 function VanasKoSTracker:OnDisable()
@@ -160,7 +162,7 @@ local changeZoneTimer;
 
 function VanasKoSTracker:Zone_Changed(zone)
 	self:CancelTimer(changeZoneTimer);
-	changeZonetimer = self:ScheduleTimer("ChangeZone", 10);
+	changeZonetimer = self:ScheduleTimer("ChangeZone", JOIN_DELAY);
 end
 
 function VanasKoSTracker:ChangeZone()

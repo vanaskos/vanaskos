@@ -367,12 +367,21 @@ function VanasKoSPvPDataGatherer:SetupColumns(list)
 			VanasKoSGUI:SetColumnType(3, "number");
 			VanasKoSGUI:SetColumnType(4, "number");
 			VanasKoSGUI:SetColumnType(5, "number");
-			VanasKoSGUI:HideToggleButton();
+			VanasKoSGUI:HideToggleButtons();
 		end
 	end
 end
 
-function VanasKoSPvPDataGatherer:ToggleButtonOnClick(button, frame)
+function VanasKoSPvPDataGatherer:ToggleLeftButtonOnClick(button, frame)
+	local list = VANASKOS.showList;
+	if(list == "PVPSTATS") then
+		self.group = 1
+	end
+	self:SetupColumns(list)
+	VanasKoSGUI:Update();
+end
+
+function VanasKoSPvPDataGatherer:ToggleRightButtonOnClick(button, frame)
 	local list = VANASKOS.showList;
 	if(list == "PVPSTATS") then
 		self.group = 1

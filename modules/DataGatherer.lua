@@ -365,12 +365,20 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		gatheredData['name'] = name;
 		gatheredData['realm'] = realm;
 		gatheredData['guild'], gatheredData['guildrank'] = GetGuildInfo(unit);
-		gatheredData['level'] = UnitLevel(unit);
 		gatheredData['race'] = UnitRace(unit);
 		gatheredData['class'], gatheredData['classEnglish'] = UnitClass(unit);
 		gatheredData['gender'] = UnitSex(unit);
 		gatheredData['zone'] = zone;
 		gatheredData['faction'] = nil;
+
+		local lvl = UnitLevel(unit);
+		if(gatheredData['level'] == -1) then
+			lvl = (UnitLevel("player") or 1) + 10;
+			if(lvl < 80) then
+				lvl = lvl .. "+";
+			end
+		end
+		gatheredData['level'] = lvl;
 
 		if(gatheredData['realm'] == nil) then
 			gatheredData['list'] = select(2, VanasKoS:IsOnList(nil, gatheredData['name']));

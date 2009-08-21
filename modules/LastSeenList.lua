@@ -228,12 +228,21 @@ function VanasKoSLastSeenList:SetupColumns(list)
 			VanasKoSGUI:SetColumnSort(2, SortByLastSeen, SortByLastSeenReverse);
 			VanasKoSGUI:SetColumnType(1, "normal");
 			VanasKoSGUI:SetColumnType(2, "highlight");
-			VanasKoSGUI:HideToggleButton();
+			VanasKoSGUI:HideToggleButtons();
 		end
 	end
 end
 
-function VanasKoSLastSeenList:ToggleButtonOnClick(button, frame)
+function VanasKoSLastSeenList:ToggleLeftButtonOnClick(button, frame)
+	local list = VANASKOS.showList;
+	if(list == "LASTSEEN") then
+		self.group = 1
+	end
+	self:SetupColumns(list)
+	VanasKoSGUI:Update();
+end
+
+function VanasKoSLastSeenList:ToggleRightButtonOnClick(button, frame)
 	local list = VANASKOS.showList;
 	if(list == "LASTSEEN") then
 		self.group = 1

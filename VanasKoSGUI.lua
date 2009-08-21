@@ -437,22 +437,41 @@ function VanasKoSGUI:ListButton_OnLeave(button, frame)
 	end
 end
 
-function VanasKoSGUI:ToggleButton_OnClick(button, frame)
-	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleButtonOnClick) then
-		listHandler[VANASKOS.showList]:ToggleButtonOnClick(button, frame);
+function VanasKoSGUI:ToggleLeftButton_OnClick(button, frame)
+	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleLeftButtonOnClick) then
+		listHandler[VANASKOS.showList]:ToggleLeftButtonOnClick(button, frame);
 	end
 	self:ScrollFrameUpdate();
 end
 
-function VanasKoSGUI:ToggleButton_OnEnter(button, frame)
-	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleButtonOnEnter) then
-		listHandler[VANASKOS.showList]:ToggleButtonOnEnter(button, frame);
+function VanasKoSGUI:ToggleLeftButton_OnEnter(button, frame)
+	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleLeftButtonOnEnter) then
+		listHandler[VANASKOS.showList]:ToggleLeftButtonOnEnter(button, frame);
 	end
 end
 
-function VanasKoSGUI:ToggleButton_OnLeave(button, frame)
-	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleButtonOnLeave) then
-		listHandler[VANASKOS.showList]:ToggleButtonOnLeave(button, frame);
+function VanasKoSGUI:ToggleLeftButton_OnLeave(button, frame)
+	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleLeftButtonOnLeave) then
+		listHandler[VANASKOS.showList]:ToggleLeftButtonOnLeave(button, frame);
+	end
+end
+
+function VanasKoSGUI:ToggleRightButton_OnClick(button, frame)
+	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleRightButtonOnClick) then
+		listHandler[VANASKOS.showList]:ToggleRightButtonOnClick(button, frame);
+	end
+	self:ScrollFrameUpdate();
+end
+
+function VanasKoSGUI:ToggleRightButton_OnEnter(button, frame)
+	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleRightButtonOnEnter) then
+		listHandler[VANASKOS.showList]:ToggleRightButtonOnEnter(button, frame);
+	end
+end
+
+function VanasKoSGUI:ToggleRightButton_OnLeave(button, frame)
+	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ToggleRightButtonOnLeave) then
+		listHandler[VANASKOS.showList]:ToggleRightButtonOnLeave(button, frame);
 	end
 end
 function VanasKoSGUI:GUIHideButtons(minimum, maximum)
@@ -856,15 +875,17 @@ function VanasKoSGUI:SetColumnSort(column, sortFunctionNew, sortFunctionRev)
 end
 
 function VanasKoSGUI:SetToggleButtonText(text)
-	VanasKoSListFrameGroupToggleButton:SetText(text);
+	VanasKoSListFrameToggleRightButton:SetText(text);
 end
 
-function VanasKoSGUI:HideToggleButton(text)
-	VanasKoSListFrameGroupToggleButton:Hide();
+function VanasKoSGUI:HideToggleButtons(text)
+	VanasKoSListFrameToggleLeftButton:Hide();
+	VanasKoSListFrameToggleRightButton:Hide();
 end
 
-function VanasKoSGUI:ShowToggleButton(text)
-	VanasKoSListFrameGroupToggleButton:Show();
+function VanasKoSGUI:ShowToggleButtons(text)
+	VanasKoSListFrameToggleLeftButton:Show();
+	VanasKoSListFrameToggleRightButton:Show();
 end
 
 --[[---------------------------------------------------------------------------------------------------

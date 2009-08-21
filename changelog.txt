@@ -1,6 +1,12 @@
 Release Changelog for VanasKoS
 
 alpha:
+- Fixed semi-transparency in KoS GUI texture
+- Made Name/Reason the default KoS view
+- Added an previous view button
+- If a level 10+ player is detected correct level guessing to at least 10+
+
+4.2 beta:
 - Changed appearance of KoS GUI, allowing for easier sorting, and more compact
   display of information
 - Use the wowace/curse auto-generated locale tool

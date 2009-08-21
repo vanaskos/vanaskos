@@ -251,20 +251,32 @@ function VanasKoSGUICreate:CreateListFrame()
 	VanasKoSListFrameSyncButton:SetPoint("TOPRIGHT", listFrame, "TOPRIGHT", -44, -36);
 	VanasKoSListFrameSyncButton:SetText(L["sync"]); ]]
 
-	local toggleButton = CreateFrame("Button", "VanasKoSListFrameGroupToggleButton", VanasKoSListFrame);
-	toggleButton:SetWidth(20);
-	toggleButton:SetHeight(20);
-	toggleButton:SetPoint("BOTTOMRIGHT", VanasKoSListFrame, "BOTTOMRIGHT", -65, 126);
-	toggleButton:SetScript("OnClick", function() VanasKoSGUI:ToggleButton_OnClick(arg1, this); end);
-	toggleButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
-	toggleButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down");
-	toggleButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Disabled");
-	toggleButton:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD");
-	toggleButton:SetNormalFontObject("GameFontNormalSmall");
-	toggleButton:SetPushedTextOffset(0, 0);
-	local toggleButtonText = toggleButton:CreateFontString(toggleButton:GetName() .. "Text", "BORDER");
-	toggleButtonText:SetPoint("RIGHT", toggleButton, "LEFT", 0, 0);
-	toggleButton:SetFontString(toggleButtonText);
+	local toggleRButton = CreateFrame("Button", "VanasKoSListFrameToggleRightButton", VanasKoSListFrame);
+	toggleRButton:SetWidth(20);
+	toggleRButton:SetHeight(20);
+	toggleRButton:SetPoint("BOTTOMRIGHT", VanasKoSListFrame, "BOTTOMRIGHT", -65, 126);
+	toggleRButton:SetScript("OnClick", function() VanasKoSGUI:ToggleRightButton_OnClick(arg1, this); end);
+	toggleRButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
+	toggleRButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down");
+	toggleRButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Disabled");
+	toggleRButton:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD");
+	toggleRButton:SetNormalFontObject("GameFontNormalSmall");
+	toggleRButton:SetPushedTextOffset(0, 0);
+	local toggleRButtonText = toggleRButton:CreateFontString(toggleRButton:GetName() .. "Text", "BORDER");
+	toggleRButtonText:SetWidth(100);
+	toggleRButtonText:SetJustifyH("MIDDLE");
+	toggleRButtonText:SetPoint("RIGHT", toggleRButton, "LEFT", 0, 0);
+	toggleRButton:SetFontString(toggleRButtonText);
+
+	local toggleLButton = CreateFrame("Button", "VanasKoSListFrameToggleLeftButton", VanasKoSListFrame);
+	toggleLButton:SetWidth(20);
+	toggleLButton:SetHeight(20);
+	toggleLButton:SetPoint("RIGHT", toggleRButtonText, "LEFT", 0, 0);
+	toggleLButton:SetScript("OnClick", function() VanasKoSGUI:ToggleLeftButton_OnClick(arg1, this); end);
+	toggleLButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
+	toggleLButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
+	toggleLButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled");
+	toggleLButton:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD");
 
 	local sortButton = CreateFrame("Button", "VanasKoSListFrameSortButton", VanasKoSListFrame, "UIPanelButtonTemplate");
 	sortButton:SetWidth(40);

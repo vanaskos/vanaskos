@@ -12,7 +12,6 @@ local inBattleground = false;
 local myName = nil;
 
 local combatLogEventRegistered = true;
-local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable();
 
 function VanasKoSDataGatherer:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("DataGatherer", 
@@ -120,8 +119,7 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, even
 	end
 	
 	
-	-- try source and destinationation - if 
-	-- source or destination is friendly, register as event
+	-- try source and destinatio  if source or destination is friendly, register as event
 	if(srcName ~= nil and srcName ~= myName) then
 		local fOrE = isFriendlyOrEnemy(srcFlags);
 		if(fOrE) then
@@ -287,7 +285,6 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	end
 end
 
-local tourist = LibStub("LibTourist-3.0");
 local eventsEnabled = false;
 
 function VanasKoSDataGatherer:EnableEvents()
@@ -330,26 +327,25 @@ function VanasKoSDataGatherer:UpdateZone()
 end
 
 function VanasKoSDataGatherer:IsInSanctuary()
-	local zone = GetRealZoneText();
-
-	if(zone == BZ["Shattrath City"] or zone == BZ["Dalaran"]) then
-		return true;
-	else
-		return false;
-	end
+	local pvpType, isFFA, faction = GetZonePVPInfo();
+	return pvpType == "sanctuary" and true or false;
 end
 
 function VanasKoSDataGatherer:IsInBattleground()
-	local zone = GetRealZoneText();
-
-	if(tourist:IsBattleground(zone) or
-		tourist:IsInstance(zone) or
-		tourist:IsArena(zone) or
-		zone == BZ["Wintergrasp"]) then
+	local inInstance, instanceType = IsInInstance();
+	if(inInstance or 
+		(instanceType == "arena") or
+		(instanceType == "pvp")) then
 		return true;
-	else
-		return false
 	end
+	
+	local pvpType, isFFA, faction = GetZonePVPInfo();
+	if( (pvpType == "arena") or
+		(pvpType == "combat")) then
+		return true;
+	end
+	
+	return false;
 end
 
 local gatheredData = { };

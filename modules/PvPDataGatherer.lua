@@ -405,6 +405,9 @@ local lastDamageTo = { };
 
 
 function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, dstName, amount)
+	if(VanasKoSDataGatherer:IsInBattleground()) then
+		return;
+	end;
 	if (srcName == UnitName("player")) then
 		self:DamageDoneTo(dstName, amount);
 	elseif (dstName == UnitName("player")) then
@@ -413,6 +416,10 @@ function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, dstName, amount)
 end
 
 function VanasKoSPvPDataGatherer:PvPDeath(message, name)
+	if(VanasKoSDataGatherer:IsInBattleground()) then
+		return;
+	end;
+	
 	if (name ~= UnitName("player")) then
 		if (lastDamageTo) then
 			for i=1,#lastDamageTo do

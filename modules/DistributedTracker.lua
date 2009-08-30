@@ -8,8 +8,6 @@ VanasKoSTracker = VanasKoS:NewModule("DistributedTracker", "AceComm-3.0", "AceEv
 
 local VanasKoSTracker = VanasKoSTracker;
 local VanasKoS = VanasKoS;
-local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable();
-local BZR = LibStub("LibBabble-Zone-3.0"):GetReverseLookupTable();
 
 local JOIN_DELAY = 20;
 

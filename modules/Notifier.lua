@@ -482,7 +482,7 @@ function VanasKoSNotifier:Player_Target_Changed(message, data)
 	local name = data and data.name or UnitName("target");
 	local guild = data and data.guild or GetGuildInfo("target");
 	if(self.db.profile.notifyTargetFrame) then
-		if(UnitIsPlayer("target")) then
+--[[		if(UnitIsPlayer("target")) then
 			if(VanasKoS:BooleanIsOnList("PLAYERKOS", name)) then
 				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
 				TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
@@ -501,7 +501,7 @@ function VanasKoSNotifier:Player_Target_Changed(message, data)
 			end
 		else
 			TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
-		end
+		end ]]
 	end
 	self:UpdateReasonFrame(name, guild);
 end

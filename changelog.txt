@@ -2,6 +2,7 @@ Release Changelog for VanasKoS
 
 alpha:
 - Fixed dragon around target frame
+- Updated libraries
 
 4.21:
 - Disabled dragon around target frame due to API change

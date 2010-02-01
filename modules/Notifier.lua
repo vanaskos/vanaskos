@@ -482,26 +482,26 @@ function VanasKoSNotifier:Player_Target_Changed(message, data)
 	local name = data and data.name or UnitName("target");
 	local guild = data and data.guild or GetGuildInfo("target");
 	if(self.db.profile.notifyTargetFrame) then
---[[		if(UnitIsPlayer("target")) then
+		if(UnitIsPlayer("target")) then
 			if(VanasKoS:BooleanIsOnList("PLAYERKOS", name)) then
-				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
-				TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
+				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite");
+				TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha());
 			elseif(VanasKoS:BooleanIsOnList("GUILDKOS", guild)) then
-				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
-				TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
+				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
+				TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha());
 			elseif(VanasKoS:BooleanIsOnList("HATELIST", name)) then
-				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
-				TargetFrameTexture:SetVertexColor(1.0, 0.0, 0.0, TargetFrameTexture:GetAlpha());
+				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
+				TargetFrameTextureFrameTexture:SetVertexColor(1.0, 0.0, 0.0, TargetFrameTextureFrameTexture:GetAlpha());
 			elseif(VanasKoS:BooleanIsOnList("NICELIST", name)) then
-				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
-				TargetFrameTexture:SetVertexColor(0.0, 1.0, 0.0, TargetFrameTexture:GetAlpha());
+				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare");
+				TargetFrameTextureFrameTexture:SetVertexColor(0.0, 1.0, 0.0, TargetFrameTextureFrameTexture:GetAlpha());
 			else
-				TargetFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
-				TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
+				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame");
+				TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha());
 			end
 		else
-			TargetFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTexture:GetAlpha());
-		end ]]
+			TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha());
+		end
 	end
 	self:UpdateReasonFrame(name, guild);
 end

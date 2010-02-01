@@ -1,10 +1,17 @@
 Release Changelog for VanasKoS
 
 alpha:
+- Fixed dragon around target frame
+
+4.21:
+- Disabled dragon around target frame due to API change
+
+4.21 beta:
 - Fixed semi-transparency in KoS GUI texture
 - Made Name/Reason the default KoS view
 - Added an previous view button
 - If a level 10+ player is detected correct level guessing to at least 10+
+- Update for 3.3 patch
 
 4.2 beta:
 - Changed appearance of KoS GUI, allowing for easier sorting, and more compact

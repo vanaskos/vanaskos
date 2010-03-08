@@ -93,6 +93,9 @@ function VanasKoSPortraitContextMenu:OnDisable()
 end
 
 function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
+	-- hack from fyrye to enable context menu for Pitbull4
+	which = string.gsub(which, "PB4_", "")
+
 	if(which ~= "PLAYER" and which ~= "PARTY" and which ~= "RAID_PLAYER" and which ~= "RAID" and which ~= "FRIEND") then
 		return;
 	end

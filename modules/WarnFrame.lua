@@ -205,48 +205,70 @@ local function ShowTooltip(buttonNr)
 	tooltipFrame:Show();
 end
 
+local function SetProperties(self, profile)
+	if(self == nil) then
+		return;
+	end
+
+	self:SetWidth(profile.WARN_FRAME_WIDTH);
+	self:SetHeight(profile.WARN_BUTTONS * profile.WARN_BUTTON_HEIGHT +
+			    profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
+	if(profile.WARN_FRAME_POINT) then
+		self:SetPoint(profile.WARN_FRAME_POINT,
+					"UIParent",
+					profile.WARN_FRAME_ANCHOR,
+					profile.WARN_FRAME_XOFF,
+					profile.WARN_FRAME_XOFF);
+	else
+		self:SetPoint("CENTER");
+	end
+
+	if(profile.WarnFrameBorder) then
+		VanasKoS_WarnFrame:SetBackdrop( {
+			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
+					insets = { left = 5, right = 4, top = 5, bottom = 5 },
+		});
+		self:EnableMouse(true);
+	else
+		VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
+		self:EnableMouse(false);
+	end
+
+	-- set the default backdrop color
+	local r, g, b, a = GetColor("DefaultBGColor");
+	self:SetBackdropColor(r, g, b, a);
+	self:Hide();
+end
+
 local function CreateWarnFrame()
 	if(warnFrame ~= nil) then
 		return;
 	end
 	-- Create the Main Window
 	warnFrame = CreateFrame("Button", "VanasKoS_WarnFrame", UIParent);
-	warnFrame:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
-	warnFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTONS * VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT +
-			    VanasKoSWarnFrame.db.profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
-	warnFrame:SetPoint("CENTER");
 	warnFrame:SetToplevel(true);
 	warnFrame:SetMovable(true);
 	warnFrame:SetFrameStrata("LOW");
-	if(VanasKoSWarnFrame.db.profile.WarnFrameBorder) then
-		VanasKoS_WarnFrame:SetBackdrop( {
-			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
-					insets = { left = 5, right = 4, top = 5, bottom = 5 },
-		});
-		warnFrame:EnableMouse(true);
-	else
-		VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
-		warnFrame:EnableMouse(false);
-	end
-	-- set the default backdrop color
-	local r, g, b, a = GetColor("DefaultBGColor");
-	warnFrame:SetBackdropColor(r, g, b, a);
 
-	-- allow dragging or the window
+	-- allow dragging the window
 	warnFrame:RegisterForDrag("LeftButton");
-	warnFrame:SetScript("OnDragStart",
-							function()
-								if(VanasKoSWarnFrame.db.profile.Locked) then
-									return;
-								end
-								warnFrame:StartMoving();
-							end);
-	warnFrame:SetScript("OnDragStop",
-							function()
-								warnFrame:StopMovingOrSizing();
-							end);
-	warnFrame:Hide();
+	warnFrame:SetScript("OnDragStart", function()
+						if(VanasKoSWarnFrame.db.profile.Locked) then
+							return;
+						end
+						warnFrame:StartMoving();
+					end);
+	warnFrame:SetScript("OnDragStop", function()
+						warnFrame:StopMovingOrSizing();
+						local point, _, anchor, xOff, yOff = warnFrame:GetPoint()
+						VanasKoSWarnFrame.db.profile.WARN_FRAME_POINT = point
+						VanasKoSWarnFrame.db.profile.WARN_FRAME_ANCHOR = anchor
+						VanasKoSWarnFrame.db.profile.WARN_FRAME_XOFF = xOff
+						VanasKoSWarnFrame.db.profile.WARN_FRAME_YOFF = yOff
+					end);
+
+	SetProperties(warnFrame, VanasKoSWarnFrame.db.profile);
 end
 
 local function CreateTooltipFrame()
@@ -571,7 +593,14 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 				name = L["Reset Position"],
 				desc= L["Reset Position"],
 				order = 7,
-				func = function() VanasKoS_WarnFrame:ClearAllPoints(); VanasKoS_WarnFrame:SetPoint("CENTER"); end,
+				func = function()
+					VanasKoS_WarnFrame:ClearAllPoints();
+					VanasKoS_WarnFrame:SetPoint("CENTER");
+					VanasKoSWarnFrame.db.profile.WARN_FRAME_POINT = nil;
+					VanasKoSWarnFrame.db.profile.WARN_FRAME_ANCHOR = nil;
+					VanasKoSWarnFrame.db.profile.WARN_FRAME_XOFF = nil;
+					VanasKoSWarnFrame.db.profile.WARN_FRAME_YOFF = nil;
+				end,
 			},
 			contentHeader = {
 				type = 'header',
@@ -741,10 +770,12 @@ function VanasKoSWarnFrame:OnInitialize()
 	self:RegisterConfiguration();
 	
 	self:SetEnabledState(self.db.profile.Enabled);
+  	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+  	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+  	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 end
 
 function VanasKoSWarnFrame:OnEnable()
-	--CreateWarnFrame();
 	CreateOOCButtons();
 	CreateCombatButtons();
 	CreateTooltipFrame();
@@ -775,6 +806,13 @@ function VanasKoSWarnFrame:OnDisable()
 	
 	self:Update();
 	warnFrame:Hide();
+end
+
+function VanasKoSWarnFrame:RefreshConfig()
+	SetProperties(warnFrame, self.db.profile);
+	CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize);
+	UpdateWarnSize();
+	self:Update()
 end
 
 function VanasKoSWarnFrame:PLAYER_REGEN_ENABLED(event) -- ...

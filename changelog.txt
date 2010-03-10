@@ -3,6 +3,11 @@ Release Changelog for VanasKoS
 alpha:
 - Fixed dragon around target frame
 - Updated libraries
+- Save warning frame position to the database
+- Added support for context menu for pitbull 4
+- Added ability to customize the macro on player name clicks in the warnframe
+- Added option to change the length of time data remains in the warnframe
+- Added options to change text color of the warnframe
 
 4.21:
 - Disabled dragon around target frame due to API change

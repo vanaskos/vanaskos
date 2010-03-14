@@ -133,6 +133,7 @@ function VanasKoSEventMap:POI_OnEnter(frame, id)
 		anchor = "ANCHOR_LEFT";
 	end
 
+	WorldMapPOIFrame.allowBlobTooltip = false;
 	if(frame.trackedPlayer) then
 		WorldMapTooltip:ClearLines();
 		WorldMapTooltip:SetOwner(frame, anchor);
@@ -189,6 +190,7 @@ function VanasKoSEventMap:POI_OnEnter(frame, id)
 end
 
 function VanasKoSEventMap:POI_OnLeave(frame, id)
+	WorldMapPOIFrame.allowBlobTooltip = true;
 	WorldMapTooltip:Hide();
 end
 

@@ -43,25 +43,41 @@ Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 #@end-no-lib-strip@
 
+VanasKoS_Locale.lua
 VanasKoSLocals.lua
 VanasKoS.lua
 
 GUICreate.lua
 VanasKoSGUI.lua
 
+modules\DefaultLists_Locale.lua
 modules\DefaultLists.lua
+modules\PvPDataGatherer_Locale.lua
 modules\PvPDataGatherer.lua
 modules\DataGatherer.lua
+modules\Importer_Locale.lua
 modules\Importer.lua
+modules\ChatNotifier_Locale.lua
 modules\ChatNotifier.lua
+modules\Notifier_Locale.lua
 modules\Notifier.lua
+modules\WarnFrame_Locale.lua
 modules\WarnFrame.lua
+modules\DistributedTracker_Locale.lua
 modules\DistributedTracker.lua
+modules\MinimapButton_Locale.lua
 modules\MinimapButton.lua
+modules\CommandLineHandler_Locale.lua
 modules\CommandLineHandler.lua
+modules\FriendsFrameDocker_Locale.lua
 modules\FriendsFrameDocker.lua
+modules\Synchronizer_Locale.lua
 modules\Synchronizer.lua
+modules\PortraitContextMenu_Locale.lua
 modules\PortraitContextMenu.lua
+modules\LastSeenList_Locale.lua
 modules\LastSeenList.lua
+modules\PvPStats_Locale.lua
 modules\PvPStats.lua
+modules\EventMap_Locale.lua
 modules\EventMap.lua

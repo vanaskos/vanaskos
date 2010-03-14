@@ -127,71 +127,67 @@ function VanasKoSEventMap:POI_OnEnter(frame, id)
 		return
 	end
 
-	local x = WorldMapButton:GetCenter();
 	local anchor = "ANCHOR_RIGHT";
-	if (x < frame.x) then
+	if (WorldMapButton:GetCenter() < frame.x) then
 		anchor = "ANCHOR_LEFT";
 	end
 
-	WorldMapPOIFrame.allowBlobTooltip = false;
+	local tooltip = WorldMapTooltip
+	tooltip:ClearLines();
+	tooltip:SetOwner(frame, anchor);
 	if(frame.trackedPlayer) then
-		WorldMapTooltip:ClearLines();
-		WorldMapTooltip:SetOwner(frame, anchor);
 		local name = frame.playerName;
-		WorldMapTooltip:AddLine(format("Tracking: %s (%s)", name, SecondsToTime(time()-trackedPlayers[name:lower()].lastseen)));
-		WorldMapTooltip:Show();
-		return;
-	end
-	
-	WorldMapTooltip:ClearLines();
-	WorldMapTooltip:SetOwner(frame, anchor);
-	WorldMapTooltip:AddLine(format(L["PvP Encounter"]));
+		tooltip:AddLine(format("Tracking: %s (%s)", name,
+					SecondsToTime(time() - trackedPlayers[name:lower()].lastseen)));
+	else	
+		tooltip:AddLine(format(L["PvP Encounter"]));
 
-	local pvplog = VanasKoS:GetList("PVPLOG");
-	for i, eventIdx in ipairs(frame.event) do
-		local event = pvplog.event[eventIdx];
-		local player = "";
-		if (event.myname) then
-			player = player .. event.myname;
-		end
-		if (event.mylevel) then
-			player = player .. " (" .. event.mylevel .. ")";
-		end
-
-		local playerdata = VanasKoS:GetPlayerData(event.enemyname);
-		local enemy = (playerdata and playerdata.displayname) or string.Capitalize(event.enemyname);
-		local enemyNote = event.enemylevel or "";
-
-		if (playerdata) then
-			enemy = playerdata.displayname or string.Capitalize(event.enemyname);
-			if (playerdata.guild) then
-				enemy = enemy .. " <" .. playerdata.guild .. ">";
+		local pvplog = VanasKoS:GetList("PVPLOG");
+		for i, eventIdx in ipairs(frame.event) do
+			local event = pvplog.event[eventIdx];
+			local player = "";
+			if (event.myname) then
+				player = player .. event.myname;
 			end
-			if (playerdata.race) then
-				enemyNote = enemyNote .. " " .. playerdata.race;
+			if (event.mylevel) then
+				player = player .. " (" .. event.mylevel .. ")";
 			end
-			if (playerdata.class) then
-				enemyNote = enemyNote .. " " .. playerdata.class;
+
+			local playerdata = VanasKoS:GetPlayerData(event.enemyname);
+			local enemy = (playerdata and playerdata.displayname) or string.Capitalize(event.enemyname);
+			local enemyNote = event.enemylevel or "";
+
+			if (playerdata) then
+				enemy = playerdata.displayname or string.Capitalize(event.enemyname);
+				if (playerdata.guild) then
+					enemy = enemy .. " <" .. playerdata.guild .. ">";
+				end
+				if (playerdata.race) then
+					enemyNote = enemyNote .. " " .. playerdata.race;
+				end
+				if (playerdata.class) then
+					enemyNote = enemyNote .. " " .. playerdata.class;
+				end
 			end
-		end
 
-		if (enemyNote ~= "") then
-			enemy = enemy .. " (" .. enemyNote .. ")";
-		end
+			if (enemyNote ~= "") then
+				enemy = enemy .. " (" .. enemyNote .. ")";
+			end
 
-		if (event.type == "loss") then
-			WorldMapTooltip:AddLine(format(L["|cffff0000%s - %s killed by %s|r"], date("%c", event.time), player, enemy));
-		elseif (event.type == "win") then
-			WorldMapTooltip:AddLine(format(L["|cffff0000%s - %s killed %s|r"], date("%c", event.time), player, enemy));
+			if (event.type == "loss") then
+				tooltip:AddLine(format(L["|cffff0000%s - %s killed by %s|r"], date("%c", event.time), player, enemy));
+			elseif (event.type == "win") then
+				tooltip:AddLine(format(L["|cffff0000%s - %s killed %s|r"], date("%c", event.time), player, enemy));
+			end
 		end
 	end
-	
-	WorldMapTooltip:Show();
+	WorldMapPOIFrame.allowBlobTooltip = false;
+	tooltip:Show();
 end
 
 function VanasKoSEventMap:POI_OnLeave(frame, id)
-	WorldMapPOIFrame.allowBlobTooltip = true;
 	WorldMapTooltip:Hide();
+	WorldMapPOIFrame.allowBlobTooltip = true;
 end
 
 function VanasKoSEventMap:CreatePOI(x, y)
@@ -560,9 +556,8 @@ function VanasKoSEventMap:OnInitialize()
 	self.POIList = {};
 	self.POIGrid = {};
 
-	VanasIconFrame = CreateFrame("Frame", "VanasKoSMapDetails", WorldMapDetailFrame);
-	VanasIconFrame:SetAllPoints(WorldMapDetailFrame);
-	VanasIconFrame:SetFrameLevel(WorldMapDetailFrame:GetFrameLevel() - 1);
+	VanasIconFrame = CreateFrame("Frame", "VanasKoSMapDetails", WorldMapButton);
+	VanasIconFrame:SetAllPoints(true);
 
 	self:SetEnabledState(self.db.profile.Enabled);
 end
@@ -582,8 +577,8 @@ function VanasKoSEventMap:ReadjustCamera(...)
 	self.ICONSIZE = 20 * 16 / zoom;
 	]]
 
-	local zoom = WorldMapFrame:GetScale();
-	if (WorldMapFrame:GetScale() < 1) then
+	local zoom = WorldMapDetailFrame:GetScale();
+	if (zoom < 1) then
 		zoom = 1;
 	end
 	self.ICONSIZE = 16 / zoom;

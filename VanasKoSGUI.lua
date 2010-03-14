@@ -30,7 +30,7 @@ VanasKoSConfigOptions = {
 		version = {
 			type = "description",
 			order = 2,
-			name = L["Version: "] .. VANASKOS.VERSION,
+			name = function() return L["Version: "] .. VANASKOS.VERSION end,
 		},
 		performanceheader = {
 			type = "header",

@@ -1,5 +1,7 @@
 -- Definitions based on Locales
 
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS", false);
+
 VANASKOS = { };
 VANASKOS.DEBUG = false;
 --@debug@

@@ -9,6 +9,7 @@ alpha:
 - Added option to change the length of time data remains in the warnframe
 - Added options to change text color of the warnframe
 - Fixed displaying eventmap tooltip (broken by Blizzard's Quest POI changes in 3.3)
+- Separated localization from source
 
 4.21:
 - Disabled dragon around target frame due to API change

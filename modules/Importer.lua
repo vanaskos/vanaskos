@@ -4,7 +4,7 @@ Handles import of other AddOns KoS Data
 ------------------------------------------------------------------------]]
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/Importer", false);
 
-local BC = LibStub("LibBabble-Class-3.0"):GetLookupTable()
+local LCM = LOCALIZED_CLASS_NAMES_MALE;
 local BR = LibStub("LibBabble-Race-3.0"):GetLookupTable()
 
 VanasKoSImporter = VanasKoS:NewModule("Importer", "AceEvent-3.0");
@@ -329,7 +329,7 @@ local SKMZoneTranslate = {
 };
 
 local SKMRaceTranslate = {BR["Dwarf"], BR["Gnome"], BR["Human"], BR["Night Elf"], BR["Orc"], BR["Tauren"], BR["Troll"], BR["Undead"], BR["Draenei"], BR["Blood Elf"]};
-local SKMClassTranslate = {BC["Druid"], BC["Hunter"], BC["Mage"], BC["Paladin"], BC["Priest"], BC["Rogue"], BC["Shaman"], BC["Warrior"], BC["Warlock"]};
+local SKMClassTranslate = {"DRUID", "HUNTER", "MAGE", "PALADIN", "PRIEST", "ROGUE", "SHAMAN", "WARRIOR", "WARLOCK"};
 
 local function SKMGetZoneName(ZoI)
 	if (ZoI ~= nil) then
@@ -432,7 +432,8 @@ local function importSKMapEnemy(player, enemy)
 		local guild = etable["Gu"] or etable["guild"];
 		local level = etable["Lv"] or etable["level"];
 		level = (level ~= -1 and level) or nil;
-		local class = SKMClassTranslate[etable["Cl"] or etable["class"]];
+		local classEnglish = SKMClassTranslate[etable["Cl"] or etable["class"]];
+		local class = LCM[classEnglish]
 		local race = SKMRaceTranslate[etable["Ra"] or etable["race"]];
 		local lastseen = SKMTimeTranslate(etable["lV"] or etable["lastView"]);
 		local zone = etable["zoneName"] or SKMGetZoneName(etable["ZoI"]);

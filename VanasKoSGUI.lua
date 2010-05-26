@@ -748,9 +748,8 @@ function VanasKoSGUI:Update()
 	if(VanasKoSFrame.selectedTab == 1) then
 		VanasKoSFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
 		VanasKoSFrameTopRight:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight");
-		--VanasKoSFrameBottomLeft:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotLeft");
 		VanasKoSFrameBottomLeft:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotLeft");
-		VanasKoSFrameBottomRight:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotRight");
+		VanasKoSFrameBottomRight:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotRight");
 		
 		VanasKoSFrameTitleText:SetText(VANASKOS.NAME .. " - " .. L["Lists"]);
 		self:GUIFrame_ShowSubFrame("VanasKoSListFrame");
@@ -878,12 +877,14 @@ function VanasKoSGUI:SetToggleButtonText(text)
 	VanasKoSListFrameToggleRightButton:SetText(text);
 end
 
-function VanasKoSGUI:HideToggleButtons(text)
+function VanasKoSGUI:HideToggleButtons()
+	VanasKoSListFrameNoTogglePatch:Show();
 	VanasKoSListFrameToggleLeftButton:Hide();
 	VanasKoSListFrameToggleRightButton:Hide();
 end
 
-function VanasKoSGUI:ShowToggleButtons(text)
+function VanasKoSGUI:ShowToggleButtons()
+	VanasKoSListFrameNoTogglePatch:Hide();
 	VanasKoSListFrameToggleLeftButton:Show();
 	VanasKoSListFrameToggleRightButton:Show();
 end

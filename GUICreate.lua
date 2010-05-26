@@ -278,6 +278,17 @@ function VanasKoSGUICreate:CreateListFrame()
 	toggleLButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled");
 	toggleLButton:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD");
 
+	local noToggleFrame = CreateFrame("Frame", "VanasKoSListFrameNoTogglePatch", VanasKoSListFrame);
+	noToggleFrame:SetWidth(256);
+	noToggleFrame:SetHeight(32);
+	noToggleFrame:SetPoint("BOTTOMLEFT", listFrame, "BOTTOMLEFT", 150, 117);
+	local noToggleTexture = noToggleFrame:CreateTexture(nil, "OVERLAY");
+	noToggleTexture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\NoTogglePatch");
+	noToggleTexture:SetWidth(256);
+	noToggleTexture:SetHeight(32);
+	noToggleTexture:SetPoint("TOPLEFT", noToggleFrame);
+	noToggleFrame:Hide();
+
 	local sortButton = CreateFrame("Button", "VanasKoSListFrameSortButton", VanasKoSListFrame, "UIPanelButtonTemplate");
 	sortButton:SetWidth(40);
 	sortButton:SetHeight(17);
@@ -354,14 +365,13 @@ function VanasKoSGUICreate:CreateMainFrame()
 	kosFrameTextureTopRight:SetPoint("TOPRIGHT");
 
 	local kosFrameTextureBottomLeft = kosFrame:CreateTexture("VanasKoSFrameBottomLeft", "ARTWORK");
---	kosFrameTextureBottomLeft:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotLeft");
 	kosFrameTextureBottomLeft:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotLeft");
 	kosFrameTextureBottomLeft:SetWidth(256);
 	kosFrameTextureBottomLeft:SetHeight(256);
 	kosFrameTextureBottomLeft:SetPoint("BOTTOMLEFT");
 
 	local kosFrameTextureBottomRight = kosFrame:CreateTexture("VanasKoSFrameBottomRight", "ARTWORK");
-	kosFrameTextureBottomRight:SetTexture("Interface\\FriendsFrame\\WhoFrame-BotRight");
+	kosFrameTextureBottomRight:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotRight");
 	kosFrameTextureBottomRight:SetWidth(128);
 	kosFrameTextureBottomRight:SetHeight(256);
 	kosFrameTextureBottomRight:SetPoint("BOTTOMRIGHT");

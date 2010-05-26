@@ -98,6 +98,20 @@ function VanasKoSLastSeenList:OnDisable()
 	self:UnregisterAllMessages();
 end
 
+-- FilterFunction as called by VanasKoSGUI - key is the index from the table entry that gets displayed, value the data associated with the index. searchBoxText the text entered in the searchBox
+-- returns true if the entry should be shown, false otherwise
+function VanasKoSLastSeenList:FilterFunction(key, value, searchBoxText)
+	if(searchBoxText == "") then
+		return true;
+	end
+
+	if(key:find(searchBoxText) ~= nil) then
+		return true;
+	end
+
+	return false;
+end
+
 function VanasKoSLastSeenList:AddEntry(list, name, data)
 end
 

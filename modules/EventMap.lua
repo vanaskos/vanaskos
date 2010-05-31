@@ -533,6 +533,7 @@ end
 
 function VanasKoSEventMap:OnEnable()
 	self:RegisterEvent("WORLD_MAP_UPDATE");
+	self:RegisterMessage("VanasKoS_PvPDeath", "PvPDeath");
 	if (Cartographer3) then
 		Cartographer3_Data = Cartographer3.Data;
 		self:RawHook(Cartographer3.Utils, "ReadjustCamera");
@@ -548,4 +549,8 @@ function VanasKoSEventMap:OnDisable()
 		self:Unhook(Cartographer3.Utils, "ReadjustCamera");
 	end
 	self:ClearEventMap();
+end
+
+function VanasKoSEventMap:PvPDeath(message, name)
+	self:RedrawMap();
 end

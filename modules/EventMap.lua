@@ -101,7 +101,7 @@ function VanasKoSEventMap:POI_OnEnter(frame, id)
 			if (event.type == "loss") then
 				tooltip:AddLine(format(L["|cffff0000%s - %s killed by %s|r"], date("%c", event.time), player, enemy));
 			elseif (event.type == "win") then
-				tooltip:AddLine(format(L["|cffff0000%s - %s killed %s|r"], date("%c", event.time), player, enemy));
+				tooltip:AddLine(format(L["|cff00ff00%s - %s killed %s|r"], date("%c", event.time), player, enemy));
 			end
 		end
 	end

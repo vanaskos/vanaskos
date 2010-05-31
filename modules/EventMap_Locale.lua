@@ -6,7 +6,7 @@ Displays PvP Events on World Map
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "enUS", true)
 if L then
 	L["|cffff0000%s - %s killed by %s|r"] = true
-	L["|cffff0000%s - %s killed %s|r"] = true
+	L["|cff00ff00%s - %s killed %s|r"] = true
 	L["Colored dots"] = true
 	L["Dot Options"] = true
 	L["Draw Alts"] = true

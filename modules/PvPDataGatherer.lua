@@ -9,96 +9,6 @@ VanasKoSPvPDataGatherer = VanasKoS:NewModule("PvPDataGatherer", "AceEvent-3.0");
 local VanasKoSPvPDataGatherer = VanasKoSPvPDataGatherer;
 local VanasKoS = VanasKoS;
 
--- sort functions
-
--- sorts by index
-local function SortByIndex(val1, val2)
-	return val1 < val2;
-end
-local function SortByIndexReverse(val1, val2)
-	return val1 > val2
-end
-
--- sorts by most pvp encounters
-local function SortByScore(val1, val2)
-	local list = VanasKoS:GetList("PVPSTATS");
-	if (list) then
-		local cmp1 = list[val1] and ((list[val1].wins or 0) - (list[val1].losses or 0)) or 0;
-		local cmp2 = list[val2] and ((list[val2].wins or 0) - (list[val2].losses or 0)) or 0;
-		return (cmp1 > cmp2);
-	end
-	return false;
-end
-local function SortByScoreReverse(val1, val2)
-	local list = VanasKoS:GetList("PVPSTATS");
-	if (list) then
-		local cmp1 = list[val1] and ((list[val1].wins or 0) - (list[val1].losses or 0)) or 0;
-		local cmp2 = list[val2] and ((list[val2].wins or 0) - (list[val2].losses or 0)) or 0;
-		return (cmp1 < cmp2);
-	end
-	return false;
-end
-
--- sorts by most pvp encounters
-local function SortByEncounters(val1, val2)
-	local list = VanasKoS:GetList("PVPSTATS");
-	if (list ~= nil) then
-		local cmp1 = list[val1] and ((list[val1].wins or 0) + (list[val1].losses or 0)) or 0;
-		local cmp2 = list[val2] and ((list[val2].wins or 0) + (list[val2].losses or 0)) or 0;
-		return (cmp1 > cmp2);
-	end
-	return false;
-end
-local function SortByEncountersReverse(val1, val2)
-	local list = VanasKoS:GetList("PVPSTATS");
-	if (list ~= nil) then
-		local cmp1 = list[val1] and ((list[val1].wins or 0) + (list[val1].losses or 0)) or 0;
-		local cmp2 = list[val2] and ((list[val2].wins or 0) + (list[val2].losses or 0)) or 0;
-		return (cmp1 < cmp2);
-	end
-	return false;
-end
-
--- sort by most wins
-local function SortByWins(val1, val2)
-	local list = VanasKoS:GetList("PVPSTATS");
-	if (list ~= nil) then
-		local cmp1 = list[val1] and list[val1].wins or 0;
-		local cmp2 = list[val2] and list[val2].wins or 0;
-		return (cmp1 > cmp2);
-	end
-	return false;
-end
-local function SortByWinsReverse(val1, val2)
-	local list = VanasKoS:GetList("PVPSTATS");
-	if (list ~= nil) then
-		local cmp1 = list[val1] and list[val1].wins or 0;
-		local cmp2 = list[val2] and list[val2].wins or 0;
-		return (cmp1 < cmp2);
-	end
-	return false;
-end
-
--- sort by most losses
-local function SortByLosses(val1, val2)
-	local list = VanasKoS:GetList("PVPSTATS");
-	if (list ~= nil) then
-		local cmp1 = list[val1] and list[val1].losses or 0;
-		local cmp2 = list[val2] and list[val2].losses or 0;
-		return (cmp1 > cmp2);
-	end
-	return false
-end
-local function SortByLossesReverse(val1, val2)
-	local list = VanasKoS:GetList("PVPSTATS");
-	if (list ~= nil) then
-		local cmp1 = list[val1] and list[val1].losses or 0;
-		local cmp2 = list[val2] and list[val2].losses or 0;
-		return (cmp1 < cmp2);
-	end
-	return false
-end
-
 function VanasKoSPvPDataGatherer:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("PvPDataGatherer", 
 		{
@@ -106,99 +16,38 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 				Enabled = true,
 			},
 			realm = {
+				-- Bug in ace3 prevents moving pvplog from
+				-- realm/pvpstast/pvplog to realm/pvplog
 				pvpstats = {
-					players = {
-						},
 					pvplog = {
-						},
-				},
+					},
+				}
 			}
 		}
 	);
 
-	if(VanasKoSDB.namespaces.PvPDataGatherer.realms) then
-		for k,v in pairs(VanasKoSDB.namespaces.PvPDataGatherer.realms) do
-			if(string.find(k, GetRealmName()) ~= nil) then
-				if(v.pvpstats) then
-					self.db.realm.pvpstats = v.pvpstats;
-					v.pvpstats = nil;
-				end
-			end
-		end
-	end
-	
-	-- import of old data, will be removed in some version in the future
-	--[[if(VanasKoS.db.realm.pvpstats) then
-		self.db.realm.pvpstats = VanasKoS.db.realm.pvpstats;
-		VanasKoS.db.realm.pvpstats = nil;
-	end]]--
-
 	VanasKoSGUI:AddModuleToggle("PvPDataGatherer", L["PvP Data Gathering"]);
 
-	VanasKoS:RegisterList(5, "PVPSTATS", L["PvP Stats"], self);
 	VanasKoS:RegisterList(nil, "PVPLOG", nil, self);
 
-	VanasKoSGUI:RegisterList("PVPSTATS", self);
-
-	-- register sort options for the lists this module provides
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byname", L["by name"], L["sort by name"], SortByIndex, SortByIndexReverse);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byscore", L["by score"], L["sort by most wins to losses"], SortByScore, SortByScoreReverse);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byencounters", L["by encounters"], L["sort by most PVP encounters"], SortByEncounters, SortByEncountersReverse);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bywins", L["by wins"], L["sort by most wins"], SortByWins, SortByWinsReverse);
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bylosses", L["by losses"], L["sort by most losses"], SortByLosses, SortByLossesReverse);
-
-	VanasKoSGUI:SetDefaultSortFunction({"PVPSTATS"}, SortByName);
-	
 	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 function VanasKoSPvPDataGatherer:FilterFunction(key, value, searchBoxText)
-	if(searchBoxText == "") then
-		return true;
-	end
-
-	if(key:find(searchBoxText) ~= nil) then
-		return true;
-	end
-
-	return false;
+	return (searchBoxText == "") or (key:find(searchBoxText) ~= nil)
 end
 
 function VanasKoSPvPDataGatherer:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2, buttonText3, buttonText4, buttonText5, buttonText6)
-	if(list == "PVPSTATS") then
-		local data = VanasKoS:IsOnList("PVPSTATS", key);
-		buttonText1:SetText(string.Capitalize(key));
-		buttonText2:SetText(format("|cff00ff00%d|r", data.wins));
-		buttonText3:SetText(format("|cffff0000%d|r", data.losses));
-		buttonText4:SetText(format("|cffffffff%d|r", data.wins + data.losses));
-		buttonText5:SetText(format("%d", data.wins - data.losses));
-
-		-- Could make the colors slightly change based on score
-		if (data.wins > data.losses) then
-			buttonText5:SetTextColor(0, 1, 0);
-		elseif (data.losses > data.wins) then
-			buttonText5:SetTextColor(1, 0, 0);
-		else
-			buttonText5:SetTextColor(1, 1, 0);
-		end
-		button:Show();
-	end
 end
 
 function VanasKoSPvPDataGatherer:ShowList(list)
-	VanasKoSListFrameChangeButton:Disable();
-	VanasKoSListFrameAddButton:Disable();
 end
 
 function VanasKoSPvPDataGatherer:HideList(list)
-	VanasKoSListFrameChangeButton:Enable();
-	VanasKoSListFrameAddButton:Enable();
 end
 
 function VanasKoSPvPDataGatherer:GetList(list)
-	if(list == "PVPSTATS") then
-		return self.db.realm.pvpstats.players;
-	elseif(list == "PVPLOG") then
+	if(list == "PVPLOG") then
 		return self.db.realm.pvpstats.pvplog;
 	else
 		return nil;
@@ -206,18 +55,7 @@ function VanasKoSPvPDataGatherer:GetList(list)
 end
 
 function VanasKoSPvPDataGatherer:AddEntry(list, name, data)
-	if(list == "PVPSTATS") then
-		local listVar = VanasKoS:GetList("PVPSTATS");
-		if(listVar[name] == nil) then
-			listVar[name] = { ['wins'] = 0, ['losses'] = 0};
-		end
-		if(data.wins) then
-			listVar[name].wins = listVar[name].wins + data.wins;
-		end
-		if(data.losses) then
-			listVar[name].losses = listVar[name].losses + data.losses;
-		end
-	elseif(list == "PVPLOG") then
+	if(list == "PVPLOG") then
 		local pvplog = VanasKoS:GetList("PVPLOG");
 		tinsert(pvplog.event, {['enemyname'] = name,
 					['time'] = data['time'],
@@ -241,79 +79,26 @@ function VanasKoSPvPDataGatherer:AddEntry(list, name, data)
 			pvplog.player[name] = {}
 		end
 		tinsert(pvplog.player[name], #pvplog.event);
-
-		return true;
 	end
 	return true;
 end
 
 function VanasKoSPvPDataGatherer:RemoveEntry(listname, name, guild)
-	if(listname == "PVPLOG") then
-		return;
-	end
-	local list = self:GetList(listname);
-	if(list and list[name]) then
-		list[name] = nil;
-		self:SendMessage("VanasKoS_List_Entry_Removed", listname, name);
-	end
 end
 
 function VanasKoSPvPDataGatherer:IsOnList(list, name)
-	local listVar = self:GetList(list);
-	if(list == "PVPSTATS") then
-		if(listVar[name]) then
-			return listVar[name];
-		else
-			return nil;
-		end
-	else
-		return nil;
-	end
+	return nil;
 end
 
 function VanasKoSPvPDataGatherer:SetupColumns(list)
-	if(list == "PVPSTATS") then
-		if(not self.group or self.group == 1) then
-			VanasKoSGUI:SetNumColumns(5);
-			VanasKoSGUI:SetColumnWidth(1, 103);
-			VanasKoSGUI:SetColumnWidth(2, 40);
-			VanasKoSGUI:SetColumnWidth(3, 40);
-			VanasKoSGUI:SetColumnWidth(4, 40);
-			VanasKoSGUI:SetColumnWidth(5, 40);
-			VanasKoSGUI:SetColumnName(1, L["Name"]);
-			VanasKoSGUI:SetColumnName(2, L["Win"]);
-			VanasKoSGUI:SetColumnName(3, L["Lost"]);
-			VanasKoSGUI:SetColumnName(4, L["PvP"]);
-			VanasKoSGUI:SetColumnName(5, L["Score"]);
-			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
-			VanasKoSGUI:SetColumnSort(2, SortByWins, SortByWinsReverse);
-			VanasKoSGUI:SetColumnSort(3, SortByLosses, SortByLossesReverse);
-			VanasKoSGUI:SetColumnSort(4, SortByEncounters, SortByEncountersReverse);
-			VanasKoSGUI:SetColumnSort(5, SortByScore, SortByScoreReverse);
-			VanasKoSGUI:SetColumnType(1, "normal");
-			VanasKoSGUI:SetColumnType(2, "number");
-			VanasKoSGUI:SetColumnType(3, "number");
-			VanasKoSGUI:SetColumnType(4, "number");
-			VanasKoSGUI:SetColumnType(5, "number");
-			VanasKoSGUI:HideToggleButtons();
-		end
-	end
 end
 
 function VanasKoSPvPDataGatherer:ToggleLeftButtonOnClick(button, frame)
-	local list = VANASKOS.showList;
-	if(list == "PVPSTATS") then
-		self.group = 1
-	end
 	self:SetupColumns(list)
 	VanasKoSGUI:Update();
 end
 
 function VanasKoSPvPDataGatherer:ToggleRightButtonOnClick(button, frame)
-	local list = VANASKOS.showList;
-	if(list == "PVPSTATS") then
-		self.group = 1
-	end
 	self:SetupColumns(list)
 	VanasKoSGUI:Update();
 end
@@ -325,6 +110,9 @@ end
 function VanasKoSPvPDataGatherer:OnEnable()
 	self:RegisterMessage("VanasKoS_PvPDamage", "PvPDamage");
 	self:RegisterMessage("VanasKoS_PvPDeath", "PvPDeath");
+	if(self.db.realm.pvpstats.players) then
+		VanasKoS:Print(L["Old pvp statistics detected. You should import old data by going to importer under VanasKoS configuration"]);
+	end
 end
 
 local lastDamageFrom = nil;
@@ -333,9 +121,6 @@ local lastDamageTo = { };
 
 
 function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, dstName, amount)
-	if(VanasKoSDataGatherer:IsInBattleground()) then
-		return;
-	end;
 	if (srcName == UnitName("player")) then
 		self:DamageDoneTo(dstName, amount);
 	elseif (dstName == UnitName("player")) then
@@ -344,14 +129,11 @@ function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, dstName, amount)
 end
 
 function VanasKoSPvPDataGatherer:PvPDeath(message, name)
-	if(VanasKoSDataGatherer:IsInBattleground()) then
-		return;
-	end;
-	
 	if (name ~= UnitName("player")) then
 		if (lastDamageTo) then
 			for i=1,#lastDamageTo do
 				if(lastDamageTo[i] and lastDamageTo[i][1] == name) then
+					self:SendMessage("VanasKoS_PvPWin", name);
 					self:LogPvPWin(name);
 					tremove(lastDamageTo, i);
 				end
@@ -360,6 +142,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name)
 	else
 		if (lastDamageFromTime ~= nil) then
 			if((time() - lastDamageFromTime) < 5) then
+				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom);
 				self:LogPvPLoss(lastDamageFrom);
 			end
 		end
@@ -395,24 +178,19 @@ function VanasKoSPvPDataGatherer:DamageDoneTo(name)
 	end
 end
 
-local tempStatData = { ['wins'] = 0, ['losses'] = 0 };
-
-
 function VanasKoSPvPDataGatherer:LogPvPLoss(name)
 	if(name == nil) then
 		return;
 	end
-	if(VanasKoSDataGatherer:IsInBattleground()) then
-		return;
-	end
 
 	VanasKoS:Print(format(L["PvP Loss versus %s registered."], name));
+
 	name = name:lower();
 
-	tempStatData.wins = 0;
-	tempStatData.losses = 1;
-	VanasKoS:AddEntry("PVPSTATS", name, tempStatData);
-
+	-- Should be ok to call set current zone here, pvp losses don't
+	-- happen *that* often, and when they do you probably shouldn't have
+	-- been staring at your map anyway...
+	SetMapToCurrentZone();
 	local posX, posY = GetPlayerMapPosition("player");
 	local data = VanasKoS:GetPlayerData(name);
 	local zone = GetRealZoneText();
@@ -431,20 +209,14 @@ function VanasKoSPvPDataGatherer:LogPvPWin(name)
 	if(name == nil) then
 		return;
 	end
-	if(VanasKoSDataGatherer:IsInBattleground()) then
-		return;
-	end
 
 	VanasKoS:Print(format(L["PvP Win versus %s registered."], name));
 
 	name = name:lower();
 
-	local list = VanasKoS:GetList("PVPSTATS");
-
-	tempStatData.wins = 1;
-	tempStatData.losses = 0;
-	VanasKoS:AddEntry("PVPSTATS", name, tempStatData);
-
+	-- Same as losses, but it should be even more rare that you can win in
+	-- pvp while staring at the map, so shouldn't be a problem
+	SetMapToCurrentZone();
 	local posX, posY = GetPlayerMapPosition("player");
 	local data = VanasKoS:GetPlayerData(name);
 	local zone = GetRealZoneText();

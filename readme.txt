@@ -5,6 +5,17 @@ Description:
 
 Vanas KoS is a Kill-on-Sight notifier, that uses every possibility, to detect near KoS targets, and notifies the User in different ways. Additionally it records PvP-Stats in outdoor PvP and shows these in the tooltip (configurable).
 
+License:
+VanasKoS is mostly licensed under the Creative Commons 
+Attribution-NonCommercial-ShareAlike 2.5 License.
+Note:
+Soundfiles/Graphics/Libraries used may be licensed differently.
+These sounds are from from www.freesound.org under Creative Commons Sampling
+Plus 1.0 Licenes:
+extreme alarm modified version of a sound by sirplus (sound 25032)
+hell bell is by DJ Chronos (sound 45137)
+glockenspiel is by cfork (sound 26875)
+
 Features:
 * KoS List for Players and Guilds
 * Goodlist
@@ -55,4 +66,4 @@ so you can get your revenge.
 If you have Cartographer installed, you'll be additionally asked if you want to create a Mapnote at the received location.
 
 credits:
-Ace2, Parser-3.0, Babble-Zone-2.2, Dewdrop-2.0, DeuceLog, Tourist-2.0
+Ace3

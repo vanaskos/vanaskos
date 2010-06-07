@@ -33,6 +33,8 @@ local dataCache = nil;
 local buttonData = nil;
 
 local timer = nil;
+local currentButtonCount = 0;
+local CursorPosition, gsub, strfind = CursorPosition, gsub, strfind
 
 local function GetColor(which)
 	return VanasKoSWarnFrame.db.profile[which .. "R"], VanasKoSWarnFrame.db.profile[which .. "G"], VanasKoSWarnFrame.db.profile[which .. "B"], VanasKoSWarnFrame.db.profile[which .. "A"];
@@ -148,6 +150,26 @@ local function GetTooltipText(name, data)
 	return result;
 end
 
+local function UpdateTooltipPosition()
+	if(not VanasKoSWarnFrame.db.profile.ShowMouseOverInfos) then
+		if(tooltipFrame:IsVisible()) then
+			tooltipFrame:Hide();
+		end
+		return;
+	end
+
+	tooltipFrame:ClearAllPoints();
+
+	local x, y = GetCursorPosition(); -- gets coordinates based on WorldFrame position
+	local scale = UIParent:GetEffectiveScale();
+
+	if(WorldFrame:GetRight() < (x + (tooltipFrame:GetTextWidth()+10)*scale)) then
+		tooltipFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMLEFT", x/scale, y/scale + 5);
+	else
+		tooltipFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x/scale, y/scale + 5);
+	end
+end
+
 local function ShowTooltip(buttonNr)
 	if(not VanasKoSWarnFrame.db.profile.ShowMouseOverInfos) then
 		if(tooltipFrame:IsVisible()) then
@@ -159,16 +181,7 @@ local function ShowTooltip(buttonNr)
 	local name = buttonData[buttonNr];
 	tooltipFrame:SetText(GetTooltipText(name), dataCache[name]);
 
-	tooltipFrame:ClearAllPoints();
-
-	local x, y = GetCursorPosition(); -- gets coordinates based on WorldFrame position
-	local scale = UIParent:GetEffectiveScale();
-
-	if(WorldFrame:GetRight() < (x + (tooltipFrame:GetTextWidth()+10)*scale)) then
-		tooltipFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMLEFT", x/scale, y/scale);
-	else
-		tooltipFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x/scale, y/scale);
-	end
+	UpdateTooltipPosition();
 
 	tooltipFrame:SetWidth(tooltipFrame:GetTextWidth()+10);
 	tooltipFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_TOOLTIP_HEIGHT);
@@ -185,6 +198,7 @@ local function SetProperties(self, profile)
 	self:SetHeight(profile.WARN_BUTTONS * profile.WARN_BUTTON_HEIGHT +
 			    profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
 	if(profile.WARN_FRAME_POINT) then
+		VanasKoS_WarnFrame:ClearAllPoints();
 		self:SetPoint(profile.WARN_FRAME_POINT,
 					"UIParent",
 					profile.WARN_FRAME_ANCHOR,
@@ -389,7 +403,8 @@ local function CreateClassIcons()
 
 		warnButton:SetScript("OnEnter", function() ShowTooltip(i); end);
 		warnButton:SetScript("OnLeave", function() tooltipFrame:Hide(); end);
-		if (i <= VanasKoSWarnFrame.db.profile.WARN_BUTTONS) then
+		warnButton:SetScript("OnUpdate", function() UpdateTooltipPosition(); end);
+		if (i <= currentButtonCount) then
 			warnButton:Show();
 		else
 			warnButton:Hide();
@@ -466,9 +481,37 @@ local function ShowWarnFrame()
 end
 
 local function UpdateWarnSize()
+	currentButtonCount = VanasKoSWarnFrame.db.profile.WARN_BUTTONS;
+	if(VanasKoSWarnFrame.db.profile.DynamicResize) then
+		currentButtonCount = nearbyKoSCount + nearbyEnemyCount + nearbyFriendlyCount + 1;
+		if(currentButtonCount > VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX) then
+			currentButtonCount = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX;
+		end
+	end
+	local point, _, anchor, xOff, yOff = warnFrame:GetPoint();
+	local oldH = warnFrame:GetHeight();
 	warnFrame:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
-	warnFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTONS * VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT +
-				VanasKoSWarnFrame.db.profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
+	local h = currentButtonCount * VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT +
+				VanasKoSWarnFrame.db.profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1;
+	warnFrame:SetHeight(h);
+	if(VanasKoSWarnFrame.db.profile.GrowUp) then
+		if (point == "TOPRIGHT" or point == "TOP" or point == "TOPLEFT") then
+			warnFrame:ClearAllPoints();
+			warnFrame:SetPoint(point, "UIParent", anchor, xOff, yOff + h - oldH);
+
+		elseif (point == "RIGHT" or point == "CENTER" or point == "LEFT") then
+			warnFrame:ClearAllPoints();
+			warnFrame:SetPoint(point, "UIParent", anchor, xOff, yOff + (h - oldH) / 2);
+		end
+	else
+		if (point == "BOTTOMRIGHT" or point == "BOTTOM" or point == "BOTTOMLEFT") then
+			warnFrame:ClearAllPoints();
+			warnFrame:SetPoint(point, "UIParent", anchor, xOff, yOff - h + oldH);
+		elseif (point == "RIGHT" or point == "CENTER" or point == "LEFT") then
+			warnFrame:ClearAllPoints();
+			warnFrame:SetPoint(point, "UIParent", anchor, xOff, yOff - (h - oldH) / 2);
+		end
+	end
 	for i=1, VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
 		warnButtonsCombat[i]:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
 		warnButtonsCombat[i]:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
@@ -476,7 +519,7 @@ local function UpdateWarnSize()
 		warnButtonsOOC[i]:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
 		classIcons[i][1]:SetWidth(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
 		classIcons[i][1]:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
-		if (i > VanasKoSWarnFrame.db.profile.WARN_BUTTONS) then
+		if (i > currentButtonCount) then
 			HideButton(i);
 		end
 	end
@@ -532,17 +575,33 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 				name = L["Grow list upwards"],
 				desc = L["Grow list from the bottom of the WarnFrame"],
 				order = 4,
-				get = function () return VanasKoSWarnFrame.db.profile.GrowUp; end,
-				set = function (frame, v)
+				get = function() return VanasKoSWarnFrame.db.profile.GrowUp; end,
+				set = function(frame, v)
 					VanasKoSWarnFrame.db.profile.GrowUp = v;
 					VanasKoSWarnFrame:Update();
 				end,
+			},
+			hideInBattleground = {
+				type = 'toggle',
+				name = L["Hide in battleground"],
+				desc = L["Hide in battlegrounds and pvp zones"],
+				order = 5,
+				get = function() return VanasKoSWarnFrame.db.profile.hideInBg; end,
+				set = function(frame, v) VanasKoSWarnFrame.db.profile.hideInBg = v; end
+			},
+			hideInInstance = {
+				type = 'toggle',
+				name = L["Hide in dungeon"],
+				desc = L["Hide in dungeon instances"],
+				order = 6,
+				get = function() return VanasKoSWarnFrame.db.profile.hideInInstance; end,
+				set = function(frame, v) VanasKoSWarnFrame.db.profile.hideInInstance = v; end
 			},
 			reset = {
 				type = 'execute',
 				name = L["Reset Position"],
 				desc= L["Reset Position"],
-				order = 5,
+				order = 7,
 				func = function()
 					VanasKoS_WarnFrame:ClearAllPoints();
 					VanasKoS_WarnFrame:SetPoint("CENTER");
@@ -556,7 +615,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 				type = 'group',
 				name = L["Content"],
 				desc = L["What to show in the warning window"],
-				order = 6,
+				order = 8,
 				args = {
 					setLines = {
 						type = 'range',
@@ -574,11 +633,19 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						step = 1,
 						isPercent = false,
 					},
+					dynamicResize = {
+						type = 'toggle',
+						name = L["Dynamic resize"],
+						desc = L["Sets number of entries to display in the WarnFrame based on nearby player count"],
+						order = 2,
+						get = function() return VanasKoSWarnFrame.db.profile.DynamicResize; end,
+						set = function(frame, v) VanasKoSWarnFrame.db.profile.DynamicResize = v; end
+					},
 					contentShowLevel = {
 						type = 'toggle',
 						name = L["Show Target Level When Possible"],
 						desc = L["Show Target Level When Possible"],
-						order = 2,
+						order = 3,
 						get = function() return VanasKoSWarnFrame.db.profile.ShowTargetLevel; end,
 						set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowTargetLevel = v; VanasKoSWarnFrame:Update(); end
 					},
@@ -586,7 +653,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						type = 'toggle',
 						name = L["Show KoS Targets"],
 						desc = L["Show KoS Targets"],
-						order = 3,
+						order = 4,
 						get = function() return VanasKoSWarnFrame.db.profile.ShowKoS; end,
 						set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowKoS = v; VanasKoSWarnFrame:Update(); end
 					},
@@ -594,7 +661,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						type = 'toggle',
 						name = L["Show Hostile Targets"],
 						desc = L["Show Hostile Targets"],
-						order = 4,
+						order = 5,
 						get = function() return VanasKoSWarnFrame.db.profile.ShowHostile; end,
 						set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowHostile = v; VanasKoSWarnFrame:Update(); end
 					},
@@ -602,7 +669,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						type = 'toggle',
 						name = L["Show Friendly Targets"],
 						desc = L["Show Friendly Targets"],
-						order = 5,
+						order = 6,
 						get = function() return VanasKoSWarnFrame.db.profile.ShowFriendly; end,
 						set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowFriendly = v; VanasKoSWarnFrame:Update(); end
 					},
@@ -610,7 +677,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						type = 'toggle',
 						name = L["Show additional Information on Mouse Over"],
 						desc = L["Toggles the display of additional Information on Mouse Over"],
-						order = 6,
+						order = 7,
 						get = function() return VanasKoSWarnFrame.db.profile.ShowMouseOverInfos; end,
 						set = function(frame, v) VanasKoSWarnFrame.db.profile.ShowMouseOverInfos = v; VanasKoSWarnFrame:Update(); end
 					},
@@ -618,12 +685,12 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						type = 'toggle',
 						name = L["Show class icons"],
 						desc = L["Toggles the display of Class icons in the Warnframe"],
-						order = 7,
+						order = 8,
 						get = function() return VanasKoSWarnFrame.db.profile.ShowClassIcons; end,
 						set = function(frame, v)
 							VanasKoSWarnFrame.db.profile.ShowClassIcons = v;
 							VanasKoSWarnFrame:Update();
-							for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS do
+							for i=1,currentButtonCount do
 								setButtonClassIcon(i, nil);
 							end
 						end
@@ -634,7 +701,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 				type = 'group',
 				name = L["Design"],
 				desc = L["Controls the design of the warning window"],
-				order = 7,
+				order = 9,
 				args = {
 					fontSize = {
 						type = 'range',
@@ -854,7 +921,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 				type = 'group',
 				name = L["Macro"],
 				desc = L["Macro to execute on click"],
-				order = 8,
+				order = 10,
 				args = {
 					macroInfo = {
 						type = 'description',
@@ -959,7 +1026,7 @@ function VanasKoSWarnFrame:OnInitialize()
 			WARN_BUTTON_HEIGHT = 16;
 			WARN_BUTTONS = 5;
 
-			WARN_BUTTONS_MAX = 20;
+			WARN_BUTTONS_MAX = 40;
 
 			MacroText = "/targetexact ${name}";
 		}
@@ -1126,8 +1193,9 @@ end
 
 local function GetButtonText(name, data)
 	assert(name ~= nil);
-	
-	local result = string.Capitalize(name);
+
+	_, _, player, realm = strfind(name, "([^-]+)[-]?(.*)");
+	local result = string.Capitalize(player);
 
 	local data = VanasKoS:GetPlayerData(name);
 	
@@ -1167,11 +1235,16 @@ local function GetFactionFont(faction)
 end
 
 local function SetButton(buttonNr, name, faction, data)
-	local c = GetCurrentMapContinent();
-	local z = GetCurrentMapZone();
-	SetMapToCurrentZone();
+	-- This screws with the map too much, calling SetMapToCurrentZone is
+	-- required to get good coordinates, but this is simply called to often
+	-- and makes the map unusable in some zones, and makes the map dropdown
+	-- stop working.
+
+	-- local c = GetCurrentMapContinent();
+	-- local z = GetCurrentMapZone();
+	-- SetMapToCurrentZone();
 	local zx, zy = GetPlayerMapPosition("player");
-	SetMapZoom(c, z)
+	-- SetMapZoom(c, z)
 
 	wx, wy = GetPlayerMapPosition
 	if(InCombatLockdown()) then
@@ -1199,19 +1272,22 @@ local function SetButton(buttonNr, name, faction, data)
 			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name), data);
 			warnButtonsOOC[buttonNr]:EnableMouse(true);
 			local macroText = VanasKoSWarnFrame.db.profile.MacroText;
-			macroText = string.gsub(macroText, "${class}", (data and data.class) or "");
-			macroText = string.gsub(macroText, "${classEnglish}", (data and data.classEnglish) or "");
-			macroText = string.gsub(macroText, "${race}", (data and data.race) or "");
-			macroText = string.gsub(macroText, "${guild}", (data and data.guild) or "");
-			macroText = string.gsub(macroText, "${guildRank}", (data and data.guildRank) or "");
-			macroText = string.gsub(macroText, "${level}", (data and data.level) or "");
-			macroText = string.gsub(macroText, "${name}", (data and data.name) or name);
-			macroText = string.gsub(macroText, "${gender}", (data and data.gender) or "");
-			macroText = string.gsub(macroText, "${genderText}", data and (data.gender == 2 and L["male"]) or (data.gender == 3 and L["female"]) or "");
-			macroText = string.gsub(macroText, "${realm}", (data and data.realm) or "");
-			macroText = string.gsub(macroText, "${zoneX}", floor(zx * 100 + 0.5));
-			macroText = string.gsub(macroText, "${zoneY}", floor(zy * 100 + 0.5));
-			macroText = string.gsub(macroText, "${zone}", GetZoneText());
+			_, _, player, realm = strfind(name, "([^-]+)[-]?(.*)");
+			macroText = gsub(macroText, "${class}", (data and data.class) or "");
+			macroText = gsub(macroText, "${classEnglish}", (data and data.classEnglish) or "");
+			macroText = gsub(macroText, "${race}", (data and data.race) or "");
+			macroText = gsub(macroText, "${guild}", (data and data.guild) or "");
+			macroText = gsub(macroText, "${guildRank}", (data and data.guildRank) or "");
+			macroText = gsub(macroText, "${level}", (data and data.level) or "");
+			macroText = gsub(macroText, "${shortname}", player);
+			macroText = gsub(macroText, "${realm}", realm);
+			macroText = gsub(macroText, "${name}", name);
+			macroText = gsub(macroText, "${gender}", (data and data.gender) or "");
+			macroText = gsub(macroText, "${genderText}", data and (data.gender == 2 and L["male"]) or (data.gender == 3 and L["female"]) or "");
+			macroText = gsub(macroText, "${realm}", (data and data.realm) or "");
+			macroText = gsub(macroText, "${zoneX}", floor(zx * 100 + 0.5));
+			macroText = gsub(macroText, "${zoneY}", floor(zy * 100 + 0.5));
+			macroText = gsub(macroText, "${zone}", GetZoneText());
 			warnButtonsOOC[buttonNr]:SetAttribute("macrotext", macroText);
 			warnButtonsOOC[buttonNr]:Show();
 		else
@@ -1223,6 +1299,10 @@ local function SetButton(buttonNr, name, faction, data)
 end
 
 function VanasKoSWarnFrame:Update()
+	if(self.db.profile.DynamicResize) then
+		UpdateWarnSize();
+	end
+
 	-- more hostile
 	if( (nearbyKoSCount+nearbyEnemyCount) > (nearbyFriendlyCount)) then
 		if (nearbyKoSCount > nearbyEnemyCount) then
@@ -1244,12 +1324,12 @@ function VanasKoSWarnFrame:Update()
 
 	local counter = 0;
 	if(self.db.profile.GrowUp) then
-		counter = self.db.profile.WARN_BUTTONS - 1;
+		counter = currentButtonCount - 1;
 	end
 
 	if(self.db.profile.ShowKoS) then
 		for k,v in pairs(nearbyKoS) do
-			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS and counter >= 0) then
+			if(counter < currentButtonCount and counter >= 0) then
 				SetButton(counter+1, k, "kos", dataCache and dataCache[k] or nil);
 				if(self.db.profile.ShowClassIcons) then
 					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
@@ -1266,7 +1346,7 @@ function VanasKoSWarnFrame:Update()
 
 	if(self.db.profile.ShowHostile) then
 		for k,v in pairs(nearbyEnemy) do
-			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS and counter >= 0) then
+			if(counter < currentButtonCount and counter >= 0) then
 				SetButton(counter+1, k, "enemy", dataCache and dataCache[k] or nil);
 				if(self.db.profile.ShowClassIcons) then
 					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
@@ -1283,7 +1363,7 @@ function VanasKoSWarnFrame:Update()
 
 	if(self.db.profile.ShowFriendly) then
 		for k,v in pairs(nearbyFriendly) do
-			if(counter < VanasKoSWarnFrame.db.profile.WARN_BUTTONS and counter >= 0) then
+			if(counter < currentButtonCount and counter >= 0) then
 				SetButton(counter+1, k, "friendly", dataCache and dataCache[k] or nil);
 				if(self.db.profile.ShowClassIcons) then
 					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
@@ -1298,17 +1378,32 @@ function VanasKoSWarnFrame:Update()
 		end
 	end
 
-	for i=0,self.db.profile.WARN_BUTTONS-1 do
+	for i=0,currentButtonCount-1 do
 		if ((i <= counter and self.db.profile.GrowUp == true) or
 			(i >= counter and self.db.profile.GrowUp == false)) then
 			HideButton(i+1);
 		end
 	end
 
+	if(self.db.profile.hideInBg and VanasKoSDataGatherer:IsInBattleground()) then
+		HideWarnFrame();
+		return;
+	end
+
+	if(self.db.profile.hideInInstance) then
+		local inInstance, instanceType = IsInInstance();
+		if (inInstance) then
+			if (instanceType == "party" or instanceType == "raid") then
+				HideWarnFrame();
+				return;
+			end
+		end
+	end
+
 	-- show or hide/fade frame according to settings
 	if(self.db.profile.Enabled) then
 		if(self.db.profile.HideIfInactive) then
-			if((counter > 0 and self.db.profile.GrowUp == false) or (counter < (self.db.profile.WARN_BUTTONS - 1) and self.db.profile.GrowUp == true)) then
+			if((counter > 0 and self.db.profile.GrowUp == false) or (counter < (currentButtonCount - 1) and self.db.profile.GrowUp == true)) then
 				ShowWarnFrame();
 			else
 				HideWarnFrame();

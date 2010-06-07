@@ -1,21 +1,20 @@
-Certain variables are provided and can be substituted. If the data is not
-available it disappears from the macro. So if you want to test for the
-existance you should surround the variable in quotes eg "{class}" ~= ""
-
-Substitution list:
-${class} => localized class name
-${classEnglish} => english class name
-${race} => race
-${guild} => guild
-${guildRank} => guild Rank
-${level} => level
+Some variables are provided for substitution:
+${class} => localized class name (*)
+${classEnglish} => english class name (*)
+${race} => race (*)
+${guild} => guild (*)
+${guildRank} => guild Rank (*)
+${level} => level (*)
 ${name} => name
-${gender} => gender (this is a number, check the wow api)
-${genderText} => localized gender string
-${realm} => realm
+${gender} => gender (this is a number, check the wow api) (*)
+${genderText} => localized gender string (*)
+${realm} => realm (*)
 ${zoneX} => player coordinate at time of detection
 ${zoneY} => player coordinate at time of detection
 ${zone} => player zone at time of detection
+
+(*) The data may not be available, it disappears from the macro. You
+can test for the existance of the variable like this eg "{class}" ~= ""
 
 Below is an example of a macro that:
 Left-click:  Targets hostile units (should go back to last target if friendly)
@@ -25,7 +24,7 @@ Right-click: if hostile casts the spell "Hunter's Mark"
 
 Macro Text:
 /targetexact [button:1] ${name}
-/run if SecureCmdOptionParse("[mod:ctrl, harm]") then SendChatMessage(format("Detected %s%s%s%s%s%s%s in %s at (%d,%d)", "${name}", ("${realm}" ~= "") and "- ${realm}" or "", ("${guild}" ~= "") and " <${guild}>" or "", ("${level}" ~= "") and " Level ${level}", ("${genderText}" ~= "") and " ${genderText}" or "", ("${race}" ~= "") and " ${race}" or "", ("${class}" ~= "") and " ${class}" or "", "${zone}", ${zoneX}, ${zoneY}), "WHISPER", nil, GetUnitName("player")) end
+/run if SecureCmdOptionParse("[mod:ctrl, harm]") then SendChatMessage(format("Detected %s%s%s%s%s%s%s in %s at (%d,%d)", "${name}", ("${realm}" ~= "") and "- ${realm}" or "", ("${guild}" ~= "") and " <${guild}>" or "", ("${level}" ~= "") and " Level ${level}" or "", ("${genderText}" ~= "") and " ${genderText}" or "", ("${race}" ~= "") and " ${race}" or "", ("${class}" ~= "") and " ${class}" or "", "${zone}", ${zoneX}, ${zoneY}), "WHISPER", nil, GetUnitName("player")) end
 /run if SecureCmdOptionParse("[mod:ctrl, help]") then SendWho("${name}") end
 /targetlasttarget [help]
 /cast [harm,button:2] Hunter's Mark

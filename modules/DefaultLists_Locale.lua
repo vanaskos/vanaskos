@@ -58,6 +58,7 @@ if L then
 	L["[%s] %s (%s) - Reason: %s"] = true
 	L["Wanted"] = true
 	L["Player Info"] = true
+	L["Old list entries detected. You should import old data by going to importer under VanasKoS configuration"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "frFR")

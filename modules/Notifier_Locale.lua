@@ -34,6 +34,22 @@ if L then
 	L["%sHatelist: %s"]    = "|cffff00ff%s's|r Hatelist: %s"
 	L["%sNicelist: %s"]    = "|cffff00ff%s's|r Nicelist: %s"
 	L["%sWanted: %s"]      = "|cffff00ff%s's|r Wanted: %s"
+
+	L["Hated player \"%s\" (%s) is in your party"] = true
+	L["Nice player \"%s\" (%s) is in your party"] = true
+	L["Hated player \"%s\" (%s) is in your raid"] = true
+	L["Nice player \"%s\" (%s) is in your raid"] = true
+	L["Hated player sound"] = true
+	L["Sound when a hated player joins your raid or party"] = true
+	L["Nice player sound"] = true
+	L["Sound when a nice player joins your raid or party"] = true
+	
+	L["Party notification"] = true
+	L["Notify when a player in hate list or nice list joins your party"] = true
+	L["Friend list"] = true
+	L["Colors players in friend list based on hated/nice status"] = true
+	L["Ignore list"] = true
+	L["Colors players in ignore list based on hated/nice status"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Notifier", "frFR")

@@ -135,7 +135,10 @@ function VanasKoSTracker:SendSeenPeople()
 	if(count == 0) then
 		return;
 	end
-	
+
+	-- Hopefully they are looking at the correct zone on the map, we could
+	-- call SetMapToCurrentZone(), but it would make people angry if called
+	-- it often
 	local mapAndZone = GetCurrentMapContinent() * 1000 + GetCurrentMapZone();
 	if(mapAndZone <= 0 or mapAndZone >= 5000) then
 		return; -- todo: implement

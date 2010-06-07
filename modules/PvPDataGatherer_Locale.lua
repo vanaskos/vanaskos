@@ -25,6 +25,7 @@ if L then
 	L["by name"] = true
 	L["sort by name"] = true
 	L["wins: |cff00ff00%d|r - losses: |cffff0000%d|r"] = true
+	L["Old pvp statistics detected. You should import old data by going to importer under VanasKoS configuration"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "frFR")

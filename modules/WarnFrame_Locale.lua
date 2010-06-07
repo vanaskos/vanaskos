@@ -18,6 +18,10 @@ if L then
 	L["Grow list from the bottom of the WarnFrame"] = true
 	L["Grow list upwards"] = true
 	L["Hide if inactive"] = true
+	L["Hide in battleground"] = true
+	L["Hide in battlegrounds and pvp zones"] = true
+	L["Hide in dungeon"] = true
+	L["Hide in dungeon instances"] = true
 	L["Hostile"] = true
 	L["How friendly content is shown"] = true
 	L["How hostile content is shown"] = true
@@ -36,6 +40,8 @@ if L then
 	L["Neutral"] = true
 	L["No Information Available"] = true
 	L["Number of lines"] = true
+	L["Dynamic resize"] = true
+	L["Sets number of entries to display in the WarnFrame based on nearby player count"] = true
 	L["Remove delay"] = true
 	L["Reset"] = true
 	L["Reset macro to default"] = true

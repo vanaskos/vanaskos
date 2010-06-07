@@ -179,7 +179,7 @@ end
 function VanasKoSDefaultLists:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("DefaultLists", 
 					{
-						realm = {
+						factionrealm = {
 							koslist = {
 								players = {
 								},
@@ -199,39 +199,6 @@ function VanasKoSDefaultLists:OnInitialize()
 							ShowOnlyMyEntries = false
 						}
 					});
-
-	-- import of old data, will be removed in some version in the future
---[[	if(VanasKoS.db.realm.koslist) then
-		self.db.realm.koslist = VanasKoS.db.realm.koslist;
-		VanasKoS.db.realm.koslist = nil;
-	end
-	if(VanasKoS.db.realm.hatelist) then
-		self.db.realm.hatelist = VanasKoS.db.realm.hatelist;
-		VanasKoS.db.realm.hatelist = nil;
-	end
-	if(VanasKoS.db.realm.nicelist) then
-		self.db.realm.nicelist = VanasKoS.db.realm.nicelist;
-		VanasKoS.db.realm.nicelist = nil;
-	end ]]
---[[
-	if(VanasKoSDB.namespaces.DefaultLists.realms) then
-		for k,v in pairs(VanasKoSDB.namespaces.DefaultLists.realms) do
-			if(string.find(k, GetRealmName()) ~= nil) then
-				if(v.koslist) then
-					self.db.realm.koslist = v.koslist;
-					v.koslist = nil;
-				end
-				if(v.hatelist) then
-					self.db.realm.hatelist = v.hatelist;
-					v.hatelist = nil;
-				end
-				if(v.nicelist) then
-					self.db.realm.nicelist = v.nicelist;
-					v.nicelist = nil;
-				end
-			end
-		end
-	end]]
 	
 	-- register lists this modules provides at the core
 	VanasKoS:RegisterList(1, "PLAYERKOS", L["Player KoS"], self);
@@ -278,11 +245,21 @@ function VanasKoSDefaultLists:OnInitialize()
 end
 
 function VanasKoSDefaultLists:OnEnable()
+	if(self.db.realm and (self.db.realm.nicelist or self.db.realm.hatelist or self.db.realm.koslist)) then
+		VanasKoS:Print(L["Old list entries detected. You should import old data by going to importer under VanasKoS configuration"]);
+	end
 end
 
 function VanasKoSDefaultLists:OnDisable()
 end
 
+function VanasKoSDefaultLists:ShowList()
+	VanasKoSListFrameCheckBox:Show();
+end
+
+function VanasKoSDefaultLists:HideList()
+	VanasKoSListFrameCheckBox:Hide();
+end
 
 -- FilterFunction as called by VanasKoSGUI - key is the index from the table entry that gets displayed, value the data associated with the index. searchBoxText the text entered in the searchBox
 -- returns true if the entry should be shown, false otherwise
@@ -311,7 +288,7 @@ end
 
 
 function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2, buttonText3, buttonText4, buttonText5, buttonText6)
-	if(list == "PLAYERKOS" or list == "HATELIST" or list == "NICELIST") then
+	if(key and value and (list == "PLAYERKOS" or list == "HATELIST" or list == "NICELIST")) then
 		local data = VanasKoS:GetPlayerData(key);
 		-- name, guildrank, guild, level, race, class, gender, zone, lastseen
 		local owner = "";
@@ -465,21 +442,21 @@ end
 -- don't call this directly, call it via VanasKoS:AddEntry - it expects name to be lower case!
 function VanasKoSDefaultLists:AddEntry(list, name, data)
 	if(list == "PLAYERKOS") then
-		self.db.realm.koslist.players[name] = { ["reason"] = data['reason'], ["created"] = time(), ['creator'] = UnitName("player") };
+		self.db.factionrealm.koslist.players[name] = { ["reason"] = data['reason'], ["created"] = time(), ['creator'] = UnitName("player") };
 	elseif(list == "GUILDKOS") then
-		self.db.realm.koslist.guilds[name] = { ["reason"] = data['reason'], ["created"] = time(), ['creator'] = UnitName("player") };
+		self.db.factionrealm.koslist.guilds[name] = { ["reason"] = data['reason'], ["created"] = time(), ['creator'] = UnitName("player") };
 	elseif(list == "HATELIST") then
 		if(VanasKoS:IsOnList("NICELIST", name)) then
 			self:Print(format(L["Entry %s is already on Nicelist"], name));
 			return;
 		end
-		self.db.realm.hatelist.players[name] = { ["reason"] = data['reason'], ["created"] = time(), ['creator'] = UnitName("player")  };
+		self.db.factionrealm.hatelist.players[name] = { ["reason"] = data['reason'], ["created"] = time(), ['creator'] = UnitName("player")  };
 	elseif(list == "NICELIST") then
 		if(VanasKoS:IsOnList("HATELIST", name)) then
 			self:Print(format(L["Entry %s is already on Hatelist"], name));
 			return;
 		end
-		self.db.realm.nicelist.players[name] = { ["reason"] = data['reason'], ["created"] = time(), ['creator'] = UnitName("player")  };
+		self.db.factionrealm.nicelist.players[name] = { ["reason"] = data['reason'], ["created"] = time(), ['creator'] = UnitName("player")  };
 	end
 
 	self:SendMessage("VanasKoS_List_Entry_Added", list, name, data);
@@ -495,13 +472,13 @@ end
 
 function VanasKoSDefaultLists:GetList(list)
 	if(list == "PLAYERKOS") then
-		return self.db.realm.koslist.players;
+		return self.db.factionrealm.koslist.players;
 	elseif(list == "GUILDKOS") then
-		return self.db.realm.koslist.guilds;
+		return self.db.factionrealm.koslist.guilds;
 	elseif(list == "HATELIST") then
-		return self.db.realm.hatelist.players;
+		return self.db.factionrealm.hatelist.players;
 	elseif(list == "NICELIST") then
-		return self.db.realm.nicelist.players;
+		return self.db.factionrealm.nicelist.players;
 	else
 		return nil;
 	end
@@ -622,9 +599,11 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 		end
 		if(pdatalist['level'] and pdatalist['race'] and pdatalist['class']) then
 			tooltip:AddLine(format(L['Level %s %s %s'], pdatalist['level'], pdatalist['race'], pdatalist['class']));
+		elseif(pdatalist['race'] and pdatalist['class']) then
+			tooltip:AddLine(format('%s %s', pdatalist['race'], pdatalist['class']));
 		end
 		if(pdatalist['zone'] and pdatalist['lastseen']) then
-			tooltip:AddLine(format(L['Last seen at |cff00ff00%s|r in |cff00ff00%s|r'], date("%x", pdatalist['lastseen']), pdatalist['zone']));
+			tooltip:AddLine(format(L['Last seen at |cff00ff00%s|r in |cff00ff00%s|r'], date("%c", pdatalist['lastseen']), pdatalist['zone']));
 		end
 	end
 
@@ -639,7 +618,7 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 		end
 
 		if(selectedPlayerData['created']) then
-			tooltip:AddLine(format(L['Created: |cffffffff%s|r'], date("%x", selectedPlayerData['created'])));
+			tooltip:AddLine(format(L['Created: |cffffffff%s|r'], date("%c", selectedPlayerData['created'])));
 		end
 
 		if(selectedPlayerData['sender']) then
@@ -647,7 +626,7 @@ function VanasKoSDefaultLists:UpdateMouseOverFrame()
 		end
 
 		if(selectedPlayerData['lastupdated']) then
-			tooltip:AddLine(format(L['Last updated: |cffffffff%s|r'], date("%x", selectedPlayerData['lastupdated'])));
+			tooltip:AddLine(format(L['Last updated: |cffffffff%s|r'], date("%c", selectedPlayerData['lastupdated'])));
 		end
 	end
 

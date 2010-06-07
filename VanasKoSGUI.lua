@@ -148,12 +148,6 @@ function VanasKoSGUI:OnInitialize()
 	
 	self:AddConfigOption("VanasKoS-Profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(VanasKoS.db));
 	
-	VanasKoSListFrameSortButton:SetScript("OnClick", function()
-			local x, y = GetCursorPosition();
-			local uiScale = UIParent:GetEffectiveScale();
-			EasyMenu(sortButtonOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
-		end);
-	
 	VanasKoSListFrameConfigurationButton:SetScript("OnClick", function() VanasKoSGUI:OpenConfigWindow(); end);
 
 	self:RegisterMessage("VanasKoS_List_Added", "InitializeDropDowns");
@@ -251,19 +245,6 @@ VANASKOS.selectedEntry = nil;
 
 local VANASKOSFRAME_SUBFRAMES = { "VanasKoSListFrame", "VanasKoSAboutFrame" };
 
-function VanasKoSGUI:UpdateSortOptions()
-	if(sortOptions[VANASKOS.showList]) then
-		sortButtonOptions = sortOptions[VANASKOS.showList];
-	else
-		sortButtonOptions = { };
-	end
-	
-end
-
-function VanasKoSGUI:GetSortButtonOptions()
-	return sortButtonOptions;
-end
-
 local shownList = nil;
 local displayedList = nil;
 
@@ -271,7 +252,6 @@ function VanasKoSGUI:ShowList(list)
 	VANASKOS.showList = list;
 	shownList = VanasKoS:GetList(VANASKOS.showList);
 	
-	self:UpdateSortOptions();
 	self:SetSortFunction(defaultSortFunction[list], defaultRevSortFunction[list]);
 end
 
@@ -725,11 +705,16 @@ function VanasKoSGUI:ScrollFrameUpdate()
 end
 
 function VanasKoSGUI:AddEntry()
+	local name, realm = UnitName("target");
 	if(VANASKOS.showList == "GUILDKOS") then
-		VANASKOS.LastNameEntered = GetGuildInfo("target");
-	else
-		VANASKOS.LastNameEntered = UnitName("target");
+		name = GetGuildInfo("target");
 	end
+	if (name and realm and realm ~= "") then
+		VANASKOS.LastNameEntered = name .. "-" .. realm;
+	else
+		VANASKOS.LastNameEntered = name;
+	end
+
 	if(VANASKOS.LastNameEntered) then
 		if(UnitIsPlayer("target")) then
 			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");

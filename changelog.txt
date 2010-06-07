@@ -1,6 +1,17 @@
 Release Changelog for VanasKoS
 
 alpha:
+- Store lists per realm/faction (requires import of old VanasKoS data)
+- Improved pvp statistics (requires import of old VanasKoS data)
+- Added support for cross-server players
+- Show mouseover stats for all players regardless of faction
+- three new sounds
+- Use GetPlayerInfoByGUID when an entry shows up in the combat log
+- Added option to dynamically resize the warning window
+- Added options to hide warning window in battlegrounds and instances
+- Remove "sort" and "pvp stats" buttons
+- Added options to notify when a nice/hated player joins the group
+- Improved background artwork
 - Fixed dragon around target frame
 - Updated libraries
 - Save warning frame position to the database
@@ -9,8 +20,8 @@ alpha:
 - Added option to change the length of time data remains in the warnframe
 - Added options to change text color of the warnframe
 - Fixed displaying eventmap tooltip (broken by Blizzard's Quest POI changes in 3.3)
+- Redraw eventmap when a new death is recorded
 - Separated localization from source
-- Improved background artwork
 - Allow name searches in last seen list
 
 4.21:

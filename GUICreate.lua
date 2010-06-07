@@ -119,7 +119,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	listFrame:SetAllPoints(VanasKoSFrame);
 
 	local chooseListDropDown = CreateFrame("Frame", "VanasKoSFrameChooseListDropDown", VanasKoSListFrame, "UIDropDownMenuTemplate");
-	chooseListDropDown:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPLEFT", 65, -44);
+	chooseListDropDown:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPLEFT", 65, -43);
 	VanasKoSFrameChooseListDropDownButton:SetScript("OnClick", function() ToggleDropDownMenu(1, nil, VanasKoSFrameChooseListDropDown, VanasKoSFrameChooseListDropDown, 15, 10); end);
 	UIDropDownMenu_SetWidth(chooseListDropDown, 100, 15)
 
@@ -288,12 +288,6 @@ function VanasKoSGUICreate:CreateListFrame()
 	noToggleTexture:SetHeight(32);
 	noToggleTexture:SetPoint("TOPLEFT", noToggleFrame);
 	noToggleFrame:Hide();
-
-	local sortButton = CreateFrame("Button", "VanasKoSListFrameSortButton", VanasKoSListFrame, "UIPanelButtonTemplate");
-	sortButton:SetWidth(40);
-	sortButton:SetHeight(17);
-	sortButton:SetPoint("BOTTOMLEFT", listFrame, "BOTTOMLEFT", 20, 126);
-	sortButton:SetText(L["sort"]);
 
 	local scrollFrame = CreateFrame("ScrollFrame", "VanasKoSListScrollFrame", VanasKoSListFrame, "FauxScrollFrameTemplate");
 	scrollFrame:SetWidth(296);

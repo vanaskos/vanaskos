@@ -95,11 +95,7 @@ end
 function VanasKoSImporter:OnDisable()
 end
 
-local function importListSafe(src, dest) 
-	if(not src or not dest) then
-		return;
-	end
-	
+local function importOldList(src, dest) 
 	for k,v in pairs(src) do
 		if(not dest[k]) then
 			dest[k] = src[k];
@@ -108,145 +104,348 @@ local function importListSafe(src, dest)
 	end
 end
 
+local function importVanasDefaultListsPerRealm(realmDB)
+	for k,v in pairs(realmDB) do
+		local allyRealm = "Alliance - " .. string.gsub(string.gsub(k, " [-] Alliance", ""), " [-] Horde", "");
+		local hordeRealm = "Horde - " .. string.gsub(string.gsub(k, " [-] Alliance", ""), " [-] Horde", "");
+
+		if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm]) then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm] = {};
+		end
+		if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm]) then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm] = {};
+		end
+
+		if(v.koslist) then
+			if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].koslist) then
+				VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].koslist = {};
+			end
+			if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].koslist) then
+				VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].koslist = {};
+			end
+
+			if (v.koslist.players) then
+				if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].koslist.players) then
+					VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].koslist.players = {};
+				end
+				if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].koslist.players) then
+					VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].koslist.players = {};
+				end
+				importOldList(v.koslist.players, VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].koslist.players);
+				importOldList(v.koslist.players, VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].koslist.players);
+				v.koslist.players = nil;
+			end
+			if(v.koslist.guilds) then
+				if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].koslist.guilds) then
+					VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].koslist.guilds = {};
+				end
+				if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].koslist.guilds) then
+					VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].koslist.guilds = {};
+				end
+				importOldList(v.koslist.guilds, VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].koslist.guilds);
+				importOldList(v.koslist.guilds, VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].koslist.guilds);
+				v.koslist.guilds = nil;
+			end
+			v.koslist = nil;
+		end
+
+		if(v.hatelist and v.hatelist.players) then
+			if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].hatelist) then
+				VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].hatelist = {};
+			end
+			if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].hatelist.players) then
+				VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].hatelist.players = {};
+			end
+			if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].hatelist) then
+				VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].hatelist = {};
+			end
+			if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].hatelist.players) then
+				VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].hatelist.players = {};
+			end
+			importOldList(v.hatelist.players, VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].hatelist.players);
+			importOldList(v.hatelist.players, VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].hatelist.players);
+			v.hatelist = nil;
+		end
+
+		if(v.nicelist and v.nicelist.players) then
+			if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].nicelist) then
+				VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].nicelist = {};
+			end
+			if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].nicelist.players) then
+				VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].nicelist.players = {};
+			end
+			if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].nicelist) then
+				VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].nicelist = {};
+			end
+			if(not VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].nicelist.players) then
+				VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].nicelist.players = {};
+			end
+			importOldList(v.nicelist.players, VanasKoSDB.namespaces.DefaultLists.factionrealm[allyRealm].nicelist.players);
+			importOldList(v.nicelist.players, VanasKoSDB.namespaces.DefaultLists.factionrealm[hordeRealm].nicelist.players);
+			v.nicelist = nil;
+		end
+	end
+end
+
+function importVanasPvPStats(src)
+	if(not VanasKoSDB.namespaces.PvPStats) then
+		VanasKoSDB.namespaces.PvPStats = {};
+	end
+	if(not VanasKoSDB.namespaces.PvPStats.realm) then
+		VanasKoSDB.namespaces.PvPStats.realm = {};
+	end
+
+	for k,v in pairs(src) do
+		local realm = string.gsub(string.gsub(k, " [-] Alliance", ""), " [-] Horde", "");
+		if(not VanasKoSDB.namespaces.PvPStats.realm[realm]) then
+			VanasKoSDB.namespaces.PvPStats.realm[realm] = {};
+		end
+		if(not VanasKoSDB.namespaces.PvPStats.realm[realm].pvpstats) then
+			VanasKoSDB.namespaces.PvPStats.realm[realm].pvpstats = {};
+		end
+		local pvpstats = VanasKoSDB.namespaces.PvPStats.realm[realm].pvpstats;
+		if(not pvpstats.players) then
+			pvpstats.players = {};
+		end
+		if (v.pvpstats and v.pvpstats.players) then
+			for name, stat in pairs(v.pvpstats.players) do
+				if(not pvpstats.players[name]) then
+					pvpstats.players[name] = {};
+				end
+				if(not pvpstats.players[name].wins) then
+					pvpstats.players[name].wins = 0;
+				end
+				if(not pvpstats.players[name].losses) then
+					pvpstats.players[name].losses = 0;
+				end
+				pvpstats.players[name].wins = pvpstats.players[name].wins + (stat.wins or 0);
+				pvpstats.players[name].losses = pvpstats.players[name].losses + (stat.losses or 0);
+			end
+			v.pvpstats.players = nil;
+		end
+	end
+end
+
 function VanasKoSImporter:FromOldVanasKoS()
-	if(VanasKoSDB.namespaces.DefaultLists.realms) then
-		for k,v in pairs(VanasKoSDB.namespaces.DefaultLists.realms) do
-			if(string.find(k, GetRealmName()) ~= nil) then
-				if(v.koslist and v.koslist.players) then
-					importListSafe(v.koslist.players, VanasKoSDefaultLists.db.realm.koslist.players);
-					v.koslist.players = nil;
-				end
-				if(v.koslist and v.koslist.guilds) then
-					importListSafe(v.koslist.guilds, VanasKoSDefaultLists.db.realm.koslist.guilds);
-					v.koslist.guilds = nil;
-				end
-				v.koslist = nil;
-				if(v.hatelist and v.hatelist.players) then
-					importListSafe(v.hatelist.players, VanasKoSDefaultLists.db.realm.hatelist.players);
-					v.hatelist = nil;
-				end
-				if(v.nicelist and v.nicelist.players) then
-					importListSafe(v.nicelist.players, VanasKoSDefaultLists.db.realm.nicelist.players);
-					v.nicelist = nil;
+	if(not VanasKoSDB and not VanasKoSDB.namespaces) then
+		return
+	end
+
+	if(VanasKoSDB.namespaces.DefaultLists) then
+		if(not VanasKoSDB.namespaces.DefaultLists.factionrealm) then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm = {};
+		end
+
+		if(VanasKoSDB.namespaces.DefaultLists.realms) then
+			importVanasDefaultListsPerRealm(VanasKoSDB.namespaces.DefaultLists.realms);
+			VanasKoSDB.namespaces.DefaultLists.realms = nil;
+		end
+		if(VanasKoSDB.namespaces.DefaultLists.realm) then
+			importVanasDefaultListsPerRealm(VanasKoSDB.namespaces.DefaultLists.realm);
+			VanasKoSDB.namespaces.DefaultLists.realm = nil;
+		end
+	end
+
+	if(VanasKoSDB.namespaces.PvPDataGatherer) then
+		if(VanasKoSDB.namespaces.PvPDataGatherer.realm) then
+			importVanasPvPStats(VanasKoSDB.namespaces.PvPDataGatherer.realm);
+		end
+		if(VanasKoSDB.namespaces.PvPDataGatherer.realms) then
+			importVanasPvPStats(VanasKoSDB.namespaces.PvPDataGatherer.realms);
+			VanasKoSDB.namespaces.PvPDataGatherer.realms = nil;
+		end
+	end
+
+	if(VanasKoSDB.namespaces.DataGatherer and VanasKoSDB.namespaces.DataGatherer.realms) then
+		for k,v in pairs (VanasKoSDB.namespaces.DataGatherer.realms) do
+			local realm = string.gsub(string.gsub(k, " [-] Alliance", ""), " [-] Horde", "");
+			if(not VanasKoSDB.namespaces.DataGatherer.realm) then
+				VanasKoSDB.namespaces.DataGatherer.realm = {};
+			end
+			if(not VanasKoSDB.namespaces.DataGatherer.realm[realm]) then
+				VanasKoSDB.namespaces.DataGatherer.realm[realm] = {};
+			end
+			if(not VanasKoSDB.namespaces.DataGatherer.realm[realm].data) then
+				VanasKoSDB.namespaces.DataGatherer.realm[realm].data = {};
+			end
+			if(not VanasKoSDB.namespaces.DataGatherer.realm[realm].data.players) then
+				VanasKoSDB.namespaces.DataGatherer.realm[realm].data.players = {};
+			end
+			local datalist = VanasKoSDB.namespaces.DataGatherer.realm[realm].data.players;
+
+			if(v.data) then
+				for player, data in pairs(datalist) do
+					if(not datalist[player]) then
+						datalist[player] = data
+					end
 				end
 			end
+			v.players = nil;
 		end
+		VanasKoSDB.namespaces.DataGatherer.realms = nil;
 	end
 end
 
 function VanasKoSImporter:ConvertFromOldVanasKoSList()
-	local koslist = VanasKoS:GetList("PLAYERKOS");
-	local datalist = VanasKoS:GetList("PLAYERDATA");
-	-- split old koslist data to koslist and playerdata
-	for k,v in pairs(koslist) do
-		if(koslist[k].lastseen ~= nil and koslist[k].lastseen ~= -1) then
-			local name = koslist[k].displayname;
-			if(name == nil or name == "") then
-				name = k;
+	if(VanasKoSDB and VanasKoSDB.namespaces and VanasKoSDB.namespaces.DefaultLists and VanasKoSDB.namespaces.DefaultLists.factionrealm) then
+		for k, v in pairs(VanasKoSDB.namespaces.DefaultLists.factionrealm) do
+			local realm = string.gsub(string.gsub(k, "Alliance [-] ", ""), "Horde [-] ", "");
+
+			local koslist  = v.koslist and v.koslist.players or {};
+			local gkoslist = v.koslist and v.koslist.guilds or {};
+			local hatelist = v.hatelist and v.hatelist.players or {};
+			local nicelist = v.nicelist and v.nicelist.players or {};
+			if (not VanasKoSDB.namespaces.DataGatherer) then
+				VanasKoSDB.namespaces.DataGatherer = {};
 			end
-			local level = koslist[k].level;
-			local class = koslist[k].class;
-			local race = koslist[k].race;
-			local lastseen = koslist[k].lastseen;
-			if(lastseen == -1) then
-				lastseen = nil;
+			if (not VanasKoSDB.namespaces.DataGatherer.realm) then
+				VanasKoSDB.namespaces.DataGatherer.realm = {};
+			end
+			if (not VanasKoSDB.namespaces.DataGatherer.realm[realm]) then
+				VanasKoSDB.namespaces.DataGatherer.realm[realm] = {};
+			end
+			if (not VanasKoSDB.namespaces.DataGatherer.realm[realm].data) then
+				VanasKoSDB.namespaces.DataGatherer.realm[realm].data = {};
+			end
+			if (not VanasKoSDB.namespaces.DataGatherer.realm[realm].data.players) then
+				VanasKoSDB.namespaces.DataGatherer.realm[realm].data.players = {};
+			end
+			local datalist = VanasKoSDB.namespaces.DataGatherer.realm[realm].data.players;
+
+			-- split old koslist data to koslist and playerdata
+			for n,data in pairs(koslist) do
+				if(koslist[n].lastseen ~= nil and koslist[n].lastseen ~= -1) then
+					local name = koslist[n].displayname;
+					if(name == nil or name == "") then
+						name = n;
+					end
+					local level = koslist[n].level;
+					local class = koslist[n].class;
+					local race = koslist[n].race;
+					local lastseen = koslist[n].lastseen;
+					if(lastseen == -1) then
+						lastseen = nil;
+					end
+
+					local data = {
+						['name'] = name,
+						['guild'] = nil,
+						['level'] = level,
+						['race'] = race,
+						['class'] = class,
+						['gender'] = 0,
+						['zone'] = nil,
+					};
+
+					local lname = data.name:lower();
+					if(not dataList[lname]) then
+						dataList[lname] = data;
+					end
+					dataList[lname].lastseen = lastseen;
+				end
+				-- delete old entries
+				koslist[n].displayname = nil;
+				koslist[n].level = nil;
+				koslist[n].class = nil;
+				koslist[n].race = nil;
+				koslist[n].lastseen = nil;
 			end
 
-			local data = {
-				['name'] = name,
-				['guild'] = nil,
-				['level'] = level,
-				['race'] = race,
-				['class'] = class,
-				['gender'] = 0,
-				['zone'] = nil
-			};
-
-			self:SendMessage("VanasKoS_Player_Data_Gathered", "PLAYERKOS", data);
-			-- fix lastseen:
-			datalist[k].lastseen = lastseen;
-
-		end
-		-- delete old entries
-		koslist[k].displayname = nil;
-		koslist[k].level = nil;
-		koslist[k].class = nil;
-		koslist[k].race = nil;
-		koslist[k].lastseen = nil;
-	end
-
-	-- convert old foreign entries to the new format
-	local lists = { "PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST" };
-	for index, listname in pairs(lists) do
-		local list = VanasKoS:GetList(listname);
-
-		for k,v in pairs(list) do
-			if(list[k].owner == nil and list[k].creator ~= nil and list[k].sender ~= nil) then
-				list[k].owner = list[k].creator:lower();
-			end
-		end
-	end
-
-	--convert continent/id zone information to zone only and
-	-- upgrade to new format
-	local pvplog = VanasKoS:GetList("PVPLOG");
-	if (not (pvplog.player and pvplog.zone and pvplog.event)) then
-		local playerlog = {};
-		local zonelog = {};
-		local eventlog = {};
-		for player, event in pairs(pvplog) do
-			for timestamp, data in pairs(event) do
-				local zone = data.zone or "UNKNOWN";
-				if (data.zoneid and data.continent) then
-					if (not zoneContinentZoneID[data.continent] or not zoneContinentZoneID[data.continent][data.zoneid]) then
-						VanasKoS:Print("pvplog: Invalid continent:" .. data.continent .. " zoneid:" .. data.zoneid);
-					else
-						zone = zoneContinentZoneID[data.continent][data.zoneid];
+			-- convert old foreign entries to the new format
+			local lists = {koslist, gkoslist, hatelist, nicelist};
+			for index, list in pairs(lists) do
+				for n,data in pairs(list) do
+					if(data.owner == nil) then
+						if(data.creator ~= nil and data.sender ~= nil) then
+							list[n].owner = data.sender:lower();
+						end
 					end
 				end
-				tinsert(eventlog, {['enemyname'] = player,
-							['time'] = timestamp,
-							['myname'] = data['myname'],
-							['mylevel'] = data['mylevel'],
-							['enemylevel'] = data['enemylevel'],
-							['type'] = data['type'],
-							['zone']  = zone,
-							['posX'] = data['posX'],
-							['posY'] = data['posY'],
-						});
-
-				if (not zonelog[zone]) then
-					zonelog[zone] = {};
-				end
-				tinsert(zonelog[zone], #eventlog);
-
-				if (not playerlog[player]) then
-					playerlog[player] = {};
-				end
-				tinsert(playerlog[player], #eventlog);
 			end
 		end
-		wipe(pvplog);
-
-		pvplog.event = eventlog;
-		pvplog.player = playerlog;
-		pvplog.zone = zonelog;
 	end
 
-	--convert continent/id zone information to zone only
-	for player, data in pairs(datalist) do
-		if (data.zoneid and data.continent) then
-			if (not zoneContinentZoneID[data.continent] or not zoneContinentZoneID[data.continent][data.zoneid]) then
-				VanasKoS:Print("playerdata: Invalid continent:" .. data.continent .. " zoneid:" .. data.zoneid);
-				pvplog[player][timestamp].zone = "UNKNOWN";
-			else
-				pvplog[player][timestamp].zone = zoneContinentZoneID[data.continent][data.zoneid];
+	if(VanasKoSDB and VanasKoSDB.namespaces and VanasKoSDB.namespaces.PvPDataGatherer and VanasKoSDB.namespaces.PvPDataGatherer.realm) then
+		for k, v in pairs(VanasKoSDB.namespaces.PvPDataGatherer.realm) do
+			if (not VanasKoSDB.namespaces.DataGatherer) then
+				VanasKoSDB.namespaces.DataGatherer = {};
 			end
-			datalist[player].zoneid = nil;
-			datalist[player].continent = nil;
+			if (not VanasKoSDB.namespaces.DataGatherer.realm) then
+				VanasKoSDB.namespaces.DataGatherer.realm = {};
+			end
+			if (not VanasKoSDB.namespaces.DataGatherer.realm[k]) then
+				VanasKoSDB.namespaces.DataGatherer.realm[k] = {};
+			end
+			if (not VanasKoSDB.namespaces.DataGatherer.realm[k].data) then
+				VanasKoSDB.namespaces.DataGatherer.realm[k].data = {};
+			end
+			if (not VanasKoSDB.namespaces.DataGatherer.realm[k].data.players) then
+				VanasKoSDB.namespaces.DataGatherer.realm[k].data.players = {};
+			end
+			local datalist = VanasKoSDB.namespaces.DataGatherer.realm[k].data.players;
+			local pvplog = v.pvpstats and v.pvpstats.pvplog;
+			--convert continent/id zone information to zone only and
+			-- upgrade to new format
+			if (pvplog and not (pvplog.player and pvplog.zone and pvplog.event)) then
+				local playerlog = {};
+				local zonelog = {};
+				local eventlog = {};
+				for player, event in pairs(v) do
+					for timestamp, data in pairs(event) do
+						local zone = data.zone or "UNKNOWN";
+						if (data.zoneid and data.continent) then
+							if (not zoneContinentZoneID[data.continent] or not zoneContinentZoneID[data.continent][data.zoneid]) then
+								VanasKoS:Print("pvplog: Invalid continent:" .. data.continent .. " zoneid:" .. data.zoneid);
+							else
+								zone = zoneContinentZoneID[data.continent][data.zoneid];
+							end
+						end
+						tinsert(eventlog, {['enemyname'] = player,
+									['time'] = timestamp,
+									['myname'] = data['myname'],
+									['mylevel'] = data['mylevel'],
+									['enemylevel'] = data['enemylevel'],
+									['type'] = data['type'],
+									['zone']  = zone,
+									['posX'] = data['posX'],
+									['posY'] = data['posY'],
+								});
+
+						if (not zonelog[zone]) then
+							zonelog[zone] = {};
+						end
+						tinsert(zonelog[zone], #eventlog);
+
+						if (not playerlog[player]) then
+							playerlog[player] = {};
+						end
+						tinsert(playerlog[player], #eventlog);
+					end
+				end
+				wipe(pvplog);
+
+				pvplog.event = eventlog;
+				pvplog.player = playerlog;
+				pvplog.zone = zonelog;
+			end
+
+			--convert continent/id zone information to zone only
+			for player, data in pairs(datalist) do
+				if (data.zoneid and data.continent) then
+					if (not zoneContinentZoneID[data.continent] or not zoneContinentZoneID[data.continent][data.zoneid]) then
+						VanasKoS:Print("playerdata: Invalid continent:" .. data.continent .. " zoneid:" .. data.zoneid);
+						pvplog[player][timestamp].zone = "UNKNOWN";
+					else
+						pvplog[player][timestamp].zone = zoneContinentZoneID[data.continent][data.zoneid];
+					end
+					datalist[player].zoneid = nil;
+					datalist[player].continent = nil;
+				end
+			end
 		end
 	end
 end
+
 --[[----------------------------------------------------------------------
 	Import Functions
 ------------------------------------------------------------------------]]
@@ -397,15 +596,22 @@ end
 -- returns imported
 local function importSKMapEnemyStats(player, enemy)
 	local etable = assert(SKM_Data[GetRealmName()][player].EnemyHistory[enemy]);
-	local pvpstats = VanasKoS:GetList("PVPSTATS");
+	local pvpstats = VanasKoS:GetList("PVPSTATS", 1);
 	local wins = tonumber(etable["PK"] or etable["playerKill"]) or 0;
+	local bgwins = tonumber(etable["PbK"] or etable["playerBGKill"]) or 0;
 	local losses = tonumber(etable["EKP"] or etable["enemyKillPlayer"]) or 0;
+	local bglosses = tonumber(etable["EKb"] or etable["enemyKillBG"]) or 0;
 	local name = etable["Na"] or etable["name"] or enemy;
 	local lname = name:lower();
 
-	if (wins + losses > 0) then
+	if (wins + losses + bgwins + bglosses > 0) then
 		if (not pvpstats[lname]) then
-			pvpstats[lname] = {['wins'] = wins, ['losses'] = losses};
+			pvpstats[lname] = {
+				['wins'] = wins + bgwins,
+				['losses'] = losses + bglosses,
+				['bgwins'] = bgwins,
+				['bglosses'] = bglosses,
+			};
 		else
 			pvpstats[lname].wins = wins + (pvpstats[lname].wins or 0);
 			pvpstats[lname].losses = losses + (pvpstats[lname].losses or 0);

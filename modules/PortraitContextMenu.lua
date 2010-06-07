@@ -52,30 +52,34 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 	end
 
 	local info = UIDropDownMenu_CreateInfo();
+	local realm = nil;
+	if(unit) then
+		name, realm = UnitName(unit);
+	end
+	if(realm and realm ~= "") then
+		name = name .. "-" .. realm;
+	end
 	for index, value in ipairs(VanasKoSTargetPopupMenu) do
 		info.text = VanasKoSTargetPopupButtons[value].text;
 		info.value = value;
 		info.owner = which;
 		info.func = VanasKoSPortraitContextMenu_UnitPopup_OnClick;
 		info.notCheckable = 1;
-		info.arg1 = {["button"] = value, ["unit"] = unit, ["name"] = name};
+		info.arg1 = {["button"] = value, ["name"] = name};
 		UIDropDownMenu_AddButton(info);
 	end
 end
 
 function VanasKoSPortraitContextMenu_UnitPopup_OnClick(self, info)
-	assert(info);
-	assert(info.button);
-	name = info.name or UnitName(info.unit);
-	assert(name);
+	assert(info and info.button and info.name);
 
 	if(info.button == "VANASKOS_ADD_PLAYERKOS") then
-		VanasKoS:AddEntryByName("PLAYERKOS", name);
+		VanasKoS:AddEntryByName("PLAYERKOS", info.name);
 	elseif(info.button == "VANASKOS_ADD_GUILDKOS") then
-		VanasKoS:AddEntryByName("GUILDKOS", name);
+		VanasKoS:AddEntryByName("GUILDKOS", info.name);
 	elseif(info.button == "VANASKOS_ADD_HATELIST") then
-		VanasKoS:AddEntryByName("HATELIST", name);
+		VanasKoS:AddEntryByName("HATELIST", info.name);
 	elseif(info.button == "VANASKOS_ADD_NICELIST") then
-		VanasKoS:AddEntryByName("NICELIST", name);
+		VanasKoS:AddEntryByName("NICELIST", info.name);
 	end
 end

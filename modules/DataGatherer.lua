@@ -32,12 +32,6 @@ function VanasKoSDataGatherer:OnInitialize()
 			},
 		});
 
-	-- import of old data, will be removed in some version in the future
---[[	if(VanasKoS.db.realm.data) then
-		self.db.realm.data = VanasKoS.db.realm.data;
-		VanasKoS.db.realm.data = nil;
-	end ]]
-
 	VanasKoS:RegisterList(nil, "PLAYERDATA", nil, self);
 	VanasKoS:RegisterList(nil, "GUILDDATA", nil, self);
 	myName = UnitName("player");
@@ -113,7 +107,7 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, even
 		
 		local fOrE = isFriendlyOrEnemy(dstFlags);
 		if(dstName and fOrE) then
-			VanasKoSDataGatherer:SendDataMessage(dstName, fOrE, spellID);
+			VanasKoSDataGatherer:SendDataMessage(dstName, dstGUID, fOrE, spellID);
 			return;
 		end
 	end
@@ -123,14 +117,14 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, even
 	if(srcName ~= nil and srcName ~= myName) then
 		local fOrE = isFriendlyOrEnemy(srcFlags);
 		if(fOrE) then
-			VanasKoSDataGatherer:SendDataMessage(srcName, fOrE, spellID);
+			VanasKoSDataGatherer:SendDataMessage(srcName, srcGUID, fOrE, spellID);
 		end
 	end
 
 	if(dstName ~= nil and dstName ~= myName) then
 		local fOrE = isFriendlyOrEnemy(dstFlags);
 		if(fOrE) then
-			VanasKoSDataGatherer:SendDataMessage(dstName, fOrE, spellID);
+			VanasKoSDataGatherer:SendDataMessage(dstName, dstGUID, fOrE, spellID);
 		end
 	end
 
@@ -182,7 +176,7 @@ function VanasKoSDataGatherer:CleanupPlayerDataDatabase()
 	local pkos = VanasKoS:GetList("PLAYERKOS") or {};
 	local hl = VanasKoS:GetList("HATELIST") or {};
 	local nl = VanasKoS:GetList("NICELIST") or {};
-	local ps = VanasKoS:GetList("PVPSTATS") or {};
+	local ps = VanasKoS:GetList("PVPSTATS", 1) or {};
 	
 	for k, v in pairs(playerDataList) do
 		if(not (pkos[k] or hl[k] or nl[k] or ps[k])) then -- entry isn't in any of these lists.
@@ -249,10 +243,6 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	-- self:PrintLiteral(list, name, guild, level, race, class, gender);
 	assert(data.name ~= nil)
 	
-	if(self:IsInBattleground()) then
-		return;
-	end
-	
 	if(self:IsInSanctuary() and not self.db.profile.GatherInCities) then
 		return;
 	end
@@ -309,9 +299,7 @@ function VanasKoSDataGatherer:UpdateZone()
 	local zone = GetRealZoneText();
 	local gatherEvents;
 
-	if (self:IsInBattleground()) then
-		gatherEvents = false;
-	elseif (self:IsInSanctuary()) then
+	if (self:IsInSanctuary()) then
 		gatherEvents = self.db.profile.EnableInSanctuary;
 	else
 		gatherEvents = true;
@@ -358,8 +346,10 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		if(name == nil) then
 			return false;
 		end
+		if(realm and realm ~= "") then
+			name = name .. "-" .. realm;
+		end
 		gatheredData['name'] = name;
-		gatheredData['realm'] = realm;
 		gatheredData['guild'], gatheredData['guildrank'] = GetGuildInfo(unit);
 		gatheredData['race'] = UnitRace(unit);
 		gatheredData['class'], gatheredData['classEnglish'] = UnitClass(unit);
@@ -376,20 +366,17 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		end
 		gatheredData['level'] = lvl;
 
-		if(gatheredData['realm'] == nil) then
-			gatheredData['list'] = select(2, VanasKoS:IsOnList(nil, gatheredData['name']));
+		gatheredData['list'] = select(2, VanasKoS:IsOnList(nil, gatheredData['name']));
 
-			if(gatheredData['realm'] == nil and 
-				(gatheredData['list'] == "PLAYERKOS" or gatheredData['list'] == "GUILDKOS")) then
-				gatheredData['faction'] = "kos";
-			elseif(UnitExists(unit) and UnitIsEnemy("player", unit)) then
-				gatheredData['faction'] = "enemy";
-			else
-				gatheredData['faction'] = "friendly";
-			end
-
-			self:SendMessage("VanasKoS_Player_Data_Gathered", gatheredData['list'], gatheredData);
+		if((gatheredData['list'] == "PLAYERKOS" or gatheredData['list'] == "GUILDKOS")) then
+			gatheredData['faction'] = "kos";
+		elseif(UnitExists(unit) and UnitIsEnemy("player", unit)) then
+			gatheredData['faction'] = "enemy";
+		else
+			gatheredData['faction'] = "friendly";
 		end
+
+		self:SendMessage("VanasKoS_Player_Data_Gathered", gatheredData['list'], gatheredData);
 
 		return true;
 	end
@@ -417,27 +404,37 @@ end
 
 local LevelGuessLib = LibStub("LibLevelGuess-1.0");
 
-function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
+function VanasKoSDataGatherer:SendDataMessage(name, guid, faction, spellId)
 	local zone = GetRealZoneText();
 	-- dumb fix to hide obviously invalid strings gathered in other localizations then enUS
 	if(name == nil or name:lower() == myName:lower()) then
 		return;
 	end
 	
+	local class, classEnglish, race, raceEnglish, gender = GetPlayerInfoByGUID(guid)
 	gatheredData['name'] = name;
 	gatheredData['faction'] = faction;
 	gatheredData['zone'] = zone;
+	gatheredData['class'] = class;
+	gatheredData['classEnglish'] = classEnglish;
+	gatheredData['race'] = race;
+	gatheredData['raceEnglish'] = raceEnglish;
+	gatheredData['gender'] = gender;
 
 	local lname = name:lower();
+	if(not playerDataList[lname]) then
+		playerDataList[lname] = { };
+	end
+	playerDataList[lname].class = class;
+	playerDataList[lname].classEnglish = classEnglish;
+	playerDataList[lname].race = race;
+	playerDataList[lname].raceEnglish = raceEnglish;
+	playerDataList[lname].gender = gender;
 
 	if(spellId ~= nil and tonumber(spellId)) then
-		local level, classEnglish = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
+		local level, _ = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
 		--print("spellid", spellId, "level", level, "english", classEnglish);
-		if(level ~= nil and classEnglish ~= nil) then
-			if(not playerDataList[lname]) then
-				playerDataList[lname] = { };
-			end
-
+		if(level ~= nil) then
 			local oldLevel = 0;
 			if(playerDataList[lname].level ~= nil) then -- update old level (was lower)
 				if(string.find(playerDataList[lname].level, "+") ~= nil) then
@@ -454,16 +451,11 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 					playerDataList[lname].level = level;
 				end
 			end
-			
-			if(playerDataList[lname].classEnglish and playerDataList[lname].classEnglish ~= classEnglish) then
-				--print("VanasKoS DEBUG: Wrong data gathered: " .. spellId .. " " .. lname .. playerDataList[lname].classEnglish .. " ~= " .. classEnglish .. "  " .. spellName);
-			end
-			playerDataList[lname].classEnglish = classEnglish;
 		end
 	end
 	-- /script VanasKoSDataGatherer:SendDataMessage("name", "enemy", nil);
 	-- /dump VanasKoSDataGatherer.db.realm.data.players['name'];
-	if(not self:IsInBattleground() and playerDataList[lname]) then
+	if(playerDataList[lname]) then
 		gatheredData['level'] =  playerDataList[lname].level;
 		gatheredData['guild'] = playerDataList[lname].guild;
 		gatheredData['guildrank'] = playerDataList[lname].guildrank;
@@ -471,7 +463,6 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 		gatheredData['classEnglish'] = playerDataList[lname].classEnglish;
 		gatheredData['race'] = playerDataList[lname].race;
 		gatheredData['gender'] = playerDataList[lname].gender;
-		gatheredData['realm'] = nil;
 	else
 		gatheredData['level'] =  nil;
 		gatheredData['guild'] = nil;
@@ -480,10 +471,9 @@ function VanasKoSDataGatherer:SendDataMessage(name, faction, spellId)
 		gatheredData['classEnglish'] = nil;
 		gatheredData['race'] = nil;
 		gatheredData['gender'] = nil;
-		gatheredData['realm'] = nil;
 	end
 
-	if(not self:IsInBattleground() and VanasKoS:BooleanIsOnList("PLAYERKOS", name)) then
+	if(VanasKoS:BooleanIsOnList("PLAYERKOS", name)) then
 		gatheredData['faction'] = "kos";
 	end
 

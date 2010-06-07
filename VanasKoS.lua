@@ -110,16 +110,16 @@ function VanasKoS:GetListNameByShortName(shortname)
 	end
 end
 
-function VanasKoS:GetList(list)
+function VanasKoS:GetList(list, group)
 	if(listHandler[list] ~= nil) then
-		return listHandler[list]:GetList(list);
+		return listHandler[list]:GetList(list, group);
 	end
 
 	return nil;
 end
 
 function VanasKoS:GetPlayerData(name)
-	local list = self:GetList("PLAYERDATA");
+	local list = self:GetList("PLAYERDATA", 1);
 	if(name == nil or not list or list[string.lower(name)] == nil) then
 		return nil;
 	end
@@ -128,7 +128,7 @@ function VanasKoS:GetPlayerData(name)
 end
 
 function VanasKoS:GetGuildData(name)
-	local list = self:GetList("GUILDDATA");
+	local list = self:GetList("GUILDDATA", 1);
 	if(name == nil or list == nil or list[name:lower()] == nil) then
 		return nil;
 	end
@@ -136,14 +136,14 @@ function VanasKoS:GetGuildData(name)
 	return list[name:lower()].displayname;
 end
 
-function VanasKoS:BooleanIsOnList(list, name)
+function VanasKoS:BooleanIsOnList(list, name, group)
 	if(not name) then
 		return false;
 	end
 	
 	name = string.trim(name:lower());
 	
-	local list = VanasKoS:GetList(list);
+	local list = VanasKoS:GetList(list, group);
 	
 	if(list and list[name]) then
 		return true;
@@ -153,7 +153,7 @@ function VanasKoS:BooleanIsOnList(list, name)
 end
 
 local ListsToLookInto = { "PLAYERKOS", "NICELIST", "HATELIST", "GUILDKOS" }
-function VanasKoS:IsOnList(list, name)
+function VanasKoS:IsOnList(list, name, group)
 	if(not name) then
 		return nil;
 	end
@@ -166,7 +166,7 @@ function VanasKoS:IsOnList(list, name)
 		end
 	else
 		for k,v in pairs(ListsToLookInto) do
-			local listVar = VanasKoS:GetList(v);
+			local listVar = VanasKoS:GetList(v, group);
 			if(listVar and listVar[name]) then
 				return listVar[name], v;
 			end
@@ -203,6 +203,7 @@ end
 function VanasKoS:AddEntryFromTarget(list, args)
 	local playername = "";
 	local reason = "";
+	local realm = "";
 	if(args == nil) then
 		args = "";
 	end
@@ -210,20 +211,17 @@ function VanasKoS:AddEntryFromTarget(list, args)
 	VANASKOS.showList = list;
 	VanasKoSGUI:ScrollFrameUpdate();
 
-	if(string.find(args, " ")) then
-		playername = string.sub(args, 0, string.find(args, " "));
-		reason = string.sub(args, string.find(args, " ")+1, string.len(args));
-	else
-		playername = args;
-	end
+	_, _, playername, reason = string.find(args, "([^%s]+)%s*([^%s]+)");
 
-	if(UnitIsPlayer("target")) then
+	if(not playername or playername == "" and UnitIsPlayer("target")) then
+		playername, realm = UnitName("target");
 		if(list == "GUILDKOS") then
 			playername = GetGuildInfo("target");
 			reason = "";
-		else
-			playername = UnitName("target");
 		end
+	end
+	if (realm and realm ~= "") then
+		playername = playername .. "-" .. realm;
 	end
 
 	if(playername == "") then
@@ -301,9 +299,10 @@ end
 
 -- resets the database
 function VanasKoS:ResetKoSList(silent)
-	self.db:ResetDB("realm");
+	self.db:ResetDB("factionrealm");
 	if(not silent) then
-		self:Print(format(L["KoS List for Realm \"%s\" now purged."], GetRealmName()));
+		local _, faction = UnitFactionGroup("player");
+		self:Print(format(L["KoS List for Realm \"%s\" - %s now purged."], GetRealmName(), faction));
 	end
 	self:SendMessage("VanasKoS_KoS_Database_Purged", GetRealmName());
 end

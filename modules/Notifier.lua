@@ -351,7 +351,7 @@ function VanasKoSNotifier:OnEnable()
 	self:RegisterMessage("VanasKoS_Player_Target_Changed", "Player_Target_Changed");
 	self:RegisterMessage("VanasKoS_Mob_Target_Changed", "Player_Target_Changed");
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	self:RegisterEvent("GUILD_ROSTER_CHANGED");
+	self:RegisterEvent("RAID_ROSTER_UPDATE");
 	self:SecureHook("FriendsList_Update");
 	self:SecureHook("IgnoreList_Update");
 	for i=1,IGNORES_TO_DISPLAY do
@@ -494,7 +494,7 @@ function VanasKoSNotifier:PARTY_MEMBERS_CHANGED()
 	lastPartyUpdate = newParty;
 end
 
-function VanasKoSNotifier:GUILD_ROSTER_CHANGED()
+function VanasKoSNotifier:RAID_ROSTER_UPDATE()
 	if (self.db.profile.notifyParty ~= true) then
 		return
 	end

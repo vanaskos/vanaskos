@@ -501,7 +501,7 @@ function VanasKoSNotifier:RAID_ROSTER_UPDATE()
 
 	local newParty = {};
 	for i = 1, 40 do
-		if(GetPartyMember(i)) then
+		if(GetRaidRosterInfo(i)) then
 			local name, realm = UnitName("raid" .. i);
 			local guild = GetGuildInfo("raid" .. i);
 			if (realm and realm ~= "") then

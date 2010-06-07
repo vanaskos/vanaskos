@@ -357,6 +357,10 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		gatheredData['zone'] = zone;
 		gatheredData['faction'] = nil;
 
+		if(gatheredData['guild'] and realm and realm ~= "") then
+			gatheredData.guild = gatheredData.guild .. "-" .. realm;
+		end
+
 		local lvl = UnitLevel(unit);
 		if(gatheredData['level'] == -1) then
 			lvl = (UnitLevel("player") or 1) + 10;

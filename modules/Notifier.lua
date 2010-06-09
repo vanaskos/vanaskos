@@ -136,6 +136,7 @@ function VanasKoSNotifier:OnInitialize()
 			notifyOnlyMyTargets = true,
 			notifyEnemyTargets = false,
 			notifyParty = true,
+			notifyRaidBrowser = true,
 			notifyFlashingBorder = true,
 			notifyInShattrathEnabled = false,
 			notifyExtraReasonFrameEnabled = false,
@@ -169,12 +170,13 @@ function VanasKoSNotifier:OnInitialize()
 
 	local configOptions = {
 		type = 'group',
+		childGroups = 'tab',
 		name = L["Notifications"],
 		desc = L["Notifications"],
 		args = {
 			upperarea = {
 				type = 'toggle',
-				name = L["Notification in the Upper Area"],
+				name = L["On-screen"],
 				desc = L["Notification in the Upper Area"],
 				order = 1,
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyVisual = v; end,
@@ -182,7 +184,7 @@ function VanasKoSNotifier:OnInitialize()
 			},
 			chatframe = {
 				type = 'toggle',
-				name = L["Notification in the Chatframe"],
+				name = L["Chat message"],
 				desc = L["Notification in the Chatframe"],
 				order = 2,
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyChatframe = v; end,
@@ -190,7 +192,7 @@ function VanasKoSNotifier:OnInitialize()
 			},
 			targetframe = {
 				type = 'toggle',
-				name = L["Notification through Target Portrait"],
+				name = L["Dragon Portrait"],
 				desc = L["Notification through Target Portrait"],
 				order = 3,
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyTargetFrame = v; end,
@@ -198,25 +200,33 @@ function VanasKoSNotifier:OnInitialize()
 			},
 			flashingborder = {
 				type = 'toggle',
-				name = L["Notification through flashing Border"],
+				name = L["Flashing Border"],
 				desc = L["Notification through flashing Border"],
 				order = 4,
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyFlashingBorder = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyFlashingBorder; end,
 			},
+			raidbrowser = {
+				type = 'toggle',
+				name = L["Raid Browser"],
+				desc = L["Colors players in raid browser based on hated/nice status"],
+				order = 5,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyRaidBrowser = v; end,
+				get = function() return VanasKoSNotifier.db.profile.notifyRaidBrowser; end,
+			},
 			onlymytargets = {
 				type = 'toggle',
-				name = L["Notify only on my KoS-Targets"],
+				name = L["Mine only"],
 				desc = L["Notify only on my KoS-Targets"],
-				order = 5,
+				order = 6,
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyOnlyMyTargets = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyOnlyMyTargets; end,
 			},
 			notifyenemy = {
 				type = 'toggle',
-				name = L["Notify of any enemy target"],
+				name = L["All enemies"],
 				desc = L["Notify of any enemy target"],
-				order = 6,
+				order = 7,
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyEnemyTargets = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyEnemyTargets; end,
 			},
@@ -224,7 +234,7 @@ function VanasKoSNotifier:OnInitialize()
 				type = 'toggle',
 				name = L["Party notification"],
 				desc = L["Notify when a player in hate list or nice list joins your party"],
-				order = 7,
+				order = 8,
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyParty = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyParty; end,
 			},
@@ -232,7 +242,7 @@ function VanasKoSNotifier:OnInitialize()
 				type = 'toggle',
 				name = L["Friend list"],
 				desc = L["Colors players in friend list based on hated/nice status"],
-				order = 7,
+				order = 9,
 				set = function(frame, v) VanasKoSNotifier.db.profile.friendlist = v; end,
 				get = function() return VanasKoSNotifier.db.profile.friendlist; end,
 			},
@@ -240,7 +250,7 @@ function VanasKoSNotifier:OnInitialize()
 				type = 'toggle',
 				name = L["Ignore list"],
 				desc = L["Colors players in ignore list based on hated/nice status"],
-				order = 7,
+				order = 10,
 				set = function(frame, v) VanasKoSNotifier.db.profile.ignorelist = v; end,
 				get = function() return VanasKoSNotifier.db.profile.ignorelist; end,
 			},
@@ -248,96 +258,106 @@ function VanasKoSNotifier:OnInitialize()
 				type = 'toggle',
 				name = L["Notify in Sanctuary"],
 				desc = L["Notify in Sanctuary"],
-				order = 7,
+				order = 11,
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyInShattrathEnabled = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyInShattrathEnabled; end,
 			},
 			showpvpstats = {
 				type = 'toggle',
-				name = L["Show PvP-Stats in Tooltip"],
+				name = L["Stats in Tooltip"],
 				desc = L["Show PvP-Stats in Tooltip"],
-				order = 8,
+				order = 12,
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyShowPvPStats = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyShowPvPStats; end,
 			},
 			notificationInterval = {
 				type = 'range',
-				name = L["Notification Interval (seconds)"],
+				name = L["Interval (seconds)"],
 				desc = L["Notification Interval (seconds)"],
 				min = 0,
 				max = 600,
 				step = 5,
-				order = 9,
+				order = 13,
 				set = function(frame, value) VanasKoSNotifier.db.profile.NotifyTimerInterval = value; end,
 				get = function() return VanasKoSNotifier.db.profile.NotifyTimerInterval; end,
 			},
-			kosSound = {
-				type = 'select',
-				name = L["Sound on KoS detection"],
-				desc = L["Sound on KoS detection"],
-				order = 10,
-				get = function() return GetSound("kos"); end,
-				set = function(frame, value) SetSound("kos", value); end,
-				values = function() return GetMediaList(); end,
-			},
-			enemySound = {
-				type = 'select',
-				name = L["Sound on enemy detection"],
-				desc = L["Sound on enemy detection"],
-				order = 11,
-				get = function() return GetSound("enemy"); end,
-				set = function(frame, value) SetSound("enemy", value); end,
-				values = function() return GetMediaList(); end,
-			},
-			hateSound = {
-				type = 'select',
-				name = L["Hated player sound"],
-				desc = L["Sound when a hated player joins your raid or party"],
-				order = 12,
-				get = function() return GetSound("hate"); end,
-				set = function(frame, value) SetSound("hate", value); end,
-				values = function() return GetMediaList(); end,
-			},
-			niceSound = {
-				type = 'select',
-				name = L["Nice player sound"],
-				desc = L["Sound when a nice player joins your raid or party"],
-				order = 13,
-				get = function() return GetSound("nice"); end,
-				set = function(frame, value) SetSound("nice", value); end,
-				values = function() return GetMediaList(); end,
-			},
-			extrareasonframetitle = {
-				type = 'header',
-				name = L["Additional Reason Window"],
-				desc = L["Additional Reason Window"],
+			soundgroup = {
+				type = "group",
+				name = L["Sounds"],
+				name = L["Notification sounds"],
 				order = 14,
+				args = {
+					kosSound = {
+						type = 'select',
+						name = L["KoS Sound"],
+						desc = L["Sound on KoS detection"],
+						order = 1,
+						get = function() return GetSound("kos"); end,
+						set = function(frame, value) SetSound("kos", value); end,
+						values = function() return GetMediaList(); end,
+					},
+					enemySound = {
+						type = 'select',
+						name = L["Enemy Sound"],
+						desc = L["Sound on enemy detection"],
+						order = 2,
+						get = function() return GetSound("enemy"); end,
+						set = function(frame, value) SetSound("enemy", value); end,
+						values = function() return GetMediaList(); end,
+					},
+					hateSound = {
+						type = 'select',
+						name = L["Hated sound"],
+						desc = L["Sound when a hated player joins your raid or party"],
+						order = 3,
+						get = function() return GetSound("hate"); end,
+						set = function(frame, value) SetSound("hate", value); end,
+						values = function() return GetMediaList(); end,
+					},
+					niceSound = {
+						type = 'select',
+						name = L["Nice sound"],
+						desc = L["Sound when a nice player joins your raid or party"],
+						order = 4,
+						get = function() return GetSound("nice"); end,
+						set = function(frame, value) SetSound("nice", value); end,
+						values = function() return GetMediaList(); end,
+					},
+				},
 			},
-			extrareasonframeenabled = {
-				type = 'toggle',
-				name = L["Enabled"],
-				desc = L["Enabled"],
+			extrareasongroup = {
+				type = "group",
+				name = L["Extra Reason"],
+				desc = L["Additional Reason Window"],
 				order = 15,
-				set = function(frame, v) VanasKoSNotifier:EnableReasonFrame(v); end,
-				get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled; end,
-			},
-			extrareasonframelocked = {
-				type = 'toggle',
-				name = L["Locked"],
-				desc = L["Locked"],
-				order = 16,
-				set = function(frame, v) VanasKoSNotifier:LockReasonFrame(v); end,
-				get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked; end,
-			},
-			extrareasonframeshowanchor = {
-				type = 'toggle',
-				name = L["Show Anchor"],
-				desc = L["Show Anchor"],
-				order = 17,
-				set = function(frame, v) VanasKoSNotifier:ShowAnchorReasonFrame(v); end,
-				get = function() return reasonFrame.showanchor; end,
+				args = {
+					extrareasonframeenabled = {
+						type = 'toggle',
+						name = L["Enabled"],
+						desc = L["Enabled"],
+						order = 1,
+						set = function(frame, v) VanasKoSNotifier:EnableReasonFrame(v); end,
+						get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameEnabled; end,
+					},
+					extrareasonframelocked = {
+						type = 'toggle',
+						name = L["Locked"],
+						desc = L["Locked"],
+						order = 2,
+						set = function(frame, v) VanasKoSNotifier:LockReasonFrame(v); end,
+						get = function() return VanasKoSNotifier.db.profile.notifyExtraReasonFrameLocked; end,
+					},
+					extrareasonframeshowanchor = {
+						type = 'toggle',
+						name = L["Show Anchor"],
+						desc = L["Show Anchor"],
+						order = 3,
+						set = function(frame, v) VanasKoSNotifier:ShowAnchorReasonFrame(v); end,
+						get = function() return reasonFrame.showanchor; end,
 
-			}
+					}
+				},
+			},
 		},
 	};
 
@@ -357,8 +377,13 @@ function VanasKoSNotifier:OnEnable()
 	for i=1,IGNORES_TO_DISPLAY do
 		local button = getglobal("FriendsFrameIgnoreButton" .. i .. "ButtonText");
 		local reasonFont = button:CreateFontString("VanasKoSIgnoreButton" .. i .. "ReasonText");
-		reasonFont:SetFontObject("GameFontNormal");
-		reasonFont:SetPoint("TOPLEFT", 100, -2);
+		reasonFont:SetFontObject("GameFontNormalSmall");
+		reasonFont:SetPoint("RIGHT", 10, 0);
+	end
+	self:SecureHook("LFRBrowseFrameListButton_SetData");
+	--self:SecureHook("LFRBrowseButton_OnEnter");
+	for i=1, NUM_LFR_LIST_BUTTONS do
+		self:SecureHookScript(getglobal("LFRBrowseFrameListButton" .. i), "OnEnter", "LFRBrowseButton_OnEnter");
 	end
 
 	self:HookScript(GameTooltip, "OnTooltipSetUnit");
@@ -409,7 +434,7 @@ end
 
 function VanasKoSNotifier:IgnoreList_Update()
 	if (self.db.profile.ignorelist ~= true) then
-		return
+		return;
 	end
 
 	local ignoreOffset = FauxScrollFrame_GetOffset(FriendsFrameIgnoreScrollFrame);
@@ -427,11 +452,13 @@ function VanasKoSNotifier:IgnoreList_Update()
 				nameText:SetText(format("|cffff0000%s|r", name));
 				if (not note or note == "") then
 					noteText:SetText("("..VanasKoS:IsOnList("HATELIST", lname).reason..")");
+					noteText:SetPoint("LEFT", nameText, "RIGHT");
 				end
 			elseif (VanasKoS:IsOnList("NICELIST", lname)) then
 				nameText:SetText(format("|cff00ff00%s|r", name));
 				if (not note or note == "") then
 					noteText:SetText("("..VanasKoS:IsOnList("NICELIST", lname).reason..")");
+					noteText:SetPoint("LEFT", nameText, "RIGHT");
 				end
 			end
 		end
@@ -458,10 +485,15 @@ function VanasKoSNotifier:PARTY_MEMBERS_CHANGED()
 				end
 			end
 			newParty[name] = i;
-			if(not lastPartyUpdate[name]) then
-				local hate = VanasKoS:IsOnList("HATELIST", name);
-				local nice = VanasKoS:IsOnList("NICELIST", name);
-				if(hate) then
+			local hate = VanasKoS:IsOnList("HATELIST", name);
+			local nice = VanasKoS:IsOnList("NICELIST", name);
+			if(hate) then
+				if(self.db.profile.notifyTargetFrame) then
+					local texture = getglobal("PartyMemberFrame"..i.."Texture");
+					texture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSPartyFrame");
+					texture:SetVertexColor(1.0, 0.0, 0.0, texture:GetAlpha());
+				end
+				if(not lastPartyUpdate[name]) then
 					local msg = format(L["Hated player \"%s\" (%s) is in your party"], name, hate.reason or "");
 					if(self.db.profile.notifyVisual) then
 						UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME);
@@ -473,7 +505,14 @@ function VanasKoSNotifier:PARTY_MEMBERS_CHANGED()
 						self:FlashNotify();
 					end
 					self:PlaySound(self.db.profile.hatePlayName);
-				elseif(nice) then
+				end
+			elseif(nice) then
+				if(self.db.profile.notifyTargetFrame) then
+					local texture = getglobal("PartyMemberFrame"..i.."Texture");
+					texture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSPartyFrame");
+					texture:SetVertexColor(0.0, 1.0, 0.0, texture:GetAlpha());
+				end
+				if(not lastPartyUpdate[name]) then
 					local msg = format(L["Nice player \"%s\" (%s) is in your party"], name, nice.reason or "");
 					if(self.db.profile.notifyVisual) then
 						UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME);
@@ -548,6 +587,42 @@ function VanasKoSNotifier:RAID_ROSTER_UPDATE()
 	wipe(lastPartyUpdate);
 	lastPartyUpdate = newParty;
 end
+
+function VanasKoSNotifier:LFRBrowseFrameListButton_SetData(button, index)
+	if (self.db.profile.notifyRaidBrowser ~= true) then
+		return;
+	end
+
+	-- name, level, areaName, className, comment, partyMembers, status, class, encountersTotal, encountersComplete, isLeader, isTank, isHealer, isDamage
+	local name = SearchLFGGetResults(index);
+	local lname = name:lower();
+	local hate = VanasKoS:IsOnList("HATELIST", lname);
+	local nice = VanasKoS:IsOnList("NICELIST", lname);
+	if (hate) then
+		button.name:SetTextColor(1, 0, 0);
+	elseif (nice) then
+		button.name:SetTextColor(0, 1, 0);
+	end
+end
+
+function VanasKoSNotifier:LFRBrowseButton_OnEnter(frame)
+	if (self.db.profile.notifyRaidBrowser ~= true) then
+		return;
+	end
+
+	local name = SearchLFGGetResults(frame.index);
+	local lname = name:lower();
+	local hate = VanasKoS:IsOnList("HATELIST", lname);
+	local nice = VanasKoS:IsOnList("NICELIST", lname);
+	if (hate) then
+		GameTooltip:AddLine("|cffff0000" .. hate.reason .. "|r");
+		GameTooltip:Show();
+	elseif (nice) then
+		GameTooltip:AddLine("|cff00ff00" .. nice.reason .. "|r");
+		GameTooltip:Show();
+	end
+end
+
 function VanasKoSNotifier:OnDisable()
 	self:UnregisterAllMessages();
 end

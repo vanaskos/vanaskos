@@ -11,8 +11,9 @@ alpha:
 - Added options to hide warning window in battlegrounds and instances
 - Remove "sort" and "pvp stats" buttons
 - Added options to notify when a nice/hated player joins the group
+- Added option to modify raid browser and friend/ignore list
 - Improved background artwork
-- Fixed dragon around target frame
+- Fixed dragon around target frame, and added one for party frames
 - Updated libraries
 - Save warning frame position to the database
 - Added support for context menu for pitbull 4

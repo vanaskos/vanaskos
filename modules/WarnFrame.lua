@@ -10,6 +10,8 @@ VanasKoSWarnFrame = VanasKoS:NewModule("WarnFrame", "AceEvent-3.0", "AceTimer-3.
 local VanasKoSWarnFrame = VanasKoSWarnFrame;
 local VanasKoS = VanasKoS;
 
+local WARN_BUTTONS_MAX = 40;
+
 local warnFrame = nil;
 local normalFont = nil;
 local kosFont = nil;
@@ -347,7 +349,7 @@ local function CreateClassIcons()
 
 	classIcons = { };
 	local i = 1;
-	for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
+	for i=1,WARN_BUTTONS_MAX do
 			local classIcon = CreateFrame("Button", nil, warnFrame);
 			classIcon:SetPoint("LEFT", warnButtonsCombat[i], "LEFT", 5, 0);
 			classIcon:SetWidth(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
@@ -385,7 +387,7 @@ local function CreateClassIcons()
 		warnButtonsOOC = { };
 		
 		local i=1;
-		for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
+		for i=1,WARN_BUTTONS_MAX do
 			local warnButton = CreateFrame("Button", nil, warnFrame, "SecureActionButtonTemplate");
 		if(i == 1) then
 			warnButton:SetPoint("TOP", warnFrame, 0, -5);
@@ -421,7 +423,7 @@ local function CreateCombatButtons()
 	warnButtonsCombat = { };
 
 	local i = 0;
-	for i=1,VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
+	for i=1,WARN_BUTTONS_MAX do
 		local warnButton = CreateFrame("Button", nil, warnFrame);
 		-- same size as OOC buttons
 		warnButton:SetAllPoints(warnButtonsOOC[i]);
@@ -481,13 +483,6 @@ local function ShowWarnFrame()
 end
 
 local function UpdateWarnSize()
-	currentButtonCount = VanasKoSWarnFrame.db.profile.WARN_BUTTONS;
-	if(VanasKoSWarnFrame.db.profile.DynamicResize) then
-		currentButtonCount = nearbyKoSCount + nearbyEnemyCount + nearbyFriendlyCount + 1;
-		if(currentButtonCount > VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX) then
-			currentButtonCount = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX;
-		end
-	end
 	local point, _, anchor, xOff, yOff = warnFrame:GetPoint();
 	local oldH = warnFrame:GetHeight();
 	warnFrame:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
@@ -512,7 +507,7 @@ local function UpdateWarnSize()
 			warnFrame:SetPoint(point, "UIParent", anchor, xOff, yOff - (h - oldH) / 2);
 		end
 	end
-	for i=1, VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX do
+	for i=1,WARN_BUTTONS_MAX do
 		warnButtonsCombat[i]:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
 		warnButtonsCombat[i]:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
 		warnButtonsOOC[i]:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
@@ -629,7 +624,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 							VanasKoSWarnFrame:Update();
 						end,
 						min = 1,
-						max = VanasKoSWarnFrame.db.profile.WARN_BUTTONS_MAX,
+						max = WARN_BUTTONS_MAX,
 						step = 1,
 						isPercent = false,
 					},
@@ -1026,8 +1021,6 @@ function VanasKoSWarnFrame:OnInitialize()
 			WARN_BUTTON_HEIGHT = 16;
 			WARN_BUTTONS = 5;
 
-			WARN_BUTTONS_MAX = 40;
-
 			MacroText = "/targetexact ${name}";
 		}
 	});
@@ -1299,7 +1292,18 @@ local function SetButton(buttonNr, name, faction, data)
 end
 
 function VanasKoSWarnFrame:Update()
-	if(self.db.profile.DynamicResize) then
+	local newButtonCount = 0;
+	if(VanasKoSWarnFrame.db.profile.DynamicResize) then
+		newButtonCount = nearbyKoSCount + nearbyEnemyCount + nearbyFriendlyCount + 1;
+		if(newButtonCount > WARN_BUTTONS_MAX) then
+			newButtonCount = WARN_BUTTONS_MAX;
+		end
+	else
+		newButtonCount = VanasKoSWarnFrame.db.profile.WARN_BUTTONS;
+	end
+
+	if (newButtonCount ~= currentButtonCount) then
+		currentButtonCount = newButtonCount;
 		UpdateWarnSize();
 	end
 

@@ -29,9 +29,7 @@ if L then
 	L["PvP"] = true
 	L["Score"] = true
 	L["PvP Data Gathering"] = true
-	L["PvP Loss versus %s registered."] = true
 	L["PvP Stats"] = true
-	L["PvP Win versus %s registered."] = true
 	L["by losses"] = true
 	L["sort by most losses"] = true
 	L["by encounters"] = true

@@ -19,7 +19,6 @@ SML:Register("sound", "VanasKoS: Extreme alarm", "Interface\\AddOns\\VanasKoS\\A
 SML:Register("sound", "VanasKoS: Hell's bell", "Interface\\AddOns\\VanasKoS\\Artwork\\hell_bell.mp3");
 SML:Register("sound", "VanasKoS: Glockenspiel", "Interface\\AddOns\\VanasKoS\\Artwork\\glock_N_kloing.mp3");
 
-local notifyAllowed = true;
 local flashNotifyFrame = nil;
 local reasonFrame = nil
 
@@ -235,7 +234,7 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Party notification"],
 				desc = L["Notify when a player in hate list or nice list joins your party"],
 				order = 8,
-				set = function(frame, v) VanasKoSNotifier.db.profile.notifyParty = v; end,
+				set = function(frame, v) VanasKoSNotifier.db.profile.notifyParty = v; VanasKoSNotifier:EnablePartyEvents(v); end,
 				get = function() return VanasKoSNotifier.db.profile.notifyParty; end,
 			},
 			friendlist = {
@@ -259,7 +258,10 @@ function VanasKoSNotifier:OnInitialize()
 				name = L["Notify in Sanctuary"],
 				desc = L["Notify in Sanctuary"],
 				order = 11,
-				set = function(frame, v) VanasKoSNotifier.db.profile.notifyInShattrathEnabled = v; end,
+				set = function(frame, v) 
+					VanasKoSNotifier.db.profile.notifyInShattrathEnabled = v;
+					VanasKoSNotifier:ZoneChanged();
+				end,
 				get = function() return VanasKoSNotifier.db.profile.notifyInShattrathEnabled; end,
 			},
 			showpvpstats = {
@@ -367,11 +369,11 @@ function VanasKoSNotifier:OnInitialize()
 end
 
 function VanasKoSNotifier:OnEnable()
-	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
+	self:EnablePlayerDetectedEvents(true);
+	self:EnablePartyEvents(self.db.profile.notifyParty);
 	self:RegisterMessage("VanasKoS_Player_Target_Changed", "Player_Target_Changed");
 	self:RegisterMessage("VanasKoS_Mob_Target_Changed", "Player_Target_Changed");
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED");
-	self:RegisterEvent("RAID_ROSTER_UPDATE");
+	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");
 	self:SecureHook("FriendsList_Update");
 	self:SecureHook("IgnoreList_Update");
 	for i=1,IGNORES_TO_DISPLAY do
@@ -465,9 +467,20 @@ function VanasKoSNotifier:IgnoreList_Update()
 	end
 end
 
+local partyEventsEnabled = false;
+function VanasKoSNotifier:EnablePartyEvents(enable)
+	if(enable and (not partyEventsEnabled)) then
+		self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+		self:RegisterEvent("RAID_ROSTER_UPDATE");
+	elseif((not enable) and partyEventsEnabled) then
+		self:UnregisterEvent("PARTY_MEMBERS_CHANGED");
+		self:UnregisterEvent("RAID_ROSTER_UPDATE");
+	end
+end
+
 local lastPartyUpdate = {}
 function VanasKoSNotifier:PARTY_MEMBERS_CHANGED()
-	if (self.db.profile.notifyParty ~= true or UnitInRaid("player")) then
+	if (UnitInRaid("player")) then
 		return
 	end
 
@@ -534,10 +547,6 @@ function VanasKoSNotifier:PARTY_MEMBERS_CHANGED()
 end
 
 function VanasKoSNotifier:RAID_ROSTER_UPDATE()
-	if (self.db.profile.notifyParty ~= true) then
-		return
-	end
-
 	local newParty = {};
 	for i = 1, 40 do
 		if(GetRaidRosterInfo(i)) then
@@ -808,31 +817,28 @@ function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, grea
 	return msg;
 end
 
-local function ReenableNotifications()
-	notifyAllowed = true;
+local playerDetectEventEnabled = false;
+function VanasKoSNotifier:EnablePlayerDetectedEvents(enable)
+	if(enable and (not playerDetectEventEnabled)) then
+		self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
+		playerDetectEventEnabled = true;
+	elseif((not enable) and playerDetectEventEnabled) then
+		self:UnregisterMessage("VanasKoS_Player_Detected");
+		playerDetectEventEnabled = false;
+	end
+end
+
+function VanasKoSNotifier:ZoneChanged(message)
+	if (VanasKoS:IsInSanctuary()) then
+		self:EnablePlayerDetectedEvents(self.db.profile.notifyInShattrathEnabled);
+	elseif (VanasKoS:IsInBattleground()) then
+		self:EnablePlayerDetectedEvents(false);
+	else
+		self:EnablePlayerDetectedEvents(true);
+	end
 end
 
 function VanasKoSNotifier:Player_Detected(message, data)
-	assert(data.name ~= nil);
-	
-	if (data.faction == nil) then
-		return
-	end
-
-	if (notifyAllowed ~= true) then
-		return;
-	end
-
-	-- don't notify if we're in shattrah
-	if(VanasKoSDataGatherer:IsInSanctuary() and not self.db.profile.notifyInShattrathEnabled) then
-		return;
-	end
-
-	-- don't notify if we're in battleground
-	if(VanasKoSDataGatherer:IsInBattleground()) then
-		return;
-	end
-
 	if (data.faction == "kos") then
 		VanasKoSNotifier:KosPlayer_Detected(data);
 	elseif (data.faction == "enemy") then
@@ -840,13 +846,17 @@ function VanasKoSNotifier:Player_Detected(message, data)
 	end
 end
 
-function VanasKoSNotifier:EnemyPlayer_Detected(data)
-	assert(data.name ~= nil);
+local function ReenableNotifications()
+	VanasKoSNotifier:EnablePlayerDetectedEvents(true)
+end
 
+function VanasKoSNotifier:EnemyPlayer_Detected(data)
 	if(self.db.profile.notifyEnemyTargets == false) then
 		return;
 	end
-	notifyAllowed = false;
+
+	self:EnablePlayerDetectedEvents(false);
+
 	-- Reallow Notifies in NotifyTimeInterval Time
 	self:ScheduleTimer(ReenableNotifications, self.db.profile.NotifyTimerInterval);
 
@@ -893,7 +903,7 @@ function VanasKoSNotifier:KosPlayer_Detected(data)
 		return;
 	end
 
-	notifyAllowed = false;
+	self:EnablePlayerDetectedEvents(false);
 	-- Reallow Notifies in NotifyTimeInterval Time
 	self:ScheduleTimer(ReenableNotifications, self.db.profile.NotifyTimerInterval);
 

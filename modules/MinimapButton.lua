@@ -33,8 +33,13 @@ local minimapOptions = {
 	},
 	{
 		text = L["Warning Window"],
-		func = function() VanasKoS:ToggleModuleActive("WarnFrame"); VanasKoSWarnFrame:Update(); end,
-		checked = function() return VanasKoS:GetModule("WarnFrame").enabledState; end,
+		func = function()
+				if (VanasKoSWarnFrame) then
+					VanasKoS:ToggleModuleActive("WarnFrame");
+					VanasKoSWarnFrame:Update();
+				end
+			end,
+		checked = function() return VanasKoSWarnFrame and VanasKoS:GetModule("WarnFrame").enabledState; end,
 	},
 	{
 		text = L["Configuration"],
@@ -171,23 +176,25 @@ function VanasKoSMinimapButton:Toggle()
 end
 
 function VanasKoSMinimapButton:UpdateOptions()
-	local list = VanasKoSPvPDataGatherer:GetDamageFromArray();
+	if (VanasKoSPvPDataGatherer) then
+		local list = VanasKoSPvPDataGatherer:GetDamageFromArray();
 
-	wipe(attackerMenu);
-	if(not list) then
-		return;
-	end
+		wipe(attackerMenu);
+		if(not list) then
+			return;
+		end
 
-	for k,v in pairs(list) do
-		attackerMenu[#attackerMenu+1] = {
-			text = v[1] .. " " .. date("%c", v[2]),
-			order = #attackerMenu,
-			func = function()
-					VanasKoSGUI:ShowList("PLAYERKOS");
-					VANASKOS.LastNameEntered = v[1];
-					StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
-				end,
-		};
+		for k,v in pairs(list) do
+			attackerMenu[#attackerMenu+1] = {
+				text = v[1] .. " " .. date("%c", v[2]),
+				order = #attackerMenu,
+				func = function()
+						VanasKoSGUI:ShowList("PLAYERKOS");
+						VANASKOS.LastNameEntered = v[1];
+						StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
+					end,
+			};
+		end
 	end
 end
 
@@ -321,17 +328,18 @@ function VanasKoSMinimapButton:UpdateMyText()
 end
 
 function VanasKoSMinimapButton:OnTooltipShow(tt)
-	local list = VanasKoSPvPDataGatherer:GetDamageFromArray();
-
 	tt:AddLine(VANASKOS.NAME);
-	if (#list > 0) then
-		tt:AddLine(L["Last Attackers"] .. ":", 1.0, 1.0, 1.0);
-						
-		for k,v in pairs(list) do
-			tt:AddDoubleLine(v[1], format(L["%s ago"], SecondsToTime(time() - v[2])), 1.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+
+	if (VanasKoSPvPDataGatherer) then
+		local list = VanasKoSPvPDataGatherer:GetDamageFromArray();
+		if (#list > 0) then
+			tt:AddLine(L["Last Attackers"] .. ":", 1.0, 1.0, 1.0);
+							
+			for k,v in pairs(list) do
+				tt:AddDoubleLine(v[1], format(L["%s ago"], SecondsToTime(time() - v[2])), 1.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+			end
 		end
-	end
-	
+	end	
 	
 	if(showWarnFrameInfoText and (nearbyKoSCount + nearbyEnemyCount + nearbyFriendlyCount) > 0) then
 		tt:AddLine(L["Nearby People"] .. ":", 1.0, 1.0, 1.0);
@@ -364,6 +372,4 @@ function VanasKoSMinimapButton:UpdateList()
 			self:RemovePlayer(k);
 		end
 	end
-	
-	VanasKoSWarnFrame:Update();
 end

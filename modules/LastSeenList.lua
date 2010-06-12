@@ -291,12 +291,6 @@ function VanasKoSLastSeenList:ListButtonOnClick(button, frame)
 	end
 end
 
-function VanasKoSLastSeenList:ListButtonOnEnter(button, frame)
-	VanasKoSDefaultLists:SetSelectedPlayerData(VanasKoSGUI:GetListEntryForID(frame:GetID()));
-	
-	VanasKoSDefaultLists:ShowTooltip();
-end
-
-function VanasKoSLastSeenList:ListButtonOnLeave(button, frame)
-	VanasKoSDefaultLists:HideTooltip();
+function VanasKoSLastSeenList:HoverType()
+	return "player";
 end

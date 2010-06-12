@@ -5,10 +5,11 @@ Handles all external Player Data from Chat and Target Changes/Mouseovers
 
 VanasKoSDataGatherer = VanasKoS:NewModule("DataGatherer", "AceEvent-3.0", "AceTimer-3.0");
 
+local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DataGatherer", false);
+
 local VanasKoSDataGatherer = VanasKoSDataGatherer;
 local VanasKoS = VanasKoS;
 
-local inBattleground = false;
 local myName = nil;
 
 local combatLogEventRegistered = true;
@@ -29,9 +30,58 @@ function VanasKoSDataGatherer:OnInitialize()
 				StorePlayerDataPermanently = false,
 				GatherInCities = false,
 				EnableInSanctuary = false,
+				EnableInCity = true,
 			},
 		});
 
+	VanasKoSGUI:AddMainMenuConfigOptions({
+		data_gatherer_group = {
+			name = L["Data Gathering"],
+			type = "group",
+			args = {
+				combatlog = {
+					type = "toggle",
+					order = 1,
+					name = L["Use Combat Log"],
+					desc = L["Toggles if the combatlog should be used to detect nearby player"],
+					get = function() return VanasKoSDataGatherer.db.profile.UseCombatLog; end,
+					set = function(frame, v) VanasKoSDataGatherer.db.profile.UseCombatLog = v; VanasKoSDataGatherer:EnableCombatEvents(v); end,
+				},
+				playerdatastore = {
+					type = "toggle",
+					order = 2,
+					name = L["Permanent Player-Data-Storage"],
+					desc = L["Toggles if the data about players (level, class, etc) should be saved permanently."],
+					get = function() return VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently; end,
+					set = function(frame, v) VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently = v; end,
+				},
+				gatherincities = {
+					type = "toggle",
+					order = 3,
+					name = L["Save data gathered in cities"],
+					desc = L["Toggles if data from players gathered in cities should be saved."],
+					get = function() return VanasKoSDataGatherer.db.profile.GatherInCities; end,
+					set = function(frame, v) VanasKoSDataGatherer.db.profile.GatherInCities = v; VanasKoSDataGatherer:ZoneChanged(); end,
+				},
+				enableinsanctuary = {
+					type = "toggle",
+					order = 4,
+					name = L["Enable in Sanctuaries"],
+					desc = L["Toggles detection of players in sanctuaries"],
+					get = function() return VanasKoSDataGatherer.db.profile.EnableInSanctuary; end,
+					set = function(frame, v) VanasKoSDataGatherer.db.profile.EnableInSanctuary = v; VanasKoSDataGatherer:ZoneChanged(); end,
+				},
+				enableincity = {
+					type = "toggle",
+					order = 4,
+					name = L["Enable in Cities"],
+					desc = L["Toggles detection of players in cities"],
+					get = function() return VanasKoSDataGatherer.db.profile.EnableInCity; end,
+					set = function(frame, v) VanasKoSDataGatherer.db.profile.EnableInCity = v; VanasKoSDataGatherer:ZoneChanged(); end,
+				},
+			},
+		},
+	});
 	VanasKoS:RegisterList(nil, "PLAYERDATA", nil, self);
 	VanasKoS:RegisterList(nil, "GUILDDATA", nil, self);
 	myName = UnitName("player");
@@ -146,14 +196,10 @@ local playerDataList = nil;
 
 function VanasKoSDataGatherer:OnEnable()
 	-- on zonechange update zone
-	self:RegisterEvent("ZONE_CHANGED", "UpdateZone");
-	self:RegisterEvent("ZONE_CHANGED_INDOORS", "UpdateZone");
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateZone");
-
-	self:RegisterMessage("VanasKoS_Player_Data_Gathered", "Data_Gathered");
+	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");
 	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
 
-	self:UpdateZone();
+	self:ZoneChanged();
 
 	playerDataList = self.db.realm.data.players;
 	local count = 0;
@@ -243,27 +289,44 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	-- self:PrintLiteral(list, name, guild, level, race, class, gender);
 	assert(data.name ~= nil)
 	
-	if(self:IsInSanctuary() and not self.db.profile.GatherInCities) then
-		return;
-	end
-	
 	local lname = data.name:lower();
 
 	if(not playerDataList[lname]) then
 		playerDataList[lname] = { };
 	end
 
-	playerDataList[lname].guild = data['guild'];
-	playerDataList[lname].guildrank = data['guildrank'];
-	if((data['level'] and data['level'] ~= -1) or
-		(data['level'] == -1 and playerDataList[lname].level == nil)) then
-		playerDataList[lname].level = data['level'];
+	if (data.guild) then
+		playerDataList[lname].guild = data.guild;
 	end
-	playerDataList[lname].race = data['race'];
-	playerDataList[lname].class = data['class'];
-	playerDataList[lname].classEnglish = data['classEnglish'];
-	playerDataList[lname].gender = data['gender'];
-	playerDataList[lname].zone = data['zone'];
+
+	if (data.guildrank) then
+		playerDataList[lname].guildrank = data.guildrank;
+	end
+
+	if(type(data.level) == "number") then
+		-- if it's number we are sure of the level so just overwrite
+		playerDataList[lname].level = data.level;
+		-- print("data.level", data.level);
+	elseif(type(data.level) == "string") then
+		-- we're not sure of the exact level so overwrite only if larger
+		local level = tonumber(select(3, strfind(data.level, "(%d+)[+]"))) or -1;
+
+		local oldLevel = playerDataList[lname].level or -1;
+		if (type(oldLevel) == "string") then
+			oldLevel = tonumber(select(3, strfind(oldLevel, "(%d+)[+]"))) or -1;
+		end
+
+		-- print("oldlevel", oldLevel, "level", level, "data.level", data.level);
+		if(oldLevel < level) then
+			playerDataList[lname].level = data.level;
+		end
+		-- print("type", type(data.level));
+	end
+	playerDataList[lname].race = data.race;
+	playerDataList[lname].class = data.class;
+	playerDataList[lname].classEnglish = data.classEnglish;
+	playerDataList[lname].gender = data.gender;
+	playerDataList[lname].zone = data.zone;
 
 	--
 	if(data.guild and VanasKoS:BooleanIsOnList("GUILDKOS", data.guild)) then
@@ -275,71 +338,68 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	end
 end
 
-local eventsEnabled = false;
+local targetEventsEnabled = false;
+function VanasKoSDataGatherer:EnableTargetEvents(enable)
+	if (enable and (not targetEventsEnabled)) then
+		self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
+		self:RegisterEvent("PLAYER_TARGET_CHANGED");
+		targetEventsEnabled = true;
+	elseif ((not enable) and targetEventsEnabled) then
+		self:UnregisterEvent("UPDATE_MOUSEOVER_UNIT");
+		self:UnregisterEvent("PLAYER_TARGET_CHANGED");
+		targetEventsEnabled = false;
+	end
+end
 
-function VanasKoSDataGatherer:EnableEvents()
-	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
-	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	if(self.db.profile.UseCombatLog) then
+local combatEventsEnabled = false;
+function VanasKoSDataGatherer:EnableCombatEvents(enable)
+	if(enable and (not combatEventsEnabled)) then
 		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-	end
-	eventsEnabled = true;
-end
-
-function VanasKoSDataGatherer:DisableEvents()
-	self:UnregisterEvent("UPDATE_MOUSEOVER_UNIT");
-	self:UnregisterEvent("PLAYER_TARGET_CHANGED");
-	if (self.db.profile.UseCombatLog) then
+		combatEventsEnabled = true;
+	elseif ((not enable) and combatEventsEnabled) then
 		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+		combatEventsEnabled = false;
 	end
-	eventsEnabled = false;
 end
 
-function VanasKoSDataGatherer:UpdateZone()
-	local zone = GetRealZoneText();
-	local gatherEvents;
+local gatherEventEnabled = false;
+function VanasKoSDataGatherer:EnableDataGathering(enable)
+	if(enable and (not gatherEventEnabled)) then
+		-- print("enable data gathering");
+		self:RegisterMessage("VanasKoS_Player_Data_Gathered", "Data_Gathered");
+		gatherEventEnabled = true;
+	elseif ((not enable) and combatEventsEnabled) then
+		-- print("disable data gathering");
+		self:UnregisterMessage("VanasKoS_Player_Data_Gathered");
+		gatherEventEnabled = false;
+	end
+end
 
-	if (self:IsInSanctuary()) then
-		gatherEvents = self.db.profile.EnableInSanctuary;
+
+function VanasKoSDataGatherer:ZoneChanged()
+	if (VanasKoS:IsInSanctuary()) then
+		self:EnableTargetEvents(self.db.profile.EnableInSanctuary);
+		self:EnableCombatEvents(self.db.profile.EnableInSanctuary and self.db.profile.UseCombatLog);
+	elseif (VanasKoS:IsInCity()) then
+		self:EnableTargetEvents(self.db.profile.EnableInCity);
+		self:EnableCombatEvents(self.db.profile.EnableInCity and self.db.profile.UseCombatLog);
+	elseif (VanasKoS:IsInDungeon()) then
+		self:EnableTargetEvents(false);
+		self:EnableCombatEvents(false);
 	else
-		gatherEvents = true;
+		self:EnableTargetEvents(true);
+		self:EnableCombatEvents(self.db.profile.UseCombatLog);
 	end
 
-	if (eventsEnabled and not gatherEvents) then
-		self:DisableEvents();
-	elseif (not eventsEnabled and gatherEvents) then
-		self:EnableEvents();
+	if (VanasKoS:IsInCity()) then
+		self:EnableDataGathering(self.db.profile.GatherInCities);
+	else
+		self:EnableDataGathering(true);
 	end
-	
-	self:SendMessage("VanasKoS_Zone_Changed", zone);
-end
-
-function VanasKoSDataGatherer:IsInSanctuary()
-	local pvpType, isFFA, faction = GetZonePVPInfo();
-	return pvpType == "sanctuary" and true or false;
-end
-
-function VanasKoSDataGatherer:IsInBattleground()
-	local inInstance, instanceType = IsInInstance();
-	if(inInstance or 
-		(instanceType == "arena") or
-		(instanceType == "pvp")) then
-		return true;
-	end
-	
-	local pvpType, isFFA, faction = GetZonePVPInfo();
-	if( (pvpType == "arena") or
-		(pvpType == "combat")) then
-		return true;
-	end
-	
-	return false;
 end
 
 local gatheredData = { };
 function VanasKoSDataGatherer:Get_Player_Data(unit)
-	local zone = GetRealZoneText();
-
 	if(UnitIsPlayer(unit) and UnitName(unit) ~= myName) then
 		local name, realm = UnitName(unit);
 
@@ -349,38 +409,38 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		if(realm and realm ~= "") then
 			name = name .. "-" .. realm;
 		end
-		gatheredData['name'] = name;
-		gatheredData['guild'], gatheredData['guildrank'] = GetGuildInfo(unit);
-		gatheredData['race'] = UnitRace(unit);
-		gatheredData['class'], gatheredData['classEnglish'] = UnitClass(unit);
-		gatheredData['gender'] = UnitSex(unit);
-		gatheredData['zone'] = zone;
-		gatheredData['faction'] = nil;
+		gatheredData.name = name;
+		gatheredData.guild, gatheredData.guildrank = GetGuildInfo(unit);
+		gatheredData.race = UnitRace(unit);
+		gatheredData.class, gatheredData.classEnglish = UnitClass(unit);
+		gatheredData.gender = UnitSex(unit);
+		gatheredData.zone = GetRealZoneText();
+		gatheredData.faction = nil;
 
-		if(gatheredData['guild'] and realm and realm ~= "") then
+		if(gatheredData.guild and realm and realm ~= "") then
 			gatheredData.guild = gatheredData.guild .. "-" .. realm;
 		end
 
 		local lvl = UnitLevel(unit);
-		if(gatheredData['level'] == -1) then
+		if(gatheredData.level == -1) then
 			lvl = (UnitLevel("player") or 1) + 10;
 			if(lvl < 80) then
 				lvl = lvl .. "+";
 			end
 		end
-		gatheredData['level'] = lvl;
+		gatheredData.level = lvl;
 
-		gatheredData['list'] = select(2, VanasKoS:IsOnList(nil, gatheredData['name']));
+		gatheredData.list = select(2, VanasKoS:IsOnList(nil, gatheredData.name));
 
-		if((gatheredData['list'] == "PLAYERKOS" or gatheredData['list'] == "GUILDKOS")) then
-			gatheredData['faction'] = "kos";
+		if((gatheredData.list == "PLAYERKOS" or gatheredData.list == "GUILDKOS")) then
+			gatheredData.faction = "kos";
 		elseif(UnitExists(unit) and UnitIsEnemy("player", unit)) then
-			gatheredData['faction'] = "enemy";
+			gatheredData.faction = "enemy";
 		else
-			gatheredData['faction'] = "friendly";
+			gatheredData.faction = "friendly";
 		end
 
-		self:SendMessage("VanasKoS_Player_Data_Gathered", gatheredData['list'], gatheredData);
+		self:SendMessage("VanasKoS_Player_Data_Gathered", gatheredData.list, gatheredData);
 
 		return true;
 	end
@@ -411,75 +471,39 @@ local LevelGuessLib = LibStub("LibLevelGuess-1.0");
 function VanasKoSDataGatherer:SendDataMessage(name, guid, faction, spellId)
 	local zone = GetRealZoneText();
 	-- dumb fix to hide obviously invalid strings gathered in other localizations then enUS
-	if(name == nil or name:lower() == myName:lower()) then
+	if(not name or name:lower() == myName:lower()) then
 		return;
 	end
 	
 	local class, classEnglish, race, raceEnglish, gender = GetPlayerInfoByGUID(guid)
-	gatheredData['name'] = name;
-	gatheredData['faction'] = faction;
-	gatheredData['zone'] = zone;
-	gatheredData['class'] = class;
-	gatheredData['classEnglish'] = classEnglish;
-	gatheredData['race'] = race;
-	gatheredData['raceEnglish'] = raceEnglish;
-	gatheredData['gender'] = gender;
+	gatheredData.name = name;
+	gatheredData.faction = faction;
+	gatheredData.zone = zone;
+	gatheredData.class = class;
+	gatheredData.classEnglish = classEnglish;
+	gatheredData.race = race;
+	gatheredData.raceEnglish = raceEnglish;
+	gatheredData.gender = gender;
 
-	local lname = name:lower();
-	if(not playerDataList[lname]) then
-		playerDataList[lname] = { };
-	end
-	playerDataList[lname].class = class;
-	playerDataList[lname].classEnglish = classEnglish;
-	playerDataList[lname].race = race;
-	playerDataList[lname].raceEnglish = raceEnglish;
-	playerDataList[lname].gender = gender;
-
-	if(spellId ~= nil and tonumber(spellId)) then
-		local level, _ = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
-		--print("spellid", spellId, "level", level, "english", classEnglish);
-		if(level ~= nil) then
-			local oldLevel = 0;
-			if(playerDataList[lname].level ~= nil) then -- update old level (was lower)
-				if(string.find(playerDataList[lname].level, "+") ~= nil) then
-					oldLevel = tonumber(string.match(playerDataList[lname].level, "%d+"));
-				end
-			end
-			if(not playerDataList[lname].level or 
-				playerDataList[lname].level == -1) then
-				if(oldLevel < level) then
-					if(level < 80) then
-						level = level .. "+";
-					end
-
-					playerDataList[lname].level = level;
-				end
-			end
+	if(spellId and tonumber(spellId)) then
+		gatheredData.level = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
+		if (gatheredData.level and gatheredData.level < 80) then
+			gatheredData.level = gatheredData.level .. "+";
 		end
+		-- print("spellid", spellId, "level", gatheredData.level, "english", classEnglish);
 	end
 	-- /script VanasKoSDataGatherer:SendDataMessage("name", "enemy", nil);
 	-- /dump VanasKoSDataGatherer.db.realm.data.players['name'];
-	if(playerDataList[lname]) then
-		gatheredData['level'] =  playerDataList[lname].level;
-		gatheredData['guild'] = playerDataList[lname].guild;
-		gatheredData['guildrank'] = playerDataList[lname].guildrank;
-		gatheredData['class'] = playerDataList[lname].class;
-		gatheredData['classEnglish'] = playerDataList[lname].classEnglish;
-		gatheredData['race'] = playerDataList[lname].race;
-		gatheredData['gender'] = playerDataList[lname].gender;
-	else
-		gatheredData['level'] =  nil;
-		gatheredData['guild'] = nil;
-		gatheredData['guildrank'] = nil;
-		gatheredData['class'] = nil;
-		gatheredData['classEnglish'] = nil;
-		gatheredData['race'] = nil;
-		gatheredData['gender'] = nil;
-	end
-
 	if(VanasKoS:BooleanIsOnList("PLAYERKOS", name)) then
-		gatheredData['faction'] = "kos";
+		gatheredData.faction = "kos";
 	end
 
+	if(gatheredData.faction == "kos") then
+		gatheredData.list = "PLAYERKOS";
+	else
+		gatheredData.list = nil;
+	end
+
+	self:SendMessage("VanasKoS_Player_Data_Gathered", gatheredData.list, gatheredData);
 	self:SendMessage("VanasKoS_Player_Detected", gatheredData);
 end

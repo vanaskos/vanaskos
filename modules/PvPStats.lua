@@ -447,26 +447,21 @@ end
 function VanasKoSPvPStats:AddEntry(list, name, data)
 	if(list == "PVPSTATS") then
 		local listVar = VanasKoS:GetList("PVPSTATS", 1);
-		if(listVar[name] == nil) then
-			listVar[name] = {
-				['wins'] = 0,
-				['losses'] = 0,
-				['bgwins'] = 0,
-				['bglosses'] = 0,
-			};
+		if(not listVar[name]) then
+			listVar[name] = {};
 		end
-		if(data.wins) then
-			listVar[name].wins = listVar[name].wins + data.wins;
-		end
-		if(data.losses) then
-			listVar[name].losses = listVar[name].losses + data.losses;
-		end
-		if(data.bgwins) then
-			listVar[name].bgwins = listVar[name].bgwins + data.bgwins;
-		end
-		if(data.bglosses) then
-			listVar[name].bglosses = listVar[name].bglosses + data.bglosses;
-		end
+		local pstat = listVar[name];
+
+		listVar[name].wins = (pstat.wins or 0) + data.wins;
+		listVar[name].losses = (pstat.losses or 0) + data.losses;
+		listVar[name].bgwins = (pstat.bgwins or 0) + data.bgwins;
+		listVar[name].bglosses = (pstat.bglosses or 0) + data.bglosses;
+		listVar[name].arenawins = (pstat.arenawins or 0) + data.arenawins;
+		listVar[name].arenalosses = (pstat.arenalosses or 0) + data.arenalosses;
+		listVar[name].combatwins = (pstat.combatwins or 0) + data.combatwins;
+		listVar[name].combatlosses = (pstat.combatlosses or 0) + data.combatlosses;
+		listVar[name].ffawins = (pstat.ffawins or 0) + data.ffawins;
+		listVar[name].ffalosses = (pstat.ffalosses or 0) + data.ffalosses;
 	end
 	return true;
 end
@@ -628,13 +623,6 @@ end
 
 function VanasKoSPvPStats:OnDisable()
 	self:UnregisterAllMessages();
-	local showOptions = VanasKoSGUI:GetShowButtonOptions();
-	for k,v in pairs(showOptions) do
-		if v.text == L["PvP Stats"] then
-			showOptions[k] = nil;
-		end
-	end
-	showOptions.args["pvpstats"] = nil;
 end
 
 function VanasKoSPvPStats:OnEnable()
@@ -713,26 +701,37 @@ function VanasKoSPvPStats:OnEnable()
 end
 
 
-local tempStatData = { ['wins'] = 0, ['losses'] = 0 };
+local tempStatData = {
+	['wins'] = 0,
+	['losses'] = 0 ,
+	['bgwins'] = 0,
+	['bglosses'] = 0,
+	['arenawins'] = 0,
+	['arenalosses'] = 0,
+	['combatwins'] = 0,
+	['combatlosses'] = 0,
+	['ffawins'] = 0,
+	['ffalosses'] = 0,
+};
 
 function VanasKoSPvPStats:PvPLoss(message, name)
 	if(name == nil) then
 		return;
 	end
 
-	local inBg = 0;
-	if(VanasKoSDataGatherer:IsInBattleground()) then
-		inBg = 1;
-	end
-
-	VanasKoS:Print(format(L["PvP Loss versus %s registered."], name));
-	name = name:lower();
-
+	local lname = name:lower();
 	tempStatData.wins = 0;
 	tempStatData.losses = 1;
 	tempStatData.bgwins = 0;
-	tempStatData.bglosses = inBg;
-	VanasKoS:AddEntry("PVPSTATS", name, tempStatData);
+	tempStatData.bglosses = VanasKoS:IsInBattleground() and 1 or 0;
+	tempStatData.arenawins = 0;
+	tempStatData.arenalosses = VanasKoS:IsInArena() and 1 or 0;
+	tempStatData.combatwins = 0;
+	tempStatData.combatlosses = VanasKoS:IsInCombatZone() and 1 or 0;
+	tempStatData.ffawins = 0;
+	tempStatData.ffalosses = VanasKoS:IsInFfaZone() and 1 or 0;
+
+	VanasKoS:AddEntry("PVPSTATS", lname, tempStatData);
 end
 
 function VanasKoSPvPStats:PvPWin(message, name)
@@ -740,33 +739,26 @@ function VanasKoSPvPStats:PvPWin(message, name)
 		return;
 	end
 
-	local inBg = 0;
-	if(VanasKoSDataGatherer:IsInBattleground()) then
-		inBg = 1;
-	end
-
-	VanasKoS:Print(format(L["PvP Win versus %s registered."], name));
-
-	name = name:lower();
-
 	tempStatData.wins = 1;
 	tempStatData.losses = 0;
-	tempStatData.bgwins = inBg;
+	tempStatData.bgwins = VanasKoS:IsInBattleground() and 1 or 0;
 	tempStatData.bglosses = 0;
-	VanasKoS:AddEntry("PVPSTATS", name, tempStatData);
+	tempStatData.arenawins = VanasKoS:IsInArena() and 1 or 0;
+	tempStatData.arenalosses = 0;
+	tempStatData.combatwins = VanasKoS:IsInCombatZone() and 1 or 0;
+	tempStatData.combatlosses = 0;
+	tempStatData.ffawins = VanasKoS:IsInFfaZone() and 1 or 0;
+	tempStatData.ffalosses = 0;
+
+	VanasKoS:AddEntry("PVPSTATS", lname, tempStatData);
 end
 
-function VanasKoSPvPStats:ListButtonOnEnter(button, frame)
-	if(self.group == PLAYERS_LIST) then
-		local selectedPlayer, selectedPlayerData = VanasKoSGUI:GetListEntryForID(frame:GetID());
-		VanasKoSDefaultLists:SetSelectedPlayerData(selectedPlayer, selectedPlayerData);
+function VanasKoSPvPStats:HoverType()
+	if (self.group == PLAYERS_LIST) then
+		return "player";
+	elseif (self.group == GUILDS_LIST) then
+		return "guild";
 	end
-	
-	VanasKoSDefaultLists:ShowTooltip();
-end
-
-function VanasKoSPvPStats:ListButtonOnLeave(button, frame)
-	VanasKoSDefaultLists:ListButtonOnLeave();
 end
 
 local function round(number, dp)

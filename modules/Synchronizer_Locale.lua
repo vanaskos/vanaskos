@@ -1,5 +1,10 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "enUS", true)
 if L then
+	L["Nicelist"] = true
+	L["Player KoS"] = true
+	L["Guild KoS"] = true
+	L["Hatelist"] = true
+
 	L["Accept/Ignore-Lists"] = true
 	L["Adds a Share Group to the list"] = true
 	L["Add Share Group"] = true

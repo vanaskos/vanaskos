@@ -4,8 +4,6 @@ local VanasKoSDefaultLists = VanasKoSDefaultLists;
 local VanasKoS = VanasKoS;
 local VanasKoSGUI = VanasKoSGUI;
 
-local tooltip = nil;
-
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DefaultLists", false);
 
 -- sort functions
@@ -237,11 +235,6 @@ function VanasKoSDefaultLists:OnInitialize()
 			VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries = not VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries;
 			VanasKoSGUI:UpdateShownList();
 		end);
-
-	self.tooltipFrame = CreateFrame("GameTooltip", "VanasKoSDefaultListsTooltip", UIParent, "GameTooltipTemplate");
-	tooltip = self.tooltipFrame;
-	
-	tooltip:Hide();
 end
 
 function VanasKoSDefaultLists:OnEnable()
@@ -259,6 +252,15 @@ end
 
 function VanasKoSDefaultLists:HideList()
 	VanasKoSListFrameCheckBox:Hide();
+end
+
+function VanasKoSDefaultLists:HoverType()
+	local list = VANASKOS.showList;
+	if (list == "PLAYERKOS" or list == "HATELIST" or list == "NICELIST") then
+		return "player";
+	elseif (list == "GUILDKOS") then
+		return "guild";
+	end
 end
 
 -- FilterFunction as called by VanasKoSGUI - key is the index from the table entry that gets displayed, value the data associated with the index. searchBoxText the text entered in the searchBox
@@ -574,111 +576,4 @@ function VanasKoSDefaultLists:ListButtonOnClick(button, frame)
 	end
 
 	ListButtonOnRightClickMenu();
-end
-
-local selectedPlayer, selectedPlayerData = nil;
-
-function VanasKoSDefaultLists:UpdateMouseOverFrame()
-	if(not selectedPlayer) then
-		tooltip:AddLine("----");
-		return;
-	end
-	
-	-- name
-	local pdatalist = VanasKoS:GetList("PLAYERDATA")[selectedPlayer];
-	tooltip:AddLine(string.Capitalize(selectedPlayer));
-	
-	-- guild, level, race, class, zone, lastseen
-	if(pdatalist) then
-		if(pdatalist['guild']) then
-			local text = "<|cffffffff" .. pdatalist['guild'] .. "|r>";
-			if(pdatalist['guildrank']) then
-				text = text .. " (" .. pdatalist['guildrank'] .. ")";
-			end
-			tooltip:AddLine(text);
-		end
-		if(pdatalist['level'] and pdatalist['race'] and pdatalist['class']) then
-			tooltip:AddLine(format(L['Level %s %s %s'], pdatalist['level'], pdatalist['race'], pdatalist['class']));
-		elseif(pdatalist['race'] and pdatalist['class']) then
-			tooltip:AddLine(format('%s %s', pdatalist['race'], pdatalist['class']));
-		end
-		if(pdatalist['zone'] and pdatalist['lastseen']) then
-			tooltip:AddLine(format(L['Last seen at |cff00ff00%s|r in |cff00ff00%s|r'], date("%c", pdatalist['lastseen']), pdatalist['zone']));
-		end
-	end
-
-	-- infos about creator, sender, owner, last updated
-	if(selectedPlayerData) then
-		if(selectedPlayerData['owner']) then
-			tooltip:AddLine(format(L['Owner: |cffffffff%s|r'], selectedPlayerData['owner']));
-		end
-
-		if(selectedPlayerData['creator']) then
-			tooltip:AddLine(format(L['Creator: |cffffffff%s|r'], selectedPlayerData['creator']));
-		end
-
-		if(selectedPlayerData['created']) then
-			tooltip:AddLine(format(L['Created: |cffffffff%s|r'], date("%c", selectedPlayerData['created'])));
-		end
-
-		if(selectedPlayerData['sender']) then
-			tooltip:AddLine(format(L['Received from: |cffffffff%s|r'], selectedPlayerData['sender']));
-		end
-
-		if(selectedPlayerData['lastupdated']) then
-			tooltip:AddLine(format(L['Last updated: |cffffffff%s|r'], date("%c", selectedPlayerData['lastupdated'])));
-		end
-	end
-
-	local pvplog = VanasKoS:GetList("PVPLOG");
-	if(pvplog) then
-		local playerlog = pvplog.player[selectedPlayer];
-		if(playerlog) then
-			tooltip:AddLine("|cffffffff" .. L["PvP Encounter:"] .. "|r");
-			local i = 0;
-			for k,eventIdx in ipairs(playerlog) do
-				local event = pvplog.event[eventIdx];
-				if(event.type and event.zone and event.myname) then
-					if(event.type == 'win') then
-						tooltip:AddLine(format(L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", k), event.zone, event.myname));
-					else
-						tooltip:AddLine(format(L["%s: |cffff0000Loss|r |cffffffffin %s(|r|cffff00ff%s|r|cffffffff)|r"], date("%c", k), event.zone, event.myname));
-					end
-				end
-				i = i + 1;
-				if(i > 10) then
-					return;
-				end
-			end
-		end
-	end
-end
-
-function VanasKoSDefaultLists:ShowTooltip()
-	tooltip:ClearLines();
-	tooltip:SetOwner(VanasKoSListFrame, "ANCHOR_CURSOR");
-	tooltip:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -30);
-	tooltip:SetPoint("BOTTOMLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -390);
-	
-	self:UpdateMouseOverFrame();
-	tooltip:Show();
-end
-
-function VanasKoSDefaultLists:HideTooltip()
-	tooltip:Hide();
-end
-
-function VanasKoSDefaultLists:ListButtonOnEnter(button, frame)
-	self:SetSelectedPlayerData(VanasKoSGUI:GetListEntryForID(frame:GetID()));
-	
-	self:ShowTooltip();
-end
-
-function VanasKoSDefaultLists:ListButtonOnLeave(button, frame)
-	self:HideTooltip();
-end
-
-function VanasKoSDefaultLists:SetSelectedPlayerData(selPlayer, selPlayerData)
-	selectedPlayer = selPlayer;
-	selectedPlayerData = selPlayerData;
 end

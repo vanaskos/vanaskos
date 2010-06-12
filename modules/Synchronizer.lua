@@ -11,8 +11,6 @@ local SHARE_LIST = "sl";
 
 
 local function RegisterConfiguration()
-	local DL = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DefaultLists", false);
-	
 	VanasKoSGUI:AddModuleToggle("Synchronizer", L["Sharing"]);
 	VanasKoSGUI:AddConfigOption("Synchronizer", {
 		type = 'group',
@@ -68,10 +66,10 @@ local function RegisterConfiguration()
 						set = function(frame, key, value) VanasKoSSynchronizer.db.profile.GuildShareLists[key] = value end,
 							
 						values = {
-							["PLAYERKOS"] = DL["Player KoS"],
-							["GUILDKOS"] = DL["Guild KoS"],
-							["HATELIST"] = DL["Hatelist"],
-							["NICELIST"] = DL["Nicelist"],
+							["PLAYERKOS"] = L["Player KoS"],
+							["GUILDKOS"] = L["Guild KoS"],
+							["HATELIST"] = L["Hatelist"],
+							["NICELIST"] = L["Nicelist"],
 						},
 					},
 				},
@@ -312,6 +310,10 @@ end
 local sendList = { };
 function VanasKoSSynchronizer:GetListToShare(listName)
 	local list = VanasKoS:GetList(listName);
+	if (not list) then
+		return
+	end
+
 	wipe(sendList);
 	for k, v in pairs(list) do
 		if (not v.owner or v.owner == "") then

@@ -12,6 +12,7 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0");
 local AceConfig = LibStub("AceConfig-3.0");
 
 
+local tooltip = nil;
 local listHandler = { };
 
 VanasKoSGUI.dropDownFrame = nil;
@@ -21,6 +22,7 @@ VanasKoSGUI.numConfigOptions = 8;
 VanasKoSConfigOptions = {
 	name = "VanasKoS",
 	type = "group",
+	childGroups = 'tab',
 	args = {
 		help = {
 			type = "description",
@@ -32,54 +34,23 @@ VanasKoSConfigOptions = {
 			order = 2,
 			name = function() return L["Version: "] .. VANASKOS.VERSION end,
 		},
-		performanceheader = {
-			type = "header",
+		moduleGroup = {
+			type = "group",
 			order = 3,
-			name = L["Performance"],
+			name = "Modules",
+			args = {
+				modules = {
+					type = "multiselect",
+					order = 3,
+					name = L["Enabled modules"],
+					desc = L["Enable/Disable modules"],
+					get = function(frame, k) return VanasKoS:GetModule(k).enabledState; end,
+					set = function(frame, k, v) VanasKoS:ToggleModuleActive(k); end,
+					values = {},
+				},
+			},
 		},
-		combatlog = {
-			type = "toggle",
-			order = 4,
-			name = L["Use Combat Log"],
-			desc = L["Toggles if the combatlog should be used to detect nearby player (Needs UI-Reload)"],
-			get = function() return VanasKoSDataGatherer.db.profile.UseCombatLog; end,
-			set = function(frame, v) VanasKoSDataGatherer.db.profile.UseCombatLog = v; end,
-		},
-		playerdatastore = {
-			type = "toggle",
-			order = 5,
-			name = L["Permanent Player-Data-Storage"],
-			desc = L["Toggles if the data about players (level, class, etc) should be saved permanently."],
-			get = function() return VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently; end,
-			set = function(frame, v) VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently = v; end,
-		},
-		gatherincities = {
-			type = "toggle",
-			order = 6,
-			name = L["Save data gathered in cities"],
-			desc = L["Toggles if data from players gathered in cities should be (temporarily) saved."],
-			get = function() return VanasKoSDataGatherer.db.profile.GatherInCities; end,
-			set = function(frame, v) VanasKoSDataGatherer.db.profile.GatherInCities = v; end,
-		},
-		enableinsanctuary = {
-			type = "toggle",
-			order = 7,
-			name = L["Enable in Sanctuaries"],
-			desc = L["Toggles detection of players in sanctuaries"],
-			get = function() return VanasKoSDataGatherer.db.profile.EnableInSanctuary; end,
-			set = function(frame, v) VanasKoSDataGatherer.db.profile.EnableInSanctuary = v; VanasKoSDataGatherer:UpdateZone(); end,
-		},
-		modules = {
-			type = "multiselect",
-			order = 8,
-			name = L["Enabled modules"],
-			desc = L["Enable/Disable modules"],
-			get = function(frame, k) return VanasKoS:GetModule(k).enabledState; end,
-			set = function(frame, k, v) VanasKoS:ToggleModuleActive(k); end,
-			values = {},
-		}
-	}
-	
+	},
 };
 
 function VanasKoSGUI:AddConfigOption(name, option)
@@ -106,7 +77,7 @@ function VanasKoSGUI:AddMainMenuConfigOptions(optionTable)
 end
 
 function VanasKoSGUI:AddModuleToggle(moduleName, text)
-	VanasKoSConfigOptions.args.modules.values[moduleName] = text;
+	VanasKoSConfigOptions.args.moduleGroup.args.modules.values[moduleName] = text;
 end
 
 function VanasKoSGUI:GetListName(listid)
@@ -153,43 +124,46 @@ function VanasKoSGUI:OnInitialize()
 	self:RegisterMessage("VanasKoS_List_Added", "InitializeDropDowns");
 	
 	self:AddMainMenuConfigOptions({
-		gui_header = {
-			type = "header",
-			order = 1,
+		gui_group = {
 			name = L["GUI"],
+			type = "group",
+			args = {
+				gui_locked = { 
+					type = 'toggle',
+					name = L["Locked"],
+					desc = L["Locks the Main Window"],
+					order = 1,
+					set = function() VanasKoSGUI.db.profile.GUILocked = not VanasKoSGUI.db.profile.GUILocked; end,
+					get = function() return VanasKoSGUI.db.profile.GUILocked; end,
+				},
+				gui_reset = {
+					type = 'execute',
+					name = L["Reset Position"],
+					desc = L["Resets the Position of the Main Window"],
+					order = 2,
+					func = function() VanasKoSGUI.db.profile.GUIMoved = false; HideUIPanel(VanasKoSFrame); ShowUIPanel(VanasKoSFrame); end,
+				},
+			},
 		},
-		gui_locked = { 
-			type = 'toggle',
-			name = L["Locked"],
-			desc = L["Locks the Main Window"],
-			order = 2,
-			set = function() VanasKoSGUI.db.profile.GUILocked = not VanasKoSGUI.db.profile.GUILocked; end,
-			get = function() return VanasKoSGUI.db.profile.GUILocked; end,
-		},
-		gui_reset = {
-			type = 'execute',
-			name = L["Reset Position"],
-			desc = L["Resets the Position of the Main Window"],
-			order = 3,
-			func = function() VanasKoSGUI.db.profile.GUIMoved = false; HideUIPanel(VanasKoSFrame); ShowUIPanel(VanasKoSFrame); end,
-		}
 	});
 	
 	VanasKoSListFrameSearchBox:SetScript("OnTextChanged", function() VanasKoSGUI:SetFilterText(this:GetText()) end);
 	
 	VanasKoSFrame:RegisterForDrag("LeftButton");
-	VanasKoSFrame:SetScript("OnDragStart",
-								function()
-									if(VanasKoSGUI.db.profile.GUILocked) then
-										return;
-									end
-									VanasKoSFrame:StartMoving();
-								end);
-	VanasKoSFrame:SetScript("OnDragStop",
-								function()
-									VanasKoSFrame:StopMovingOrSizing();
-									VanasKoSGUI.db.profile.GUIMoved = true;
-								end);
+	VanasKoSFrame:SetScript("OnDragStart", function()
+							if(VanasKoSGUI.db.profile.GUILocked) then
+								return;
+							end
+							VanasKoSFrame:StartMoving();
+						end);
+	VanasKoSFrame:SetScript("OnDragStop", function()
+							VanasKoSFrame:StopMovingOrSizing();
+							VanasKoSGUI.db.profile.GUIMoved = true;
+						end);
+	self.tooltipFrame = CreateFrame("GameTooltip", "VanasKoSListTooltip", UIParent, "GameTooltipTemplate");
+	tooltip = self.tooltipFrame;
+	
+	tooltip:Hide();
 end
 
 function VanasKoSGUI:OpenConfigWindow()
@@ -409,12 +383,19 @@ function VanasKoSGUI:ListButton_OnEnter(button, frame)
 	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ListButtonOnEnter) then
 		listHandler[VANASKOS.showList]:ListButtonOnEnter(button, frame);
 	end
+	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].HoverType) then
+		local hoveredKey, hoveredValue = self:GetListEntryForID(frame:GetID());
+		local hoveredType = listHandler[VANASKOS.showList]:HoverType();
+		self:ShowTooltip(hoveredKey, hoveredValue, hoveredType);
+	end
 end
 
 function VanasKoSGUI:ListButton_OnLeave(button, frame)
 	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ListButtonOnLeave) then
 		listHandler[VANASKOS.showList]:ListButtonOnLeave(button, frame);
 	end
+
+	self:HideTooltip();
 end
 
 function VanasKoSGUI:ToggleLeftButton_OnClick(button, frame)
@@ -454,6 +435,124 @@ function VanasKoSGUI:ToggleRightButton_OnLeave(button, frame)
 		listHandler[VANASKOS.showList]:ToggleRightButtonOnLeave(button, frame);
 	end
 end
+
+function VanasKoSGUI:ShowTooltip(k, v, ty)
+	if (ty == "player" or ty == "guild") then
+		tooltip:ClearLines();
+		tooltip:SetOwner(VanasKoSListFrame, "ANCHOR_CURSOR");
+		tooltip:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -30);
+		tooltip:SetPoint("BOTTOMLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -390);
+		
+		self:UpdateMouseOverFrame(k, v, ty);
+		tooltip:Show();
+	end
+end
+
+function VanasKoSGUI:HideTooltip()
+	tooltip:Hide();
+end
+
+function VanasKoSGUI:UpdateMouseOverFrame(k, v, ty)
+	if(not k) then
+		tooltip:AddLine("----");
+		return;
+	end
+
+	-- name
+	local data = nil;
+	if (ty == "player") then
+		tooltip:AddLine(string.Capitalize(k));
+		data = VanasKoS:GetList("PLAYERDATA")[k];
+
+		-- guild, level, race, class, zone, lastseen
+		if(data) then
+			if(data.guild) then
+				local text = "<|cffffffff" .. data.guild .. "|r>";
+				if(data.guildrank) then
+					text = text .. " (" .. data.guildrank .. ")";
+				end
+				tooltip:AddLine(text);
+			end
+			if(data.level and data.race and data.class) then
+				tooltip:AddLine(format(L['Level %s %s %s'], data.level, data.race, data.class));
+			elseif(data.race and data.class) then
+				tooltip:AddLine(format('%s %s', data.race, data.class));
+			end
+			if(data.zone and data.lastseen) then
+				tooltip:AddLine(format(L['Last seen at |cff00ff00%s|r in |cff00ff00%s|r'], date("%c", data.lastseen), data.zone));
+			end
+		end
+	elseif(ty == "guild") then
+		local data = VanasKoS:GetList("GUILDDATA")[k];
+		if (data and data.displayName) then
+			tooltip:AddLine("<"..data.displayName..">");
+		else
+			tooltip:AddLine("<"..string.Capitalize(k)..">");
+		end
+	end
+		
+	-- infos about creator, sender, owner, last updated
+	if(v) then
+		if(v.reason) then
+			tooltip:AddLine(format('|cffffffff%s', v.reason));
+		end
+		if(v.owner) then
+			tooltip:AddLine(format(L['Owner: |cffffffff%s|r'], v.owner));
+		end
+
+		if(v.creator) then
+			tooltip:AddLine(format(L['Creator: |cffffffff%s|r'], v.creator));
+		end
+
+		if(v.created) then
+			tooltip:AddLine(format(L['Created: |cffffffff%s|r'], date("%c", v.created)));
+		end
+
+		if(v.sender) then
+			tooltip:AddLine(format(L['Received from: |cffffffff%s|r'], v.sender));
+		end
+
+		if(v.lastupdated) then
+			tooltip:AddLine(format(L['Last updated: |cffffffff%s|r'], date("%c", v.lastupdated)));
+		end
+	end
+
+	if (ty == "player") then
+		local pvplog = VanasKoS:GetList("PVPLOG");
+		if(pvplog) then
+			local playerlog = pvplog.player[k];
+			if(playerlog) then
+				local i = #playerlog + 1;
+				local iter = function()
+					i = i - 1;
+					if(not playerlog or playerlog[i] == nil) then 
+						return nil;
+					else 
+						return i, playerlog[i];
+					end
+				end
+
+				if (#playerlog > 0) then
+					tooltip:AddLine("|cffffffff" .. L["PvP Encounter:"] .. "|r");
+				end
+				for key,eventIdx in iter do
+					local event = pvplog.event[eventIdx];
+					if(event.type and event.zone and event.myname) then
+						if(event.type == 'win') then
+							tooltip:AddLine(format(L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), event.zone, event.myname));
+						else
+							tooltip:AddLine(format(L["%s: |cffff0000Loss|r |cffffffffin %s(|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), event.zone, event.myname));
+						end
+					end
+					if(key < #playerlog - 15) then
+						return;
+					end
+				end
+			end
+		end
+	end
+end
+
 function VanasKoSGUI:GUIHideButtons(minimum, maximum)
 	for i=minimum,maximum,1 do
 		local button = getglobal("VanasKoSListFrameListButton" .. i);
@@ -513,9 +612,6 @@ function VanasKoSGUI:pairsByKeys(t, fSort, fFilter)
 	table.sort(a, fSort);
 	local i = 0      -- iterator variable
 	local iter = function ()   -- iterator function
-		function Reset()
-			i = 0;
-		end
 		i = i + 1;
 		if a[i] == nil then 
 			return nil;

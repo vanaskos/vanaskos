@@ -38,6 +38,17 @@ if L then
 	L["Use Combat Log"] = true
 	L["Vanas KoS"] = true
 	L["Version: "] = true
+
+	L["Level %s %s %s"] = true
+	L["Last seen at |cff00ff00%s|r in |cff00ff00%s|r"] = true
+	L["Owner: |cffffffff%s|r"] = true
+	L["Creator: |cffffffff%s|r"] = true
+	L["Created: |cffffffff%s|r"] = true
+	L["Received from: |cffffffff%s|r"] = true
+	L["Last updated: |cffffffff%s|r"] = true
+	L["PvP Encounter:"] = true;
+	L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"] = true
+	L["%s: |cffff0000Loss|r |cffffffffin %s(|r|cffff00ff%s|r|cffffffff)|r"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "frFR")

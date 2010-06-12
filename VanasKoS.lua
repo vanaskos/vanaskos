@@ -35,6 +35,10 @@ function VanasKoS:OnInitialize()
 end
 
 function VanasKoS:OnEnable()
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateZone");
+	self:RegisterEvent("ZONE_CHANGED", "UpdateZone");
+	self:RegisterEvent("ZONE_CHANGED_INDOORS", "UpdateZone");
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateZone");
 	self:RegisterMessage("VanasKoS_List_Entry_Added", "List_Entry_Added");
 	self:RegisterMessage("VanasKoS_List_Entry_Removed", "List_Entry_Removed");
 end
@@ -42,6 +46,7 @@ end
 function VanasKoS:OnDisable()
 	VanasKoS_WarnFrame:Hide();
 	self:UnregisterAllMessages();
+	self:UnregisterAllEvents();
 end
 
 --[[----------------------------------------------------------------------
@@ -177,6 +182,10 @@ function VanasKoS:IsOnList(list, name, group)
 end
 
 function VanasKoS:AddEntry(list, name, data)
+	if (not name) then
+		return;
+	end
+
 	name = string.trim(name:lower());
 	
 	if(listHandler[list] ~= nil and listHandler[list].AddEntry ~= nil) then
@@ -328,4 +337,88 @@ end
 
 function VanasKoS:ToggleMenu()
 	VanasKoSGUI:Toggle();
+end
+
+--[[----------------------------------------------------------------------
+	Zone information
+------------------------------------------------------------------------]]
+local inSanctuary = false;
+local inBattleground = false;
+local inArena = false;
+local inDungeon = false;
+local inCombatZone = false;
+local inFfaZone = false;
+local inCity = false;
+
+local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable()
+local CityNames = {
+	-- Alliance city names
+	[BZ["Stormwind City"]] = true,
+	[BZ["Ironforge"]] = true,
+	[BZ["Darnassus"]] = true,
+	[BZ["The Exodar"]] = true,
+
+	-- Horde city names
+	[BZ["Orgrimmar"]] = true,
+	[BZ["Undercity"]] = true,
+	[BZ["Thunder Bluff"]] = true,
+	[BZ["Silvermoon City"]] = true,
+
+	-- Neutral city names
+	[BZ["Booty Bay"]] = true,
+	[BZ["Dalaran"]] = true,
+	[BZ["Everlook"]] = true,
+	[BZ["Gadgetzan"]] = true,
+	[BZ["Ratchet"]] = true,
+	[BZ["Shattrath City"]] = true,
+};
+
+function VanasKoS:UpdateZone()
+	local gatherTargetEvents, gatherCombatEvents;
+	local zone = GetRealZoneText();
+	local pvpType, isFFA, faction = GetZonePVPInfo();
+	local inInstance, instanceType = IsInInstance();
+
+	inSanctuary = (pvpType == "sanctuary");
+	inCombatZone = (pvpType == "combat");
+	inArena = ((inInstance and instanceType == "arena") or pvpType == "arena");
+	inDungeon = (inInstance and (instanceType == "party" or instanceType == "raid"));
+	inBattleground = (inInstance and instanceType == "pvp");
+	inFfaZone = isFFA;
+
+	if (CityNames[zone]) then
+		inCity = true;
+	else
+		inCity = false;
+	end
+
+	self:SendMessage("VanasKoS_Zone_Changed", zone);
+end
+
+function VanasKoS:IsInBattleground()
+	return inBattleground;
+end
+
+function VanasKoS:IsInSanctuary()
+	return inSanctuary;
+end
+
+function VanasKoS:IsInArena()
+	return inArena;
+end
+
+function VanasKoS:IsInDungeon()
+	return inDungeon;
+end
+
+function VanasKoS:IsInCombatZone()
+	return inComabtZone;
+end
+
+function VanasKoS:IsInFfaZone()
+	return inFfaZone;
+end
+
+function VanasKoS:IsInCity()
+	return inCity;
 end

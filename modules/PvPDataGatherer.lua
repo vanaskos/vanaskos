@@ -16,10 +16,11 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 				Enabled = true,
 			},
 			realm = {
-				-- Bug in ace3 prevents moving pvplog from
-				-- realm/pvpstast/pvplog to realm/pvplog
 				pvpstats = {
 					pvplog = {
+						event = {},
+						zone = {},
+						player = {},
 					},
 				}
 			}
@@ -260,13 +261,6 @@ function VanasKoSPvPDataGatherer:GetDamageToArray()
 	return lastDamageTo;
 end
 
-function VanasKoSPvPDataGatherer:ListButtonOnEnter(button, frame)
-	local selectedPlayer, selectedPlayerData = VanasKoSGUI:GetListEntryForID(frame:GetID());
-	VanasKoSDefaultLists:SetSelectedPlayerData(selectedPlayer, selectedPlayerData)
-	
-	VanasKoSDefaultLists:ShowTooltip();
-end
-
-function VanasKoSPvPDataGatherer:ListButtonOnLeave(button, frame)
-	VanasKoSDefaultLists:ListButtonOnLeave();
+function VanasKoSPvPDataGatherer:HoverType()
+	return "player";
 end

@@ -171,7 +171,7 @@ end
 
 local function checkForKoS(name, continent, zone, posX, posY)
 	local koslist = VanasKoS:GetList("PLAYERKOS");
-	if(koslist[name:lower()]) then
+	if(koslist and koslist[name:lower()]) then
 		local zones = { GetMapZones(continent) };
 		VanasKoS:Print(format(L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"], name, posX, posY, zones[zone], koslist[name:lower()].reason));
 		VanasKoSEventMap:TrackPlayer(name, continent, zone, posX/100, posY/100);

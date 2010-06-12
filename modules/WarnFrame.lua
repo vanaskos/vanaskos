@@ -37,6 +37,7 @@ local buttonData = nil;
 local timer = nil;
 local currentButtonCount = 0;
 local CursorPosition, gsub, strfind = CursorPosition, gsub, strfind
+local InCombatLockdown = InCombatLockdown
 
 local function GetColor(which)
 	return VanasKoSWarnFrame.db.profile[which .. "R"], VanasKoSWarnFrame.db.profile[which .. "G"], VanasKoSWarnFrame.db.profile[which .. "B"], VanasKoSWarnFrame.db.profile[which .. "A"];
@@ -507,6 +508,11 @@ local function UpdateWarnSize()
 			warnFrame:SetPoint(point, "UIParent", anchor, xOff, yOff - (h - oldH) / 2);
 		end
 	end
+
+	for i=currentButtonCount+1, WARN_BUTTONS_MAX do
+		HideButton(i);
+	end
+
 	for i=1,WARN_BUTTONS_MAX do
 		warnButtonsCombat[i]:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
 		warnButtonsCombat[i]:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
@@ -514,9 +520,6 @@ local function UpdateWarnSize()
 		warnButtonsOOC[i]:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
 		classIcons[i][1]:SetWidth(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
 		classIcons[i][1]:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
-		if (i > currentButtonCount) then
-			HideButton(i);
-		end
 	end
 end
 
@@ -582,7 +585,13 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 				desc = L["Hide in battlegrounds and pvp zones"],
 				order = 5,
 				get = function() return VanasKoSWarnFrame.db.profile.hideInBg; end,
-				set = function(frame, v) VanasKoSWarnFrame.db.profile.hideInBg = v; end
+				set = function(frame, v)
+					VanasKoSWarnFrame.db.profile.hideInBg = v;
+					VanasKoSWarnFrame:EnableZoneChangeEvent(v and VanasKoSWarnFrame.db.profile.hideInInstance);
+					if(VanasKoS:IsInBattleground()) then
+						VanasKoSWarnFrame:EnablePlayerDetectEvent(not v);
+					end
+				end
 			},
 			hideInInstance = {
 				type = 'toggle',
@@ -590,7 +599,13 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 				desc = L["Hide in dungeon instances"],
 				order = 6,
 				get = function() return VanasKoSWarnFrame.db.profile.hideInInstance; end,
-				set = function(frame, v) VanasKoSWarnFrame.db.profile.hideInInstance = v; end
+				set = function(frame, v)
+					VanasKoSWarnFrame.db.profile.hideInInstance = v;
+					VanasKoSWarnFrame:EnableZoneChangeEvent(v and VanasKoSWarnFrame.db.profile.hideInBg);
+					if(VanasKoS:IsInDungeon()) then
+						VanasKoSWarnFrame:EnablePlayerDetectEvent(not v);
+					end
+				end
 			},
 			reset = {
 				type = 'execute',
@@ -1046,15 +1061,26 @@ function VanasKoSWarnFrame:OnEnable()
 	CreateTooltipFrame();
 	CreateClassIcons();
 	CreateWarnFrameFonts(self.db.profile.FontSize);
-
-	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
-
 	warnFrame:SetAlpha(1);
 	self:Update();
 
-	if(timer == nil) then
-		timer = self:ScheduleRepeatingTimer("UpdateList", 1);
+	self:EnableZoneChangeEvent(self.db.profile.hideInBg or self.db.profile.hideInInstance);
+
+	if(self.db.profile.hideInBg and VanasKoS:IsInBattleground()) then
+		timer = nil;
+		HideWarnFrame();
+		self:EnablePlayerDetectEvent(false);
+	elseif(self.db.profile.hideInInstance and VanasKoS:IsInDungeon()) then
+		timer = nil;
+		HideWarnFrame();
+		self:EnablePlayerDetectEvent(false);
+	else
+		if (not timer) then
+			timer = self:ScheduleRepeatingTimer("UpdateList", 1);
+		end
+		self:EnablePlayerDetectEvent(true);
 	end
+
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
 end
 
@@ -1062,7 +1088,8 @@ function VanasKoSWarnFrame:OnDisable()
 	self:UnregisterAllEvents();
 	self:CancelAllTimers();
 	timer = nil;
-	
+
+	currentButtonCount = 0;
 	wipe(nearbyKoS);
 	wipe(nearbyEnemy);
 	wipe(nearbyFriendly);
@@ -1170,18 +1197,64 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 	if (not dataCache[name]) then
 		dataCache[name] = { };
 	end
-	dataCache[name]['name'] = data.name:trim();
-	dataCache[name]['realm'] = data.realm;
-	dataCache[name]['guild'] = data.guild;
-	dataCache[name]['guildrank'] = data.guildrank;
-	dataCache[name]['class'] = data.class;
-	dataCache[name]['classEnglish'] = data.classEnglish;
-	dataCache[name]['race'] = data.race;
-	dataCache[name]['gender'] = data.gender;
-	dataCache[name]['faction'] = faction;
-	dataCache[name]['level'] = data.level;
+	dataCache[name].name = data.name:trim();
+	dataCache[name].realm = data.realm;
+	dataCache[name].guild = data.guild;
+	dataCache[name].guildrank = data.guildrank;
+	dataCache[name].class = data.class;
+	dataCache[name].classEnglish = data.classEnglish;
+	dataCache[name].race = data.race;
+	dataCache[name].gender = data.gender;
+	dataCache[name].faction = faction;
+	dataCache[name].level = data.level;
 	
 	self:Update();
+end
+
+local playerDetectEventEnabled = false;
+function VanasKoSWarnFrame:EnablePlayerDetectEvent(enable)
+	if (enable and (not playerDetectEventEnabled)) then
+		self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
+		playerDetectEventEnabled = true;
+	elseif ((not enable) and playerDetectEventEnabled) then
+		self:UnregisterMessage("VanasKoS_Player_Detected");
+		playerDetectEventEnabled = false;
+	end
+end
+
+local zoneChangeEventEnabled = false;
+function VanasKoSWarnFrame:EnableZoneChangeEvent(enable)
+	if (enable and (not zoneChangeEventEnabled)) then
+		self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");
+		zoneChangeEventEnabled = true;
+	elseif ((not enable) and zoneChangeEventEnabled) then
+		self:UnregisterMessage("VanasKoS_Zone_Changed");
+		zoneChangeEventEnabled = false;
+	end
+end
+
+function VanasKoSWarnFrame:ZoneChanged(message)
+	if(self.db.profile.hideInBg and VanasKoS:IsInBattleground()) then
+		HideWarnFrame();
+		if (timer) then
+			self:CancelTimer(timer);
+			timer = nil;
+		end
+		self:EnablePlayerDetectEvent(false)
+	elseif(self.db.profile.hideInInstance and VanasKoS:IsInDungeon()) then
+		HideWarnFrame();
+		if (timer) then
+			self:CancelTimer(timer);
+			timer = nil;
+		end
+		self:EnablePlayerDetectEvent(false)
+	else
+		if (not timer) then
+			timer = self:ScheduleRepeatingTimer("UpdateList", 1);
+		end
+		self:EnablePlayerDetectEvent(true)
+	end
+
 end
 
 local function GetButtonText(name, data)
@@ -1239,7 +1312,7 @@ local function SetButton(buttonNr, name, faction, data)
 	local zx, zy = GetPlayerMapPosition("player");
 	-- SetMapZoom(c, z)
 
-	wx, wy = GetPlayerMapPosition
+	local wx, wy = GetPlayerMapPosition
 	if(InCombatLockdown()) then
 		warnFrame:SetBackdropBorderColor(1.0, 0.0, 0.0);
 		if(buttonData[buttonNr] ~= name) then
@@ -1302,7 +1375,7 @@ function VanasKoSWarnFrame:Update()
 		newButtonCount = VanasKoSWarnFrame.db.profile.WARN_BUTTONS;
 	end
 
-	if (newButtonCount ~= currentButtonCount) then
+	if (newButtonCount ~= currentButtonCount and not InCombatLockdown()) then
 		currentButtonCount = newButtonCount;
 		UpdateWarnSize();
 	end
@@ -1389,24 +1462,13 @@ function VanasKoSWarnFrame:Update()
 		end
 	end
 
-	if(self.db.profile.hideInBg and VanasKoSDataGatherer:IsInBattleground()) then
-		HideWarnFrame();
-		return;
-	end
-
-	if(self.db.profile.hideInInstance) then
-		local inInstance, instanceType = IsInInstance();
-		if (inInstance) then
-			if (instanceType == "party" or instanceType == "raid") then
-				HideWarnFrame();
-				return;
-			end
-		end
-	end
-
 	-- show or hide/fade frame according to settings
 	if(self.db.profile.Enabled) then
-		if(self.db.profile.HideIfInactive) then
+		if(self.db.profile.hideInBg and VanasKoS:IsInBattleground()) then
+			HideWarnFrame();
+		elseif(self.db.profile.hideInInstance and VanasKoS:IsInDungeon()) then
+			HideWarnFrame();
+		elseif(self.db.profile.HideIfInactive) then
 			if((counter > 0 and self.db.profile.GrowUp == false) or (counter < (currentButtonCount - 1) and self.db.profile.GrowUp == true)) then
 				ShowWarnFrame();
 			else

@@ -1259,26 +1259,28 @@ end
 
 local function GetButtonText(name, data)
 	assert(name ~= nil);
-
 	_, _, player, realm = strfind(name, "([^-]+)[-]?(.*)");
 	local result = string.Capitalize(player);
 
-	local data = VanasKoS:GetPlayerData(name);
-	
-	-- Create a cache entry.
 	if(VanasKoSWarnFrame.db.profile.ShowTargetLevel) then
 		local level = nil;
 
 		-- If there is a player level coming in, record it.
-		if (data ~= nil and data.level ~= nil and data.level ~= "") then
+		if (data and data.level and data.level ~= "") then
 			level = data.level;
 			if (tonumber(level) == -1) then
 				level = "??";
 			end
+		else
+			local pdata = VanasKoS:GetPlayerData(name);
+			if (pdata and pdata.level) then
+				level = pdata.level
+			end
 		end
 
+
 		-- If we have a level, append it.
-		if (level ~= nil) then
+		if (level) then
 			result = result .. " [" .. tostring(level) .. "]";
 		end
 
@@ -1311,7 +1313,6 @@ local function SetButton(buttonNr, name, faction, data)
 	-- SetMapToCurrentZone();
 	local zx, zy = GetPlayerMapPosition("player");
 	-- SetMapZoom(c, z)
-
 	local wx, wy = GetPlayerMapPosition
 	if(InCombatLockdown()) then
 		warnFrame:SetBackdropBorderColor(1.0, 0.0, 0.0);
@@ -1323,11 +1324,11 @@ local function SetButton(buttonNr, name, faction, data)
 			end
 
 			warnButtonsCombat[buttonNr]:SetNormalFontObject(GetFactionFont(faction));
-			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name), data);
+			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name, data));
 			warnButtonsCombat[buttonNr]:Show();
 		else
-			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name), data);
-			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name), data);
+			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));
+			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name, data));
 		end
 	else
 		warnFrame:SetBackdropBorderColor(0.8, 0.8, 0.8);
@@ -1335,7 +1336,7 @@ local function SetButton(buttonNr, name, faction, data)
 			warnButtonsOOC[buttonNr]:SetAlpha(1);
 			warnButtonsCombat[buttonNr]:Hide();
 			warnButtonsOOC[buttonNr]:SetNormalFontObject(GetFactionFont(faction));
-			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name), data);
+			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));
 			warnButtonsOOC[buttonNr]:EnableMouse(true);
 			local macroText = VanasKoSWarnFrame.db.profile.MacroText;
 			_, _, player, realm = strfind(name, "([^-]+)[-]?(.*)");
@@ -1357,7 +1358,7 @@ local function SetButton(buttonNr, name, faction, data)
 			warnButtonsOOC[buttonNr]:SetAttribute("macrotext", macroText);
 			warnButtonsOOC[buttonNr]:Show();
 		else
-			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name), data);
+			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));
 		end
 	end
 
@@ -1403,13 +1404,12 @@ function VanasKoSWarnFrame:Update()
 	if(self.db.profile.GrowUp) then
 		counter = currentButtonCount - 1;
 	end
-
 	if(self.db.profile.ShowKoS) then
 		for k,v in pairs(nearbyKoS) do
 			if(counter < currentButtonCount and counter >= 0) then
-				SetButton(counter+1, k, "kos", dataCache and dataCache[k] or nil);
+				SetButton(counter+1, k, "kos", dataCache[k]);
 				if(self.db.profile.ShowClassIcons) then
-					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
+					setButtonClassIcon(counter + 1, dataCache[k] and dataCache[k].classEnglish);
 				end
 			end
 
@@ -1424,9 +1424,9 @@ function VanasKoSWarnFrame:Update()
 	if(self.db.profile.ShowHostile) then
 		for k,v in pairs(nearbyEnemy) do
 			if(counter < currentButtonCount and counter >= 0) then
-				SetButton(counter+1, k, "enemy", dataCache and dataCache[k] or nil);
+				SetButton(counter+1, k, "enemy", dataCache[k]);
 				if(self.db.profile.ShowClassIcons) then
-					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
+					setButtonClassIcon(counter + 1, dataCache[k] and dataCache[k].classEnglish);
 				end
 			end
 
@@ -1441,9 +1441,9 @@ function VanasKoSWarnFrame:Update()
 	if(self.db.profile.ShowFriendly) then
 		for k,v in pairs(nearbyFriendly) do
 			if(counter < currentButtonCount and counter >= 0) then
-				SetButton(counter+1, k, "friendly", dataCache and dataCache[k] or nil);
+				SetButton(counter+1, k, "friendly", dataCache[k]);
 				if(self.db.profile.ShowClassIcons) then
-					setButtonClassIcon(counter + 1, dataCache and dataCache[k] and dataCache[k].classEnglish);
+					setButtonClassIcon(counter + 1, dataCache[k] and dataCache[k].classEnglish);
 				end
 			end
 

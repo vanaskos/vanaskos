@@ -374,13 +374,20 @@ function VanasKoSNotifier:OnEnable()
 	self:RegisterMessage("VanasKoS_Player_Target_Changed", "Player_Target_Changed");
 	self:RegisterMessage("VanasKoS_Mob_Target_Changed", "Player_Target_Changed");
 	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");
-	self:SecureHook("FriendsList_Update");
+	self:SecureHook("FriendsFrame_SetButton");
+	self:SecureHook("FriendsFrameTooltip_Show");
 	self:SecureHook("IgnoreList_Update");
+	local frame = getglobal("FriendsFrameFriendsScrollFrame");
+	frame.buttonFunc = FriendsFrame_SetButton;
+	for i=1,FRIENDS_TO_DISPLAY do
+		local button = getglobal("FriendsFrameFriendsScrollFrameButton" .. i);
+		self:SecureHookScript(button, "OnEnter", "FriendsFrameTooltip_Show");
+	end
 	for i=1,IGNORES_TO_DISPLAY do
-		local button = getglobal("FriendsFrameIgnoreButton" .. i .. "ButtonText");
+		local button = getglobal("FriendsFrameIgnoreButton" .. i);
 		local reasonFont = button:CreateFontString("VanasKoSIgnoreButton" .. i .. "ReasonText");
 		reasonFont:SetFontObject("GameFontNormalSmall");
-		reasonFont:SetPoint("RIGHT", 10, 0);
+		reasonFont:SetPoint("RIGHT");
 	end
 	self:SecureHook("LFRBrowseFrameListButton_SetData");
 	--self:SecureHook("LFRBrowseButton_OnEnter");
@@ -391,43 +398,58 @@ function VanasKoSNotifier:OnEnable()
 	self:HookScript(GameTooltip, "OnTooltipSetUnit");
 end
 
-function VanasKoSNotifier:FriendsList_Update()
+function VanasKoSNotifier:FriendsFrame_SetButton(button, index, firstButton)
 	if (self.db.profile.friendlist ~= true) then
 		return
 	end
 
-	local friendOffset = FauxScrollFrame_GetOffset(FriendsFrameFriendsScrollFrame);
-	local friendIndex;
-	for i=1, FRIENDS_TO_DISPLAY do
-		friendIndex = friendOffset + i;
+	if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
 		-- name, level, class, area, connected, status, note, RAF
-		local name, _, _, _, connected, _, note = GetFriendInfo(friendIndex);
-		local nameText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextName");
-		local noteText = getglobal("FriendsFrameFriendButton"..i.."ButtonTextNoteText");
+		local name, _, _, _, connected, _, note = GetFriendInfo(button.id);
+		local nameText = button.name;
 
 		if(name) then
 			local lname = name:lower();
 			if (VanasKoS:IsOnList("HATELIST", lname)) then
 				if (connected) then
-					local cname = gsub(nameText:GetText(), name, "|cffff0000"..name.."|r");
-					nameText:SetText(cname);
+					nameText:SetTextColor(1, 0, 0);
 				else
-					local cname = gsub(nameText:GetText(), name, "|cff770000"..name.."|r|cff888888");
-					nameText:SetText(cname);
-				end
-				if (not note or note == "") then
-					noteText:SetText("("..VanasKoS:IsOnList("HATELIST", lname).reason..")");
+					nameText:SetTextColor(0.5, 0, 0);
 				end
 			elseif (VanasKoS:IsOnList("NICELIST", lname)) then
 				if (connected) then
-					local cname = gsub(nameText:GetText(), name, "|cff00ff00"..name.."|r");
-					nameText:SetText(cname);
+					nameText:SetTextColor(0, 1, 0);
 				else
-					local cname = gsub(nameText:GetText(), name, "|cff007700"..name.."|r|cff888888");
-					nameText:SetText(cname);
+					nameText:SetTextColor(0, 0.5, 0);
 				end
-				if (not note or note == "") then
-					noteText:SetText("("..VanasKoS:IsOnList("NICELIST", lname).reason..")");
+			end
+		end
+	end
+end
+
+function VanasKoSNotifier:FriendsFrameTooltip_Show(button)
+	if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
+		local name, _, _, _, connected, _, noteText = GetFriendInfo(button.id);
+		if (name) then
+			local lname = name:lower();
+			if (not noteText) then
+				local hate = VanasKoS:IsOnList("HATELIST", lname);
+				local nice = VanasKoS:IsOnList("NICELIST", lname);
+				local tooltip = FriendsTooltip;
+				if (hate) then
+					if (hate.reason) then
+						FriendsFrameTooltip_SetLine(FriendsTooltipNoteText, nil, "|cffff0000" .. hate.reason .. "|r");
+						tooltip:SetHeight(tooltip.height + FRIENDS_TOOLTIP_MARGIN_WIDTH * 2);
+						tooltip:SetWidth(min(FRIENDS_TOOLTIP_MAX_WIDTH, tooltip.maxWidth + FRIENDS_TOOLTIP_MARGIN_WIDTH * 2));
+						tooltip:Show()
+					end
+				elseif (nice) then
+					if (nice.reason) then
+						FriendsFrameTooltip_SetLine(FriendsTooltipNoteText, nil, "|cff00ff00" .. nice.reason .. "|r");
+						tooltip:SetHeight(tooltip.height + FRIENDS_TOOLTIP_MARGIN_WIDTH * 2);
+						tooltip:SetWidth(min(FRIENDS_TOOLTIP_MAX_WIDTH, tooltip.maxWidth + FRIENDS_TOOLTIP_MARGIN_WIDTH * 2));
+						tooltip:Show()
+					end
 				end
 			end
 		end
@@ -440,27 +462,28 @@ function VanasKoSNotifier:IgnoreList_Update()
 	end
 
 	local ignoreOffset = FauxScrollFrame_GetOffset(FriendsFrameIgnoreScrollFrame);
-	local ignoreIndex;
 	for i=1, IGNORES_TO_DISPLAY do
-		ignoreIndex = ignoreOffset + i;
 		-- name, level, class, area, connected, status, note, RAF
-		local name = GetIgnoreName(ignoreIndex);
-		local nameText = getglobal("FriendsFrameIgnoreButton"..i.."ButtonTextName");
-		local noteText = getglobal("VanasKoSIgnoreButton"..i.."ReasonText");
+		local ignoreButton = getglobal("FriendsFrameIgnoreButton"..i);
+		if (ignoreButton.type == SQUELCH_TYPE_IGNORE or ignoreButton.type == SQUELCH_TYPE_MUTE) then
+			local nameText = ignoreButton.name;
+			local noteText = getglobal("VanasKoSIgnoreButton"..i.."ReasonText");
+			local name = GetIgnoreName(ignoreButton.index);
 
-		if(name) then
-			local lname = name:lower();
-			if (VanasKoS:IsOnList("HATELIST", lname)) then
-				nameText:SetText(format("|cffff0000%s|r", name));
-				if (not note or note == "") then
-					noteText:SetText("("..VanasKoS:IsOnList("HATELIST", lname).reason..")");
-					noteText:SetPoint("LEFT", nameText, "RIGHT");
-				end
-			elseif (VanasKoS:IsOnList("NICELIST", lname)) then
-				nameText:SetText(format("|cff00ff00%s|r", name));
-				if (not note or note == "") then
-					noteText:SetText("("..VanasKoS:IsOnList("NICELIST", lname).reason..")");
-					noteText:SetPoint("LEFT", nameText, "RIGHT");
+			if(name) then
+				local lname = name:lower();
+				if (VanasKoS:IsOnList("HATELIST", lname)) then
+					nameText:SetText(format("|cffff0000%s|r", name));
+					if (not note or note == "") then
+						noteText:SetText("("..VanasKoS:IsOnList("HATELIST", lname).reason..")");
+						noteText:SetPoint("LEFT", nameText, "LEFT", nameText:GetStringWidth(), 0);
+					end
+				elseif (VanasKoS:IsOnList("NICELIST", lname)) then
+					nameText:SetText(format("|cff00ff00%s|r", name));
+					if (not note or note == "") then
+						noteText:SetText("("..VanasKoS:IsOnList("NICELIST", lname).reason..")");
+						noteText:SetPoint("LEFT", nameText, "LEFT", nameText:GetStringWidth(), 0);
+					end
 				end
 			end
 		end
@@ -659,10 +682,10 @@ function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 	-- add the KoS: <text> and KoS (Guild): <text> messages
 	for k,v in pairs(listsToCheck) do
 		local data = nil;
-		if(k ~= "GUILDKOS") then
-			data = VanasKoS:IsOnList(k, name);
-		else
+		if(k == "GUILDKOS") then
 			data = VanasKoS:IsOnList(k, guild);
+		else
+			data = VanasKoS:IsOnList(k, name);
 		end
 		if(data) then
 			local reason = data.reason or "";
@@ -743,7 +766,7 @@ function VanasKoSNotifier:Player_Target_Changed(message, data)
 			name = name .. "-" .. realm;
 		end
 	end
-	local guild = data and data.guild or GetGuildInfo("target");
+	local guild = (data and data.guild) or GetGuildInfo("target");
 	if(self.db.profile.notifyTargetFrame) then
 		if(UnitIsPlayer("target")) then
 			if(VanasKoS:BooleanIsOnList("PLAYERKOS", name)) then

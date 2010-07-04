@@ -1002,9 +1002,6 @@ StaticPopupDialogs["VANASKOS_ADD_REASON_ENTRY"] = {
 		getglobal(this:GetName().."EditBox"):SetFocus();
 	end,
 	OnHide = function()
-		if(ChatFrameEditBox:IsVisible() ) then
-			ChatFrameEditBox:SetFocus();
-		end
 		getglobal(this:GetName().."EditBox"):SetText("");
 	end,
 	EditBoxOnEscapePressed = function()
@@ -1041,9 +1038,6 @@ StaticPopupDialogs["VANASKOS_ADD_ENTRY"] = {
 		getglobal(this:GetName().."EditBox"):SetFocus();
 	end,
 	OnHide = function()
-		if(ChatFrameEditBox:IsVisible() ) then
-			ChatFrameEditBox:SetFocus();
-		end
 		getglobal(this:GetName().."EditBox"):SetText("");
 	end,
 	EditBoxOnEscapePressed = function()
@@ -1074,9 +1068,6 @@ StaticPopupDialogs["VANASKOS_CHANGE_ENTRY"] = {
 		getglobal(this:GetName().."EditBox"):SetFocus();
 	end,
 	OnHide = function()
-		if(ChatFrameEditBox:IsVisible() ) then
-			ChatFrameEditBox:SetFocus();
-		end
 		getglobal(this:GetName().."EditBox"):SetText("");
 	end,
 	EditBoxOnEscapePressed = function()

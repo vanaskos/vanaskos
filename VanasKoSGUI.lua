@@ -848,10 +848,6 @@ function VanasKoSGUI:Update()
 end
 
 local function getConcatenatedString(firstchar, rest)
-	if(firstchar:len() == 1 and firstchar:byte(1) > 127) then
-		firstchar = firstchar .. rest:sub(1, 1);
-		rest = rest:sub(2);
-	end
 	return firstchar:upper() .. rest;
 end
 
@@ -860,13 +856,9 @@ function string.Capitalize(str)
 	if(str == nil) then
 		return "error"; 
 	end
-    if(GetLocale() == "koKR") then 
-		return str;
-	end
 
-	local result, _ = str:gsub("(.)(.*)", getConcatenatedString);
+	local result, _ = str:gsub("^([%z\1-\127\194-\244][\128-\191]*)(.*)", getConcatenatedString);
 	return result;
-	
 end
 
 function VanasKoSGUI:Toggle()

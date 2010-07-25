@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "enUS", true)
+﻿local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "enUS", true)
 if L then
 	L["Name"] = true
 	L["Guild"] = true

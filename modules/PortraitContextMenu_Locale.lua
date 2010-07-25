@@ -1,4 +1,4 @@
---[[----------------------------------------------------------------------
+﻿--[[----------------------------------------------------------------------
 	TargetPortraitContextMenu Module - Part of VanasKoS
 modifies the TargetPortrait to add context menu options for adding targets to lists
 ------------------------------------------------------------------------]]

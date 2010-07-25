@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "enUS", true)
+﻿local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "enUS", true)
 if L then
 	L["About"] = true
 	L["Accept"] = true

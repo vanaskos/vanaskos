@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/FriendsFrameDocker", false);
+﻿local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/FriendsFrameDocker", false);
 
 local VanasKoSFriendsFrameDocker = VanasKoS:NewModule("FriendsFrameDocker", "AceHook-3.0");
 

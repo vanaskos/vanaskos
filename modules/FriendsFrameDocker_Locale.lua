@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "enUS", true)
+﻿local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/FriendsFrameDocker", "enUS", true)
 if L then
 	L["Dock into Friends Frame"] = true
 end

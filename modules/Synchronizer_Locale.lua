@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "enUS", true)
+﻿local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Synchronizer", "enUS", true)
 if L then
 	L["Nicelist"] = true
 	L["Player KoS"] = true

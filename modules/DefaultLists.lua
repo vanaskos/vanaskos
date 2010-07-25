@@ -1,4 +1,4 @@
-VanasKoSDefaultLists = VanasKoS:NewModule("DefaultLists", "AceEvent-3.0");
+﻿VanasKoSDefaultLists = VanasKoS:NewModule("DefaultLists", "AceEvent-3.0");
 
 local VanasKoSDefaultLists = VanasKoSDefaultLists;
 local VanasKoS = VanasKoS;

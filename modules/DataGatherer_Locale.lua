@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DataGatherer", "enUS", true)
+﻿local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DataGatherer", "enUS", true)
 if L then
 	L["Enable in Sanctuaries"] = true
 	L["Enable in Cities"] = true

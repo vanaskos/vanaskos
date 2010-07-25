@@ -11,6 +11,9 @@ local VanasKoS = VanasKoS;
 
 local pvpStatsList = nil;
 
+-- Global wow strings
+local MALE, FEMALE, NAME, WIN, PVP, GUILD, CLASS, RACE, ZONE, CATEGORY, GENERAL = MALE, FEMALE, NAME, WIN, PVP, GUILD, CLASS, RACE, ZONE, CATEGORY, GENERAL
+
 local PLAYERS_LIST = 1;
 local GUILDS_LIST = 2;
 local GENERAL_LIST = 3;
@@ -162,7 +165,7 @@ function VanasKoSPvPStats:RenderButton(list, buttonIndex, button, key, value, bu
 	local score = value.score or value.wins - value.losses;
 	if(list == "PVPSTATS") then
 		buttonText1:SetText(string.Capitalize(key));
-		if (self.group ~= GENERAL_LIST or key == L["Total"] or key == L["Male"] or key == L["Female"]) then
+		if (self.group ~= GENERAL_LIST or key == L["Total"] or key == MALE or key == FEMALE) then
 			buttonText2:SetText(format("|cff00ff00%d|r", value.wins));
 			buttonText3:SetText(format("|cffff0000%d|r", value.losses));
 			buttonText4:SetText(format("|cffffffff%d|r", value.pvp or (value.wins + value.losses)));
@@ -357,14 +360,14 @@ function VanasKoSPvPStats:BuildList()
 						local elevel = string.gsub(event.enemylevel or 0, "[+]", "");
 						elevel = tonumber(elevel);
 						local mlevel = event.mylevel or 0;
-						if(not pvpStatsList[L["Male"]]) then
-							pvpStatsList[L["Male"]] = {
+						if(not pvpStatsList[MALE]) then
+							pvpStatsList[MALE] = {
 								["wins"] = 0;
 								["losses"] = 0;
 							};
 						end
-						if(not pvpStatsList[L["Female"]]) then
-							pvpStatsList[L["Female"]] = {
+						if(not pvpStatsList[FEMALE]) then
+							pvpStatsList[FEMALE] = {
 								["wins"] = 0;
 								["losses"] = 0;
 							};
@@ -385,10 +388,10 @@ function VanasKoSPvPStats:BuildList()
 							end
 							local playerdata = VanasKoS:GetPlayerData(event.enemyname);
 							if(playerdata and playerdata.gender == 2) then
-								pvpStatsList[L["Male"]].wins = pvpStatsList[L["Male"]].wins + 1;
+								pvpStatsList[MALE].wins = pvpStatsList[MALE].wins + 1;
 							end
 							if(playerdata and playerdata.gender == 3) then
-								pvpStatsList[L["Female"]].wins = pvpStatsList[L["Female"]].wins + 1;
+								pvpStatsList[FEMALE].wins = pvpStatsList[FEMALE].wins + 1;
 							end
 						else
 							losses = losses + 1;
@@ -406,10 +409,10 @@ function VanasKoSPvPStats:BuildList()
 							end
 							local playerdata = VanasKoS:GetPlayerData(event.enemyname);
 							if(playerdata and playerdata.gender == 2) then
-								pvpStatsList[L["Male"]].losses = pvpStatsList[L["Male"]].losses + 1;
+								pvpStatsList[MALE].losses = pvpStatsList[MALE].losses + 1;
 							end
 							if(playerdata and playerdata.gender == 3) then
-								pvpStatsList[L["Female"]].losses = pvpStatsList[L["Female"]].losses + 1;
+								pvpStatsList[FEMALE].losses = pvpStatsList[FEMALE].losses + 1;
 							end
 						end
 					end
@@ -497,10 +500,10 @@ function VanasKoSPvPStats:SetupColumns(list)
 		VanasKoSGUI:SetColumnWidth(3, 40);
 		VanasKoSGUI:SetColumnWidth(4, 40);
 		VanasKoSGUI:SetColumnWidth(5, 40);
-		VanasKoSGUI:SetColumnName(1, L["Name"]);
-		VanasKoSGUI:SetColumnName(2, L["Win"]);
+		VanasKoSGUI:SetColumnName(1, NAME);
+		VanasKoSGUI:SetColumnName(2, WIN);
 		VanasKoSGUI:SetColumnName(3, L["Lost"]);
-		VanasKoSGUI:SetColumnName(4, L["PvP"]);
+		VanasKoSGUI:SetColumnName(4, PVP);
 		VanasKoSGUI:SetColumnName(5, L["Score"]);
 		VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
 		VanasKoSGUI:SetColumnSort(2, SortByWins, SortByWinsReverse);
@@ -516,24 +519,24 @@ function VanasKoSPvPStats:SetupColumns(list)
 		if(not self.group or self.group == PLAYERS_LIST) then
 			VanasKoSGUI:SetToggleButtonText(L["Players"]);
 		elseif(self.group == GUILDS_LIST) then
-			VanasKoSGUI:SetColumnName(1, L["Guild"]);
-			VanasKoSGUI:SetToggleButtonText(L["Guilds"]);
+			VanasKoSGUI:SetColumnName(1, GUILD);
+			VanasKoSGUI:SetToggleButtonText(GUILD);
 		elseif(self.group == CLASS_LIST) then
-			VanasKoSGUI:SetColumnName(1, L["Class"]);
-			VanasKoSGUI:SetToggleButtonText(L["Class"]);
+			VanasKoSGUI:SetColumnName(1, CLASS);
+			VanasKoSGUI:SetToggleButtonText(CLASS);
 		elseif(self.group == RACE_LIST) then
-			VanasKoSGUI:SetColumnName(1, L["Race"]);
-			VanasKoSGUI:SetToggleButtonText(L["Race"]);
+			VanasKoSGUI:SetColumnName(1, RACE);
+			VanasKoSGUI:SetToggleButtonText(RACE);
 		elseif(self.group == MAP_LIST) then
-			VanasKoSGUI:SetColumnName(1, L["Zone"]);
-			VanasKoSGUI:SetToggleButtonText(L["Zone"]);
+			VanasKoSGUI:SetColumnName(1, ZONE);
+			VanasKoSGUI:SetToggleButtonText(ZONE);
 		elseif(self.group == DATE_LIST) then
 			VanasKoSGUI:SetColumnName(1, L["Date"]);
 			VanasKoSGUI:SetToggleButtonText(L["Date"]);
 		elseif(self.group == GENERAL_LIST) then
-			VanasKoSGUI:SetColumnName(1, L["Category"]);
+			VanasKoSGUI:SetColumnName(1, CATEGORY);
 			VanasKoSGUI:SetColumnName(4, L["Total"]);
-			VanasKoSGUI:SetToggleButtonText(L["General"]);
+			VanasKoSGUI:SetToggleButtonText(GENERAL);
 		end
 	end
 end

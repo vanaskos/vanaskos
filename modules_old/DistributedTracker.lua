@@ -3,7 +3,6 @@
 Broadcasts a list on ZONE and GUILD and handles returning position answers
 ------------------------------------------------------------------------]]
 
-
 local function RegisterTranslations(locale, translationfunction)
 	local defaultLocale = false;
 	if(locale == "enUS") then
@@ -18,6 +17,9 @@ local function RegisterTranslations(locale, translationfunction)
 	end
 end
 
+-- Global wow strings
+local OKAY, CANCEL = OKAY, CANCEL
+
 VanasKoSTracker = VanasKoS:NewModule("DistributedTracker", "AceComm-3.0", "AceEvent-3.0", "AceTimer-3.0");
 
 local VanasKoSTracker = VanasKoSTracker;
@@ -27,8 +29,6 @@ local comm = AceLibrary("AceComm-3.0");
 RegisterTranslations("enUS", function() return {
 	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = true,
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = true,
-	["Ok"] = true,
-	["Cancel"] = true,
 	["Distributed Tracking"] = true,
 	["Enabled"] = true,
 	["Wanted List"] = true,
@@ -41,8 +41,6 @@ RegisterTranslations("enUS", function() return {
 RegisterTranslations("deDE", function() return {
 	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Position von Player %s empfangen (%d, %d in %s) von %s - Grund: %s",
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%%s in %s bei %d, %d (%s) - Cartographer Notiz erstellen?",
-	["Ok"] = "Ok",
-	["Cancel"] = "Abbrechen",
 	["Distributed Tracking"] = "Verteiltes Suchen",
 	["Enabled"] = "Aktiviert",
 	["Wanted List"] = "Gesucht-Liste",
@@ -55,8 +53,6 @@ RegisterTranslations("deDE", function() return {
 RegisterTranslations("frFR", function() return {
 	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Position du joueur %s (%d, %d \195\128 %s) re\195\167u de %s - Raison: %s",
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s in %s at %d, %d (%s) - Cr\195\169er une note avec \"Cartographer\" ?",
-	["Ok"] = "Ok",
-	["Cancel"] = "Annuler",
 	["Distributed Tracking"] = "R\195\169partition des informations KoS",
 	["Enabled"] = "Actif",
 	["Wanted List"] = "Liste Wanted",
@@ -69,8 +65,6 @@ RegisterTranslations("frFR", function() return {
 RegisterTranslations("koKR", function() return {
 --	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = true,
 --	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = true,
-	["Ok"] = "확인",
-	["Cancel"] = "취소",
 	["Distributed Tracking"] = "분산 추적",
 	["Enabled"] = "사용",
 	["Wanted List"] = "수배 목록",
@@ -83,8 +77,6 @@ RegisterTranslations("koKR", function() return {
 RegisterTranslations("esES", function() return {
 	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Posición del Jugador %s (%d, %d in %s) recibida desde %s - Razón: %s",
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s en %s en %d, %d (%s) - ¿Crear Nota de Cartographer?",
-	["Ok"] = "Aceptar",
-	["Cancel"] = "Cancelar",
 	["Distributed Tracking"] = "Rastreo Distribuido",
 	["Enabled"] = "Activado",
 	["Wanted List"] = "Lista de Se Busca",
@@ -97,8 +89,6 @@ RegisterTranslations("esES", function() return {
 RegisterTranslations("ruRU", function() return {
 	["Position on Player %s (%d, %d in %s) received from %s - Reason: %s"] = "Расположение игрока %s (%d, %d в %s) получено от %s - Причина: %s",
 	["%s in %s at %d, %d (%s) - Create Cartographer Note?"] = "%s в %s по %d, %d (%s) - Создать метку в Картографе?",
-	["Ok"] = "Ok",
-	["Cancel"] = "Отмена",
 	["Distributed Tracking"] = "Распределенное слежение",
 	["Enabled"] = "Включено",
 	["Wanted List"] = "Список розыска",
@@ -623,8 +613,8 @@ end
 
 StaticPopupDialogs["VANASKOS_TRACKER_ADD_NOTE"] = {
 	text = "TEMPLATE",
-	button1 = L["Ok"],
-	button2 = L["Cancel"],
+	button1 = OKAY,
+	button2 = CANCEL,
 	OnAccept = function()
 		if(Cartographer_Notes ~= nil) then
 			local dialog = this:GetParent();

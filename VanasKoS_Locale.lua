@@ -1,10 +1,8 @@
 ﻿local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "enUS", true)
 if L then
 	L["About"] = true
-	L["Accept"] = true
 	L["Add Entry"] = true
 	L["Add KoS Player"] = true
-	L["Cancel"] = true
 	L["Change Entry"] = true
 	L["Configuration"] = true
 	L["Donate"] = true
@@ -18,7 +16,6 @@ if L then
 	L["Lists"] = true
 	L["Locked"] = true
 	L["Locks the Main Window"] = true
-	L["Name"] = true
 	L["Performance"] = true
 	L["Permanent Player-Data-Storage"] = true
 	L["Reason"] = true

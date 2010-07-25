@@ -1,12 +1,7 @@
 ﻿local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DefaultLists", "enUS", true)
 if L then
-	L["Name"] = true
-	L["Guild"] = true
-	L["Lvl"] = true
-	L["Class"] = true
 	L["Reason"] = true
 	L["Last Seen"] = true
-	L["Zone"] = true
 	L["never seen"] = true
 	L["0 Secs"] = true
 	L["by create date"] = true

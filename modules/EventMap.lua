@@ -5,6 +5,9 @@ Displays PvP Events on World Map
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/EventMap", false);
 
+-- Global wow strings
+local WIN, LOSS = WIN, LOSS
+
 VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0");
 
 local VanasIconFrame = nil;
@@ -445,7 +448,7 @@ function VanasKoSEventMap:OnInitialize()
 			},
 			lossBackgroundColor = {
 				type = 'color',
-				name = L["Loss"],
+				name = LOSS,
 				desc = L["Sets the loss color and opacity"],
 				order = 22,
 				set = function(frame, r, g, b, a) SetColor("LossColor", r, g, b, a); end,
@@ -454,7 +457,7 @@ function VanasKoSEventMap:OnInitialize()
 			},
 			winBackgroundColor = {
 				type = 'color',
-				name = L["Win"],
+				name = WIN,
 				desc = L["Sets the win color and opacity"],
 				order = 23,
 				set = function(frame, r, g, b, a) SetColor("WinColor", r, g, b, a); end,

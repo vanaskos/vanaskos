@@ -4,7 +4,6 @@ Broadcasts a list to GUILD and handles returning position answers
 ------------------------------------------------------------------------]]
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DistributedTracker", "enUS", true)
 if L then
-	L["Cancel"] = true
 	L["Distributed Tracking"] = true
 	L["Found multiple matches for zone '%s': %s"] = true
 	L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"] = true

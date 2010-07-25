@@ -5,6 +5,9 @@ Keeps track of recently seen players
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/LastSeenList", false);
 
+-- Global wow strings
+local NAME = NAME;
+
 VanasKoSLastSeenList = VanasKoS:NewModule("LastSeenList", "AceEvent-3.0");
 
 local VanasKoSLastSeenList = VanasKoSLastSeenList;
@@ -171,7 +174,7 @@ function VanasKoSLastSeenList:SetupColumns(list)
 			VanasKoSGUI:SetNumColumns(2);
 			VanasKoSGUI:SetColumnWidth(1, 103);
 			VanasKoSGUI:SetColumnWidth(2, 200);
-			VanasKoSGUI:SetColumnName(1, L["Name"]);
+			VanasKoSGUI:SetColumnName(1, NAME);
 			VanasKoSGUI:SetColumnName(2, L["Last seen"]);
 			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
 			VanasKoSGUI:SetColumnSort(2, SortByLastSeen, SortByLastSeenReverse);

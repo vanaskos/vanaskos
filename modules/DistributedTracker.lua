@@ -11,6 +11,9 @@ local VanasKoS = VanasKoS;
 
 local JOIN_DELAY = 20;
 
+-- Global wow strings
+local OKAY, CANCEL = OKAY, CANCEL
+
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DistributedTracker", false);
 local AceSerializer = LibStub("AceSerializer-3.0");
 
@@ -386,8 +389,8 @@ end
 
 StaticPopupDialogs["VANASKOS_TRACKER_ADD_NOTE"] = {
 	text = "TEMPLATE",
-	button1 = L["Ok"],
-	button2 = L["Cancel"],
+	button1 = OKAY,
+	button2 = CANCEL,
 	OnAccept = function()
 		local dialog = this:GetParent();
 		if(Cartographer_Notes ~= nil) then

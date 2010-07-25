@@ -1,5 +1,8 @@
 ﻿local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/Synchronizer", false);
 
+-- Global wow strings
+local GUILD = GUILD
+
 VanasKoSSynchronizer = VanasKoS:NewModule("Synchronizer", "AceComm-3.0", "AceTimer-3.0");
 
 local VanasKoSSynchronizer = VanasKoSSynchronizer;
@@ -20,7 +23,7 @@ local function RegisterConfiguration()
 		args = {
 			guild = {
 				type = "group",
-				name = L["Guild"],
+				name = GUILD,
 				desc = L["Guild Sharing Options"],
 				order = 1,
 				args = {

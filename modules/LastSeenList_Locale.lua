@@ -5,7 +5,6 @@ Keeps track of recently seen players
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/LastSeenList", "enUS", true)
 if L then
-	L["Name"] = true
 	L["0 Secs ago"] = true
 	L["Add to Hatelist"] = true
 	L["Add to Nicelist"] = true

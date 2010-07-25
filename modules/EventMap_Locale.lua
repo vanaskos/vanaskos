@@ -15,7 +15,6 @@ if L then
 	L["Dynamic Zoom"] = true
 	L["Icon Options"] = true
 	L["Icons"] = true
-	L["Loss"] = true
 	L["PvP Encounter"] = true
 	L["PvP Event Map"] = true
 	L["Redraws icons based on Cartographer3 zoom level"] = true
@@ -28,7 +27,6 @@ if L then
 	L["Size of dots"] = true
 	L["Toggle showing individual icons or simple dots"] = true
 	L["Tooltips"] = true
-	L["Win"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "frFR")

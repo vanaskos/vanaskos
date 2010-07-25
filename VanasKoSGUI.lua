@@ -11,6 +11,8 @@ local VanasKoS = VanasKoS;
 local AceConfigDialog = LibStub("AceConfigDialog-3.0");
 local AceConfig = LibStub("AceConfig-3.0");
 
+-- Global wow strings
+local NAME, ACCEPT, CANCEL = NAME, ACCEPT, CANCEL
 
 local tooltip = nil;
 local listHandler = { };
@@ -967,8 +969,8 @@ end
 -----------------------------------------------------------------------------------------------------]]
 StaticPopupDialogs["VANASKOS_ADD_REASON_ENTRY"] = {
 	text = L["Reason"],
-	button1 = L["Accept"],
-	button2 = L["Cancel"],
+	button1 = ACCEPT,
+	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 255,
 	OnAccept = function()
@@ -1006,9 +1008,9 @@ StaticPopupDialogs["VANASKOS_ADD_REASON_ENTRY"] = {
 }
 
 StaticPopupDialogs["VANASKOS_ADD_ENTRY"] = {
-	text = L["Name"],
-	button1 = L["Accept"],
-	button2 = L["Cancel"],
+	text = NAME,
+	button1 = ACCEPT,
+	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 255,
 	OnAccept = function()
@@ -1043,8 +1045,8 @@ StaticPopupDialogs["VANASKOS_ADD_ENTRY"] = {
 
 StaticPopupDialogs["VANASKOS_CHANGE_ENTRY"] = {
 	text = L["Reason"],
-	button1 = L["Accept"],
-	button2 = L["Cancel"],
+	button1 = ACCEPT,
+	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 255,
 	OnAccept = function()

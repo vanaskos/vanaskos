@@ -13,7 +13,6 @@ if L then
 	L["Enables/Disables the sharing module"] = true
 	L["Group"] = true
 	L["Groups with whom I share"] = true
-	L["Guild"] = true
 	L["Guild KoS"] = true
 	L["Guild Sharing"] = true
 	L["Guild Sharing Options"] = true

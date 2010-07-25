@@ -5,10 +5,7 @@ Gathers PvP Wins and Losses
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "enUS", true)
 if L then
-	L["Name"] = true
-	L["Win"] = true
 	L["Lost"] = true
-	L["PvP"] = true
 	L["Score"] = true
 	L["PvP Data Gathering"] = true
 	L["PvP Loss versus %s registered."] = true

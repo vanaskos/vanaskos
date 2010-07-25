@@ -17,6 +17,9 @@ local function RegisterTranslations(locale, translationfunction)
 	end
 end
 
+-- Global wow strings
+local ACCEPT, CANCEL = ACCEPT, CANCEL
+
 VanasKoSSynchronizer = VanasKoS:NewModule("Synchronizer", "AceComm-3.0", "AceEvent-3.0", "AceSerializer-3.0", "AceTimer-3.0");
 local VanasKoSSynchronizer = VanasKoSSynchronizer;
 local VanasKoS = VanasKoS;
@@ -28,8 +31,6 @@ local SYNCTIME = 3600*6;
 RegisterTranslations("enUS", function() return {
 	["Accept %d entries for list %s from %s?"] = true,
 	["KoS-List was received but couldn't be processed due to previous received list."] = true,
-	["Accept"] = true,
-	["Cancel"] = true,
 	["selected entry to the party"] = true,
 	["transfers the selected entry to the party"] = true,
 	["all entries to the party"] = true,
@@ -62,8 +63,6 @@ RegisterTranslations("enUS", function() return {
 RegisterTranslations("deDE", function() return {
 	["Accept %d entries for list %s from %s?"] = "%d Einträge fuer Liste %s von %s akzeptieren?",
 	["KoS-List was received but couldn't be processed due to previous received list."] = "Eine KoS-List wurde empfangen, konnte aber aufgrund einer vorher empfangenen und unbestaetigten KoS-Liste nicht bearbeitet werden",
-	["Accept"] = "Annehmen",
-	["Cancel"] = "Abbrechen",
 	["selected entry to the party"] = "Gewaehlter Eintrag an Gruppe",
 	["transfers the selected entry to the party"] = "Sendet gewaehlte Eintraege an Gruppe",
 	["all entries to the party"] = "Alle Eintraege an Gruppe",
@@ -94,8 +93,6 @@ RegisterTranslations("deDE", function() return {
 RegisterTranslations("frFR", function() return {
 	["Accept %d entries for list %s from %s?"] = "Accepter les entrées de %d pour la liste %s de %s?",
 	["KoS-List was received but couldn't be processed due to previous received list."] = "La liste KoS a \195\169t\195\169 re�ue mais n'a pas pu \195\170tre trait\195\169e avec la pr\195\169c\195\169dente liste.",
-	["Accept"] = "Accepter",
-	["Cancel"] = "Annuler",
 	["selected entry to the party"] = "S\195\169lectionnez une entr\195\169e \195\160 partager (groupe)",
 	["transfers the selected entry to the party"] = "Transfaire l'entr\195\169e s\195\169lectionn\195\169 au groupe",
 	["all entries to the party"] = "S\195\169lectionnez toutes les entr\195\169es \195\160 partager (groupe)",
@@ -127,8 +124,6 @@ RegisterTranslations("koKR", function() return {
 	["Accept %d entries for list %s from %s?"] = "%3$s로 부터 받은 %2$s 목록에 대해 %1$d개를 허용합니다.",
 	["KoS-List was received but couldn't be processed due to previous received list."] = "KoS-List was received but couldn't be processed due to previous received list.",
 
-	["Accept"] = "확인",
-	["Cancel"] = "취소",
 
 	["selected entry to the party"] = "선택된 대상 파티에 알림",
 	["transfers the selected entry to the party"] ="선택된 대상을 파티에 전송합니다.",
@@ -160,8 +155,6 @@ RegisterTranslations("koKR", function() return {
 RegisterTranslations("esES", function() return {
 	["Accept %d entries for list %s from %s?"] = "¿Aceptar %d entradas para la lista %s desde %s?",
 	["KoS-List was received but couldn't be processed due to previous received list."] = "Se ha recibido una lista de KoS pero no ha podido ser procesada debido a la lista recibida previamente.",
-	["Accept"] = "Aceptar",
-	["Cancel"] = "Cancelar",
 	["selected entry to the party"] = "Entrada seleccionada al grupo",
 	["transfers the selected entry to the party"] = "Transfiere la entrada seleccionada al grupo",
 	["all entries to the party"] = "Todas las entradas al grupo",
@@ -192,8 +185,6 @@ RegisterTranslations("esES", function() return {
 RegisterTranslations("ruRU", function() return {
 	["Accept %d entries for list %s from %s?"] = "Принять %d записей для списка %s от %s?",
 	["KoS-List was received but couldn't be processed due to previous received list."] = "Был получен KoS-список но не обработан из за предыдущего полученного списка.",
-	["Accept"] = "Принять",
-	["Cancel"] = "Отмена",
 	["selected entry to the party"] = "выбранные записи в группу",
 	["transfers the selected entry to the party"] = "отправляет выбранные записи в группу",
 	["all entries to the party"] = "все записи в группу",
@@ -1222,8 +1213,8 @@ end
 
 StaticPopupDialogs["VANASKOS_QUESTION_ADD"] = {
 	text = "TEMPLATE",
-	button1 = L["Accept"],
-	button2 = L["Cancel"],
+	button1 = ACCEPT,
+	button2 = CANCEL,
 	OnAccept = function()
 		local dialog = this:GetParent();
 

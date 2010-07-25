@@ -5,6 +5,9 @@ Creates the WarnFrame to alert of nearby KoS, Hostile and Friendly
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/WarnFrame", false);
 
+-- Global wow strings
+local LEVEL = LEVEL
+
 VanasKoSWarnFrame = VanasKoS:NewModule("WarnFrame", "AceEvent-3.0", "AceTimer-3.0");
 
 local VanasKoSWarnFrame = VanasKoSWarnFrame;
@@ -111,7 +114,7 @@ local function GetTooltipText(name, data)
 	local data = VanasKoS:GetPlayerData(name);
 	
 	if (data and data.level ~= nil) then
-		result = result .. L["Level"] .. " " .. data.level .. " ";
+		result = result .. LEVEL .. " " .. data.level .. " ";
 	end
 	if (data and data.race ~= nil) then
 		result = result .. data.race .. " ";

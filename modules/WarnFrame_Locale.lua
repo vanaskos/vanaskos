@@ -29,7 +29,6 @@ if L then
 	L["How neutral content is shown"] = true
 	L["KoS"] = true
 	L["KoS/Enemy/Friendly Warning Window"] = true
-	L["Level"] = true
 	L["Locked"] = true
 	L["male"] = true
 	L["Macro"] = true

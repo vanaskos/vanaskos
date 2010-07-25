@@ -6,6 +6,9 @@ local VanasKoSGUI = VanasKoSGUI;
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DefaultLists", false);
 
+-- Global wow strings
+local NAME, GUILD, LEVEL_ABBR, CLASS, ZONE = NAME, GUILD, LEVEL_ABBR, CLASS, ZONE
+
 -- sort functions
 
 -- sorts by index
@@ -345,7 +348,7 @@ function VanasKoSDefaultLists:SetupColumns(list)
 			VanasKoSGUI:SetNumColumns(2);
 			VanasKoSGUI:SetColumnWidth(1, 83);
 			VanasKoSGUI:SetColumnWidth(2, 220);
-			VanasKoSGUI:SetColumnName(1, L["Name"]);
+			VanasKoSGUI:SetColumnName(1, NAME);
 			VanasKoSGUI:SetColumnName(2, L["Reason"]);
 			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
 			VanasKoSGUI:SetColumnSort(2, SortByReason, SortByReasonReverse);
@@ -358,10 +361,10 @@ function VanasKoSDefaultLists:SetupColumns(list)
 			VanasKoSGUI:SetColumnWidth(2, 100);
 			VanasKoSGUI:SetColumnWidth(3, 32);
 			VanasKoSGUI:SetColumnWidth(4, 92);
-			VanasKoSGUI:SetColumnName(1, L["Name"]);
-			VanasKoSGUI:SetColumnName(2, L["Guild"]);
-			VanasKoSGUI:SetColumnName(3, L["Lvl"]);
-			VanasKoSGUI:SetColumnName(4, L["Class"]);
+			VanasKoSGUI:SetColumnName(1, NAME);
+			VanasKoSGUI:SetColumnName(2, GUILD);
+			VanasKoSGUI:SetColumnName(3, LEVEL_ABBR);
+			VanasKoSGUI:SetColumnName(4, CLASS);
 			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
 			VanasKoSGUI:SetColumnSort(2, SortByGuild, SortByGuildReverse);
 			VanasKoSGUI:SetColumnSort(3, SortByLevel, SortByLevelReverse);
@@ -376,9 +379,9 @@ function VanasKoSDefaultLists:SetupColumns(list)
 			VanasKoSGUI:SetColumnWidth(1, 83);
 			VanasKoSGUI:SetColumnWidth(2, 110);
 			VanasKoSGUI:SetColumnWidth(3, 110);
-			VanasKoSGUI:SetColumnName(1, L["Name"]);
+			VanasKoSGUI:SetColumnName(1, NAME);
 			VanasKoSGUI:SetColumnName(2, L["Last Seen"]);
-			VanasKoSGUI:SetColumnName(3, L["Zone"]);
+			VanasKoSGUI:SetColumnName(3, ZONE);
 			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
 			VanasKoSGUI:SetColumnSort(2, SortByLastSeen, SortByLastSeenReverse);
 			VanasKoSGUI:SetColumnSort(3, SortByZone, SortByZoneReverse);
@@ -392,7 +395,7 @@ function VanasKoSDefaultLists:SetupColumns(list)
 		VanasKoSGUI:SetNumColumns(2);
 		VanasKoSGUI:SetColumnWidth(1, 105);
 		VanasKoSGUI:SetColumnWidth(2, 208);
-		VanasKoSGUI:SetColumnName(1, L["Guild"]);
+		VanasKoSGUI:SetColumnName(1, GUILD);
 		VanasKoSGUI:SetColumnName(2, L["Reason"]);
 		VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
 		VanasKoSGUI:SetColumnSort(2, SortByReason, SortByReasonReverse);

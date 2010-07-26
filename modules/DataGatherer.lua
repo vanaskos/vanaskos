@@ -303,25 +303,7 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 		playerDataList[lname].guildrank = data.guildrank;
 	end
 
-	if(type(data.level) == "number") then
-		-- if it's number we are sure of the level so just overwrite
-		playerDataList[lname].level = data.level;
-		-- print("data.level", data.level);
-	elseif(type(data.level) == "string") then
-		-- we're not sure of the exact level so overwrite only if larger
-		local level = tonumber(select(3, strfind(data.level, "(%d+)[+]"))) or -1;
-
-		local oldLevel = playerDataList[lname].level or -1;
-		if (type(oldLevel) == "string") then
-			oldLevel = tonumber(select(3, strfind(oldLevel, "(%d+)[+]"))) or -1;
-		end
-
-		-- print("oldlevel", oldLevel, "level", level, "data.level", data.level);
-		if(oldLevel < level) then
-			playerDataList[lname].level = data.level;
-		end
-		-- print("type", type(data.level));
-	end
+	playerDataList[lname].level = data.level;
 	playerDataList[lname].race = data.race;
 	playerDataList[lname].class = data.class;
 	playerDataList[lname].classEnglish = data.classEnglish;
@@ -422,9 +404,17 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		end
 
 		local lvl = UnitLevel(unit);
-		if(gatheredData.level == -1) then
+		local lname = name:lower();
+		if(lvl == -1) then
 			lvl = (UnitLevel("player") or 1) + 10;
-			if(lvl < 80) then
+			local oldLevel = (playerDataList[lname] and playerDataList[lname].level) or -1;
+			local oldLevelNum = oldLevel;
+			if (type(oldLevel) == "string") then
+				oldLevelNum = tonumber(select(3, strfind(oldLevel, "(%d+)[+]"))) or -1;
+			end
+			if(oldLevelNum > lvl) then
+				lvl = oldLevel;
+			elseif(lvl < 80) then
 				lvl = lvl .. "+";
 			end
 		end
@@ -485,13 +475,27 @@ function VanasKoSDataGatherer:SendDataMessage(name, guid, faction, spellId)
 	gatheredData.raceEnglish = raceEnglish;
 	gatheredData.gender = gender;
 
+	local level = -1;
 	if(spellId and tonumber(spellId)) then
-		gatheredData.level = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId);
-		if (gatheredData.level and gatheredData.level < 80) then
-			gatheredData.level = gatheredData.level .. "+";
-		end
-		-- print("spellid", spellId, "level", gatheredData.level, "english", classEnglish);
+		level = LevelGuessLib:GetEstimatedLevelAndClassFromSpellId(spellId) or -1;
 	end
+	local lname = name:lower();
+	local oldLevel = (playerDataList[lname] and playerDataList[lname].level) or -1;
+	local oldLevelNum = oldLevel;
+	if (type(oldLevel) == "string") then
+		oldLevelNum = tonumber(select(3, strfind(oldLevel, "(%d+)[+]"))) or -1;
+	end
+	-- print("gathered", name, oldLevel, level);
+	if(oldLevelNum > level) then
+		level = oldLevel;
+	elseif (level < 1) then
+		level = nil;
+	elseif (level < 80) then
+		level = level .. "+";
+	end
+	gatheredData.level = level;
+	-- print("spellid", spellId, "level", gatheredData.level, "english", classEnglish);
+
 	-- /script VanasKoSDataGatherer:SendDataMessage("name", "enemy", nil);
 	-- /dump VanasKoSDataGatherer.db.realm.data.players['name'];
 	if(VanasKoS:BooleanIsOnList("PLAYERKOS", name)) then

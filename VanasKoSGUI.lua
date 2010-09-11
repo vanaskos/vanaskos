@@ -733,7 +733,8 @@ function VanasKoSGUI:ScrollFrameUpdate()
 	end
 	
 	-- stupid fix that the dropdown selection is correct if showList is set external
-	UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, VANASKOS.showList);
+	--9/10/2010 GF - This appears to be redundant and in Cataclysm, 
+	--UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, VANASKOS.showList);
 
 	if(oldlist ~= VANASKOS.showList) then
 		if(listHandler[oldlist] and listHandler[oldlist].HideList) then

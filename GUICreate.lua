@@ -320,7 +320,8 @@ function VanasKoSGUICreate:CreateListFrame()
 							end);
 	scrollFrame:SetScript("OnShow", 
 							function() 
-								UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, VANASKOS.showList);
+								--9/10/2010 GF - This appears to be redundant and in Cataclysm, 
+								--UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, VANASKOS.showList);
 							end);
 end
 

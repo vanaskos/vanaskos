@@ -166,9 +166,9 @@ function VanasKoSGUICreate:CreateListFrame()
 		colButton[i]:SetWidth(10);
 		colButton[i]:SetHeight(24);
 		colButton[i]:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-		colButton[i]:SetScript("OnClick", function() VanasKoSGUI:ColButton_OnClick(arg1, this); end);
-		colButton[i]:SetScript("OnEnter", function() VanasKoSGUI:ColButton_OnEnter(arg1, this); end);
-		colButton[i]:SetScript("OnLeave", function() VanasKoSGUI:ColButton_OnLeave(arg1, this); end);
+		colButton[i]:SetScript("OnClick", function(self, button, down) VanasKoSGUI:ColButton_OnClick(button, self); end);
+		colButton[i]:SetScript("OnEnter", function(self, motion) VanasKoSGUI:ColButton_OnEnter(motion, self); end);
+		colButton[i]:SetScript("OnLeave", function(self) VanasKoSGUI:ColButton_OnLeave(nil, self); end);
 		colButton[i]:SetHighlightTexture("Interface\\PaperDollInfoFrame\\UI-Character-Tab-Highlight");
 		colButton[i]:GetHighlightTexture():SetBlendMode("ADD");
 		colButton[i]:SetID(i);
@@ -212,9 +212,9 @@ function VanasKoSGUICreate:CreateListFrame()
 		listButton[i]:SetWidth(298);
 		listButton[i]:SetHeight(16);
 		listButton[i]:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-		listButton[i]:SetScript("OnClick", function() VanasKoSGUI:ListButton_OnClick(arg1, this); end);
-		listButton[i]:SetScript("OnEnter", function() VanasKoSGUI:ListButton_OnEnter(arg1, this); end);
-		listButton[i]:SetScript("OnLeave", function() VanasKoSGUI:ListButton_OnLeave(arg1, this); end);
+		listButton[i]:SetScript("OnClick", function(self, button, down) VanasKoSGUI:ListButton_OnClick(button, self); end);
+		listButton[i]:SetScript("OnEnter", function(self, motion) VanasKoSGUI:ListButton_OnEnter(motion, self); end);
+		listButton[i]:SetScript("OnLeave", function(self) VanasKoSGUI:ListButton_OnLeave(nil, self); end);
 		listButton[i]:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight");
 		listButton[i]:GetHighlightTexture():SetBlendMode("ADD");
 		listButton[i]:SetID(i);
@@ -255,7 +255,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	toggleRButton:SetWidth(20);
 	toggleRButton:SetHeight(20);
 	toggleRButton:SetPoint("BOTTOMRIGHT", VanasKoSListFrame, "BOTTOMRIGHT", -65, 126);
-	toggleRButton:SetScript("OnClick", function() VanasKoSGUI:ToggleRightButton_OnClick(arg1, this); end);
+	toggleRButton:SetScript("OnClick", function(self, button, down) VanasKoSGUI:ToggleRightButton_OnClick(button, self); end);
 	toggleRButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Up");
 	toggleRButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Down");
 	toggleRButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-NextPage-Disabled");
@@ -272,7 +272,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	toggleLButton:SetWidth(20);
 	toggleLButton:SetHeight(20);
 	toggleLButton:SetPoint("RIGHT", toggleRButtonText, "LEFT", 0, 0);
-	toggleLButton:SetScript("OnClick", function() VanasKoSGUI:ToggleLeftButton_OnClick(arg1, this); end);
+	toggleLButton:SetScript("OnClick", function(self, button, down) VanasKoSGUI:ToggleLeftButton_OnClick(button, self); end);
 	toggleLButton:SetNormalTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Up");
 	toggleLButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down");
 	toggleLButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled");

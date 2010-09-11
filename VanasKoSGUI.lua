@@ -149,7 +149,7 @@ function VanasKoSGUI:OnInitialize()
 		},
 	});
 	
-	VanasKoSListFrameSearchBox:SetScript("OnTextChanged", function() VanasKoSGUI:SetFilterText(this:GetText()) end);
+	VanasKoSListFrameSearchBox:SetScript("OnTextChanged", function(self, event, ...) VanasKoSGUI:SetFilterText(self:GetText()) end);
 	
 	VanasKoSFrame:RegisterForDrag("LeftButton");
 	VanasKoSFrame:SetScript("OnDragStart", function()
@@ -182,9 +182,9 @@ function VanasKoSGUI:InitializeDropDowns()
 				local button = UIDropDownMenu_CreateInfo();
 				button.text = v[2];
 				button.value = v[1];
-				button.func = function() 
-						UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, this.value);
-						VanasKoSGUI:ShowList(this.value);
+				button.func = function(self, event, ...) 
+						UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, self.value);
+						VanasKoSGUI:ShowList(self.value);
 				end
 				UIDropDownMenu_AddButton(button); 
 			end
@@ -244,9 +244,9 @@ end
 function VanasKoSGUI:GUIFrame_ShowSubFrame(frameName)
 	for index, value in pairs(VANASKOSFRAME_SUBFRAMES) do
 		if(value == frameName) then
-			getglobal(value):Show();
+			_G[value]:Show();
 		else
-			getglobal(value):Hide();
+			_G[value]:Hide();
 		end
 	end
 end
@@ -261,7 +261,7 @@ function VanasKoSGUI:GUIShowChangeDialog()
 		if(VANASKOS.showList == "PLAYERKOS" or VANASKOS.showList == "GUILDKOS" or VANASKOS.showList == "HATELIST" or VANASKOS.showList == "NICELIST") then
 			reason = list[string.lower(name)].reason;
 			if (reason ~= nil and reason ~= "") then
-				getglobal(dialog:GetName() .. "EditBox"):SetText(reason);
+				_G[dialog:GetName() .. "EditBox"]:SetText(reason);
 			end
 		end
 	end
@@ -557,7 +557,7 @@ end
 
 function VanasKoSGUI:GUIHideButtons(minimum, maximum)
 	for i=minimum,maximum,1 do
-		local button = getglobal("VanasKoSListFrameListButton" .. i);
+		local button = _G["VanasKoSListFrameListButton" .. i];
 		if(button ~= nil) then
 			button:Hide();
 		end
@@ -566,7 +566,7 @@ end
 
 function VanasKoSGUI:GUISortButtons(minimum, maximum)
 	for i=minimum,maximum,1 do
-		local button = getglobal("VanasKoSListFrameListButton" .. i);
+		local button = _G["VanasKoSListFrameListButton" .. i];
 		button:Show();
 	end
 end
@@ -751,16 +751,16 @@ function VanasKoSGUI:ScrollFrameUpdate()
  		if((listIndex-1) < listOffset) then
 		else
 			if(buttonIndex <= VANASKOS.MAX_LIST_BUTTONS) then
-				local buttonText1 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text1");
-				local buttonText2 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text2");
-				local buttonText3 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text3");
-				local buttonText4 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text4");
-				local buttonText5 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text5");
-				local buttonText6 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text6");
-				local buttonText6 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text7");
-				local buttonText6 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text8");
-				local buttonText6 = getglobal("VanasKoSListFrameListButton" ..  buttonIndex .. "Text9");
-				local button = getglobal("VanasKoSListFrameListButton" .. buttonIndex);
+				local buttonText1 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text1"];
+				local buttonText2 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text2"];
+				local buttonText3 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text3"];
+				local buttonText4 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text4"];
+				local buttonText5 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text5"];
+				local buttonText6 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text6"];
+				local buttonText6 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text7"];
+				local buttonText6 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text8"];
+				local buttonText6 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text9"];
+				local button = _G["VanasKoSListFrameListButton" .. buttonIndex];
 				button:SetID(listIndex);
 				if(listIndex == VANASKOS.selectedEntry) then
 					button:LockHighlight();
@@ -885,7 +885,7 @@ end
 
 function VanasKoSGUI:SetNumColumns(num)
 	for i=1,VANASKOS.MAX_LIST_COLS do
-		local hdr = getglobal("VanasKoSListFrameColButton" .. i);
+		local hdr = _G["VanasKoSListFrameColButton" .. i];
 		if(i <= num) then
 			hdr:Show();
 		else
@@ -893,7 +893,7 @@ function VanasKoSGUI:SetNumColumns(num)
 		end
 
 		for j=1,VANASKOS.MAX_LIST_BUTTONS do
-			local txt = getglobal("VanasKoSListFrameListButton" .. j .. "Text" .. i);
+			local txt = _G["VanasKoSListFrameListButton" .. j .. "Text" .. i];
 			if (i <= num) then
 				txt:Show();
 			else
@@ -904,20 +904,20 @@ function VanasKoSGUI:SetNumColumns(num)
 end
 
 function VanasKoSGUI:SetColumnWidth(col, width)
-	getglobal("VanasKoSListFrameColButton" .. col):SetWidth(width);
-	getglobal("VanasKoSListFrameColButton" .. col .. "Middle"):SetWidth(width - 9);
+	_G["VanasKoSListFrameColButton" .. col]:SetWidth(width);
+	_G["VanasKoSListFrameColButton" .. col .. "Middle"]:SetWidth(width - 9);
 	for i=1,VANASKOS.MAX_LIST_BUTTONS do
-		getglobal("VanasKoSListFrameListButton" .. i .. "Text" .. col):SetWidth(width - 5);
+		_G["VanasKoSListFrameListButton" .. i .. "Text" .. col]:SetWidth(width - 5);
 	end
 end
 
 function VanasKoSGUI:SetColumnName(col, Name)
-	getglobal("VanasKoSListFrameColButton" .. col):SetText(Name);
+	_G["VanasKoSListFrameColButton" .. col]:SetText(Name);
 end
 
 function VanasKoSGUI:SetColumnType(col, colType)
 	for i=1,VANASKOS.MAX_LIST_BUTTONS do
-		local frame = getglobal("VanasKoSListFrameListButton" .. i .. "Text" .. col);
+		local frame = _G["VanasKoSListFrameListButton" .. i .. "Text" .. col];
 		if frame then
 			if (colType == "normal") then
 				frame:SetFontObject("GameFontNormalSmall");
@@ -940,7 +940,7 @@ end
 
 function VanasKoSGUI:SetColumnSort(column, sortFunctionNew, sortFunctionRev)
 	if(column) then
-		local colButton = getglobal("VanasKoSListFrameColButton" .. column);
+		local colButton = _G["VanasKoSListFrameColButton" .. column];
 		if(colButton) then
 			colButton.sortFunction = sortFunctionNew;
 			colButton.revSortFunction = sortFunctionRev;
@@ -973,33 +973,31 @@ StaticPopupDialogs["VANASKOS_ADD_REASON_ENTRY"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 255,
-	OnAccept = function()
-		local editBox = getglobal(this:GetParent():GetName().."EditBox");
-		local reason = editBox:GetText();
+	OnAccept = function(self, event, ...)
+		local reason = self.editBox:GetText();
 		if(reason == "") then
 			reason = nil;
 		end
 		VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { ['reason'] = reason });
 		VanasKoSGUI:Update();
 	end,
-	EditBoxOnEnterPressed = function()
-		local editBox = getglobal(this:GetParent():GetName().."EditBox");
-		local reason = editBox:GetText();
+	EditBoxOnEnterPressed = function(self, event, ...)
+		local reason = self:GetParent().editBox:GetText();
 		if(reason == "") then
 			reason = nil;
 		end
 		VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { ['reason'] = reason });
 		VanasKoSGUI:Update();
-		this:GetParent():Hide();
+		self:GetParent():Hide();
 	end,
-	OnShow = function()
-		getglobal(this:GetName().."EditBox"):SetFocus();
+	OnShow = function(self, event, ...)
+		self.editBox:SetFocus();
 	end,
-	OnHide = function()
-		getglobal(this:GetName().."EditBox"):SetText("");
+	OnHide = function(self, event, ...)
+		self.editBox:SetText("");
 	end,
-	EditBoxOnEscapePressed = function()
-		this:GetParent():Hide();
+	EditBoxOnEscapePressed = function(self, event, ...)
+		self:GetParent():Hide();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -1013,29 +1011,27 @@ StaticPopupDialogs["VANASKOS_ADD_ENTRY"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 255,
-	OnAccept = function()
-		local editBox = getglobal(this:GetParent():GetName().."EditBox");
-		VANASKOS.LastNameEntered = editBox:GetText();
+	OnAccept = function(self, event, ...)
+		VANASKOS.LastNameEntered = self.editBox:GetText();
 		if(VANASKOS.LastNameEntered ~= "") then
 			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
 		end
 	end,
-	EditBoxOnEnterPressed = function()
-		local editBox = getglobal(this:GetParent():GetName().."EditBox");
-		VANASKOS.LastNameEntered = editBox:GetText();
+	EditBoxOnEnterPressed = function(self, event, ...)
+		VANASKOS.LastNameEntered = self:GetParent().editBox:GetText();
 		if(VANASKOS.LastNameEntered ~= "") then
 			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
 		end
 	end,
-	OnShow = function()
-		getglobal(this:GetName().."EditBox"):SetText("");
-		getglobal(this:GetName().."EditBox"):SetFocus();
+	OnShow = function(self, event, ...)
+		self.editBox:SetText("");
+		self.editBox:SetFocus();
 	end,
-	OnHide = function()
-		getglobal(this:GetName().."EditBox"):SetText("");
+	OnHide = function(self, event, ...)
+		self.editBox:SetText("");
 	end,
-	EditBoxOnEscapePressed = function()
-		this:GetParent():Hide();
+	EditBoxOnEscapePressed = function(self, event, ...)
+		self:GetParent():Hide();
 	end,
 	timeout = 0,
 	exclusive = 1,
@@ -1049,23 +1045,23 @@ StaticPopupDialogs["VANASKOS_CHANGE_ENTRY"] = {
 	button2 = CANCEL,
 	hasEditBox = 1,
 	maxLetters = 255,
-	OnAccept = function()
-		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+	OnAccept = function(self, event, ...)
+		local editBox = self.editBox;
 		VanasKoSGUI:GUIChangeKoSReason(editBox:GetText());
 	end,
-	EditBoxOnEnterPressed = function()
-		local editBox = getglobal(this:GetParent():GetName().."EditBox");
+	EditBoxOnEnterPressed = function(self, event, ...)
+		local editBox = self:GetParent().editBox;
 		VanasKoSGUI:GUIChangeKoSReason(editBox:GetText());
-		this:GetParent():Hide();
+		self:GetParent():Hide();
 	end,
-	OnShow = function()
-		getglobal(this:GetName().."EditBox"):SetFocus();
+	OnShow = function(self, event, ...)
+		self.editBox:SetFocus();
 	end,
-	OnHide = function()
-		getglobal(this:GetName().."EditBox"):SetText("");
+	OnHide = function(self, event, ...)
+		self.editBox:SetText("");
 	end,
-	EditBoxOnEscapePressed = function()
-		this:GetParent():Hide();
+	EditBoxOnEscapePressed = function(self, event, ...)
+		self:GetParent():Hide();
 	end,
 	timeout = 0,
 	exclusive = 1,

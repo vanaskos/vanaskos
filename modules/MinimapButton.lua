@@ -14,7 +14,7 @@ local ldb = LibStub:GetLibrary("LibDataBroker-1.1");
 local Broker = ldb:NewDataObject("VanasKoS", {
 	type = "launcher",
 	icon = "Interface\\Icons\\Ability_Parry",
-	OnClick = function(frame, button) VanasKoSMinimapButton:OnClick(button); end,
+	OnClick = function(self, button) VanasKoSMinimapButton:OnClick(button); end,
 	OnTooltipShow = function(tt)
 			VanasKoSMinimapButton:OnTooltipShow(tt);
 		end
@@ -198,24 +198,24 @@ function VanasKoSMinimapButton:UpdateOptions()
 	end
 end
 
-function VanasKoSMinimapButton:OnClick()
+function VanasKoSMinimapButton:OnClick(button)
 	local rev = self.db.profile.ReverseButtons;
 	local action = nil;
 
-	if(arg1 == "LeftButton" and not IsShiftKeyDown()) then
+	if(button == "LeftButton" and not IsShiftKeyDown()) then
 		if(self.db.profile.ReverseButtons) then
 			action = "addkos";
 		else
 			action = "menu";
 		end
-	elseif(arg1 == "RightButton") then
+	elseif(button == "RightButton") then
 		if(self.db.profile.ReverseButtons) then
 			action = "menu";
 		else
 			action = "addkos";
 		end
 	end
-
+	
 	if (action == "menu") then
 		VanasKoSMinimapButton:UpdateOptions();
 		local x, y = GetCursorPosition();

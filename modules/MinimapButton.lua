@@ -25,11 +25,15 @@ local minimapOptions = {
 	{
 		text = VANASKOS.NAME .. " " .. VANASKOS.VERSION,
 		isTitle = true,
+		isNotRadio = true,
+		notCheckable = true,
 	},
 	{
 		text = L["Main Window"],
 		func = function() VanasKoS:ToggleMenu(); end,
 		checked = function() return VanasKoSFrame:IsVisible(); end,
+		isNotRadio = true,
+		notCheckable = true, 
 	},
 	{
 		text = L["Warning Window"],
@@ -40,10 +44,14 @@ local minimapOptions = {
 				end
 			end,
 		checked = function() return VanasKoSWarnFrame and VanasKoS:GetModule("WarnFrame").enabledState; end,
+		isNotRadio = true,
+		notCheckable = true,
 	},
 	{
 		text = L["Configuration"],
 		func = function() VanasKoSGUI:OpenConfigWindow(); end,
+		isNotRadio = true,
+		notCheckable = true,
 	},
 --[[	{
 		text = L["Locked"],
@@ -53,23 +61,33 @@ local minimapOptions = {
 	{
 		text = L["Add Player to KoS"],
 		func = function() VanasKoS:AddEntryFromTarget("PLAYERKOS"); end,
+		isNotRadio = true,
+		notCheckable = true,
 	},
 	{
 		text = L["Add Guild to KoS"],
 		func = function() VanasKoS:AddEntryFromTarget("GUILDKOS"); end,
+		isNotRadio = true,
+		notCheckable = true,
 	},
 	{
 		text = L["Add Player to Hatelist"],
 		func = function() VanasKoS:AddEntryFromTarget("HATELIST"); end,
+		isNotRadio = true,
+		notCheckable = true,
 	},
 	{
 		text = L["Add Player to Nicelist"],
 		func = function() VanasKoS:AddEntryFromTarget("NICELIST"); end,
+		isNotRadio = true,
+		notCheckable = true,
 	},
 	{
 		text = L["Add Attacker to KoS"],
 		hasArrow = true;
 		menuList = attackerMenu;
+		isNotRadio = true,
+		notCheckable = true,
 	},
 };
 

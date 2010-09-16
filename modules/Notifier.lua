@@ -374,17 +374,24 @@ function VanasKoSNotifier:OnEnable()
 	self:RegisterMessage("VanasKoS_Player_Target_Changed", "Player_Target_Changed");
 	self:RegisterMessage("VanasKoS_Mob_Target_Changed", "Player_Target_Changed");
 	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");
-	self:SecureHook("FriendsFrame_SetButton");
+	local frame = _G["FriendsFrameFriendsScrollFrame"];
+	local version, build, bdate, tocversion = GetBuildInfo();
+	--FriendsFrame_SetButton was replaced by FriendsFrame_UpdateFriends in 40000.  Most of this can be removed after we're fully on 40000.
+	if(tocversion < 40000) then
+		self:SecureHook("FriendsFrame_SetButton");
+		frame.buttonFunc = FriendsFrame_SetButton;
+	else
+		self:SecureHook("FriendsFrame_UpdateFriends");
+		frame.buttonFunc = FriendsFrame_UpdateFriends;
+	end
 	self:SecureHook("FriendsFrameTooltip_Show");
 	self:SecureHook("IgnoreList_Update");
-	local frame = getglobal("FriendsFrameFriendsScrollFrame");
-	frame.buttonFunc = FriendsFrame_SetButton;
 	for i=1,FRIENDS_TO_DISPLAY do
-		local button = getglobal("FriendsFrameFriendsScrollFrameButton" .. i);
+		local button = _G["FriendsFrameFriendsScrollFrameButton" .. i];
 		self:SecureHookScript(button, "OnEnter", "FriendsFrameTooltip_Show");
 	end
 	for i=1,IGNORES_TO_DISPLAY do
-		local button = getglobal("FriendsFrameIgnoreButton" .. i);
+		local button = _G["FriendsFrameIgnoreButton" .. i];
 		local reasonFont = button:CreateFontString("VanasKoSIgnoreButton" .. i .. "ReasonText");
 		reasonFont:SetFontObject("GameFontNormalSmall");
 		reasonFont:SetPoint("RIGHT");
@@ -392,12 +399,13 @@ function VanasKoSNotifier:OnEnable()
 	self:SecureHook("LFRBrowseFrameListButton_SetData");
 	--self:SecureHook("LFRBrowseButton_OnEnter");
 	for i=1, NUM_LFR_LIST_BUTTONS do
-		self:SecureHookScript(getglobal("LFRBrowseFrameListButton" .. i), "OnEnter", "LFRBrowseButton_OnEnter");
+		self:SecureHookScript(_G["LFRBrowseFrameListButton" .. i], "OnEnter", "LFRBrowseButton_OnEnter");
 	end
 
 	self:HookScript(GameTooltip, "OnTooltipSetUnit");
 end
 
+--This is only here to maintain compatability for builds older than 40000.  Replaced by FriendsFrame_UpdateFriends
 function VanasKoSNotifier:FriendsFrame_SetButton(button, index, firstButton)
 	if (self.db.profile.friendlist ~= true) then
 		return
@@ -421,6 +429,42 @@ function VanasKoSNotifier:FriendsFrame_SetButton(button, index, firstButton)
 					nameText:SetTextColor(0, 1, 0);
 				else
 					nameText:SetTextColor(0, 0.5, 0);
+				end
+			end
+		end
+	end
+end
+
+function VanasKoSNotifier:FriendsFrame_UpdateFriends()
+	if (self.db.profile.friendlist ~= true) then
+		return
+	end
+
+	local scrollFrame = FriendsFrameFriendsScrollFrame;
+	local buttons = scrollFrame.buttons;
+	local numButtons = #buttons;
+	
+	for i = 1, numButtons do
+		button = buttons[i];
+		if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
+			-- name, level, class, area, connected, status, note, RAF
+			local name, _, _, _, connected, _, note = GetFriendInfo(button.id);
+			local nameText = button.name;
+	
+			if(name) then
+				local lname = name:lower();
+				if (VanasKoS:IsOnList("HATELIST", lname)) then
+					if (connected) then
+						nameText:SetTextColor(1, 0, 0);
+					else
+						nameText:SetTextColor(0.5, 0, 0);
+					end
+				elseif (VanasKoS:IsOnList("NICELIST", lname)) then
+					if (connected) then
+						nameText:SetTextColor(0, 1, 0);
+					else
+						nameText:SetTextColor(0, 0.5, 0);
+					end
 				end
 			end
 		end

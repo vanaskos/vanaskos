@@ -226,7 +226,7 @@ function VanasKoSPvPDataGatherer:LogPvPWin(name)
 						['time'] = time(),
 						['myname'] = UnitName("player"),
 						['mylevel'] = UnitLevel("player"),
-						['enemylevel'] = data['level'],
+						['enemylevel'] = data and data['level'] or 0,
 						['type'] = "win",
 						['zone']  = zone,
 						['posX'] = posX,

@@ -1,5 +1,4 @@
-﻿## Interface: 30300
-## X-Compatible-With: 40000
+﻿## Interface: 40000
 ## Title: Vanas|cffff0000KoS|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS

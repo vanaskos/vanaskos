@@ -184,6 +184,10 @@ end
 local targetInfo = { };
 
 function VanasKoSTracker:ChannelMessage()
+	if(arg9 == nil) then
+		return;
+	end;
+	
 	if(strsub(arg9, 1, 3) ~= "Crb") then
 		return;
 	end

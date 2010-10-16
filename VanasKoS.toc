@@ -10,7 +10,7 @@
 ## DefaultState: Enabled
 ## SavedVariables: VanasKoSDB
 ## SavedVariablesPerCharacter: VanasKoSDBPC
-## OptionalDeps: Ace3, LibSharedMedia-3.0, LibBabble-Race-3.0, LibBabble-Zone-3.0, LibGraph-2.0, LibDBIcon-1.0, LibLevelGuess-1.0
+## OptionalDeps: Ace3, LibSharedMedia-3.0, LibBabble-Race-3.0, LibBabble-Zone-3.0, LibDBIcon-1.0, LibLevelGuess-1.0
 ## X-eMail: boredvana@gmail.com
 ## X-Date: 2009-08-06
 ## X-Category: Battlegrounds/PvP
@@ -36,7 +36,6 @@ Libs\LibSharedMedia-3.0\lib.xml
 Libs\LibBabble-Race-3.0\lib.xml
 Libs\LibBabble-Zone-3.0\lib.xml
 Libs\LibLevelGuess-1.0\lib.xml
-Libs\LibGraph-2.0\LibGraph-2.0.lua
 #@end-no-lib-strip@
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 #@no-lib-strip@

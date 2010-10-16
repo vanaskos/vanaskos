@@ -653,14 +653,14 @@ function VanasKoSPvPStats:OnEnable()
 	end
 
 	UIDropDownMenu_Initialize(characterDropdown,
-		function()
+		function(self, level)
 			for k,v in pairs(CharacterChoices) do
 				local button = UIDropDownMenu_CreateInfo();
 				button.text = v[1];
 				button.value = v[2];
-				button.func = function()
-					VanasKoSPvPStats:SetCharacter(this.value);
-					UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsCharacterDropDown, this.value);
+				button.func = function(self)
+					VanasKoSPvPStats:SetCharacter(self.value);
+					UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsCharacterDropDown, self.value);
 				end
 				UIDropDownMenu_AddButton(button);
 			end
@@ -681,14 +681,14 @@ function VanasKoSPvPStats:OnEnable()
 	};
 
 	UIDropDownMenu_Initialize(timespanDropdown,
-		function()
+		function(self, level)
 			for k,v in VanasKoSGUI:pairsByKeys(TimeSpanChoices, nil) do
 				local button = UIDropDownMenu_CreateInfo();
 				button.text = v[1];
 				button.value = v[2];
-				button.func = function()
-					VanasKoSPvPStats:SetTimeSpan(this.value);
-					UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsTimeSpanDropDown, this.value);
+				button.func = function(self)
+					VanasKoSPvPStats:SetTimeSpan(self.value);
+					UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsTimeSpanDropDown, self.value);
 				end
 				UIDropDownMenu_AddButton(button);
 			end

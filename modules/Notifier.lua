@@ -960,6 +960,7 @@ end
 function VanasKoSNotifier:KosPlayer_Detected(data)
 	assert(data.name ~= nil);
 
+	VanasKoS:Print("layer detected: " .. data.name);
 	-- get reasons for kos (if any)
 	local pdata = VanasKoS:IsOnList("PLAYERKOS", data.name);
 	local gdata = VanasKoS:IsOnList("GUILDKOS", data.guild);

@@ -64,8 +64,8 @@ modules\Notifier_Locale.lua
 modules\Notifier.lua
 modules\WarnFrame_Locale.lua
 modules\WarnFrame.lua
-modules\DistributedTracker_Locale.lua
-modules\DistributedTracker.lua
+#modules\DistributedTracker_Locale.lua
+#modules\DistributedTracker.lua
 modules\MinimapButton_Locale.lua
 modules\MinimapButton.lua
 modules\CommandLineHandler_Locale.lua

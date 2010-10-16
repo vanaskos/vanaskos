@@ -64,13 +64,6 @@ function VanasKoSGUICreate:CreateAboutFrame()
 
 	htmlFrame:SetScript("OnShow", function() VanasKoSGUICreate:UpdateAboutText(); end);
 
-	--[[
-	local donateButton = CreateFrame("Button", nil, aboutFrame, "UIPanelButtonTemplate");
-	donateButton:SetPoint("BOTTOM", aboutFrame, "BOTTOM", -10, 90);
-	donateButton:SetHeight(21);
-	donateButton:SetWidth(120);
-	donateButton:SetText(L["Donate"]);
-	donateButton:SetScript("OnClick", function() VanasKoS:Print("Donate via PayPal to boredvana@gmail.com") end); ]]
 	self:UpdateAboutText()
 end
 

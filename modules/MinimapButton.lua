@@ -53,11 +53,6 @@ local minimapOptions = {
 		isNotRadio = true,
 		notCheckable = true,
 	},
---[[	{
-		text = L["Locked"],
-		func = function() VanasKoSWarnFrame.db.profile.Locked = not VanasKoSWarnFrame.db.profile.Locked; end,
-		checked = function() return VanasKoSWarnFrame.db.profile.Locked; end,
-	}, ]]
 	{
 		text = L["Add Player to KoS"],
 		func = function() VanasKoS:AddEntryFromTarget("PLAYERKOS"); end,
@@ -106,8 +101,6 @@ function VanasKoSMinimapButton:OnInitialize()
 
 	self.name = "VanasKoSMinimapButton";
 
-	icon:Register(self.name, Broker, self.db.profile.button);
-	
 	self.configOptions = {
 		type = 'group',
 		name = L["Minimap Button"],
@@ -136,54 +129,14 @@ function VanasKoSMinimapButton:OnInitialize()
 				set = function(frame, v) VanasKoSMinimapButton.db.profile.ReverseButtons = v; end,
 				get = function() return VanasKoSMinimapButton.db.profile.ReverseButtons; end,
 			},
---[[				reset = {
-				type = 'execute',
-				name = L["Reset Position"],
-				desc = L["Reset Position"],
-				order = 2,
-				func = function() VanasKoSMinimapButton:ResetPosition(); end,
-			},
-			angle = {
-				type = 'range',
-				name = L["Angle"],
-				desc = L["Angle"],
-				min = 0,
-				max = 360,
-				step = 1,
-				set = function(frame, value) VanasKoSMinimapButton:SetAngle(value); VanasKoSMinimapButton.db.profile.Angle = value; end,
-				get = function() return VanasKoSMinimapButton.db.profile.Angle; end,
-			},
-			distance = {
-				type = 'range',
-				name = L["Distance"],
-				desc = L["Distance"],
-				min = 40,
-				max = 150,
-				step = 1,
-				set = function(frame, value) VanasKoSMinimapButton:SetDist(value); VanasKoSMinimapButton.db.profile.Dist = value; end,
-				get = function() return VanasKoSMinimapButton.db.profile.Dist; end,
-			} ]]--
 		},
 	};
 
 	VanasKoSGUI:AddModuleToggle("MinimapButton", L["Minimap Button"]);
 	VanasKoSGUI:AddConfigOption("MinimapButton", self.configOptions);
 	minimapOptions[1].text = VANASKOS.NAME .. " " .. VANASKOS.VERSION;
-	icon:Hide(self.name);
 	self:SetEnabledState(self.db.profile.Enabled);
 end
-
---[[
-function VanasKoSMinimapButton:SetAngle(newang)
-	ang = newang;
-	self:SetPosition();
-end
-
-function VanasKoSMinimapButton:SetDist(newdist)
-	r = newdist;
-	self:SetPosition();
-end
-]]
 
 function VanasKoSMinimapButton:Toggle()
 	if(icon:IsVisible()) then
@@ -245,8 +198,12 @@ function VanasKoSMinimapButton:OnClick(button)
 end
 
 function VanasKoSMinimapButton:OnEnable()
-	self.db.profile.button.hide = nil;
-	icon:Show(self.name);
+	if(not icon:IsRegistered(self.name)) then 
+		icon:Register(self.name, Broker, self.db.profile.button);
+	end;
+	self.db.profile.button.hide = false;
+	icon:Refresh(self.name, self.db.profile.button);
+	
 	if(self.db.profile.ShowWarnFrameInfoText) then
 		self:EnableWarnFrameText();
 		if(timer == nil) then
@@ -257,7 +214,7 @@ end
 
 function VanasKoSMinimapButton:OnDisable()
 	self.db.profile.button.hide = true;
-	icon:Hide(self.name);
+	icon:Refresh(self.name, self.db.profile.button);
 	self:CancelAllTimers();
 	if(self.db.profile.ShowWarnFrameInfoText) then
 		self:DisableWarnFrameText();

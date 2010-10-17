@@ -55,10 +55,15 @@ function VanasKoSPvPDataGatherer:GetList(list)
 	end
 end
 
+
 function VanasKoSPvPDataGatherer:AddEntry(list, name, data)
 	if(list == "PVPLOG") then
 		local pvplog = VanasKoS:GetList("PVPLOG");
-		tinsert(pvplog.event, {['enemyname'] = name,
+		local hash = time() .. "." ..name;
+		if (data.time and data.time ~= time()) then
+			hash = hash .. "." .. data.time;
+		end
+		pvplog.event[hash] = {['enemyname'] = name,
 					['time'] = data['time'],
 					['myname'] = data['myname'],
 					['mylevel'] = data['mylevel'],
@@ -67,19 +72,19 @@ function VanasKoSPvPDataGatherer:AddEntry(list, name, data)
 					['zone']  = data['zone'],
 					['posX'] = data['posX'],
 					['posY'] = data['posY']
-				});
+				};
 
 		if (data['zone']) then
 			if (not pvplog.zone[data['zone']]) then
 				pvplog.zone[data['zone']] = {}
 			end
-			tinsert(pvplog.zone[data['zone']], #pvplog.event);
+			tinsert(pvplog.zone[data['zone']], hash);
 		end
 
 		if (not pvplog.player[name]) then
 			pvplog.player[name] = {}
 		end
-		tinsert(pvplog.player[name], #pvplog.event);
+		tinsert(pvplog.player[name], hash);
 	end
 	return true;
 end

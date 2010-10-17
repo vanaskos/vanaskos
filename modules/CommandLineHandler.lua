@@ -37,8 +37,8 @@ local function kaddRetrieveArgs(args)
 		name, next_pos = VanasKoS:GetArgs(args, 1, next_pos);
 		guild = strmatch(name, "<(.+)>[-]?(.*)");
 		if (guild) then
-		    name = guild;
-		    isGuild = true;
+			name = guild;
+			isGuild = true;
 		end
 		reason = strsub(args, next_pos);
 	end

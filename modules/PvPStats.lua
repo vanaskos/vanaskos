@@ -162,8 +162,8 @@ function VanasKoSPvPStats:FilterFunction(key, value, searchBoxText)
 end
 
 function VanasKoSPvPStats:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2, buttonText3, buttonText4, buttonText5, buttonText6)
-	local score = value.score or value.wins - value.losses;
-	if(list == "PVPSTATS") then
+	if(list == "PVPSTATS" and value) then
+		local score = value.score or value.wins - value.losses;
 		buttonText1:SetText(string.Capitalize(key));
 		if (self.group ~= GENERAL_LIST or key == L["Total"] or key == MALE or key == FEMALE) then
 			buttonText2:SetText(format("|cff00ff00%d|r", value.wins));
@@ -199,7 +199,9 @@ function VanasKoSPvPStats:ShowList(list)
 	if(list == "PVPSTATS") then
 		VanasKoSListFrameChangeButton:Disable();
 		VanasKoSListFrameAddButton:Disable();
-		if (self.group ~= PLAYERS_LIST) then
+		if (self.group == PLAYERS_LIST or self.group == DATE_LIST) then
+			VanasKoSListFrameRemoveButton:Enable();
+		else
 			VanasKoSListFrameRemoveButton:Disable();
 		end
 		VanasKoSPvPStatsCharacterDropDown:Show();
@@ -211,8 +213,10 @@ function VanasKoSPvPStats:HideList(list)
 	if(list == "PVPSTATS") then
 		VanasKoSListFrameChangeButton:Enable();
 		VanasKoSListFrameAddButton:Enable();
-		if (self.group ~= PLAYERS_LIST) then
+		if (self.group == PLAYERS_LIST or self.group == DATE_LIST) then
 			VanasKoSListFrameRemoveButton:Enable();
+		else
+			VanasKoSListFrameRemoveButton:Disable();
 		end
 		VanasKoSPvPStatsCharacterDropDown:Hide();
 		VanasKoSPvPStatsTimeSpanDropDown:Hide();
@@ -262,7 +266,7 @@ function VanasKoSPvPStats:BuildList()
 
 	local group = self.group;
 
-	for idx,event in ipairs(pvplog.event) do
+	for hash,event in pairs(pvplog.event) do
 		if( (not timeSpanStart or event.time >= timeSpanStart) and
 			(not timeSpanEnd or event.time <= timeSpanEnd)) then
 
@@ -470,12 +474,82 @@ function VanasKoSPvPStats:AddEntry(list, name, data)
 end
 
 function VanasKoSPvPStats:RemoveEntry(listname, name, guild)
+	local removed = nil;
+	local group = self.group;
+	local pvplog = VanasKoS:GetList("PVPLOG");
+
 	if(listname == "PVPSTATS") then
-		local list = self:GetList(listname, 1);
-		if(list and list[name]) then
-			list[name] = nil;
-			self:SendMessage("VanasKoS_List_Entry_Removed", listname, name);
+		if (group == PLAYERS_LIST) then
+			-- print("removing from players_list");
+			local list = self:GetList(listname, 1);
+			if(list and list[name]) then
+				-- print("removing from pvp stats");
+				list[name] = nil;
+				removed = true;
+			end
+
+			if (pvplog.player[name]) then
+				-- print("removing " .. name .. " from pvp player log");
+				for i, hash in ipairs(pvplog.player[name]) do
+					-- print("removing " .. hash .. " from pvp event log");
+					local event = pvplog.event[hash];
+					if (event and event.zone) then
+						for j, zhash in ipairs(pvplog.zone[event.zone]) do
+							if (zhash == hash) then
+								--print("removing " .. hash .. " from pvp zone log");
+								tremove(pvplog.zone[event.zone], j);
+								break;
+							end
+						end
+						if (next(pvplog.zone[event.zone]) == nil) then
+							pvplog.zone[event.zone] = nil;
+						end
+					end
+					pvplog.event[hash] = nil;
+					removed = true;
+				end
+				pvplog.player[name] = nil;
+			end
+		elseif (group == DATE_LIST) then
+			-- print("brute removing " .. name);
+			-- brute force
+			for hash, event in pairs(pvplog.event) do
+				local remove = nil;
+				if (event.time and date("%Y-%m-%d", event.time) == name) then
+					if (event and event.enemyname) then
+						for j, zhash in ipairs(pvplog.player[event.enemyname] or {}) do
+							if (zhash == hash) then
+								--print("removing " .. hash .. " from player log");
+								tremove(pvplog.player[event.enemyname], j);
+								break;
+							end
+						end
+						if (pvplog.player[event.enemyname] and next(pvplog.player[event.enemyname]) == nil) then
+							pvplog.player[event.enemyname] = nil;
+						end
+					end
+					if (event and event.zone) then
+						for j, zhash in ipairs(pvplog.zone[event.zone] or {}) do
+							if (zhash == hash) then
+								--print("removing " .. hash .. " from pvp zone log");
+								tremove(pvplog.zone[event.zone], j);
+								break;
+							end
+						end
+						if (pvplog.zone[event.zone] and next(pvplog.zone[event.zone]) == nil) then
+							pvplog.zone[event.zone] = nil;
+						end
+					end
+					pvplog.event[hash] = nil;
+					removed = true;
+				end
+			end
 		end
+	end
+
+	if(removed) then
+		pvpStatsList[name] = nil;
+		self:SendMessage("VanasKoS_List_Entry_Removed", listname, name);
 	end
 end
 
@@ -548,7 +622,7 @@ function VanasKoSPvPStats:ToggleLeftButtonOnClick(button, frame)
 	else
 		self.group = 1
 	end
-	if (self.group == PLAYERS_LIST) then
+	if (self.group == PLAYERS_LIST or self.group == DATE_LIST) then
 		VanasKoSListFrameRemoveButton:Enable();
 	else
 		VanasKoSListFrameRemoveButton:Disable();
@@ -565,7 +639,7 @@ function VanasKoSPvPStats:ToggleRightButtonOnClick(button, frame)
 	else
 		self.group = MAX_LIST
 	end
-	if (self.group == PLAYERS_LIST) then
+	if (self.group == PLAYERS_LIST or self.group == DATE_LIST) then
 		VanasKoSListFrameRemoveButton:Enable();
 	else
 		VanasKoSListFrameRemoveButton:Disable();
@@ -643,7 +717,7 @@ function VanasKoSPvPStats:OnEnable()
 	local pvplog = VanasKoS:GetList("PVPLOG") or {};
 
 	local twinks = { };
-	for idx, event in ipairs(pvplog.event or {}) do
+	for hash, event in pairs(pvplog.event or {}) do
 		if(event.myname) then
 			twinks[event.myname] = true;
 		end

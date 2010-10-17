@@ -1,6 +1,7 @@
 Release Changelog for VanasKoS
 
 alpha:
+- Allow pvp events to be removed by name or date from pvp stats window.
 - Allow quoted playernames in command line so that realms with spaces work
 - Fixed bug when adding player from minimap button
 - Updated library versions

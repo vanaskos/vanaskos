@@ -537,9 +537,9 @@ function VanasKoSGUI:UpdateMouseOverFrame(k, v, ty)
 				if (#playerlog > 0) then
 					tooltip:AddLine("|cffffffff" .. L["PvP Encounter:"] .. "|r");
 				end
-				for key,eventIdx in iter do
-					local event = pvplog.event[eventIdx];
-					if(event.type and event.zone and event.myname) then
+				for key,hash in iter do
+					local event = pvplog.event[hash];
+					if(event and event.type and event.zone and event.myname) then
 						if(event.type == 'win') then
 							tooltip:AddLine(format(L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), event.zone, event.myname));
 						else

@@ -391,6 +391,7 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		if(realm and realm ~= "") then
 			name = name .. "-" .. realm;
 		end
+		wipe(gatheredData);
 		gatheredData.name = name;
 		gatheredData.guild, gatheredData.guildrank = GetGuildInfo(unit);
 		gatheredData.race = UnitRace(unit);
@@ -466,6 +467,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, guid, faction, spellId)
 	end
 	
 	local class, classEnglish, race, raceEnglish, gender = GetPlayerInfoByGUID(guid)
+	wipe(gatheredData);
 	gatheredData.name = name;
 	gatheredData.faction = faction;
 	gatheredData.zone = zone;

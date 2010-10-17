@@ -12,53 +12,35 @@ function VanasKoSCommandLineHandler:OnEnable()
 	VanasKoS:RegisterChatCommand("kadd", function(args) VanasKoSCommandLineHandler:KoSAdd("kadd", args) end);
 end
 
-local function getTaggedToken(args)
-	local token = nil;
-	local tagged = nil;
-	if (args ~= nil) then
-		string.gsub(args, "^%s*(.-)%s*$", "%1");
-		string.gsub(args, "%s+", " ");
-
-		if (string.find(args, "<") == 1 and (string.find(args, ">") ~= nil)) then
-			token = string.sub(args, 2, string.find(args, ">") - 1);
-			args = string.sub(args, string.find(args, ">") + 1);
-			tagged = true;
-		elseif (string.find(args, " ")) then
-			token = string.sub(args, 1, string.find(args, " ") - 1);
-			args = string.sub(args, string.find(args, " ") + 1);
-		else
-			token = args;
-			args = nil;
-		end
-	end
-
-	if (token == "") then
-		token = nil;
-	end
-
-	return token, args, tagged;
-end
-
-
 local function kaddRetrieveArgs(args)
 	local cmd = nil;
 	local name = nil;
 	local reason = nil;
+	local guild = nil;
 	local isGuild = nil;
+	local next_pos = 1;
 
-	cmd, args, tagged = getTaggedToken(args);
+	cmd, next_pos = VanasKoS:GetArgs(args, 1, next_pos);
 	if (cmd == nil) then
 		cmd = "kos"
 		return kos;
 	elseif (cmd ~= "help" and cmd ~= "?" and cmd ~= "hate" and cmd ~= "nice" and cmd ~= "kos") then
 		name = cmd;
+		guild = strmatch(name, "<(.+)>[-]?(.*)");
 		cmd = "kos";
-		if (tagged) then
-			isGuild = true
+		if (guild) then
+			name = guild;
+			isGuild = true;
 		end
-		reason = args;
+		reason = strsub(args, next_pos);
 	else
-		name, reason, isGuild = getTaggedToken(args);
+		name, next_pos = VanasKoS:GetArgs(args, 1, next_pos);
+		guild = strmatch(name, "<(.+)>[-]?(.*)");
+		if (guild) then
+		    name = guild;
+		    isGuild = true;
+		end
+		reason = strsub(args, next_pos);
 	end
 
 	return cmd, name, reason, isGuild;
@@ -111,7 +93,7 @@ local function printConfigUsage(name)
 end
 
 function VanasKoSCommandLineHandler:KoSConfig(arg0, args)
-	local cmd, args = getTaggedToken(args);
+	local cmd, next_pos = VanasKoS:GetArgs(args, 1, 1);
 
 	if (cmd == "help" or cmd == "?") then
 		VanasKoS:Print(L["CONFIG_DESC"]);
@@ -126,7 +108,7 @@ local function printMenuUsage(name)
 end
 
 function VanasKoSCommandLineHandler:KoSMenu(arg0, args)
-	local cmd, args = getTaggedToken(args);
+	local cmd, next_pos = VanasKoS:GetArgs(args, 1, 1);
 
 	if (cmd == "help" or cmd == "?") then
 		VanasKoS:Print(L["MENU_DESC"]);
@@ -142,16 +124,16 @@ local function printKoSUsage(name)
 end
 
 function VanasKoSCommandLineHandler:KoS(arg0, args)
-	local cmd, args = getTaggedToken(args);
+	local cmd, next_pos = VanasKoS:GetArgs(args, 1, 1);
 
 	if (cmd == "help" or cmd == "?") then
 		VanasKoS:Print(format(L["KOS_DESC %s"], arg0));
 		printKoSUsage(arg0);
 	elseif (cmd == "config") then
-		self:KoSConfig(arg0 .. " config", args)
+		self:KoSConfig(arg0 .. " config", strsub(args, next_pos))
 	elseif (cmd == "add") then
-		self:KoSAdd(arg0 .. " add", args)
+		self:KoSAdd(arg0 .. " add", strsub(args, next_pos))
 	else
-		self:KoSMenu(arg0 .. " menu", args)
+		self:KoSMenu(arg0 .. " menu", strsub(args, next_pos))
 	end
 end

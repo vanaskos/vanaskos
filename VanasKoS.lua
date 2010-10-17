@@ -206,42 +206,32 @@ function VanasKoS:RemoveEntry(listname, name)
 	end
 end
 
+--/script VanasKoS:AddEntryFromTarget("PLAYERKOS");
 --[[----------------------------------------------------------------------
 	functions to manipulate the database
 ------------------------------------------------------------------------]]
-function VanasKoS:AddEntryFromTarget(list, args)
-	local playername = "";
-	local reason = "";
-	local realm = "";
-	if(args == nil) then
-		args = "";
-	end
+function VanasKoS:AddEntryFromTarget(list)
+	local playername;
+	local realm;
 
 	VANASKOS.showList = list;
 	VanasKoSGUI:ScrollFrameUpdate();
 
-	_, _, playername, reason = string.find(args, "([^%s]+)%s*([^%s]+)");
-
-	if(not playername or playername == "" and UnitIsPlayer("target")) then
+	if(UnitIsPlayer("target")) then
 		playername, realm = UnitName("target");
 		if(list == "GUILDKOS") then
 			playername = GetGuildInfo("target");
-			reason = "";
 		end
-	end
-	if (realm and realm ~= "") then
-		playername = playername .. "-" .. realm;
+		if (realm and realm ~= "") then
+			playername = playername .. "-" .. realm;
+		end
 	end
 
-	if(playername == "") then
+	if(not playername or playername == "") then
 		StaticPopup_Show("VANASKOS_ADD_ENTRY");
 	else
-		if(reason == "") then
-			VANASKOS.LastNameEntered = playername;
-			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
-		else
-			VanasKoS:AddEntry(list, playername,  { ['reason'] = reason });
-		end
+		VANASKOS.LastNameEntered = playername;
+		StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
 	end
 end
 

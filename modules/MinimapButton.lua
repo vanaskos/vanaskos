@@ -33,7 +33,6 @@ local minimapOptions = {
 		func = function() VanasKoS:ToggleMenu(); end,
 		checked = function() return VanasKoSFrame:IsVisible(); end,
 		isNotRadio = true,
-		notCheckable = true, 
 	},
 	{
 		text = L["Warning Window"],
@@ -45,7 +44,6 @@ local minimapOptions = {
 			end,
 		checked = function() return VanasKoSWarnFrame and VanasKoS:GetModule("WarnFrame").enabledState; end,
 		isNotRadio = true,
-		notCheckable = true,
 	},
 	{
 		text = L["Configuration"],

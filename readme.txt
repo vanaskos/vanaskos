@@ -50,8 +50,8 @@ without target:
 /kadd - asks for name and reason
 
 always:
-/kadd <player> - asks for reason
-/kadd <player> <reason> - adds <player> with <reason>
+/kadd player - asks for reason
+/kadd player reason - adds player with reason
 
 Functions that need explanation:
 

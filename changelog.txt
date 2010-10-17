@@ -1,6 +1,9 @@
 Release Changelog for VanasKoS
 
 alpha:
+- Allow quoted playernames in command line so that realms with spaces work
+- Fixed bug when adding player from minimap button
+- Updated library versions
 - Fixed bug in PvP stats
 - Removed libgraph
 - Temporarily disabled distributed tracker

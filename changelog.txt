@@ -1,6 +1,17 @@
 Release Changelog for VanasKoS
 
 alpha:
+- Fixed bug in PvP stats
+- Removed libgraph
+- Temporarily disabled distributed tracker
+- Fixed minimap button
+
+4.26:
+- Update toc version
+- Fixed small bug in distributed tracker
+
+4.25:
+- Bugfixes for changes in Cataclysm
 - Store lists per realm/faction (requires import of old VanasKoS data)
 - Improved pvp statistics (requires import of old VanasKoS data)
 - Added support for cross-server players

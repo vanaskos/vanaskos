@@ -11,6 +11,12 @@ if L then
 	L["Toggles if the combatlog should be used to detect nearby player"] = true
 	L["Toggles if the data about players (level, class, etc) should be saved permanently."] = true
 	L["Use Combat Log"] = true
+	L["Enable in Battleground"] = true
+	L["Toggles detection of players in battlegrounds"] = true
+	L["Enable in combat zone"] = true
+	L["Toggles detection of players in combat zones (Wintergrasp, Tol Barad)"] = true
+	L["Enable in arena"] = true
+	L["Toggles detection of players in arenas"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DataGatherer", "frFR")

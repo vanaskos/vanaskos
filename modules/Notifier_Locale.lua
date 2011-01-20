@@ -47,6 +47,19 @@ if L then
 	L["Show Anchor"] = true
 	L["Locked"] = true
 
+	L["Zones"] = true
+	L["Notification Zones"] = true
+	L["Sanctuaries"] = true
+	L["Notify in Sanctuaries"] = true
+	L["Cities"] = true
+	L["Notify in cities"] = true
+	L["Battlegrounds"] = true
+	L["Notify in battleground"] = true
+	L["Arenas"] = true
+	L["Notify in arenas"] = true
+	L["Combat Zones"] = true
+	L["Notify in combat zones (Wintergrasp, Tol Barad)"] = true
+
 	L["Enemy Detected:|cffff0000"] = true
 	L["Hated player \"%s\" (%s) is in your party"] = true
 	L["Nice player \"%s\" (%s) is in your party"] = true

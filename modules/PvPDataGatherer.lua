@@ -189,7 +189,7 @@ function VanasKoSPvPDataGatherer:LogPvPLoss(name)
 		return;
 	end
 
-	VanasKoS:Print(format(L["PvP Loss versus %s registered."], name));
+	-- VanasKoS:Print(format(L["PvP Loss versus %s registered."], name));
 
 	name = name:lower();
 
@@ -216,7 +216,7 @@ function VanasKoSPvPDataGatherer:LogPvPWin(name)
 		return;
 	end
 
-	VanasKoS:Print(format(L["PvP Win versus %s registered."], name));
+	-- VanasKoS:Print(format(L["PvP Win versus %s registered."], name));
 
 	name = name:lower();
 
@@ -247,14 +247,14 @@ function VanasKoSPvPDataGatherer:AddLastDamageFrom(name)
 		return;
 	end
 
-	for i=2,#DamageFromArray do
+	for i=#DamageFromArray,2,-1 do
 		if(DamageFromArray[i] and DamageFromArray[i][1] == name) then
 			tremove(DamageFromArray, i);
 		end
 	end
 
-	if(#DamageFromArray > 10) then
-		tremove(DamageFromArray, 11);
+	for i=#DamageFromArray,11,-1 do
+		tremove(DamageFromArray, i);
 	end
 end
 

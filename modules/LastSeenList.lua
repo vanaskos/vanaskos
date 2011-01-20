@@ -264,17 +264,17 @@ local function ListButtonOnRightClickMenu()
 		},
 		{
 			text = L["Add to Player KoS"],
-			func = function() VanasKoS:AddEntry("PLAYERKOS", entry, { ['reason'] = date() }); end,
+			func = function() VanasKoS:AddEntryByName("PLAYERKOS", entry); end,
 			order = 2,
 		},
 		{
 			text = L["Add to Hatelist"],
-			func = function() VanasKoS:AddEntry("HATELIST", entry, { ['reason'] = date() }); end,
+			func = function() VanasKoS:AddEntryByName("HATELIST", entry); end,
 			order = 3,
 		},
 		{
 			text = L["Add to Nicelist"],
-			func = function() VanasKoS:AddEntry("NICELIST", entry, { ['reason'] = date() }); end,
+			func = function() VanasKoS:AddEntryByName("NICELIST", entry); end,
 			order = 4,
 		},
 	};

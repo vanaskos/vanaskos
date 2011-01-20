@@ -38,6 +38,11 @@ if L then
 	L["Enemy level"] = true
 	L["My level"] = true
 	L["Level difference"] = true
+
+	L["Add to Player KoS"] = true
+	L["Add to Hatelist"] = true
+	L["Add to Nicelist"] = true
+	L["Remove Entry"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "frFR")

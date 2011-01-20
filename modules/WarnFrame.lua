@@ -1318,7 +1318,6 @@ local function SetButton(buttonNr, name, faction, data)
 	-- SetMapToCurrentZone();
 	local zx, zy = GetPlayerMapPosition("player");
 	-- SetMapZoom(c, z)
-	local wx, wy = GetPlayerMapPosition
 	if(InCombatLockdown()) then
 		warnFrame:SetBackdropBorderColor(1.0, 0.0, 0.0);
 		if(buttonData[buttonNr] ~= name) then

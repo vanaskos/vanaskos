@@ -55,8 +55,8 @@ end
 -- crb stuff
 
 local function GetCurrentCrbZoneName() 
-	local continent = GetCurrentMapContinent();
-	local zone = GetCurrentMapZone();
+	local continent = VanasKoS:MapContinent();
+	local zone = VanasKoS:MapZone();
 	
 	if(continent == nil or zone == nil or continent == 0 or continent > 4) then
 		return nil;
@@ -139,10 +139,7 @@ function VanasKoSTracker:SendSeenPeople()
 		return;
 	end
 
-	-- Hopefully they are looking at the correct zone on the map, we could
-	-- call SetMapToCurrentZone(), but it would make people angry if called
-	-- it often
-	local mapAndZone = GetCurrentMapContinent() * 1000 + GetCurrentMapZone();
+	local mapAndZone = VanasKoS:MapContinent() * 1000 + VanasKoS:MapZone();
 	if(mapAndZone <= 0 or mapAndZone >= 5000) then
 		return; -- todo: implement
 	end

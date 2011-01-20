@@ -9,7 +9,10 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS", false);
 local VanasKoS = VanasKoS;
 
 function VanasKoS:ToggleModuleActive(moduleStr)
-	local module = self:GetModule(moduleStr, false);
+	local module = self:GetModule(moduleStr, true);
+	if (not module) then
+	        return;
+	end
 	if(module:IsEnabled()) then
 		module.db.profile.Enabled = false;
 		VanasKoS:DisableModule(moduleStr);
@@ -20,7 +23,10 @@ function VanasKoS:ToggleModuleActive(moduleStr)
 end
 
 function VanasKoS:ModuleEnabled(moduleStr)
-	local module = self:GetModule(moduleStr, false);
+	local module = self:GetModule(moduleStr, true);
+	if (not module) then
+	        return;
+	end
 	return module:IsEnabled();
 end
 
@@ -339,6 +345,8 @@ local inDungeon = false;
 local inCombatZone = false;
 local inFfaZone = false;
 local inCity = false;
+local mapContinent = -1;
+local mapZone = -1;
 
 local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable()
 local CityNames = {
@@ -368,6 +376,10 @@ function VanasKoS:UpdateZone()
 	local zone = GetRealZoneText();
 	local pvpType, isFFA, faction = GetZonePVPInfo();
 	local inInstance, instanceType = IsInInstance();
+
+	SetMapToCurrentZone();
+	mapContinent = GetCurrentMapContinent();
+	mapZone = GetCurrentMapZone();
 
 	inSanctuary = (pvpType == "sanctuary");
 	inCombatZone = (pvpType == "combat");
@@ -411,4 +423,12 @@ end
 
 function VanasKoS:IsInCity()
 	return inCity;
+end
+
+function VanasKoS:MapContinent()
+	return mapContinent;
+end
+
+function VanasKoS:MapZone()
+	return mapZone;
 end

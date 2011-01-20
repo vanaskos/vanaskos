@@ -2,6 +2,12 @@ Release Changelog for VanasKoS
 
 alpha:
 - Update libraries (including liblevelguess)
+- More ability to disable data gathering/notifications by zone type
+- Remove events by right clicking icons on map
+- Event map speed improvements
+- Add entry from PvP stats
+- Fix error on right click when a module is missing
+- Re-enabled distributed tracker
 
 4.27:
 - Fixed bug that could send invalid information for players

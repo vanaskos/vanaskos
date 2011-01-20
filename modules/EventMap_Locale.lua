@@ -27,6 +27,7 @@ if L then
 	L["Size of dots"] = true
 	L["Toggle showing individual icons or simple dots"] = true
 	L["Tooltips"] = true
+	L["Remove events"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/EventMap", "frFR")

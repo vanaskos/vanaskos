@@ -31,6 +31,9 @@ function VanasKoSDataGatherer:OnInitialize()
 				GatherInCities = false,
 				EnableInSanctuary = false,
 				EnableInCity = true,
+				EnableInBattleground = false,
+				EnableInCombatZone = false,
+				EnableInArena = false,
 			},
 		});
 
@@ -73,12 +76,36 @@ function VanasKoSDataGatherer:OnInitialize()
 				},
 				enableincity = {
 					type = "toggle",
-					order = 4,
+					order = 5,
 					name = L["Enable in Cities"],
 					desc = L["Toggles detection of players in cities"],
 					get = function() return VanasKoSDataGatherer.db.profile.EnableInCity; end,
 					set = function(frame, v) VanasKoSDataGatherer.db.profile.EnableInCity = v; VanasKoSDataGatherer:ZoneChanged(); end,
 				},
+				enableinbg = {
+				    type = "toggle",
+				    order = 6,
+				    name = L["Enable in Battleground"],
+				    desc = L["Toggles detection of players in battlegrounds"],
+				    get = function() return VanasKoSDataGatherer.db.profile.EnableInBattleground; end,
+				    set = function(frame, v) VanasKoSDataGatherer.db.profile.EnableInBattleground = v; VanasKoSDataGatherer:ZoneChanged(); end,
+				},
+				enableincombatzone = {
+				    type = "toggle",
+				    order = 7,
+				    name = L["Enable in combat zone"],
+				    desc = L["Toggles detection of players in combat zones (Wintergrasp, Tol Barad)"],
+				    get = function() return VanasKoSDataGatherer.db.profile.EnableInCombatZone; end,
+				    set = function(frame, v) VanasKoSDataGatherer.db.profile.EnableInCombatZone = v; VanasKoSDataGatherer:ZoneChanged(); end,
+				},
+				enableinarena = {
+				    type = "toggle",
+				    order = 8,
+				    name = L["Enable in arena"],
+				    desc = L["Toggles detection of players in arenas"],
+				    get = function() return VanasKoSDataGatherer.db.profile.EnableInArena; end,
+				    set = function(frame, v) VanasKoSDataGatherer.db.profile.EnableInArena = v; VanasKoSDataGatherer:ZoneChanged(); end,
+				}
 			},
 		},
 	});
@@ -365,6 +392,15 @@ function VanasKoSDataGatherer:ZoneChanged()
 	elseif (VanasKoS:IsInCity()) then
 		self:EnableTargetEvents(self.db.profile.EnableInCity);
 		self:EnableCombatEvents(self.db.profile.EnableInCity and self.db.profile.UseCombatLog);
+	elseif (VanasKoS:IsInBattleground()) then
+		self:EnableTargetEvents(self.db.profile.EnableInBattleground);
+		self:EnableCombatEvents(self.db.profile.EnableInBattleground and self.db.profile.UseCombatLog);
+	elseif (VanasKoS:IsInCombatZone()) then
+		self:EnableTargetEvents(self.db.profile.EnableInCombatZone);
+		self:EnableCombatEvents(self.db.profile.EnableInCombatZone and self.db.profile.UseCombatLog);
+	elseif (VanasKoS:IsInArena()) then
+		self:EnableTargetEvents(self.db.profile.EnableInArena);
+		self:EnableCombatEvents(self.db.profile.EnableInArena and self.db.profile.UseCombatLog);
 	elseif (VanasKoS:IsInDungeon()) then
 		self:EnableTargetEvents(false);
 		self:EnableCombatEvents(false);
@@ -415,7 +451,7 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 			end
 			if(oldLevelNum > lvl) then
 				lvl = oldLevel;
-			elseif(lvl < 80) then
+			elseif(lvl < 85) then
 				lvl = lvl .. "+";
 			end
 		end
@@ -492,7 +528,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, guid, faction, spellId)
 		level = oldLevel;
 	elseif (level < 1) then
 		level = nil;
-	elseif (level < 80) then
+	elseif (level < 85) then
 		level = level .. "+";
 	end
 	gatheredData.level = level;

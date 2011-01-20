@@ -649,6 +649,50 @@ function VanasKoSPvPStats:ToggleRightButtonOnClick(button, frame)
 	VanasKoSGUI:UpdateShownList();
 end
 
+function VanasKoSPvPStats:ListButtonOnClick(button, frame)
+	local id = frame:GetID();
+	entry, value = VanasKoSGUI:GetListEntryForID(id);
+	if(id == nil or entry == nil) then
+		return;
+	end
+	if(button == "RightButton" and self.group == PLAYERS_LIST) then
+		local x, y = GetCursorPosition();
+		local uiScale = UIParent:GetEffectiveScale();
+		local menuItems = {
+			{
+				text = string.Capitalize(entry),
+				isTitle = true,
+			},
+			{
+				text = L["Add to Player KoS"],
+				func = function()
+							VanasKoS:AddEntryByName("PLAYERKOS", entry);
+						end,
+			},
+			{
+				text = L["Add to Hatelist"],
+				func = function()
+							VanasKoS:AddEntryByName("HATELIST", entry);
+						end
+			},
+			{
+				text = L["Add to Nicelist"],
+				func = function()
+							VanasKoS:AddEntryByName("NICELIST", entry);
+						end
+			},
+			{
+				text = L["Remove Entry"],
+				func = function()
+					VanasKoS:RemoveEntry(VANASKOS.showList, entry);
+				end
+			}
+		};
+
+		EasyMenu(menuItems, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU");
+	end
+end
+
 local statPie = nil;
 local RED = { 1.0, 0.0, 0.0 };
 local GREEN = { 0.0, 1.0, 0.0 };

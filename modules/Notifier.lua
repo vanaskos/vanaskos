@@ -138,6 +138,10 @@ function VanasKoSNotifier:OnInitialize()
 			notifyRaidBrowser = true,
 			notifyFlashingBorder = true,
 			notifyInShattrathEnabled = false,
+			notifyInCitiesEnabled = false,
+			notifyInBattlegroundEnabled = false,
+			notifyInArenaEnabled = false,
+			notifyInCombatZoneEnabled = false,
 			notifyExtraReasonFrameEnabled = false,
 			notifyExtraReasonFrameLocked = false,
 			notifyShowPvPStats = true,
@@ -253,22 +257,11 @@ function VanasKoSNotifier:OnInitialize()
 				set = function(frame, v) VanasKoSNotifier.db.profile.ignorelist = v; end,
 				get = function() return VanasKoSNotifier.db.profile.ignorelist; end,
 			},
-			insanctuary = {
-				type = 'toggle',
-				name = L["Notify in Sanctuary"],
-				desc = L["Notify in Sanctuary"],
-				order = 11,
-				set = function(frame, v) 
-					VanasKoSNotifier.db.profile.notifyInShattrathEnabled = v;
-					VanasKoSNotifier:ZoneChanged();
-				end,
-				get = function() return VanasKoSNotifier.db.profile.notifyInShattrathEnabled; end,
-			},
 			showpvpstats = {
 				type = 'toggle',
 				name = L["Stats in Tooltip"],
 				desc = L["Show PvP-Stats in Tooltip"],
-				order = 12,
+				order = 11,
 				set = function(frame, v) VanasKoSNotifier.db.profile.notifyShowPvPStats = v; end,
 				get = function() return VanasKoSNotifier.db.profile.notifyShowPvPStats; end,
 			},
@@ -279,14 +272,77 @@ function VanasKoSNotifier:OnInitialize()
 				min = 0,
 				max = 600,
 				step = 5,
-				order = 13,
+				order = 12,
 				set = function(frame, value) VanasKoSNotifier.db.profile.NotifyTimerInterval = value; end,
 				get = function() return VanasKoSNotifier.db.profile.NotifyTimerInterval; end,
+			},
+			zonesgroup = {
+				type = "group",
+				name = L["Zones"],
+				desc = L["Notification Zones"],
+				order = 13,
+				args = {
+					insanctuary = {
+						type = 'toggle',
+						name = L["Sanctuaries"],
+						desc = L["Notify in Sanctuaries"],
+						order = 1,
+						set = function(frame, v) 
+							VanasKoSNotifier.db.profile.notifyInShattrathEnabled = v;
+							VanasKoSNotifier:ZoneChanged();
+						end,
+						get = function() return VanasKoSNotifier.db.profile.notifyInShattrathEnabled; end,
+					},
+					incity = {
+						type = 'toggle',
+						name = L["Cities"],
+						desc = L["Notify in cities"],
+						order = 2,
+						set = function(frame, v) 
+							VanasKoSNotifier.db.profile.notifyInCitiesEnabled = v;
+							VanasKoSNotifier:ZoneChanged();
+						end,
+						get = function() return VanasKoSNotifier.db.profile.notifyInCitiesEnabled; end,
+					},
+					inbattleground = {
+						type = 'toggle',
+						name = L["Battlegrounds"],
+						desc = L["Notify in battleground"],
+						order = 3,
+						set = function(frame, v) 
+							VanasKoSNotifier.db.profile.notifyInBattlegroundEnabled = v;
+							VanasKoSNotifier:ZoneChanged();
+						end,
+						get = function() return VanasKoSNotifier.db.profile.notifyInBattlegroundEnabled; end,
+					},
+					inarena = {
+						type = 'toggle',
+						name = L["Arenas"],
+						desc = L["Notify in arenas"],
+						order = 4,
+						set = function(frame, v) 
+							VanasKoSNotifier.db.profile.notifyInArenaEnabled = v;
+							VanasKoSNotifier:ZoneChanged();
+						end,
+						get = function() return VanasKoSNotifier.db.profile.notifyInArenaEnabled; end,
+					},
+					inarena = {
+						type = 'toggle',
+						name = L["Combat Zones"],
+						desc = L["Notify in combat zones (Wintergrasp, Tol Barad)"],
+						order = 5,
+						set = function(frame, v) 
+							VanasKoSNotifier.db.profile.notifyInCombatZoneEnabled = v;
+							VanasKoSNotifier:ZoneChanged();
+						end,
+						get = function() return VanasKoSNotifier.db.profile.notifyInCombatZoneEnabled; end,
+					},
+				},
 			},
 			soundgroup = {
 				type = "group",
 				name = L["Sounds"],
-				name = L["Notification sounds"],
+				desc = L["Notification sounds"],
 				order = 14,
 				args = {
 					kosSound = {
@@ -885,10 +941,15 @@ function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, grea
 end
 
 local playerDetectEventEnabled = false;
+local reenableTimer = nil;
 function VanasKoSNotifier:EnablePlayerDetectedEvents(enable)
 	if(enable and (not playerDetectEventEnabled)) then
 		self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
 		playerDetectEventEnabled = true;
+		if (reenableTimer) then
+			self:CancelTimer(reenableTimer);
+			reenableTimer = nil;
+		end
 	elseif((not enable) and playerDetectEventEnabled) then
 		self:UnregisterMessage("VanasKoS_Player_Detected");
 		playerDetectEventEnabled = false;
@@ -898,8 +959,14 @@ end
 function VanasKoSNotifier:ZoneChanged(message)
 	if (VanasKoS:IsInSanctuary()) then
 		self:EnablePlayerDetectedEvents(self.db.profile.notifyInShattrathEnabled);
+	elseif (VanasKoS:IsInCity()) then
+		self:EnablePlayerDetectedEvents(self.db.profile.notifyInCitiesEnabled);
 	elseif (VanasKoS:IsInBattleground()) then
-		self:EnablePlayerDetectedEvents(false);
+		self:EnablePlayerDetectedEvents(self.db.profile.notifyInBattlegroundEnabled());
+	elseif (VanasKoS:IsInArena()) then
+		self:EnablePlayerDetectedEvents(self.db.profile.notifyInArenaEnabled());
+	elseif (VanasKoS:IsInCombatZone()) then
+		self:EnablePlayerDetectedEvents(self.db.profile.notifyInCombatZoneEnabled());
 	else
 		self:EnablePlayerDetectedEvents(true);
 	end
@@ -913,7 +980,9 @@ function VanasKoSNotifier:Player_Detected(message, data)
 	end
 end
 
+
 local function ReenableNotifications()
+	reenableTimer = nil;
 	VanasKoSNotifier:EnablePlayerDetectedEvents(true)
 end
 
@@ -922,10 +991,15 @@ function VanasKoSNotifier:EnemyPlayer_Detected(data)
 		return;
 	end
 
+	if reenableTimer then
+		-- print("oops, should not have detected enemy");
+		return;
+	end
+
 	self:EnablePlayerDetectedEvents(false);
 
 	-- Reallow Notifies in NotifyTimeInterval Time
-	self:ScheduleTimer(ReenableNotifications, self.db.profile.NotifyTimerInterval);
+	reenableTimer = self:ScheduleTimer(ReenableNotifications, self.db.profile.NotifyTimerInterval);
 
 	local msg = format(L["Enemy Detected:|cffff0000"]);
 	if (data.level ~= nil) then
@@ -971,9 +1045,14 @@ function VanasKoSNotifier:KosPlayer_Detected(data)
 		return;
 	end
 
+	if reenableTimer then
+		-- print("oops, should not have detected kos player");
+		return;
+	end
+
 	self:EnablePlayerDetectedEvents(false);
 	-- Reallow Notifies in NotifyTimeInterval Time
-	self:ScheduleTimer(ReenableNotifications, self.db.profile.NotifyTimerInterval);
+	reenableTimer = self:ScheduleTimer(ReenableNotifications, self.db.profile.NotifyTimerInterval);
 
 	if(self.db.profile.notifyVisual) then
 		UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME);

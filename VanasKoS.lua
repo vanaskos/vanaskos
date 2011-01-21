@@ -414,7 +414,7 @@ function VanasKoS:IsInDungeon()
 end
 
 function VanasKoS:IsInCombatZone()
-	return inComabtZone;
+	return inCombatZone;
 end
 
 function VanasKoS:IsInFfaZone()

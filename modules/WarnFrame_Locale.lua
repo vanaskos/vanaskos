@@ -18,10 +18,6 @@ if L then
 	L["Grow list from the bottom of the WarnFrame"] = true
 	L["Grow list upwards"] = true
 	L["Hide if inactive"] = true
-	L["Hide in battleground"] = true
-	L["Hide in battlegrounds and pvp zones"] = true
-	L["Hide in dungeon"] = true
-	L["Hide in dungeon instances"] = true
 	L["Hostile"] = true
 	L["How friendly content is shown"] = true
 	L["How hostile content is shown"] = true
@@ -68,6 +64,21 @@ if L then
 	L["Toggles the display of Class icons in the Warnframe"] = true
 	L["Warning Window"] = true
 	L["What to show in the warning window"] = true
+
+	L["Zones"] = true
+	L["Zones to show the warning window in"] = true
+	L["Battlegrounds"] = true
+	L["Show in battlegrounds and pvp zones"] = true
+	L["Dungeon"] = true
+	L["Show in dungeon instances"] = true
+	L["Dungeon"] = true
+	L["Show in dungeon instances"] = true
+	L["Cities"] = true
+	L["Show in cities"] = true
+	L["Sanctuaries"] = true
+	L["Show in sanctuaries"] = true
+	L["Combat Zones"] = true
+	L["Show in combat zones"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "frFR")

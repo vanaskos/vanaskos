@@ -584,34 +584,6 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 					VanasKoSWarnFrame:Update();
 				end,
 			},
-			hideInBattleground = {
-				type = 'toggle',
-				name = L["Hide in battleground"],
-				desc = L["Hide in battlegrounds and pvp zones"],
-				order = 5,
-				get = function() return VanasKoSWarnFrame.db.profile.hideInBg; end,
-				set = function(frame, v)
-					VanasKoSWarnFrame.db.profile.hideInBg = v;
-					VanasKoSWarnFrame:EnableZoneChangeEvent(v and VanasKoSWarnFrame.db.profile.hideInInstance);
-					if(VanasKoS:IsInBattleground()) then
-						VanasKoSWarnFrame:EnablePlayerDetectEvent(not v);
-					end
-				end
-			},
-			hideInInstance = {
-				type = 'toggle',
-				name = L["Hide in dungeon"],
-				desc = L["Hide in dungeon instances"],
-				order = 6,
-				get = function() return VanasKoSWarnFrame.db.profile.hideInInstance; end,
-				set = function(frame, v)
-					VanasKoSWarnFrame.db.profile.hideInInstance = v;
-					VanasKoSWarnFrame:EnableZoneChangeEvent(v and VanasKoSWarnFrame.db.profile.hideInBg);
-					if(VanasKoS:IsInDungeon()) then
-						VanasKoSWarnFrame:EnablePlayerDetectEvent(not v);
-					end
-				end
-			},
 			reset = {
 				type = 'execute',
 				name = L["Reset Position"],
@@ -966,6 +938,82 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 					},
 				},
 			},
+			zoneGroup = {
+				type = 'group',
+				name = L["Zones"],
+				desc = L["Zones to show the warning window in"],
+				order = 11,
+				args = {
+					showInBattleground = {
+						type = 'toggle',
+						name = L["Battlegrounds"],
+						desc = L["Show in battlegrounds and pvp zones"],
+						order = 1,
+						get = function() return not VanasKoSWarnFrame.db.profile.hideInBg; end,
+						set = function(frame, v)
+							local hide = not v;
+							VanasKoSWarnFrame.db.profile.hideInBg = hide;
+							VanasKoSWarnFrame:ZoneChanged();
+						end
+					},
+					showInInstance = {
+						type = 'toggle',
+						name = L["Dungeon"],
+						desc = L["Show in dungeon instances"],
+						order = 2,
+						get = function() return not VanasKoSWarnFrame.db.profile.hideInInstance; end,
+						set = function(frame, v)
+							local hide = not v;
+							VanasKoSWarnFrame.db.profile.hideInInstance = hide;
+							VanasKoSWarnFrame:ZoneChanged();
+						end
+					},
+					showInArenas = {
+						type = 'toggle',
+						name = L["Dungeon"],
+						desc = L["Show in dungeon instances"],
+						order = 3,
+						get = function() return VanasKoSWarnFrame.db.profile.showInArena; end,
+						set = function(frame, v)
+							VanasKoSWarnFrame.db.profile.showInArena = v;
+							VanasKoSWarnFrame:ZoneChanged();
+						end
+					},
+					showInCities = {
+						type = 'toggle',
+						name = L["Cities"],
+						desc = L["Show in cities"],
+						order = 3,
+						get = function() return VanasKoSWarnFrame.db.profile.showInCity; end,
+						set = function(frame, v)
+							VanasKoSWarnFrame.db.profile.showInCity = v;
+							VanasKoSWarnFrame:ZoneChanged();
+						end
+					},
+					showInSanctuaries = {
+						type = 'toggle',
+						name = L["Sanctuaries"],
+						desc = L["Show in sanctuaries"],
+						order = 3,
+						get = function() return VanasKoSWarnFrame.db.profile.showInSanctuary; end,
+						set = function(frame, v)
+							VanasKoSWarnFrame.db.profile.showInSanctuary = v;
+							VanasKoSWarnFrame:ZoneChanged();
+						end
+					},
+					showInCombatZone = {
+						type = 'toggle',
+						name = L["Combat Zones"],
+						desc = L["Show in combat zones"],
+						order = 3,
+						get = function() return VanasKoSWarnFrame.db.profile.showInCombatZone; end,
+						set = function(frame, v)
+							VanasKoSWarnFrame.db.profile.showInCombatZone = v;
+							VanasKoSWarnFrame:ZoneChanged();
+						end
+					},
+				},
+			},
 		},
 	};
 
@@ -1029,6 +1077,13 @@ function VanasKoSWarnFrame:OnInitialize()
 			EnemyRemoveDelay = 10,
 			KoSRemoveDelay = 60,
 
+			hideInBg  = true,
+			hideInInstance = true,
+			showInArena = false,
+			showInCombatZone = false,
+			showInCity = false,
+			showInSanctuary = false,
+
 			FontSize = 10;
 			WARN_FRAME_WIDTH = 130;
 			WARN_FRAME_WIDTH_PADDING = 5;
@@ -1069,24 +1124,10 @@ function VanasKoSWarnFrame:OnEnable()
 	warnFrame:SetAlpha(1);
 	self:Update();
 
-	self:EnableZoneChangeEvent(self.db.profile.hideInBg or self.db.profile.hideInInstance);
-
-	if(self.db.profile.hideInBg and VanasKoS:IsInBattleground()) then
-		timer = nil;
-		HideWarnFrame();
-		self:EnablePlayerDetectEvent(false);
-	elseif(self.db.profile.hideInInstance and VanasKoS:IsInDungeon()) then
-		timer = nil;
-		HideWarnFrame();
-		self:EnablePlayerDetectEvent(false);
-	else
-		if (not timer) then
-			timer = self:ScheduleRepeatingTimer("UpdateList", 1);
-		end
-		self:EnablePlayerDetectEvent(true);
-	end
-
+	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
+
+	self:ZoneChanged();
 end
 
 function VanasKoSWarnFrame:OnDisable()
@@ -1227,26 +1268,14 @@ function VanasKoSWarnFrame:EnablePlayerDetectEvent(enable)
 	end
 end
 
-local zoneChangeEventEnabled = false;
-function VanasKoSWarnFrame:EnableZoneChangeEvent(enable)
-	if (enable and (not zoneChangeEventEnabled)) then
-		self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");
-		zoneChangeEventEnabled = true;
-	elseif ((not enable) and zoneChangeEventEnabled) then
-		self:UnregisterMessage("VanasKoS_Zone_Changed");
-		zoneChangeEventEnabled = false;
-	end
-end
-
 function VanasKoSWarnFrame:ZoneChanged(message)
-	if(self.db.profile.hideInBg and VanasKoS:IsInBattleground()) then
-		HideWarnFrame();
-		if (timer) then
-			self:CancelTimer(timer);
-			timer = nil;
-		end
-		self:EnablePlayerDetectEvent(false)
-	elseif(self.db.profile.hideInInstance and VanasKoS:IsInDungeon()) then
+	local hideFrame = (self.db.profile.hideInBg and VanasKoS:IsInBattleground()) or
+			  (self.db.profile.hideInInstance and VanasKoS:IsInDungeon()) or
+			  (not self.db.profile.showInArena and VanasKoS:IsInArena()) or
+			  (not self.db.profile.showInCombatZone and VanasKoS:IsInCombatZone()) or
+			  (not self.db.profile.showInCity and VanasKoS:IsInCity()) or
+			  (not self.db.profile.showInSanctuary and VanasKoS:IsInSanctuary())
+	if (hideFrame) then
 		HideWarnFrame();
 		if (timer) then
 			self:CancelTimer(timer);

@@ -22,13 +22,43 @@ SML:Register("sound", "VanasKoS: Glockenspiel", "Interface\\AddOns\\VanasKoS\\Ar
 local flashNotifyFrame = nil;
 local reasonFrame = nil
 
+local function SetProperties(self, profile)
+	if(self == nil) then
+		return;
+	end
+
+	if(profile.WARN_FRAME_POINT) then
+		self:ClearAllPoints();
+		self:SetPoint(profile.REASON_FRAME_POINT,
+					"UIParent",
+					profile.REASON_FRAME_ANCHOR,
+					profile.REASON_FRAME_XOFF,
+					profile.REASON_FRAME_XOFF);
+	else
+		self:SetPoint("CENTER");
+	end
+
+	if (profile.notifyExtraReasonFrameLocked) then
+		self:EnableMouse(false);
+	else
+		self:EnableMouse(true);
+	end
+
+	if (profile.notifyExtraReasonFrameEnabled) then
+		self:Show();
+	else
+		self:Hide();
+	end
+end
+
 function VanasKoSNotifier:CreateReasonFrame()
-	reasonFrame = CreateFrame("Frame", "VanasKoS_Notifier_ReasonFrame");
+	reasonFrame = CreateFrame("Frame", "VanasKoS_Notifier_ReasonFrame", UIParent);
+	reasonFrame:SetMovable(true);
+	reasonFrame:SetToplevel(true);
+
 	reasonFrame:SetWidth(300);
 	reasonFrame:SetHeight(13);
 	reasonFrame:SetPoint("CENTER");
-	reasonFrame:SetMovable(true);
-	reasonFrame:SetToplevel(true);
 
 	reasonFrame.background = reasonFrame:CreateTexture("VanasKoS_Notifier_ReasonFrame_Background", "BACKGROUND");
 	reasonFrame.background:SetAllPoints();
@@ -41,23 +71,21 @@ function VanasKoSNotifier:CreateReasonFrame()
 	reasonFrame.text:SetFontObject("GameFontNormalSmall");
 	reasonFrame.text:SetTextColor(1.0, 0.0, 1.0);
 
-	reasonFrame:RegisterForDrag("leftbutton");
-	reasonFrame:SetScript("OnDragStart", function() reasonFrame:StartMoving(); end);
-	reasonFrame:SetScript("OnDragStart", function() reasonFrame:StartMoving(); end);
-	reasonFrame:SetScript("OnDragStop", function() reasonFrame:StopMovingOrSizing(); end);
 	reasonFrame.background:SetAlpha(0.0);
 
-	if (self.db.profile.notifyExtraReasonFrameLocked) then
-		reasonFrame:EnableMouse(false);
-	else
-		reasonFrame:EnableMouse(true);
-	end
+	-- allow dragging the window
+	reasonFrame:RegisterForDrag("LeftButton");
+	reasonFrame:SetScript("OnDragStart", function() reasonFrame:StartMoving(); end);
+	reasonFrame:SetScript("OnDragStop", function()
+						reasonFrame:StopMovingOrSizing();
+						local point, _, anchor, xOff, yOff = reasonFrame:GetPoint()
+						VanasKoSNotifier.db.profile.REASON_FRAME_POINT = point
+						VanasKoSNotifier.db.profile.REASON_FRAME_ANCHOR = anchor
+						VanasKoSNotifier.db.profile.REASON_FRAME_XOFF = xOff
+						VanasKoSNotifier.db.profile.REASON_FRAME_YOFF = yOff
+					end);
 
-	if (self.db.profile.notifyExtraReasonFrameEnabled) then
-		reasonFrame:Show();
-	else
-		reasonFrame:Hide();
-	end
+	SetProperties(reasonFrame, self.db.profile)
 end
 
 function VanasKoSNotifier:EnableReasonFrame(enable)
@@ -421,25 +449,25 @@ function VanasKoSNotifier:OnInitialize()
 
 	VanasKoSGUI:AddModuleToggle("Notifier", L["Notifications"]);
 	VanasKoSGUI:AddConfigOption("Notifier", configOptions);
+
+  	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+  	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+  	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 	self:SetEnabledState(self.db.profile.Enabled);
 end
 
 function VanasKoSNotifier:OnEnable()
 	self:EnablePlayerDetectedEvents(true);
 	self:EnablePartyEvents(self.db.profile.notifyParty);
+
 	self:RegisterMessage("VanasKoS_Player_Target_Changed", "Player_Target_Changed");
 	self:RegisterMessage("VanasKoS_Mob_Target_Changed", "Player_Target_Changed");
 	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");
+
 	local frame = _G["FriendsFrameFriendsScrollFrame"];
 	local version, build, bdate, tocversion = GetBuildInfo();
-	--FriendsFrame_SetButton was replaced by FriendsFrame_UpdateFriends in 40000.  Most of this can be removed after we're fully on 40000.
-	if(tocversion < 40000) then
-		self:SecureHook("FriendsFrame_SetButton");
-		frame.buttonFunc = FriendsFrame_SetButton;
-	else
-		self:SecureHook("FriendsFrame_UpdateFriends");
-		frame.buttonFunc = FriendsFrame_UpdateFriends;
-	end
+	self:SecureHook("FriendsFrame_UpdateFriends");
+	frame.buttonFunc = FriendsFrame_UpdateFriends;
 	self:SecureHook("FriendsFrameTooltip_Show");
 	self:SecureHook("IgnoreList_Update");
 	for i=1,FRIENDS_TO_DISPLAY do
@@ -453,7 +481,6 @@ function VanasKoSNotifier:OnEnable()
 		reasonFont:SetPoint("RIGHT");
 	end
 	self:SecureHook("LFRBrowseFrameListButton_SetData");
-	--self:SecureHook("LFRBrowseButton_OnEnter");
 	for i=1, NUM_LFR_LIST_BUTTONS do
 		self:SecureHookScript(_G["LFRBrowseFrameListButton" .. i], "OnEnter", "LFRBrowseButton_OnEnter");
 	end
@@ -461,34 +488,10 @@ function VanasKoSNotifier:OnEnable()
 	self:HookScript(GameTooltip, "OnTooltipSetUnit");
 end
 
---This is only here to maintain compatability for builds older than 40000.  Replaced by FriendsFrame_UpdateFriends
-function VanasKoSNotifier:FriendsFrame_SetButton(button, index, firstButton)
-	if (self.db.profile.friendlist ~= true) then
-		return
-	end
-
-	if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
-		-- name, level, class, area, connected, status, note, RAF
-		local name, _, _, _, connected, _, note = GetFriendInfo(button.id);
-		local nameText = button.name;
-
-		if(name) then
-			local lname = name:lower();
-			if (VanasKoS:IsOnList("HATELIST", lname)) then
-				if (connected) then
-					nameText:SetTextColor(1, 0, 0);
-				else
-					nameText:SetTextColor(0.5, 0, 0);
-				end
-			elseif (VanasKoS:IsOnList("NICELIST", lname)) then
-				if (connected) then
-					nameText:SetTextColor(0, 1, 0);
-				else
-					nameText:SetTextColor(0, 0.5, 0);
-				end
-			end
-		end
-	end
+function VanasKoSNotifier:RefreshConfig()
+	self:SetEnabledState(self.db.profile.Enabled);
+	SetProperties(reasonFrame, self.db.profile);
+	self:EnablePartyEvents(self.db.profile.notifyParty);
 end
 
 function VanasKoSNotifier:FriendsFrame_UpdateFriends()
@@ -962,11 +965,11 @@ function VanasKoSNotifier:ZoneChanged(message)
 	elseif (VanasKoS:IsInCity()) then
 		self:EnablePlayerDetectedEvents(self.db.profile.notifyInCitiesEnabled);
 	elseif (VanasKoS:IsInBattleground()) then
-		self:EnablePlayerDetectedEvents(self.db.profile.notifyInBattlegroundEnabled());
+		self:EnablePlayerDetectedEvents(self.db.profile.notifyInBattlegroundEnabled);
 	elseif (VanasKoS:IsInArena()) then
-		self:EnablePlayerDetectedEvents(self.db.profile.notifyInArenaEnabled());
+		self:EnablePlayerDetectedEvents(self.db.profile.notifyInArenaEnabled);
 	elseif (VanasKoS:IsInCombatZone()) then
-		self:EnablePlayerDetectedEvents(self.db.profile.notifyInCombatZoneEnabled());
+		self:EnablePlayerDetectedEvents(self.db.profile.notifyInCombatZoneEnabled);
 	else
 		self:EnablePlayerDetectedEvents(true);
 	end

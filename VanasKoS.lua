@@ -377,9 +377,12 @@ function VanasKoS:UpdateZone()
 	local pvpType, isFFA, faction = GetZonePVPInfo();
 	local inInstance, instanceType = IsInInstance();
 
+	local tmpContinent = GetCurrentMapContinent();
+	local tmpZone = GetCurrentMapZone();
 	SetMapToCurrentZone();
 	mapContinent = GetCurrentMapContinent();
 	mapZone = GetCurrentMapZone();
+	SetMapZoom(tmpContinent, tmpZone);
 
 	inSanctuary = (pvpType == "sanctuary");
 	inCombatZone = (pvpType == "combat");

@@ -58,7 +58,7 @@ local function GetCurrentCrbZoneName()
 	local continent = VanasKoS:MapContinent();
 	local zone = VanasKoS:MapZone();
 	
-	if(continent == nil or zone == nil or continent == 0 or continent > 4) then
+	if(continent == nil or zone == nil or continent == 0 or continent > 5) then
 		return nil;
 	end
 	
@@ -118,8 +118,9 @@ function VanasKoSTracker:ChangeZone()
 	if(leaveCrbChannels(channelName)) then
 		return;
 	end
-	
-	JoinChannelByName(channelName);
+	if(channelName) then
+		JoinChannelByName(channelName);
+	end
 end
 
 function VanasKoSTracker:SendSeenPeople()
@@ -338,8 +339,9 @@ function VanasKoSTracker:StartCrbTracking()
 	if(leaveCrbChannels(channelName)) then
 		return;
 	end
-	
-	JoinChannelByName(channelName);
+	if(channelName) then
+		JoinChannelByName(channelName);
+	end
 end
 
 

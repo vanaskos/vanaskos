@@ -1,6 +1,11 @@
 Release Changelog for VanasKoS
 
-alpha:
+4.29:
+- Update toc version
+- Update libraries
+- Fix bug due to blizzard api changes in COMBAT_LOG_EVENT_UNFILTERED
+
+4.28:
 - Update libraries (including liblevelguess)
 - More ability to disable data gathering/notifications by zone type
 - Remove events by right clicking icons on map

@@ -22,3 +22,6 @@ externals:
 	Libs/LibBabble-Zone-3.0: svn://svn.wowace.com/wow/libbabble-zone-3-0/mainline/tags/4.1-release1
 	Libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
 	Libs/LibLevelGuess-1.0: svn://svn.wowace.com/wow/liblevelguess-1-0/mainline/tags/v1.0.4/LibLevelGuess-1.0
+
+tools-used:
+	- libdatabroker-1-1

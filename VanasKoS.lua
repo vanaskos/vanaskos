@@ -62,6 +62,18 @@ end
 local listHandler = { };
 VANASKOS.Lists = { };
 
+local function sortLists(val1, val2)
+	if (val1[3] == nil) then
+		return false;
+	end
+
+	if (val2[3] == nil) then
+		return true;
+	end
+
+	return val1[3] < val2[3];
+end
+
 function VanasKoS:RegisterList(position, listNameInternal, listNameHuman, listHandlerObject)
 	-- only add the list if the handlerobject supports all required functions
 	if(not listHandlerObject) then
@@ -91,7 +103,8 @@ function VanasKoS:RegisterList(position, listNameInternal, listNameHuman, listHa
 	
 	-- only put it in the VANASKOS.Lists if the listname is human readable => not internal(VANASKOS.Lists is only used for vanaskosgui to choose a list to display)
 	if(listNameHuman ~= nil) then
-		tinsert(VANASKOS.Lists, position, { listNameInternal, listNameHuman });
+		tinsert(VANASKOS.Lists, { listNameInternal, listNameHuman, position });
+		table.sort(VANASKOS.Lists, sortLists);
 		self:SendMessage("VanasKoS_List_Added");
 	end
 	
@@ -111,6 +124,7 @@ function VanasKoS:UnregisterList(listNameInternal)
 			tremove(VANASKOS.Lists, k);
 		end
 	end
+	table.sort(VANASKOS.Lists, sortLists);
 end
 
 function VanasKoS:GetListNameByShortName(shortname)
@@ -266,7 +280,9 @@ end
 
 function VanasKoS:List_Entry_Added(message, list, name, data)
 	-- TODO: make this nicer
-	if(list ~= nil and list ~= "SYNCPLAYER" and list ~= "WANTED" and list~= "LASTSEEN") then
+	if(list == "PLAYERSYNC" or list == "ACCEPTSYNC" or list == "REJECTSYNC") then
+		self:Print(format(L["Entry %s added."], name));
+	elseif(list ~= nil and list~= "LASTSEEN") then
 		self:Print(format(L["Entry %s (Reason: %s) added."], name, data and data['reason'] or ""));
 	end
 end

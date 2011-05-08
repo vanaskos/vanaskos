@@ -9,6 +9,7 @@ if L then
 	L["Enable/Disable modules"] = true
 	L["Enabled modules"] = true
 	L["Enable in Sanctuaries"] = true
+	L["Entry %s added."] = true
 	L["Entry %s (Reason: %s) added."] = true
 	L["Entry \"%s\" removed from list"] = true
 	L["GUI"] = true

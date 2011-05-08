@@ -100,7 +100,8 @@ function VanasKoSGUICreate:UpdateAboutText()
 		.. "<h2>French: |cFFFFFFFFScrapy (|cFF0000FFEU-Archimonde|r)|r</h2><br />"
 		.. "<h2>Korean: |cFFFFFFFFFenlis|r</h2><br />"
 		.. "<h2>Spanish: |cFFFFFFFFshiftos|r</h2><br />"
-		.. "<h2>English/German: |cFFFFFFFFVane (|cFF0000FFEU-Aegwynn|r)|r / |cFFFFFFFFFRRjak|r</h2><br />"
+		.. "<h2>Simplified Chinese: |cFFFFFFFFananhaid|r</h2><br />"
+		.. "<h2>German: |cFFFFFFFFFreydis88, Vane (|cFF0000FFEU-Aegwynn|r)|r / |cFFFFFFFFFRRjak|r</h2><br />"
 		.. "<h2><br /></h2><h3>|cFF00FF00Modules:|r<br />"
 		.. modules
 		.. "</h3>"

@@ -1,4 +1,5 @@
-﻿--[[----------------------------------------------------------------------
+﻿-- ex:sw=8:sts=8:ts=8:noet
+--[[----------------------------------------------------------------------
       VanasKoSGUI - Part of VanasKoS
 Handles the main gui frame
 ------------------------------------------------------------------------]]
@@ -706,10 +707,12 @@ function VanasKoSGUI:RegisterList(listName, handlerObject)
 		return;
 	end
 	listHandler[listName] = handlerObject;
+	self:Update();
 end
 
 function VanasKoSGUI:UnregisterList(listName)
 	listHandler[listName] = nil;
+	self:Update();
 end
 
 function VanasKoSGUI:ScrollUpdate()
@@ -1015,13 +1018,23 @@ StaticPopupDialogs["VANASKOS_ADD_ENTRY"] = {
 	OnAccept = function(self, event, ...)
 		VANASKOS.LastNameEntered = self.editBox:GetText();
 		if(VANASKOS.LastNameEntered ~= "") then
-			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
+			if(VANASKOS.showList == "PLAYERSYNC" or VANASKOS.showList == "ACCEPTSYNC" or VANASKOS.showList == "REJECTSYNC") then
+				VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { });
+			else
+				StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
+			end
 		end
 	end,
 	EditBoxOnEnterPressed = function(self, event, ...)
 		VANASKOS.LastNameEntered = self:GetParent().editBox:GetText();
 		if(VANASKOS.LastNameEntered ~= "") then
-			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
+			if(VANASKOS.showList == "PLAYERSYNC" or VANASKOS.showList == "ACCEPTSYNC" or VANASKOS.showList == "REJECTSYNC") then
+				VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { });
+				VanasKoSGUI:Update();
+				self:GetParent():Hide();
+			else
+				StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
+			end
 		end
 	end,
 	OnShow = function(self, event, ...)

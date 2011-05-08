@@ -134,10 +134,6 @@ function VanasKoSPvPStats:OnInitialize()
 		}
 	);
 
-	VanasKoS:RegisterList(5, "PVPSTATS", L["PvP Stats"], self);
-
-	VanasKoSGUI:RegisterList("PVPSTATS", self);
-
 	-- register sort options for the lists this module provides
 	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byname", L["by name"], L["sort by name"], SortByIndex, SortByIndexReverse);
 	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byscore", L["by score"], L["sort by most wins to losses"], SortByScore, SortByScoreReverse);
@@ -213,11 +209,7 @@ function VanasKoSPvPStats:HideList(list)
 	if(list == "PVPSTATS") then
 		VanasKoSListFrameChangeButton:Enable();
 		VanasKoSListFrameAddButton:Enable();
-		if (self.group == PLAYERS_LIST or self.group == DATE_LIST) then
-			VanasKoSListFrameRemoveButton:Enable();
-		else
-			VanasKoSListFrameRemoveButton:Disable();
-		end
+	    	VanasKoSListFrameRemoveButton:Enable();
 		VanasKoSPvPStatsCharacterDropDown:Hide();
 		VanasKoSPvPStatsTimeSpanDropDown:Hide();
 	end
@@ -744,11 +736,16 @@ end
 
 function VanasKoSPvPStats:OnDisable()
 	self:UnregisterAllMessages();
+	VanasKoS:UnregisterList("PVPSTATS");
+	VanasKoSGUI:UnregisterList("PVPSTATS");
 end
 
 function VanasKoSPvPStats:OnEnable()
 	self:RegisterMessage("VanasKoS_PvPWin", "PvPWin");
 	self:RegisterMessage("VanasKoS_PvPLoss", "PvPLoss");
+
+	VanasKoS:RegisterList(6, "PVPSTATS", L["PvP Stats"], self);
+	VanasKoSGUI:RegisterList("PVPSTATS", self);
 
 	local characterDropdown = CreateFrame("Frame", "VanasKoSPvPStatsCharacterDropDown", VanasKoSListFrame, "UIDropDownMenuTemplate");
 	characterDropdown:SetPoint("RIGHT", VanasKoSListFrameToggleLeftButton, "LEFT", 10, -2);

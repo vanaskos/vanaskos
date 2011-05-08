@@ -67,7 +67,7 @@ local function SortByOwner(val1, val2)
 	local str2 = list[val2].owner or "";
 	return (str1:lower() < str2:lower());
 end
-local function SortByOwner(val1, val2)
+local function SortByOwnerReverse(val1, val2)
 	local list = VanasKoSGUI:GetCurrentList();
 	local str1 = list[val1].owner or "";
 	local str2 = list[val2].owner or "";
@@ -297,10 +297,15 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 		local data = VanasKoS:GetPlayerData(key);
 		-- name, guildrank, guild, level, race, class, gender, zone, lastseen
 		local owner = "";
+		local creator = "";
+		local displayname = string.Capitalize(key);
 		if(value.owner ~= nil and value.owner ~= "") then
 			owner = string.Capitalize(value.owner);
+			displayname = "|cffff7700" .. displayname .. "|r";
 		end
-		local displayname = string.Capitalize(key);
+		if(value.creator ~= nil and value.creator ~= "") then
+			creator = string.Capitalize(value.creator);
+		end
 		if(value.wanted == true) then
 			displayname = "|cffff0000" .. displayname .. "|r";
 		end
@@ -315,7 +320,7 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 				local classColor = RAID_CLASS_COLORS[data.classEnglish] or NORMAL_FONT_COLOR;
 				buttonText4:SetTextColor(classColor.r, classColor.g, classColor.b);
 			end
-		else
+		elseif(self.group == 3) then
 			if(data and data.lastseen) then
 				local timespan = SecondsToTime(time() - data.lastseen);
 				if(timespan == "") then
@@ -330,13 +335,29 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 			else
 				buttonText3:SetText("");
 			end
+		else
+			buttonText2:SetText(owner);
+			buttonText3:SetText(creator);
 		end
 	elseif(list == "GUILDKOS") then
 		local guildname = VanasKoS:GetGuildData(key);
 		buttonText1:SetText(guildname or string.Capitalize(key));
-		buttonText2:SetText(value and value.reason or L["_Reason Unknown_"]);
-		buttonText3:SetText("");
-		buttonText4:SetText(value.owner and string.Capitalize(value.owner) or "");
+		if(self.group == 1) then
+			buttonText2:SetText(value and value.reason or L["_Reason Unknown_"]);
+			buttonText3:SetText("");
+			buttonText4:SetText(value.owner and string.Capitalize(value.owner) or "");
+		else
+			if (data and data.owner) then
+				buttonText2:SetText(data.owner);
+			else
+				buttonText2:SetText("");
+			end
+			if (data and data.creator) then
+				buttonText3:SetText(data.creator);
+			else
+				buttonText3:SetText("");
+			end
+		end
 	end
 
 	button:Show();
@@ -374,7 +395,7 @@ function VanasKoSDefaultLists:SetupColumns(list)
 			VanasKoSGUI:SetColumnType(3, "number");
 			VanasKoSGUI:SetColumnType(4, "highlight");
 			VanasKoSGUI:SetToggleButtonText(L["Player Info"]);
-		else
+		elseif(self.group == 3) then
 			VanasKoSGUI:SetNumColumns(3);
 			VanasKoSGUI:SetColumnWidth(1, 83);
 			VanasKoSGUI:SetColumnWidth(2, 110);
@@ -389,32 +410,69 @@ function VanasKoSDefaultLists:SetupColumns(list)
 			VanasKoSGUI:SetColumnType(2, "highlight");
 			VanasKoSGUI:SetColumnType(3, "highlight");
 			VanasKoSGUI:SetToggleButtonText(L["Last Seen"]);
+		else
+			VanasKoSGUI:SetNumColumns(3);
+			VanasKoSGUI:SetColumnWidth(1, 83);
+			VanasKoSGUI:SetColumnWidth(2, 110);
+			VanasKoSGUI:SetColumnWidth(3, 110);
+			VanasKoSGUI:SetColumnName(1, NAME);
+			VanasKoSGUI:SetColumnName(2, L["Owner"]);
+			VanasKoSGUI:SetColumnName(3, L["Creator"]);
+			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
+			VanasKoSGUI:SetColumnSort(2, SortByOwner, SortByOwnerReverse);
+			VanasKoSGUI:SetColumnSort(3, SortByCreator, SortByCreatorReverse);
+			VanasKoSGUI:SetColumnType(1, "normal");
+			VanasKoSGUI:SetColumnType(2, "highlight");
+			VanasKoSGUI:SetColumnType(3, "highlight");
+			VanasKoSGUI:SetToggleButtonText(L["Owner"]);
 		end
 		VanasKoSGUI:ShowToggleButtons();
 	elseif(list == "GUILDKOS") then
-		VanasKoSGUI:SetNumColumns(2);
-		VanasKoSGUI:SetColumnWidth(1, 105);
-		VanasKoSGUI:SetColumnWidth(2, 208);
-		VanasKoSGUI:SetColumnName(1, GUILD);
-		VanasKoSGUI:SetColumnName(2, L["Reason"]);
-		VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
-		VanasKoSGUI:SetColumnSort(2, SortByReason, SortByReasonReverse);
-		VanasKoSGUI:SetColumnType(1, "normal");
-		VanasKoSGUI:SetColumnType(2, "highlight");
-		VanasKoSGUI:HideToggleButtons();
+		if(self.group == 1) then
+			VanasKoSGUI:SetNumColumns(2);
+			VanasKoSGUI:SetColumnWidth(1, 105);
+			VanasKoSGUI:SetColumnWidth(2, 208);
+			VanasKoSGUI:SetColumnName(1, GUILD);
+			VanasKoSGUI:SetColumnName(2, L["Reason"]);
+			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
+			VanasKoSGUI:SetColumnSort(2, SortByReason, SortByReasonReverse);
+			VanasKoSGUI:SetColumnType(1, "normal");
+			VanasKoSGUI:SetColumnType(2, "highlight");
+			VanasKoSGUI:SetToggleButtonText(L["Reason"]);
+			VanasKoSGUI:ShowToggleButtons();
+		else
+			VanasKoSGUI:SetNumColumns(3);
+			VanasKoSGUI:SetColumnWidth(1, 83);
+			VanasKoSGUI:SetColumnWidth(2, 110);
+			VanasKoSGUI:SetColumnWidth(3, 110);
+			VanasKoSGUI:SetColumnName(1, NAME);
+			VanasKoSGUI:SetColumnName(2, L["Owner"]);
+			VanasKoSGUI:SetColumnName(3, L["Creator"]);
+			VanasKoSGUI:SetColumnSort(1, SortByIndex, SortByIndexReverse);
+			VanasKoSGUI:SetColumnSort(2, SortByOwner, SortByOwnerReverse);
+			VanasKoSGUI:SetColumnSort(3, SortByCreator, SortByCreatorReverse);
+			VanasKoSGUI:SetColumnType(1, "normal");
+			VanasKoSGUI:SetColumnType(2, "highlight");
+			VanasKoSGUI:SetColumnType(3, "highlight");
+			VanasKoSGUI:SetToggleButtonText(L["Owner"]);
+		end
 	end
 end
 
 function VanasKoSDefaultLists:ToggleLeftButtonOnClick(button, frame)
 	local list = VANASKOS.showList;
 	if(list == "PLAYERKOS" or list == "HATELIST" or list == "NICELIST") then
-		if (not self.group or self.group < 3) then
+		if (not self.group or self.group < 4) then
 			self.group = (self.group or 1) + 1;
 		else
 			self.group = 1
 		end
 	elseif(list == "GUILDKOS") then
-		self.group = 1;
+		if (not self.group or self.group < 2) then
+			self.group = (self.group or 1) + 1;
+		else
+			self.group = 1;
+		end
 	end
 	self:SetupColumns(list);
 	VanasKoSGUI:ScrollFrameUpdate()
@@ -424,12 +482,16 @@ function VanasKoSDefaultLists:ToggleRightButtonOnClick(button, frame)
 	local list = VANASKOS.showList;
 	if(list == "PLAYERKOS" or list == "HATELIST" or list == "NICELIST") then
 		if (not self.group or self.group > 1) then
-			self.group = (self.group or 4) - 1;
+			self.group = (self.group or 5) - 1;
 		else
-			self.group = 3
+			self.group = 4
 		end
 	elseif(list == "GUILDKOS") then
-		self.group = 1;
+		if (not self.group or self.group > 1) then
+			self.group = (self.group or 3) - 1;
+		else
+			self.group = 2
+		end
 	end
 	self:SetupColumns(list);
 	VanasKoSGUI:ScrollFrameUpdate()

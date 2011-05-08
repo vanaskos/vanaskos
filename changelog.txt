@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+alpha:
+- Fix bug causing map to zoom to cosmic level in battlegrounds
+
 4.29:
 - Update toc version
 - Update libraries

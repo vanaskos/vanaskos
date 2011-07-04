@@ -1,11 +1,16 @@
 Release Changelog for VanasKoS
 
-alpha:
+4.31:
+- Update libraries
+- Use WoW's built-in localization string for "No player currently named..." spam filtering
+
+4.30:
+- Update toc version for 4.2
 - Fix bug causing map to zoom to cosmic level in battlegrounds
-- automatic synchronization
+- Automatic synchronization
 
 4.29:
-- Update toc version
+- Update toc version for 4.1
 - Update libraries
 - Fix bug due to blizzard api changes in COMBAT_LOG_EVENT_UNFILTERED
 

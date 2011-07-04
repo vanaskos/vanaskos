@@ -2,7 +2,7 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/Synchronizer", false);
 
 -- Global wow strings
-local NAME, GUILD = NAME, GUILD
+local NAME, GUILD, ERR_CHAT_PLAYER_NOT_FOUND_S = NAME, GUILD, ERR_CHAT_PLAYER_NOT_FOUND_S
 
 local strmatch = strmatch
 
@@ -870,7 +870,7 @@ end
 -- hide offline player spam
 function VanasKoSSynchronizer:ChatFrame_MessageEventHandler(frame, event, msg, ...)
 	if(LastWhispered and event == "CHAT_MSG_SYSTEM") then
-		local match = strmatch(msg, format(L["No player named '%s' is currently playing"], LastWhispered))
+		local match = strmatch(msg, format(ERR_CHAT_PLAYER_NOT_FOUND_S, LastWhispered))
 
 		if (not match) then
 			self.hooks.ChatFrame_MessageEventHandler(frame, event, msg, ...);

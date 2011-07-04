@@ -50,7 +50,6 @@ if L then
 	L["Sharing - Group"] = true
 	L["Sharing - Guild"] = true
 
-	L["No player named '%s' is currently playing"] = true
 	L["Accept %d entries for list %s from %s?"] = true
 end
 

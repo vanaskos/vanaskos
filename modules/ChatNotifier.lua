@@ -165,7 +165,8 @@ local HATELISTCOLOR = "ff0000";
 local NICELISTCOLOR = "00ff00";
 
 function VanasKoSChatNotifier:ChatFrame_OnEvent(frame, event, ...)
-
+	local arg2 = select(2, ...);
+	
 	-- if switched to disabled, remove hook on first intercept
 	if(not VanasKoSChatNotifier.enabledState) then
 		local ret = self.hooks["ChatFrame_OnEvent"](frame, event, ...);

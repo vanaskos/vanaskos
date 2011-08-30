@@ -1,5 +1,9 @@
 Release Changelog for VanasKoS
 
+4.32:
+- Fixed bug in hatelist/nicelist chat coloring [ticket #62]
+- Fixed bug restoring the saved warning window position
+
 4.31:
 - Update libraries
 - Use WoW's built-in localization string for "No player currently named..." spam filtering

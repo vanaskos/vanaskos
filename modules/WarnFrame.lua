@@ -211,7 +211,7 @@ local function SetProperties(self, profile)
 					"UIParent",
 					profile.WARN_FRAME_ANCHOR,
 					profile.WARN_FRAME_XOFF,
-					profile.WARN_FRAME_XOFF);
+					profile.WARN_FRAME_YOFF);
 	else
 		self:SetPoint("CENTER");
 	end

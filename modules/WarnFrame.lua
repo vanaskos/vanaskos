@@ -25,7 +25,6 @@ local friendlyFont = nil;
 local warnButtonsOOC = nil;
 local warnButtonsCombat = nil;
 local classIcons = nil;
-local tooltipFrame = nil;
 local testFontFrame = nil;
 local testFontString = nil;
 
@@ -111,90 +110,56 @@ local function SetTextColor(which, r, g, b)
 	CreateWarnFrameFonts(VanasKoSWarnFrame.db.profile.FontSize)
 end
 
-local function GetTooltipText(name, data)
-	local result = "";
-	local data = VanasKoS:GetPlayerData(name);
-	
-	if (data and data.level ~= nil) then
-		result = result .. LEVEL .. " " .. data.level .. " ";
-	end
-	if (data and data.race ~= nil) then
-		result = result .. data.race .. " ";
-	end
-	if (data and data.class ~= nil) then
-		result = result .. data.class .. " ";
-	end
-	if (data and data.guild ~= nil) then
-		result = result .. "<" .. data.guild .. "> ";
-	end
+local listsToCheck = {
+		['PLAYERKOS'] = { L["KoS: %s"], L["%sKoS: %s"] },
+		['GUILDKOS'] = { L["KoS (Guild): %s"], L["%sKoS (Guild): %s"] },
+		['NICELIST'] = { L["Nicelist: %s"], L["%sNicelist: %s"] },
+		['HATELIST'] = { L["Hatelist: %s"], L["%sHatelist: %s"] },
+		['WANTED'] = {  L["Wanted: %s"], L["%sWanted: %s"] },
+	}
 
-	local playerkos = VanasKoS:IsOnList("PLAYERKOS", name) and VanasKoS:IsOnList("PLAYERKOS", name).reason;
-	local nicelist = VanasKoS:IsOnList("NICELIST", name) and VanasKoS:IsOnList("NICELIST", name).reason;
-	local hatelist = VanasKoS:IsOnList("HATELIST", name) and VanasKoS:IsOnList("HATELIST", name).reason;
-	local guildkos = nil;
-	if (showDetails and data.guild) then
-		guildkos = VanasKoS:IsOnList("GUILDKOS", data.guild) and VanasKoS:IsOnList("GUILDKOS", data.guild).reason;
-	end
-
-	local reason = nil;
-	if (playerkos ~= nil) then
-		reason = playerkos;
-	elseif (nicelist ~= nil) then
-		reason = nicelist;
-	elseif (hatelist ~= nil) then
-		reason = hatelist;
-	elseif (guildkos ~= nil) then
-		reason = guildkos;
-	end
-
-	if (reason ~= nil) then
-		result = result .. "(" .. reason .. ") ";
-	end
-
-	if(result == "") then
-		result = L["No Information Available"];
-	end
-
-	return result;
+local function HideTooltip()
+	GameTooltip:Hide();
 end
 
-local function UpdateTooltipPosition()
+local function ShowTooltip(self, buttonNr)
 	if(not VanasKoSWarnFrame.db.profile.ShowMouseOverInfos) then
-		if(tooltipFrame:IsVisible()) then
-			tooltipFrame:Hide();
-		end
 		return;
 	end
 
-	tooltipFrame:ClearAllPoints();
+	local name = buttonData[buttonNr]
+	local data = dataCache[name]
 
-	local x, y = GetCursorPosition(); -- gets coordinates based on WorldFrame position
-	local scale = UIParent:GetEffectiveScale();
+	GameTooltip:Hide();
+	GameTooltip:SetOwner(self);
+	GameTooltip:SetHyperlink("unit:" .. data.guid);
 
-	if(WorldFrame:GetRight() < (x + (tooltipFrame:GetTextWidth()+10)*scale)) then
-		tooltipFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMLEFT", x/scale, y/scale + 5);
-	else
-		tooltipFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x/scale, y/scale + 5);
-	end
-end
-
-local function ShowTooltip(buttonNr)
-	if(not VanasKoSWarnFrame.db.profile.ShowMouseOverInfos) then
-		if(tooltipFrame:IsVisible()) then
-			tooltipFrame:Hide();
+	-- add the KoS: <text> and KoS (Guild): <text> messages
+	for k,v in pairs(listsToCheck) do
+		local listData = nil;
+		if(k == "GUILDKOS") then
+			listData = VanasKoS:IsOnList(k, data.guild);
+		else
+			listData = VanasKoS:IsOnList(k, name);
 		end
-		return;
+		if(listData) then
+			local reason = listData.reason or "";
+			if(listData.owner == nil) then
+				GameTooltip:AddLine(format(v[1], reason));
+			else
+				GameTooltip:AddLine(format(v[2], listData.creator or listData.owner, reason));
+			end
+		end
 	end
 
-	local name = buttonData[buttonNr];
-	tooltipFrame:SetText(GetTooltipText(name), dataCache[name]);
+	-- add pvp stats line if turned on and data is available
+	local listData = VanasKoS:IsOnList("PVPSTATS", name, 1);
+	local playerdata = VanasKoS:IsOnList("PLAYERDATA", name);
 
-	UpdateTooltipPosition();
-
-	tooltipFrame:SetWidth(tooltipFrame:GetTextWidth()+10);
-	tooltipFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_TOOLTIP_HEIGHT);
-
-	tooltipFrame:Show();
+	if(listData or playerdata) then
+		GameTooltip:AddLine(format(L["seen: |cffffffff%d|r - wins: |cff00ff00%d|r - losses: |cffff0000%d|r"], (playerdata and playerdata.seen) or 0, (listData and listData.wins) or 0, (listData and listData.losses) or 0));
+	end
+	GameTooltip:Show();
 end
 
 local function SetProperties(self, profile)
@@ -231,6 +196,7 @@ local function SetProperties(self, profile)
 	-- set the default backdrop color
 	local r, g, b, a = GetColor("DefaultBGColor");
 	self:SetBackdropColor(r, g, b, a);
+	SetFontAlignment(self.db.profile.FontAlign);
 	self:Hide();
 end
 
@@ -262,29 +228,6 @@ local function CreateWarnFrame()
 					end);
 
 	SetProperties(warnFrame, VanasKoSWarnFrame.db.profile);
-end
-
-local function CreateTooltipFrame()
-	if(tooltipFrame) then
-		return;
-	end
-
-	tooltipFrame = CreateFrame("Button", nil, UIParent);
-	tooltipFrame:SetWidth(400);
-	tooltipFrame:SetHeight(VanasKoSWarnFrame.db.profile.WARN_TOOLTIP_HEIGHT);
-	tooltipFrame:SetPoint("CENTER");
-	tooltipFrame:SetFrameStrata("DIALOG");
-	tooltipFrame:SetToplevel(true);
-	tooltipFrame:SetBackdrop( {
-		bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
-		insets = { left = 5, right = 4, top = 5, bottom = 5 }
-	});
-	local r, g, b, a = GetColor("DefaultBGColor");
-	tooltipFrame:SetBackdropColor(r, g, b, a);
-	tooltipFrame:SetNormalFontObject("GameFontWhite");
-
-	tooltipFrame:Hide();
 end
 
 -- tnx to pitbull =)
@@ -347,6 +290,41 @@ local function CreateWarnFrameFonts(size)
 	VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH = w;
 end
 
+local function UpdateButtonAlignment(nr, justify)
+	local offset = 0;
+	if (justify == "LEFT") then
+		if (VanasKoSWarnFrame.db.profile.ShowClassIcons) then
+			offset = VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT + 5;
+		else
+			offset = 5;
+		end
+	elseif (justify == "RIGHT") then
+		offset = -5;
+	else
+		if (VanasKoSWarnFrame.db.profile.ShowClassIcons) then
+			offset = VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT / 2;
+		else
+			offset = 0;
+		end
+	end
+
+	local fs = warnButtonsOOC[nr]:GetFontString()
+	if (fs) then
+		fs:ClearAllPoints();
+		fs:SetPoint(justify, warnButtonsOOC[nr], justify, offset, 0);
+	end
+	fs = warnButtonsCombat[nr]:GetFontString();
+	if (fs) then
+		fs:ClearAllPoints();
+		fs:SetPoint(justify, warnButtonsCombat[nr], justify, offset, 0);
+	end
+end
+
+local function SetFontAlignment(justify)
+	for i=1,WARN_BUTTONS_MAX do
+		UpdateButtonAlignment(i, justify)
+	end
+end
 
 local function CreateClassIcons()
 	if(classIcons) then
@@ -356,45 +334,45 @@ local function CreateClassIcons()
 	classIcons = { };
 	local i = 1;
 	for i=1,WARN_BUTTONS_MAX do
-			local classIcon = CreateFrame("Button", nil, warnFrame);
-			classIcon:SetPoint("LEFT", warnButtonsCombat[i], "LEFT", 5, 0);
-			classIcon:SetWidth(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
-			classIcon:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
+		local classIcon = CreateFrame("Button", nil, warnFrame);
+		classIcon:SetPoint("LEFT", warnButtonsCombat[i], "LEFT", 5, 0);
+		classIcon:SetWidth(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
+		classIcon:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
 
-			local texture = classIcon:CreateTexture(nil, "ARTWORK");
-			texture:SetAllPoints(classIcon);
-			texture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes");
+		local texture = classIcon:CreateTexture(nil, "ARTWORK");
+		texture:SetAllPoints(classIcon);
+		texture:SetTexture("Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes");
 
-			classIcon:Hide();
+		classIcon:Hide();
 
-			classIcons[i] = { classIcon, texture };
-		end
+		classIcons[i] = { classIcon, texture };
+	end
+end
+
+local function setButtonClassIcon(iconNr, class)
+	if(class == nil) then
+		classIcons[iconNr][1]:Hide();
+		return;
 	end
 
-	local function setButtonClassIcon(iconNr, class)
-		if(class == nil) then
-			classIcons[iconNr][1]:Hide();
-			return;
-		end
-
-		local coords = classIconNameToCoords[class];
-		if(not coords) then
-			VanasKoS:Print("Unknown class " .. class);
-			return;
-		end
-		classIcons[iconNr][2]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
-		classIcons[iconNr][1]:Show();
+	local coords = classIconNameToCoords[class];
+	if(not coords) then
+		VanasKoS:Print("Unknown class " .. class);
+		return;
 	end
+	classIcons[iconNr][2]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);
+	classIcons[iconNr][1]:Show();
+end
 
-	local function CreateOOCButtons()
-		if(warnButtonsOOC) then
-			return;
-		end
-		warnButtonsOOC = { };
-		
-		local i=1;
-		for i=1,WARN_BUTTONS_MAX do
-			local warnButton = CreateFrame("Button", nil, warnFrame, "SecureActionButtonTemplate");
+local function CreateOOCButtons()
+	if(warnButtonsOOC) then
+		return;
+	end
+	warnButtonsOOC = { };
+	
+	local i=1;
+	for i=1,WARN_BUTTONS_MAX do
+		local warnButton = CreateFrame("Button", nil, warnFrame, "SecureActionButtonTemplate");
 		if(i == 1) then
 			warnButton:SetPoint("TOP", warnFrame, 0, -5);
 		else
@@ -404,14 +382,15 @@ local function CreateClassIcons()
 		warnButton:SetWidth(VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH);
 		warnButton:SetHeight(VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT);
 		warnButton:EnableMouse(true);
+		warnButton:SetNormalFontObject("GameFontWhiteSmall");
 		warnButton:SetFrameStrata("MEDIUM");
+		warnButton:SetText("");
 		warnButton:RegisterForClicks("AnyUp");
 		warnButton:SetAttribute("type", "macro");
 		warnButton:SetAttribute("macrotext", "/wave");
 
-		warnButton:SetScript("OnEnter", function() ShowTooltip(i); end);
-		warnButton:SetScript("OnLeave", function() tooltipFrame:Hide(); end);
-		warnButton:SetScript("OnUpdate", function() UpdateTooltipPosition(); end);
+		warnButton:SetScript("OnEnter", function() ShowTooltip(warnButton, i); end);
+		warnButton:SetScript("OnLeave", function() HideTooltip(); end);
 		if (i <= currentButtonCount) then
 			warnButton:Show();
 		else
@@ -438,9 +417,10 @@ local function CreateCombatButtons()
 		warnButton:RegisterForClicks("LeftButtonUp");
 		warnButton:RegisterForClicks("RightButtonUp");
 		warnButton:SetFrameStrata("HIGH");
+		warnButton:SetText("");
 
-		warnButton:SetScript("OnEnter", function() ShowTooltip(i); end);
-		warnButton:SetScript("OnLeave", function() tooltipFrame:Hide(); end);
+		warnButton:SetScript("OnEnter", function() ShowTooltip(warnButton, i); end);
+		warnButton:SetScript("OnLeave", function() HideTooltip(); end);
 
 		warnButton:Hide();
 
@@ -679,6 +659,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 							VanasKoSWarnFrame:Update();
 							for i=1,currentButtonCount do
 								setButtonClassIcon(i, nil);
+								SetFontAlignment(VanasKoSWarnFrame.db.profile.FontAlign)
 							end
 						end
 					},
@@ -707,11 +688,40 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						step = 1,
 						isPercent = false,
 					},
+					fontAlign = {
+						type = 'select',
+						name = L["Alignment"],
+						desc = L["Sets warnframe font alignment"],
+						order = 2,
+						values = {L["LEFT"], L["CENTER"], L["RIGHT"]},
+						set = function(frame, v)
+								local align;
+								if (v == 1) then
+									align = "LEFT";
+								elseif (v == 3) then
+									align = "RIGHT";
+								else
+									align = "CENTER";
+								end
+								VanasKoSWarnFrame.db.profile.FontAlign = align;
+								SetFontAlignment(align)
+							end,
+						get = function() 
+								local align = VanasKoSWarnFrame.db.profile.FontAlign;
+								if align == "LEFT" then
+									return 1
+								elseif align == "RIGHT" then
+									return 3
+								else
+									return 2
+								end
+							end
+					},
 					kos = {
 						type = 'group',
 						name = L["KoS"],
 						desc = L["How kos content is shown"],
-						order = 2,
+						order = 3,
 						args = {
 							designMoreKoSBackgroundColor = {
 								type = 'color',
@@ -764,7 +774,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						type = 'group',
 						name = L["Hostile"],
 						desc = L["How hostile content is shown"],
-						order = 3,
+						order = 4,
 						args = {
 							designMoreHostilesBackdropBackgroundColor = {
 								type = 'color',
@@ -817,7 +827,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						type = 'group',
 						name = L["Friendly"],
 						desc = L["How friendly content is shown"],
-						order = 4,
+						order = 5,
 						args = {
 							designMoreAlliedBackdropBackgroundColor = {
 								type = 'color',
@@ -870,7 +880,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						type = 'group',
 						name = L["Neutral"],
 						desc = L["How neutral content is shown"],
-						order = 5,
+						order = 6,
 						args = {
 							designDefaultBackdropBackgroundColor = {
 								type = 'color',
@@ -1084,19 +1094,20 @@ function VanasKoSWarnFrame:OnInitialize()
 			showInCity = false,
 			showInSanctuary = false,
 
-			FontSize = 10;
-			WARN_FRAME_WIDTH = 130;
-			WARN_FRAME_WIDTH_PADDING = 5;
-			WARN_FRAME_WIDTH_EMPTY = 130;
-			WARN_FRAME_HEIGHT_PADDING = 5;
-			WARN_FRAME_HEIGHT_EMPTY = 5;
+			FontSize = 10,
+			FontAlign = "CENTER",
+			WARN_FRAME_WIDTH = 130,
+			WARN_FRAME_WIDTH_PADDING = 5,
+			WARN_FRAME_WIDTH_EMPTY = 130,
+			WARN_FRAME_HEIGHT_PADDING = 5,
+			WARN_FRAME_HEIGHT_EMPTY = 5,
 
-			WARN_TOOLTIP_HEIGHT = 24;
+			WARN_TOOLTIP_HEIGHT = 24,
 
-			WARN_BUTTON_HEIGHT = 16;
-			WARN_BUTTONS = 5;
+			WARN_BUTTON_HEIGHT = 16,
+			WARN_BUTTONS = 5,
 
-			MacroText = "/targetexact ${name}";
+			MacroText = "/targetexact ${name}",
 		}
 	});
 
@@ -1118,7 +1129,6 @@ end
 function VanasKoSWarnFrame:OnEnable()
 	CreateOOCButtons();
 	CreateCombatButtons();
-	CreateTooltipFrame();
 	CreateClassIcons();
 	CreateWarnFrameFonts(self.db.profile.FontSize);
 	warnFrame:SetAlpha(1);
@@ -1131,19 +1141,22 @@ function VanasKoSWarnFrame:OnEnable()
 end
 
 function VanasKoSWarnFrame:OnDisable()
+	self:EnablePlayerDetectEvent(false)
 	self:UnregisterAllEvents();
 	self:CancelAllTimers();
 	timer = nil;
 
 	currentButtonCount = 0;
 	wipe(nearbyKoS);
+	nearbyKoSCount = 0;
 	wipe(nearbyEnemy);
+	nearbyEnemyCount = 0;
 	wipe(nearbyFriendly);
+	nearbyFriendlyCount = 0;
 	wipe(dataCache);
 	wipe(buttonData);
 	
-	self:Update();
-	warnFrame:Hide();
+	HideWarnFrame();
 end
 
 function VanasKoSWarnFrame:RefreshConfig()
@@ -1253,6 +1266,9 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 	dataCache[name].gender = data.gender;
 	dataCache[name].faction = faction;
 	dataCache[name].level = data.level;
+	dataCache[name].guid = data.guid;
+	dataCache[name].reason = data.reason;
+	dataCache[name].owner = data.owner;
 	
 	self:Update();
 end
@@ -1346,6 +1362,7 @@ local function SetButton(buttonNr, name, faction, data)
 	-- local z = GetCurrentMapZone();
 	-- SetMapToCurrentZone();
 	local zx, zy = GetPlayerMapPosition("player");
+	local align = VanasKoSWarnFrame.db.profile.FontAlign;
 	-- SetMapZoom(c, z)
 	if(InCombatLockdown()) then
 		warnFrame:SetBackdropBorderColor(1.0, 0.0, 0.0);
@@ -1358,6 +1375,7 @@ local function SetButton(buttonNr, name, faction, data)
 
 			warnButtonsCombat[buttonNr]:SetNormalFontObject(GetFactionFont(faction));
 			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name, data));
+			UpdateButtonAlignment(buttonNr, align);
 			warnButtonsCombat[buttonNr]:Show();
 		else
 			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));
@@ -1389,6 +1407,7 @@ local function SetButton(buttonNr, name, faction, data)
 			macroText = gsub(macroText, "${zoneY}", floor(zy * 100 + 0.5));
 			macroText = gsub(macroText, "${zone}", GetZoneText());
 			warnButtonsOOC[buttonNr]:SetAttribute("macrotext", macroText);
+			UpdateButtonAlignment(buttonNr, align);
 			warnButtonsOOC[buttonNr]:Show();
 		else
 			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));

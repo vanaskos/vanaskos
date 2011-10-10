@@ -336,6 +336,7 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	playerDataList[lname].classEnglish = data.classEnglish;
 	playerDataList[lname].gender = data.gender;
 	playerDataList[lname].zone = data.zone;
+	playerDataList[lname].guid = data.guid;
 
 	--
 	if(data.guild and VanasKoS:BooleanIsOnList("GUILDKOS", data.guild)) then
@@ -435,6 +436,7 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		gatheredData.gender = UnitSex(unit);
 		gatheredData.zone = GetRealZoneText();
 		gatheredData.faction = nil;
+		gatheredData.guid = UnitGUID(unit);
 
 		if(gatheredData.guild and realm and realm ~= "") then
 			gatheredData.guild = gatheredData.guild .. "-" .. realm;
@@ -512,6 +514,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, guid, faction, spellId)
 	gatheredData.race = race;
 	gatheredData.raceEnglish = raceEnglish;
 	gatheredData.gender = gender;
+	gatheredData.guid = guid;
 
 	local level = -1;
 	if(spellId and tonumber(spellId)) then

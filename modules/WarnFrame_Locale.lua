@@ -79,6 +79,24 @@ if L then
 	L["Show in sanctuaries"] = true
 	L["Combat Zones"] = true
 	L["Show in combat zones"] = true
+
+	L["KoS: %s"] = true
+	L["%sKoS: %s"] = true
+	L["KoS (Guild): %s"] = true
+	L["%sKoS (Guild): %s"] = true
+	L["Nicelist: %s"] = true
+	L["%sNicelist: %s"] = true
+	L["Hatelist: %s"] = true
+	L["%sHatelist: %s"] = true
+	L["Wanted: %s"] = true
+	L["%sWanted: %s"] = true
+
+	L["seen: |cffffffff%d|r - wins: |cff00ff00%d|r - losses: |cffff0000%d|r"] = true
+	L["Alignment"] = true
+	L["Sets warnframe font alignment"] = true
+	L["LEFT"] = true
+	L["CENTER"] = true
+	L["RIGHT"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/WarnFrame", "frFR")

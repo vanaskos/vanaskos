@@ -162,134 +162,6 @@ local function ShowTooltip(self, buttonNr)
 	GameTooltip:Show();
 end
 
-local function SetProperties(self, profile)
-	if(self == nil) then
-		return;
-	end
-
-	self:SetWidth(profile.WARN_FRAME_WIDTH);
-	self:SetHeight(profile.WARN_BUTTONS * profile.WARN_BUTTON_HEIGHT +
-			    profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
-	if(profile.WARN_FRAME_POINT) then
-		VanasKoS_WarnFrame:ClearAllPoints();
-		self:SetPoint(profile.WARN_FRAME_POINT,
-					"UIParent",
-					profile.WARN_FRAME_ANCHOR,
-					profile.WARN_FRAME_XOFF,
-					profile.WARN_FRAME_YOFF);
-	else
-		self:SetPoint("CENTER");
-	end
-
-	if(profile.WarnFrameBorder) then
-		VanasKoS_WarnFrame:SetBackdrop( {
-			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
-					insets = { left = 5, right = 4, top = 5, bottom = 5 },
-		});
-		self:EnableMouse(true);
-	else
-		VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
-		self:EnableMouse(false);
-	end
-
-	-- set the default backdrop color
-	local r, g, b, a = GetColor("DefaultBGColor");
-	self:SetBackdropColor(r, g, b, a);
-	SetFontAlignment(self.db.profile.FontAlign);
-	self:Hide();
-end
-
-local function CreateWarnFrame()
-	if(warnFrame ~= nil) then
-		return;
-	end
-	-- Create the Main Window
-	warnFrame = CreateFrame("Button", "VanasKoS_WarnFrame", UIParent);
-	warnFrame:SetToplevel(true);
-	warnFrame:SetMovable(true);
-	warnFrame:SetFrameStrata("LOW");
-
-	-- allow dragging the window
-	warnFrame:RegisterForDrag("LeftButton");
-	warnFrame:SetScript("OnDragStart", function()
-						if(VanasKoSWarnFrame.db.profile.Locked) then
-							return;
-						end
-						warnFrame:StartMoving();
-					end);
-	warnFrame:SetScript("OnDragStop", function()
-						warnFrame:StopMovingOrSizing();
-						local point, _, anchor, xOff, yOff = warnFrame:GetPoint()
-						VanasKoSWarnFrame.db.profile.WARN_FRAME_POINT = point
-						VanasKoSWarnFrame.db.profile.WARN_FRAME_ANCHOR = anchor
-						VanasKoSWarnFrame.db.profile.WARN_FRAME_XOFF = xOff
-						VanasKoSWarnFrame.db.profile.WARN_FRAME_YOFF = yOff
-					end);
-
-	SetProperties(warnFrame, VanasKoSWarnFrame.db.profile);
-end
-
--- tnx to pitbull =)
-local classIconNameToCoords = {
-	["WARRIOR"] = {0, 0.25, 0, 0.25},
-	["MAGE"] = {0.25, 0.49609375, 0, 0.25},
-	["ROGUE"] = {0.49609375, 0.7421875, 0, 0.25},
-	["DRUID"] = {0.7421875, 0.98828125, 0, 0.25},
-	["HUNTER"] = {0, 0.25, 0.25, 0.5},
-	["SHAMAN"] = {0.25, 0.49609375, 0.25, 0.5},
-	["PRIEST"] = {0.49609375, 0.7421875, 0.25, 0.5},
-	["WARLOCK"] = {0.7421875, 0.98828125, 0.25, 0.5},
-	["PALADIN"] = {0, 0.25, 0.5, 0.75},
-	["DEATHKNIGHT"] = {0.25, 0.49609375, 0.5, 0.75},
-}
-
-local function CreateWarnFrameFonts(size)
-	if (testFontFrame == nil) then
-		testFontFrame = CreateFrame("Button", nil, UIParent);
-		testFontFrame:SetText("XXXXXXXXXXXX [00+]");
-		testFontFrame:Hide();
-	end
-
-	if (kosFont == nil) then
-		kosFont = CreateFont("VanasKoS_FontKos");
-		kosFont:SetFont(SML:Fetch("font"), size);
-	end	
-	kosFont:SetTextColor(VanasKoSWarnFrame.db.profile.KoSTextColorR,
-				VanasKoSWarnFrame.db.profile.KoSTextColorG,
-				VanasKoSWarnFrame.db.profile.KoSTextColorB);
-
-	if (enemyFont == nil) then
-		enemyFont = CreateFont("VanasKoS_FontEnemy");
-		enemyFont:SetFont(SML:Fetch("font"), size);
-	end
-	enemyFont:SetTextColor(VanasKoSWarnFrame.db.profile.EnemyTextColorR,
-				VanasKoSWarnFrame.db.profile.EnemyTextColorG,
-				VanasKoSWarnFrame.db.profile.EnemyTextColorB);
-
-	if (friendlyFont == nil) then
-		friendlyFont = CreateFont("VanasKoS_FontFriendly");
-		friendlyFont:SetFont(SML:Fetch("font"), size);
-	end
-	friendlyFont:SetTextColor(VanasKoSWarnFrame.db.profile.FriendlyTextColorR,
-				VanasKoSWarnFrame.db.profile.FriendlyTextColorG,
-				VanasKoSWarnFrame.db.profile.FriendlyTextColorB);
-
-	if (normalFont == nil) then
-		normalFont = CreateFont("VanasKoS_FontNormal");
-		normalFont:SetFont(SML:Fetch("font"), size);
-	end
-	normalFont:SetTextColor(VanasKoSWarnFrame.db.profile.NormalTextColorR,
-				VanasKoSWarnFrame.db.profile.NormalTextColorG,
-				VanasKoSWarnFrame.db.profile.NormalTextColorB);
-
-	testFontFrame:SetNormalFontObject("VanasKoS_FontNormal");
-	local h = math.floor(testFontFrame:GetTextHeight() + 5);
-	local w = math.floor(testFontFrame:GetTextWidth() + 5) + h;
-	VanasKoSWarnFrame.db.profile.WARN_BUTTON_HEIGHT = h;
-	VanasKoSWarnFrame.db.profile.WARN_FRAME_WIDTH = w;
-end
-
 local function UpdateButtonAlignment(nr, justify)
 	local offset = 0;
 	if (justify == "LEFT") then
@@ -325,6 +197,86 @@ local function SetFontAlignment(justify)
 		UpdateButtonAlignment(i, justify)
 	end
 end
+
+local function SetProperties(self, profile)
+	if(self == nil) then
+		return;
+	end
+
+	self:SetWidth(profile.WARN_FRAME_WIDTH);
+	self:SetHeight(profile.WARN_BUTTONS * profile.WARN_BUTTON_HEIGHT +
+			    profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1);
+	if(profile.WARN_FRAME_POINT) then
+		VanasKoS_WarnFrame:ClearAllPoints();
+		self:SetPoint(profile.WARN_FRAME_POINT,
+					"UIParent",
+					profile.WARN_FRAME_ANCHOR,
+					profile.WARN_FRAME_XOFF,
+					profile.WARN_FRAME_YOFF);
+	else
+		self:SetPoint("CENTER");
+	end
+
+	if(profile.WarnFrameBorder) then
+		VanasKoS_WarnFrame:SetBackdrop( {
+			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
+					insets = { left = 5, right = 4, top = 5, bottom = 5 },
+		});
+		self:EnableMouse(true);
+	else
+		VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil});
+		self:EnableMouse(false);
+	end
+
+	-- set the default backdrop color
+	local r, g, b, a = GetColor("DefaultBGColor");
+	self:SetBackdropColor(r, g, b, a);
+	SetFontAlignment(VanasKoSWarnFrame.db.profile.FontAlign);
+	self:Hide();
+end
+
+local function CreateWarnFrame()
+	if(warnFrame ~= nil) then
+		return;
+	end
+	-- Create the Main Window
+	warnFrame = CreateFrame("Button", "VanasKoS_WarnFrame", UIParent);
+	warnFrame:SetToplevel(true);
+	warnFrame:SetMovable(true);
+	warnFrame:SetFrameStrata("LOW");
+
+	-- allow dragging the window
+	warnFrame:RegisterForDrag("LeftButton");
+	warnFrame:SetScript("OnDragStart", function()
+						if(VanasKoSWarnFrame.db.profile.Locked) then
+							return;
+						end
+						warnFrame:StartMoving();
+					end);
+	warnFrame:SetScript("OnDragStop", function()
+						warnFrame:StopMovingOrSizing();
+						local point, _, anchor, xOff, yOff = warnFrame:GetPoint()
+						VanasKoSWarnFrame.db.profile.WARN_FRAME_POINT = point
+						VanasKoSWarnFrame.db.profile.WARN_FRAME_ANCHOR = anchor
+						VanasKoSWarnFrame.db.profile.WARN_FRAME_XOFF = xOff
+						VanasKoSWarnFrame.db.profile.WARN_FRAME_YOFF = yOff
+					end);
+end
+
+-- tnx to pitbull =)
+local classIconNameToCoords = {
+	["WARRIOR"] = {0, 0.25, 0, 0.25},
+	["MAGE"] = {0.25, 0.49609375, 0, 0.25},
+	["ROGUE"] = {0.49609375, 0.7421875, 0, 0.25},
+	["DRUID"] = {0.7421875, 0.98828125, 0, 0.25},
+	["HUNTER"] = {0, 0.25, 0.25, 0.5},
+	["SHAMAN"] = {0.25, 0.49609375, 0.25, 0.5},
+	["PRIEST"] = {0.49609375, 0.7421875, 0.25, 0.5},
+	["WARLOCK"] = {0.7421875, 0.98828125, 0.25, 0.5},
+	["PALADIN"] = {0, 0.25, 0.5, 0.75},
+	["DEATHKNIGHT"] = {0.25, 0.49609375, 0.5, 0.75},
+}
 
 local function CreateClassIcons()
 	if(classIcons) then
@@ -1121,9 +1073,9 @@ function VanasKoSWarnFrame:OnInitialize()
 	self:RegisterConfiguration();
 	
 	self:SetEnabledState(self.db.profile.Enabled);
-  	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
-  	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
-  	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 end
 
 function VanasKoSWarnFrame:OnEnable()
@@ -1132,6 +1084,7 @@ function VanasKoSWarnFrame:OnEnable()
 	CreateClassIcons();
 	CreateWarnFrameFonts(self.db.profile.FontSize);
 	warnFrame:SetAlpha(1);
+	SetProperties(warnFrame, VanasKoSWarnFrame.db.profile);
 	self:Update();
 
 	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");

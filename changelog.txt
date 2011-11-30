@@ -1,6 +1,8 @@
 Release Changelog for VanasKoS
 
-4.32 (alpha):
+4.32:
+- Update toc version for 4.3
+- Update libraries
 - Fixed bug in hatelist/nicelist chat coloring [ticket #62]
 - Fixed bug restoring the saved warning window position
 - Added option to change alignment in warning window

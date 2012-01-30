@@ -80,14 +80,17 @@ function VanasKoSFriendsFrameDocker:FriendsFrame_Update()
 		if(VanasKoSFrame:IsVisible()) then
 			return;
 		end
-		FriendsFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft");
-		FriendsFrameTopRight:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight");
-		FriendsFrameBottomLeft:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotLeft");
-		FriendsFrameBottomRight:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotRight");
+		ButtonFrameTemplate_ShowButtonBar(FriendsFrame);
+		FriendsFrameInset:SetPoint("TOPLEFT", 4, -84);
+		-- FIXME: Change frame artwork
+		-- FriendsFrameBottomLeft:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotLeft");
+		-- FriendsFrameBottomRight:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotRight");
 
 		VanasKoSGUI:ScrollFrameUpdate();
 		VanasKoSListFrame:SetParent("FriendsFrame");
-		VanasKoSListFrame:SetAllPoints();
+		VanasKoSListFrame:ClearAllPoints();
+		VanasKoSListFrame:SetPoint("TOPLEFT", -12, 7);
+		VanasKoSListFrame:SetPoint("BOTTOMRIGHT", 35, -79);
 
 		FriendsFrame_ShowSubFrame("NonExistingFrame"); -- so all friendframe tabs get hidden
 		VanasKoSListFrame:Show();

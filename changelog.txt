@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+4.33:
+- Fixed bug friends frame docking
+
 4.32:
 - Update toc version for 4.3
 - Update libraries

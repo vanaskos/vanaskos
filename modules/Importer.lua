@@ -83,7 +83,7 @@ function VanasKoSImporter:OnInitialize()
 end
 
 function VanasKoSImporter:OnEnable()
-	continents = {GetMapContinents()};
+	local continents = {GetMapContinents()};
 	for i, name in ipairs(continents) do
 		zoneContinentZoneID[i] = {GetMapZones(i)};
 		zoneContinentZoneID[i][0] = name;
@@ -187,7 +187,7 @@ local function importVanasDefaultListsPerRealm(realmDB)
 	end
 end
 
-function importVanasPvPStats(src)
+local function importVanasPvPStats(src)
 	if(not VanasKoSDB.namespaces.PvPStats) then
 		VanasKoSDB.namespaces.PvPStats = {};
 	end
@@ -749,7 +749,7 @@ function VanasKoSImporter:FromSKMapPvPStats()
 		end
 		if (p["GlobalMapData"] ~= nil) then
 			for i, p in ipairs(p["GlobalMapData"]) do
-				tmp_events = importSKMapPoint(player, i);
+				local tmp_events = importSKMapPoint(player, i);
 				events = events + tmp_events;
 			end
 		end

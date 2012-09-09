@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+4.40:
+- Updated TOC and fixed some global leakage
+
 4.33:
 - Fixed bug friends frame docking
 

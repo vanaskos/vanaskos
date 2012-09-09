@@ -195,6 +195,8 @@ function VanasKoSMinimapButton:OnClick(button)
 	end
 end
 
+local timer = nil;
+
 function VanasKoSMinimapButton:OnEnable()
 	if(not icon:IsRegistered(self.name)) then 
 		icon:Register(self.name, Broker, self.db.profile.button);

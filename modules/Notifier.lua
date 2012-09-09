@@ -504,7 +504,7 @@ function VanasKoSNotifier:FriendsFrame_UpdateFriends()
 	local numButtons = #buttons;
 	
 	for i = 1, numButtons do
-		button = buttons[i];
+		local button = buttons[i];
 		if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
 			-- name, level, class, area, connected, status, note, RAF
 			local name, _, _, _, connected, _, note = GetFriendInfo(button.id);

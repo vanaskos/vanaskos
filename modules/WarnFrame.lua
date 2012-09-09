@@ -1262,7 +1262,7 @@ end
 
 local function GetButtonText(name, data)
 	assert(name ~= nil);
-	_, _, player, realm = strfind(name, "([^-]+)[-]?(.*)");
+	local _, _, player, realm = strfind(name, "([^-]+)[-]?(.*)");
 	local result = string.Capitalize(player);
 
 	if(VanasKoSWarnFrame.db.profile.ShowTargetLevel) then
@@ -1343,7 +1343,7 @@ local function SetButton(buttonNr, name, faction, data)
 			warnButtonsOOC[buttonNr]:SetText(GetButtonText(name, data));
 			warnButtonsOOC[buttonNr]:EnableMouse(true);
 			local macroText = VanasKoSWarnFrame.db.profile.MacroText;
-			_, _, player, realm = strfind(name, "([^-]+)[-]?(.*)");
+			local _, _, player, realm = strfind(name, "([^-]+)[-]?(.*)");
 			macroText = gsub(macroText, "${class}", (data and data.class) or "");
 			macroText = gsub(macroText, "${classEnglish}", (data and data.classEnglish) or "");
 			macroText = gsub(macroText, "${race}", (data and data.race) or "");

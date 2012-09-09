@@ -29,6 +29,8 @@ local ACCEPT_GROUP = 4;
 local REJECT_GROUP = 5;
 
 local playerSyncList = nil;
+
+local startupRequestTimer = nil;
  
 -- sorts by index
 local function SortByIndex(val1, val2)
@@ -777,7 +779,7 @@ function VanasKoSSynchronizer:RenderButton(list, buttonIndex, button, key, value
 		if(not value.lastsync) then
 			buttonText2:SetText(L["never synced"]);
 		else
-			timespan = SecondsToTime(time() - value.lastsync);
+			local timespan = SecondsToTime(time() - value.lastsync);
 			if(timespan == "") then
 				buttonText2:SetText(L["0 Secs ago"]);
 			else

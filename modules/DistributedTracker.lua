@@ -105,7 +105,7 @@ local changeZoneTimer;
 
 function VanasKoSTracker:Zone_Changed(zone)
 	self:CancelTimer(changeZoneTimer);
-	changeZonetimer = self:ScheduleTimer("ChangeZone", JOIN_DELAY);
+	changeZoneTimer = self:ScheduleTimer("ChangeZone", JOIN_DELAY);
 end
 
 function VanasKoSTracker:ChangeZone()

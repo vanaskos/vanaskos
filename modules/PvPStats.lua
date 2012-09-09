@@ -643,7 +643,7 @@ end
 
 function VanasKoSPvPStats:ListButtonOnClick(button, frame)
 	local id = frame:GetID();
-	entry, value = VanasKoSGUI:GetListEntryForID(id);
+	local entry, value = VanasKoSGUI:GetListEntryForID(id);
 	if(id == nil or entry == nil) then
 		return;
 	end
@@ -689,6 +689,7 @@ local statPie = nil;
 local RED = { 1.0, 0.0, 0.0 };
 local GREEN = { 0.0, 1.0, 0.0 };
 local statrow = {};
+local statsCategory;
 
 function VanasKoSPvPStats:SetTimeSpan(timeSpanText)
 	if(timeSpanText == "ALLTIME") then
@@ -888,12 +889,12 @@ function VanasKoSPvPStats:SetWinLossStatsPie(wins, losses)
 	if(statPie == nil) then
 		statPie = GraphLib:CreateGraphPieChart("VanasKoS_PvP_StatPie", VanasKoSPvPStatsCharacterDropDown, "TOPLEFT", "BOTTOMLEFT", 15, 0, 100, 100);
 
-		text1 = statPie:CreateFontString(nil, "ARTWORK");
+		local text1 = statPie:CreateFontString(nil, "ARTWORK");
 		text1:SetFontObject("GameFontNormal");
 		text1:SetPoint("TOPLEFT", statPie, "TOPRIGHT", 0, 0);
 		text1:SetText("|cff00ff00Wins:" .. wins .. "|r");
 
-		text2 = statPie: CreateFontString(nil, "ARTWORK");
+		local text2 = statPie:CreateFontString(nil, "ARTWORK");
 		text2:SetFontObject("GameFontNormal");
 		text2:SetPoint("TOPLEFT", text1, "BOTTOMLEFT", 0, 0);
 		text2:SetText("|cffff0000Wins:" .. losses .. "|r");

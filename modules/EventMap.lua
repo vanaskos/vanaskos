@@ -74,7 +74,6 @@ function VanasKoSEventMap:RemoveEventsInPOI(POI)
 	for i, hash in ipairs(POI.event) do
 		local event = pvplog.event[hash];
 		if (event) then
-			local remove = nil;
 			if (event.enemyname) then
 				for j, zhash in ipairs(pvplog.player[event.enemyname] or {}) do
 					if (zhash == hash) then
@@ -101,7 +100,6 @@ function VanasKoSEventMap:RemoveEventsInPOI(POI)
 			end
 		end
 		pvplog.event[hash] = nil;
-		removed = true;
 	end
 	wipe(POI.event);
 	POI:Hide();

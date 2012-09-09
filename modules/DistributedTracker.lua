@@ -101,14 +101,17 @@ local function leaveCrbChannels(exceptChannel)
 end
 
 
-local changeZoneTimer;
+local changeZoneTimer = nil;
 
 function VanasKoSTracker:Zone_Changed(zone)
-	self:CancelTimer(changeZoneTimer);
+	if(changeZoneTimer ~= nil) then
+		self:CancelTimer(changeZoneTimer);
+	end
 	changeZoneTimer = self:ScheduleTimer("ChangeZone", JOIN_DELAY);
 end
 
 function VanasKoSTracker:ChangeZone()
+	changeZoneTimer = nil;
 	if(Nx) then
 		return;
 	end

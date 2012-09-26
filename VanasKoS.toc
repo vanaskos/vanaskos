@@ -1,4 +1,4 @@
-﻿## Interface: 50400
+﻿## Interface: 50001
 ## Title: Vanas|cffff0000KoS|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS

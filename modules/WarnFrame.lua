@@ -276,6 +276,7 @@ local classIconNameToCoords = {
 	["WARLOCK"] = {0.7421875, 0.98828125, 0.25, 0.5},
 	["PALADIN"] = {0, 0.25, 0.5, 0.75},
 	["DEATHKNIGHT"] = {0.25, 0.49609375, 0.5, 0.75},
+	["MONK"] = {0.49609375, 0.7421875, 0.5, 0.75},
 }
 
 local function CreateClassIcons()
@@ -309,7 +310,7 @@ local function setButtonClassIcon(iconNr, class)
 
 	local coords = classIconNameToCoords[class];
 	if(not coords) then
-		VanasKoS:Print("Unknown class " .. class);
+--	VanasKoS:Print("Unknown class " .. class);
 		return;
 	end
 	classIcons[iconNr][2]:SetTexCoord(coords[1], coords[2], coords[3], coords[4]);

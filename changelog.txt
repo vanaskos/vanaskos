@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+4.42:
+- Fix for Monks
+
 4.41:
 - Bugfix
 

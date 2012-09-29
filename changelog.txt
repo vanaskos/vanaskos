@@ -1,5 +1,11 @@
 Release Changelog for VanasKoS
 
+4.44:
+- Updated Libraries
+
+4.43:
+- toc fix
+
 4.42:
 - Fix for Monks
 

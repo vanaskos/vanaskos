@@ -309,7 +309,7 @@ function VanasKoSSynchronizer:OnDisable()
 	VanasKoS:UnregisterList("PLAYERSYNC");
 	VanasKoS:UnregisterList("ACCEPTSYNC");
 	VanasKoS:UnregisterList("REJECTSYNC");
-	VanasKoSGUI:UnegisterList("PLAYERSYNC");
+	VanasKoSGUI:UnregisterList("PLAYERSYNC");
 	VanasKoSGUI:UnregisterList("ACCEPTSYNC");
 	VanasKoSGUI:UnregisterList("REJECTSYNC");
 end

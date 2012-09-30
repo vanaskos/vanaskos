@@ -306,7 +306,7 @@ end
 function VanasKoSSynchronizer:OnDisable()
 	self:UnregisterAllComm();
 
-	VanasKoS:UnegisterList("PLAYERSYNC");
+	VanasKoS:UnregisterList("PLAYERSYNC");
 	VanasKoS:UnregisterList("ACCEPTSYNC");
 	VanasKoS:UnregisterList("REJECTSYNC");
 	VanasKoSGUI:UnegisterList("PLAYERSYNC");

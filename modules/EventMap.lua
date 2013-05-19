@@ -174,13 +174,15 @@ function VanasKoSEventMap:POI_OnLeave(frame)
 end
 
 function VanasKoSEventMap:CreatePOI(x, y)
-	local POI = CreateFrame("Button", "VanasKoSEventMapPOI"..self.POICnt, VanasIconFrame);
+	local POI = CreateFrame("Button", "VanasKoSEventMapPOI" .. self.POICnt, VanasIconFrame);
 	local id = self.POICnt + 1;
 	POI:SetWidth(16);
 	POI:SetHeight(16);
 	POI:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	POI:SetFrameLevel(VanasIconFrame:GetFrameLevel() + 1);
-
+	
+	POI:SetFrameStrata("HIGH"); -- Required to make the mouse events possible.
+	
 	POI.Resize = function(frame) VanasKoSEventMap:POI_Resize(frame, id); end;
 	POI:SetScript("OnEnter", function(self, motion) VanasKoSEventMap:POI_OnEnter(self, motion); end);
 	POI:SetScript("OnLeave", function(self) VanasKoSEventMap:POI_OnLeave(self); end);
@@ -257,7 +259,7 @@ function VanasKoSEventMap:drawPOI(POI)
 
 	POI:Hide();
 	POI:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", POI.x, POI.y);
-	POI:SetFrameLevel(WorldMapPlayer:GetFrameLevel() - 1);
+	POI:SetFrameLevel(WorldMapPlayerLower:GetFrameLevel() - 1);
 	
 	if(POI.trackedPlayer) then
 		POI:SetNormalTexture(nil);

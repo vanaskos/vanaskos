@@ -1,8 +1,8 @@
-﻿## Interface: 50001
+﻿## Interface: 50200
 ## Title: Vanas|cffff0000KoS|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS
-## Version: 4.44-$Rev$
+## Version: 4.45-$Rev$
 ## Notes: KoS-Management Tool
 ## Notes-deDE: KoS-Management
 ## Notes-esES: Herramienta de gestión de KoS (Matar al Ver)

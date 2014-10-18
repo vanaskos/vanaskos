@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+4.46:
+- toc updated
+
 4.45:
 - Integrated fixes for 5.2 by Unrealomega
 

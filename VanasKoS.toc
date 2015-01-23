@@ -10,7 +10,7 @@
 ## DefaultState: Enabled
 ## SavedVariables: VanasKoSDB
 ## SavedVariablesPerCharacter: VanasKoSDBPC
-## OptionalDeps: Ace3, LibSharedMedia-3.0, LibBabble-Race-3.0, LibBabble-Zone-3.0, LibDBIcon-1.0, LibLevelGuess-1.0
+## OptionalDeps: Ace3, LibSharedMedia-3.0, LibDBIcon-1.0, LibLevelGuess-1.0
 ## X-eMail: boredvana@gmail.com
 ## X-Date: 2011-11-29
 ## X-Category: Battlegrounds/PvP
@@ -33,8 +33,6 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\AceSerializer-3.0\AceSerializer-3.0.xml
 Libs\AceTimer-3.0\AceTimer-3.0.xml
 Libs\LibSharedMedia-3.0\lib.xml
-Libs\LibBabble-Race-3.0\lib.xml
-Libs\LibBabble-Zone-3.0\lib.xml
 Libs\LibLevelGuess-1.0\lib.xml
 #@end-no-lib-strip@
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
@@ -55,8 +53,6 @@ modules\PvPDataGatherer_Locale.lua
 modules\PvPDataGatherer.lua
 modules\DataGatherer_Locale.lua
 modules\DataGatherer.lua
-modules\Importer_Locale.lua
-modules\Importer.lua
 modules\ChatNotifier_Locale.lua
 modules\ChatNotifier.lua
 modules\Notifier_Locale.lua

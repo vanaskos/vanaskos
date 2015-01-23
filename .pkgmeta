@@ -3,25 +3,23 @@ package-as: VanasKoS
 manual-changelog: changelog.txt
 
 externals:
-	Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0.2-40200
+	Libs/LibStub: svn://svn.wowace.com/wow/libstub/mainline/tags/1.0.2-60000
 	Libs/CallbackHandler-1.0: svn://svn.wowace.com/wow/callbackhandler/mainline/tags/1.0.7/CallbackHandler-1.0
-	Libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceAddon-3.0
-	Libs/AceHook-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceHook-3.0
-	Libs/AceComm-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceComm-3.0
-	Libs/AceDB-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceDB-3.0
-	Libs/AceDBOptions-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceDBOptions-3.0
-	Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceLocale-3.0
-	Libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceEvent-3.0
-	Libs/AceSerializer-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceSerializer-3.0
-	Libs/AceTimer-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceTimer-3.0
-	Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceGUI-3.0
-	Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceConsole-3.0
-	Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1041/AceConfig-3.0
-	Libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/tags/4/LibSharedMedia-3.0
-	Libs/LibBabble-Race-3.0: svn://svn.wowace.com/wow/libbabble-race-3-0/mainline/tags/5.0-release5
-	Libs/LibBabble-Zone-3.0: svn://svn.wowace.com/wow/libbabble-zone-3-0/mainline/tags/5.0-release5
-	Libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/trunk/LibDBIcon-1.0
-	Libs/LibLevelGuess-1.0: svn://svn.wowace.com/wow/liblevelguess-1-0/mainline/trunk/LibLevelGuess-1.0
+	Libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceAddon-3.0
+	Libs/AceHook-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceHook-3.0
+	Libs/AceComm-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceComm-3.0
+	Libs/AceDB-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceDB-3.0
+	Libs/AceDBOptions-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceDBOptions-3.0
+	Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceLocale-3.0
+	Libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceEvent-3.0
+	Libs/AceSerializer-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceSerializer-3.0
+	Libs/AceTimer-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceTimer-3.0
+	Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceGUI-3.0
+	Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceConsole-3.0
+	Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1122/AceConfig-3.0
+	Libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/tags/7LibSharedMedia-3.0
+	Libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/tags/r40-release/LibDBIcon-1.0
+	Libs/LibLevelGuess-1.0: svn://svn.wowace.com/wow/liblevelguess-1-0/mainline/tags/v1.1/LibLevelGuess-1.0
 
 tools-used:
 	- libdatabroker-1-1

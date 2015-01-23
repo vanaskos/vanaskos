@@ -49,4 +49,4 @@ Wenn du 'Cartographer' installiert hast, wirst du automatisch gefragt, ob du ein
 
 
 credits:
-Ace2, Parser-3.0, Babble-Zone-2.2, Dewdrop-2.0, DeuceLog, Tourist-2.0
+Ace3

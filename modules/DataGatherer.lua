@@ -453,7 +453,7 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 			end
 			if(oldLevelNum > lvl) then
 				lvl = oldLevel;
-			elseif(lvl < 85) then
+			elseif(lvl < 100) then
 				lvl = lvl .. "+";
 			end
 		end
@@ -531,7 +531,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, guid, faction, spellId)
 		level = oldLevel;
 	elseif (level < 1) then
 		level = nil;
-	elseif (level < 85) then
+	elseif (level < 100) then
 		level = level .. "+";
 	end
 	gatheredData.level = level;

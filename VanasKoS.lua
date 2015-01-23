@@ -364,27 +364,26 @@ local inCity = false;
 local mapContinent = -1;
 local mapZone = -1;
 
-local BZ = LibStub("LibBabble-Zone-3.0"):GetLookupTable()
-local CityNames = {
-	-- Alliance city names
-	[BZ["Stormwind City"]] = true,
-	[BZ["Ironforge"]] = true,
-	[BZ["Darnassus"]] = true,
-	[BZ["The Exodar"]] = true,
+local CityZones = {
+    -- Alliance cities
+    [301] = true, --Stormwind City
+    [341] = true, --Ironforge
+    [381] = true, --Darnassus
+    [471] = true, --The Exodar
+    
+    -- Horde cities
+    [321] = true, --Orgrimmar
+    [382] = true, --Undercity
+    [362] = true, --Thunder Bluff
+    [480] = true, --Silvermoon City
 
-	-- Horde city names
-	[BZ["Orgrimmar"]] = true,
-	[BZ["Undercity"]] = true,
-	[BZ["Thunder Bluff"]] = true,
-	[BZ["Silvermoon City"]] = true,
-
-	-- Neutral city names
-	[BZ["Booty Bay"]] = true,
-	[BZ["Dalaran"]] = true,
-	[BZ["Everlook"]] = true,
-	[BZ["Gadgetzan"]] = true,
-	[BZ["Ratchet"]] = true,
-	[BZ["Shattrath City"]] = true,
+    -- Neutral city names
+    -- [] = true, --Booty Bay
+    [504] = true, -- Dalaran
+    -- [] = true, -- Everlook
+    -- [] = true, -- Gadgetzan
+    -- [] = true, -- Ratchet
+    [481] = true, -- Shattrath City
 };
 
 function VanasKoS:UpdateZone()

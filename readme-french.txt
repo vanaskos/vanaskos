@@ -63,4 +63,4 @@ cartographer, vous pouvez rajouter une note sur la zone ou a été détecté
 votre cible.
 
 crédits:
-Ace2, Parser-3.0, Babble-Zone-2.2, Dewdrop-2.0, DeuceLog, Tourist-2.0
+Ace3

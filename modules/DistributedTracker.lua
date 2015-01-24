@@ -139,8 +139,9 @@ function VanasKoSTracker:SendSeenPeople()
 		tempNameList[k] = nil;
 		count = count + 1;
 	end
-	
-	if(count == 0) then
+
+	-- Don't break AFK
+	if(count == 0 or IsChatAFK()) then
 		return;
 	end
 

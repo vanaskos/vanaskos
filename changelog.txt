@@ -1,5 +1,13 @@
 Release Changelog for VanasKoS
 
+4.47:
+- Updated database to use Map Area IDs rather than zone text
+- Remove obsolete Import code
+- Fix bug not adding PvP events to map [ticket #74]
+- Remove LFR Browser, fixes tainting when joining casual BGs [ticket #76]
+- Don't send Chat messages from DistributedTracker while AFK [ticket #73]
+- Update libraries
+
 4.46:
 - toc updated
 

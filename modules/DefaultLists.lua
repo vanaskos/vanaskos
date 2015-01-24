@@ -160,8 +160,8 @@ end
 local function SortByZone(val1, val2)
 	local list = VanasKoS:GetList("PLAYERDATA");
 	if(list) then
-		local str1 = list[val1] and list[val1].zone or "";
-		local str2 = list[val2] and list[val2].zone or "";
+		local str1 = list[val1] and list[val1].areaID and GetMapNameByID(list[val1].areaID) or "";
+		local str2 = list[val2] and list[val2].areaID and GetMapNameByID(list[val2].areaID) or "";
 		return (str1:lower() < str2:lower());
 	end
 	return false;
@@ -169,8 +169,8 @@ end
 local function SortByZoneReverse(val1, val2)
 	local list = VanasKoS:GetList("PLAYERDATA");
 	if(list) then
-		local str1 = list[val1] and list[val1].zone or "";
-		local str2 = list[val2] and list[val2].zone or "";
+		local str1 = list[val1] and list[val1].areaID and GetMapNameByID(list[val1].areaID) or "";
+		local str2 = list[val2] and list[val2].areaID and GetMapNameByID(list[val2].areaID) or "";
 		return (str1:lower() > str2:lower());
 	end
 	return false;
@@ -330,8 +330,8 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 			else
 				buttonText2:SetText(format(L["never seen"], timespan));
 			end
-			if (data and data.zone) then
-				buttonText3:SetText(data.zone);
+			if (data and data.areaID) then
+				buttonText3:SetText(GetMapNameByID(data.areaID));
 			else
 				buttonText3:SetText("");
 			end

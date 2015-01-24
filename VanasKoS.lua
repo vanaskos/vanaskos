@@ -363,8 +363,9 @@ local inFfaZone = false;
 local inCity = false;
 local mapContinent = -1;
 local mapZone = -1;
+local mapAreaID = -1;
 
-local CityZones = {
+local CityAreaIDs = {
     -- Alliance cities
     [301] = true, --Stormwind City
     [341] = true, --Ironforge
@@ -378,24 +379,20 @@ local CityZones = {
     [480] = true, --Silvermoon City
 
     -- Neutral city names
-    -- [] = true, --Booty Bay
     [504] = true, -- Dalaran
-    -- [] = true, -- Everlook
-    -- [] = true, -- Gadgetzan
-    -- [] = true, -- Ratchet
     [481] = true, -- Shattrath City
 };
 
 function VanasKoS:UpdateZone()
 	local gatherTargetEvents, gatherCombatEvents;
-	local zone = GetRealZoneText();
 	local pvpType, isFFA, faction = GetZonePVPInfo();
 	local inInstance, instanceType = IsInInstance();
 
-	local tmpAreaId = GetCurrentMapAreaID();
+	local tmpAreaId, _ = GetCurrentMapAreaID();
 	SetMapToCurrentZone();
+	mapAreaID, _ = GetCurrentMapAreaID();
 	mapContinent = GetCurrentMapContinent();
-	mapZone = GetCurrentMapZone();
+	mapZone, _, _, _, _ = GetCurrentMapZone();
 	SetMapByID(tmpAreaId);
 
 	inSanctuary = (pvpType == "sanctuary");
@@ -405,13 +402,13 @@ function VanasKoS:UpdateZone()
 	inBattleground = (inInstance and instanceType == "pvp");
 	inFfaZone = isFFA;
 
-	if (CityNames[zone]) then
+	if (CityAreaIDs[mapAreaID]) then
 		inCity = true;
 	else
 		inCity = false;
 	end
 
-	self:SendMessage("VanasKoS_Zone_Changed", zone);
+	self:SendMessage("VanasKoS_Zone_Changed", mapAreaID);
 end
 
 function VanasKoS:IsInBattleground()
@@ -448,4 +445,8 @@ end
 
 function VanasKoS:MapZone()
 	return mapZone;
+end
+
+function VanasKoS:MapID()
+	return mapAreaID;
 end

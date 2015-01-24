@@ -222,7 +222,7 @@ end
 local playerDataList = nil;
 
 function VanasKoSDataGatherer:OnEnable()
-	-- on zonechange update zone
+	-- on areachange update area
 	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");
 	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
 
@@ -335,7 +335,7 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	playerDataList[lname].class = data.class;
 	playerDataList[lname].classEnglish = data.classEnglish;
 	playerDataList[lname].gender = data.gender;
-	playerDataList[lname].zone = data.zone;
+	playerDataList[lname].areaID = data.areaID;
 	playerDataList[lname].guid = data.guid;
 
 	--
@@ -434,7 +434,7 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		gatheredData.race = UnitRace(unit);
 		gatheredData.class, gatheredData.classEnglish = UnitClass(unit);
 		gatheredData.gender = UnitSex(unit);
-		gatheredData.zone = GetRealZoneText();
+		gatheredData.areaID = VanasKoS:MapID()
 		gatheredData.faction = nil;
 		gatheredData.guid = UnitGUID(unit);
 
@@ -498,17 +498,12 @@ end
 local LevelGuessLib = LibStub("LibLevelGuess-1.0");
 
 function VanasKoSDataGatherer:SendDataMessage(name, guid, faction, spellId)
-	local zone = GetRealZoneText();
-	-- dumb fix to hide obviously invalid strings gathered in other localizations then enUS
-	if(not name or name:lower() == myName:lower()) then
-		return;
-	end
-	
+	local areaID = VanasKoS:MapID();
 	local class, classEnglish, race, raceEnglish, gender = GetPlayerInfoByGUID(guid)
 	wipe(gatheredData);
 	gatheredData.name = name;
 	gatheredData.faction = faction;
-	gatheredData.zone = zone;
+	gatheredData.areaID = areaID;
 	gatheredData.class = class;
 	gatheredData.classEnglish = classEnglish;
 	gatheredData.race = race;

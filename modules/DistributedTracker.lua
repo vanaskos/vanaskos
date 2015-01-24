@@ -57,11 +57,12 @@ end
 local function GetCurrentCrbZoneName() 
 	local continent = VanasKoS:MapContinent();
 	local zone = VanasKoS:MapZone();
+	local area = VanasKoS:MapID();
 	
-	if(continent == nil or zone == nil or continent == 0 or continent > 5) then
+	if(area == nil or area == -1) then
 		return nil;
 	end
-	
+
 	local channelNumber = continent * 1000 + zone;
 	return channelNumber;
 end
@@ -103,7 +104,7 @@ end
 
 local changeZoneTimer = nil;
 
-function VanasKoSTracker:Zone_Changed(zone)
+function VanasKoSTracker:Zone_Changed(areaID)
 	if(changeZoneTimer ~= nil) then
 		self:CancelTimer(changeZoneTimer);
 	end
@@ -144,8 +145,9 @@ function VanasKoSTracker:SendSeenPeople()
 	end
 
 	local mapAndZone = VanasKoS:MapContinent() * 1000 + VanasKoS:MapZone();
-	if(mapAndZone <= 0 or mapAndZone >= 5000) then
-		return; -- todo: implement
+	local areaID = VanasKoS:MapID();
+	if(areaID < 0) then
+		return;
 	end
 	
 	local posX, posY = GetPlayerMapPosition("player");
@@ -173,12 +175,11 @@ function VanasKoSTracker:SendSeenPeople()
 	SendChatMessage(str, "CHANNEL", nil, number);
 end
 
-local function checkForKoS(name, continent, zone, posX, posY)
+local function checkForKoS(name, areaID, posX, posY)
 	local koslist = VanasKoS:GetList("PLAYERKOS");
 	if(koslist and koslist[name:lower()]) then
-		local zones = { GetMapZones(continent) };
-		VanasKoS:Print(format(L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"], name, posX, posY, zones[zone], koslist[name:lower()].reason));
-		VanasKoSEventMap:TrackPlayer(name, continent, zone, posX/100, posY/100);
+		VanasKoS:Print(format(L["Map Position update on Player %s (%d, %d in %s) received - Reason: %s"], name, posX, posY, GetMapNameByID(areaID), koslist[name:lower()].reason));
+		VanasKoSEventMap:TrackPlayer(name, areaID, posX/100, posY/100);
 	end
 end
 
@@ -224,6 +225,7 @@ function VanasKoSTracker:ChannelMessage()
 		return;
 	end
 
+	local areaID = VanasKoS:MapID();
 	local posX = (tonumber(strsub(msg, 6, 8), 16) * 100) / 0xfff;
 	local posY = (tonumber(strsub(msg, 9, 11), 16) * 100) / 0xfff;
 	local healthPerc =(((strbyte(msg, 12) or 48) - 48) * 100) / 20;
@@ -272,7 +274,7 @@ function VanasKoSTracker:ChannelMessage()
 		offset = 19 + len;
 		
 		if(targetInfo.type == 2) then-- 1 = friendly, 2 = player, 3=enemy, 4= elite, 5 = other
-			checkForKoS(targetInfo.name, continent, zone, posX, posY);
+			checkForKoS(targetInfo.name, areaID, posX, posY);
 		end
 	else
 		targetInfo.name = nil;
@@ -312,7 +314,7 @@ function VanasKoSTracker:ChannelMessage()
 			end
 			
 			--VanasKoS:Print(format("name: %s", name));
-			checkForKoS(name, continent, zone, posX, posY);
+			checkForKoS(name, areaID, posX, posY);
 		end
 	end
 	--VanasKoS:Print("---");

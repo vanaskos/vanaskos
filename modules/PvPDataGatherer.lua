@@ -19,8 +19,8 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 				pvpstats = {
 					pvplog = {
 						event = {},
-						zone = {},
 						player = {},
+						area = {},
 					},
 				}
 			}
@@ -69,16 +69,16 @@ function VanasKoSPvPDataGatherer:AddEntry(list, name, data)
 					['mylevel'] = data['mylevel'],
 					['enemylevel'] = data['enemylevel'],
 					['type'] = data['type'],
-					['zone']  = data['zone'],
+					['areaID']  = data['areaID'],
 					['posX'] = data['posX'],
 					['posY'] = data['posY']
 				};
 
-		if (data['zone']) then
-			if (not pvplog.zone[data['zone']]) then
-				pvplog.zone[data['zone']] = {}
+		if (data['areaID']) then
+			if (not pvplog.area[data['areaID']]) then
+				pvplog.area[data['areaID']] = {}
 			end
-			tinsert(pvplog.zone[data['zone']], hash);
+			tinsert(pvplog.area[data['areaID']], hash);
 		end
 
 		if (not pvplog.player[name]) then
@@ -199,14 +199,14 @@ function VanasKoSPvPDataGatherer:LogPvPLoss(name)
 	SetMapToCurrentZone();
 	local posX, posY = GetPlayerMapPosition("player");
 	local data = VanasKoS:GetPlayerData(name);
-	local zone = GetRealZoneText();
+	local areaID, _ = GetCurrentMapAreaID();
 
 	VanasKoS:AddEntry("PVPLOG", name, {	['time'] = time(),
 						['myname'] = UnitName("player"),
 						['mylevel'] = UnitLevel("player"),
 						['enemylevel'] = data and data['level'] or 0,
 						['type'] = "loss",
-						['zone']  = zone,
+						['areaID']  = areaID,
 						['posX'] = posX,
 						['posY'] = posY });
 end
@@ -225,7 +225,7 @@ function VanasKoSPvPDataGatherer:LogPvPWin(name)
 	SetMapToCurrentZone();
 	local posX, posY = GetPlayerMapPosition("player");
 	local data = VanasKoS:GetPlayerData(name);
-	local zone = GetRealZoneText();
+	local areaID, _ = GetCurrentMapAreaID();
 
 	VanasKoS:AddEntry("PVPLOG", name, {
 						['time'] = time(),
@@ -233,7 +233,7 @@ function VanasKoSPvPDataGatherer:LogPvPWin(name)
 						['mylevel'] = UnitLevel("player"),
 						['enemylevel'] = data and data['level'] or 0,
 						['type'] = "win",
-						['zone']  = zone,
+						['areaID']  = areaID,
 						['posX'] = posX,
 						['posY'] = posY });
 end

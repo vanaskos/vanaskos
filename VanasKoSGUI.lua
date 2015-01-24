@@ -467,7 +467,7 @@ function VanasKoSGUI:UpdateMouseOverFrame(k, v, ty)
 		tooltip:AddLine(string.Capitalize(k));
 		data = VanasKoS:GetList("PLAYERDATA")[k];
 
-		-- guild, level, race, class, zone, lastseen
+		-- guild, level, race, class, areaID, lastseen
 		if(data) then
 			if(data.guild) then
 				local text = "<|cffffffff" .. data.guild .. "|r>";
@@ -481,8 +481,8 @@ function VanasKoSGUI:UpdateMouseOverFrame(k, v, ty)
 			elseif(data.race and data.class) then
 				tooltip:AddLine(format('%s %s', data.race, data.class));
 			end
-			if(data.zone and data.lastseen) then
-				tooltip:AddLine(format(L['Last seen at |cff00ff00%s|r in |cff00ff00%s|r'], date("%c", data.lastseen), data.zone));
+			if(data.areaID and data.lastseen) then
+				tooltip:AddLine(format(L['Last seen at |cff00ff00%s|r in |cff00ff00%s|r'], date("%c", data.lastseen), GetMapNameByID(data.areaID)));
 			end
 		end
 	elseif(ty == "guild") then
@@ -540,11 +540,11 @@ function VanasKoSGUI:UpdateMouseOverFrame(k, v, ty)
 				end
 				for key,hash in iter do
 					local event = pvplog.event[hash];
-					if(event and event.type and event.zone and event.myname) then
+					if(event and event.type and event.areaID and event.myname) then
 						if(event.type == 'win') then
-							tooltip:AddLine(format(L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), event.zone, event.myname));
+							tooltip:AddLine(format(L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), GetMapNameByID(event.areaID), event.myname));
 						else
-							tooltip:AddLine(format(L["%s: |cffff0000Loss|r |cffffffffin %s(|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), event.zone, event.myname));
+							tooltip:AddLine(format(L["%s: |cffff0000Loss|r |cffffffffin %s(|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), GetMapNameByID(event.areaID), event.myname));
 						end
 					end
 					if(key < #playerlog - 15) then

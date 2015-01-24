@@ -20,8 +20,7 @@ local ICONSIZE = 16;
 local DOTSIZE = 16;
 local POIGRIDALIGN = 16;
 VanasKoSEventMap.lastzoom = 20;
-VanasKoSEventMap.lastzone = "";
-VanasKoSEventMap.lastcontinent = "";
+VanasKoSEventMap.lastAreaID = -1;
 local trackedPlayers = { };
 
 
@@ -87,16 +86,16 @@ function VanasKoSEventMap:RemoveEventsInPOI(POI)
 				end
 			end
 		end
-		if (event.zone) then
-			for j, zhash in ipairs(pvplog.zone[event.zone] or {}) do
+		if (event.areaID) then
+			for j, zhash in ipairs(pvplog.areaID[event.areaID] or {}) do
 				if (zhash == hash) then
 					--print("removing " .. hash .. " from pvp zone log");
-					tremove(pvplog.zone[event.zone], j);
+					tremove(pvplog.areaID[event.areaID], j);
 					break;
 				end
 			end
-			if (pvplog.zone[event.zone] and next(pvplog.zone[event.zone]) == nil) then
-				pvplog.zone[event.zone] = nil;
+			if (pvplog.areaID[event.areaID] and next(pvplog.areaID[event.areaID]) == nil) then
+				pvplog.areaID[event.areaID] = nil;
 			end
 		end
 		pvplog.event[hash] = nil;
@@ -259,7 +258,7 @@ function VanasKoSEventMap:drawPOI(POI)
 
 	POI:Hide();
 	POI:SetPoint("CENTER", "WorldMapDetailFrame", "TOPLEFT", POI.x, POI.y);
-	POI:SetFrameLevel(WorldMapPlayerLower:GetFrameLevel() - 1);
+	-- POI:SetFrameLevel(WorldMapPlayerLower:GetFrameLevel() - 1);
 	
 	if(POI.trackedPlayer) then
 		POI:SetNormalTexture(nil);
@@ -299,13 +298,12 @@ function VanasKoSEventMap:drawPOI(POI)
 	POI:Show();
 end
 
-function VanasKoSEventMap:TrackPlayer(playername, continent, zone, posX, posY)
-	--VanasKoS:Print(format("%s %d %d %f %f", playername, continent, zone, posX, posY));
+function VanasKoSEventMap:TrackPlayer(playername, areaID, posX, posY)
+	--VanasKoS:Print(format("%s %d %d %f %f", playername, areaID, posX, posY));
 	local playerData = trackedPlayers[playername:lower()];
 	if(playerData == nil) then
 		playerData = {
-			['continent'] = continent,
-			['zone'] = zone,
+			['areaID'] = areaID,
 			['posX'] = posX,
 			['posY'] = posY,
 			['lastseen'] = time()
@@ -319,9 +317,10 @@ end
 function VanasKoSEventMap:CreateTrackingPoints()
 	local mapWidth = WorldMapDetailFrame:GetWidth();
 	local mapHeight = WorldMapDetailFrame:GetHeight();
+	local areaID, cont = GetCurrentMapAreaID()
 	for k, v in pairs(trackedPlayers) do
-		if(v.continent ~= GetCurrentMapContinent() or v.zone ~= GetCurrentMapZone()) then
-			--VanasKoS:Print(format("break %d %d %d %d", v.continent, v.zone, GetCurrentMapContinent(), GetCurrentMapZone()));
+		if(v.areaID ~= areaID) then
+			--VanasKoS:Print(format("break %d %d", v.areaID, GetCurrentMapAreaID()));
 		else 
 			local x = v.posX * mapWidth;
 			local y = -v.posY * mapHeight;
@@ -340,17 +339,15 @@ function VanasKoSEventMap:CreatePoints(enemyIdx)
 	self:CreateTrackingPoints();
 
 	local pvplog = VanasKoS:GetList("PVPLOG");
-	local zoneid = GetCurrentMapZone();
-	local zones = {GetMapZones(GetCurrentMapContinent())};
-	local zoneName = zones and zones[zoneid];
+	local areaID, cont = GetCurrentMapAreaID();
 	local drawAlts = self.db.profile.drawAlts;
 	local mapWidth = WorldMapDetailFrame:GetWidth();
 	local mapHeight = WorldMapDetailFrame:GetHeight();
 
-	if (pvplog and pvplog.zone[zoneName]) then
+	if (pvplog and pvplog.area[areaID]) then
 		local i = 0;
 		local myname = UnitName("player");
-		local zonelog = pvplog.zone[zoneName] or {};
+		local zonelog = pvplog.area[areaID] or {};
 		for idx = enemyIdx, #zonelog do
 			local event = pvplog.event[zonelog[idx]];
 			if (drawAlts or event.myname == myname) then
@@ -394,21 +391,18 @@ function VanasKoSEventMap:ClearEventMap()
 end
 
 function VanasKoSEventMap:RedrawMap()
-	self.lastzone = "nowhere";
-	self.lastcontinent = "nowhere";
+	self.lastAreaID = -1;
 	self:UpdatePOI();
 end
 
 function VanasKoSEventMap:UpdatePOI()
-	local continent = GetCurrentMapContinent();
-	local zone = GetCurrentMapZone();
+	local areaID, cont = GetCurrentMapAreaID();
 
 	-- Only draw if the zone has changed
-	if (self.lastzone == zone and self.lastcontinent == continent) then
+	if (self.lastAreaID == areaID) then
 		return
 	end
-	self.lastzone = zone;
-	self.lastcontinent = continent;
+	self.lastAreaID = areaID;
 
 	self:ClearEventMap();
 	self:CreatePoints(1);

@@ -324,17 +324,18 @@ function VanasKoSPvPStats:BuildList()
 							end
 						end
 					elseif(group == MAP_LIST) then
-						if(event.zone and event.zone ~= "UNKNOWN") then
-							if(not pvpStatsList[event.zone]) then
-								pvpStatsList[event.zone] = {
+						if(event.areaID and event.areaID ~= -1) then
+							local areaName = GetMapNameByID(event.areaID);
+							if(not pvpStatsList[areaName]) then
+								pvpStatsList[areaName] = {
 									["wins"] = 0;
 									["losses"] = 0;
 								};
 							end
 							if (event.type == 'win') then
-								pvpStatsList[event.zone].wins = pvpStatsList[event.zone].wins + 1;
+								pvpStatsList[areaName].wins = pvpStatsList[areaName].wins + 1;
 							else
-								pvpStatsList[event.zone].losses = pvpStatsList[event.zone].losses + 1;
+								pvpStatsList[areaName].losses = pvpStatsList[areaName].losses + 1;
 							end
 						end
 					elseif(group == DATE_LIST) then
@@ -485,16 +486,16 @@ function VanasKoSPvPStats:RemoveEntry(listname, name, guild)
 				for i, hash in ipairs(pvplog.player[name]) do
 					-- print("removing " .. hash .. " from pvp event log");
 					local event = pvplog.event[hash];
-					if (event and event.zone) then
-						for j, zhash in ipairs(pvplog.zone[event.zone]) do
+					if (event and event.areaID) then
+						for j, zhash in ipairs(pvplog.area[event.areaID]) do
 							if (zhash == hash) then
 								--print("removing " .. hash .. " from pvp zone log");
-								tremove(pvplog.zone[event.zone], j);
+								tremove(pvplog.area[event.areaID], j);
 								break;
 							end
 						end
-						if (next(pvplog.zone[event.zone]) == nil) then
-							pvplog.zone[event.zone] = nil;
+						if (next(pvplog.area[event.areaID]) == nil) then
+							pvplog.area[event.areaID] = nil;
 						end
 					end
 					pvplog.event[hash] = nil;
@@ -520,16 +521,16 @@ function VanasKoSPvPStats:RemoveEntry(listname, name, guild)
 							pvplog.player[event.enemyname] = nil;
 						end
 					end
-					if (event and event.zone) then
-						for j, zhash in ipairs(pvplog.zone[event.zone] or {}) do
+					if (event and event.areaID) then
+						for j, zhash in ipairs(pvplog.area[event.areaID] or {}) do
 							if (zhash == hash) then
 								--print("removing " .. hash .. " from pvp zone log");
-								tremove(pvplog.zone[event.zone], j);
+								tremove(pvplog.area[event.areaID], j);
 								break;
 							end
 						end
-						if (pvplog.zone[event.zone] and next(pvplog.zone[event.zone]) == nil) then
-							pvplog.zone[event.zone] = nil;
+						if (pvplog.area[event.areaID] and next(pvplog.area[event.areaID]) == nil) then
+							pvplog.area[event.areaID] = nil;
 						end
 					end
 					pvplog.event[hash] = nil;

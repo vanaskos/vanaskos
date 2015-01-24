@@ -53,6 +53,8 @@ modules\PvPDataGatherer_Locale.lua
 modules\PvPDataGatherer.lua
 modules\DataGatherer_Locale.lua
 modules\DataGatherer.lua
+modules\Importer_Locale.lua
+modules\Importer.lua
 modules\ChatNotifier_Locale.lua
 modules\ChatNotifier.lua
 modules\Notifier_Locale.lua

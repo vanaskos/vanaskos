@@ -183,7 +183,7 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, even
 		]]
 		
 		local fOrE = isFriendlyOrEnemy(dstFlags);
-		if(dstName and fOrE) then
+		if(dstName and fOrE and dstName ~= myName) then
 			VanasKoSDataGatherer:SendDataMessage(dstName, dstGUID, fOrE, spellID);
 			return;
 		end

@@ -59,7 +59,7 @@ function VanasKoSImporter:ConvertFromOldVanasKoSList()
 		end
 	end
 	if (count > 0) then
-		VanasKoS:Print(format(L["Imported %d PvP events."], count));
+		VanasKoS:Print(format(L["Imported %d PvP events"], count));
 	end
 
 	count = 0;
@@ -82,6 +82,6 @@ function VanasKoSImporter:ConvertFromOldVanasKoSList()
 		end
 	end
 	if (count > 0) then
-		VanasKoS:Print(format(L["Imported %d player data."], count));
+		VanasKoS:Print(format(L["Imported %d player data"], count));
 	end
 end

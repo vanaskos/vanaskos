@@ -1,5 +1,10 @@
 Release Changelog for VanasKoS
 
+4.48:
+- Fixed own name from appearing in warning frame
+- Updated POI icons for death, and tie
+- Fixed minor localization problems
+
 4.47:
 - Updated database to use Map Area IDs rather than zone text
 - Remove obsolete Import code

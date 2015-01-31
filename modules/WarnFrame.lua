@@ -933,8 +933,8 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 					},
 					showInArenas = {
 						type = 'toggle',
-						name = L["Dungeon"],
-						desc = L["Show in dungeon instances"],
+						name = L["Arena"],
+						desc = L["Show in arenas"],
 						order = 3,
 						get = function() return VanasKoSWarnFrame.db.profile.showInArena; end,
 						set = function(frame, v)
@@ -1090,6 +1090,8 @@ function VanasKoSWarnFrame:OnEnable()
 
 	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
+	self:RegisterEvent("PLAYER_REGEN_DISABLED");
+	self:RegisterEvent("PLAYER_DEAD");
 
 	self:ZoneChanged();
 end
@@ -1121,6 +1123,14 @@ function VanasKoSWarnFrame:RefreshConfig()
 end
 
 function VanasKoSWarnFrame:PLAYER_REGEN_ENABLED(event) -- ...
+	self:Update();
+end
+
+function VanasKoSWarnFrame:PLAYER_REGEN_DISABLED(event) -- ...
+	self:Update();
+end
+
+function VanasKoSWarnFrame:PLAYER_DEAD(event) -- ...
 	self:Update();
 end
 
@@ -1307,19 +1317,9 @@ local function GetFactionFont(faction)
 end
 
 local function SetButton(buttonNr, name, faction, data)
-	-- This screws with the map too much, calling SetMapToCurrentZone is
-	-- required to get good coordinates, but this is simply called to often
-	-- and makes the map unusable in some zones, and makes the map dropdown
-	-- stop working.
-
-	-- local c = GetCurrentMapContinent();
-	-- local z = GetCurrentMapZone();
-	-- SetMapToCurrentZone();
 	local zx, zy = GetPlayerMapPosition("player");
 	local align = VanasKoSWarnFrame.db.profile.FontAlign;
-	-- SetMapZoom(c, z)
 	if(InCombatLockdown()) then
-		warnFrame:SetBackdropBorderColor(1.0, 0.0, 0.0);
 		if(buttonData[buttonNr] ~= name) then
 			-- new data for the button, we have to do something
 			if(warnButtonsOOC[buttonNr]:GetAlpha() > 0) then
@@ -1336,7 +1336,6 @@ local function SetButton(buttonNr, name, faction, data)
 			warnButtonsCombat[buttonNr]:SetText(GetButtonText(name, data));
 		end
 	else
-		warnFrame:SetBackdropBorderColor(0.8, 0.8, 0.8);
 		if(buttonData[buttonNr] ~= name or warnButtonsOOC[buttonNr]:GetAlpha() == 0) then
 			warnButtonsOOC[buttonNr]:SetAlpha(1);
 			warnButtonsCombat[buttonNr]:Hide();
@@ -1385,6 +1384,12 @@ function VanasKoSWarnFrame:Update()
 	if (newButtonCount ~= currentButtonCount and not InCombatLockdown()) then
 		currentButtonCount = newButtonCount;
 		UpdateWarnSize();
+	end
+
+	if(InCombatLockdown()) then
+		warnFrame:SetBackdropBorderColor(1.0, 0.0, 0.0);
+	else
+		warnFrame:SetBackdropBorderColor(0.8, 0.8, 0.8);
 	end
 
 	-- more hostile

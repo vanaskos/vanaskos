@@ -71,8 +71,8 @@ if L then
 	L["Show in battlegrounds and pvp zones"] = true
 	L["Dungeon"] = true
 	L["Show in dungeon instances"] = true
-	L["Dungeon"] = true
-	L["Show in dungeon instances"] = true
+	L["Arena"] = true
+	L["Show in arenas"] = true
 	L["Cities"] = true
 	L["Show in cities"] = true
 	L["Sanctuaries"] = true

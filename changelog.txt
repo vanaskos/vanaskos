@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+latest:
+- Update toc and libraries
+
 4.48:
 - Fixed own name from appearing in warning frame
 - Fixed coloring of warning frame in and out of combat

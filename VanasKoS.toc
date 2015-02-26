@@ -2,7 +2,7 @@
 ## Title: Vanas|cffff0000KoS|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS
-## Version: 4.49-$Rev$
+## Version: 4.50-$Rev$
 ## Notes: KoS-Management Tool
 ## Notes-deDE: KoS-Management
 ## Notes-esES: Herramienta de gestión de KoS (Matar al Ver)
@@ -34,6 +34,7 @@ Libs\AceSerializer-3.0\AceSerializer-3.0.xml
 Libs\AceTimer-3.0\AceTimer-3.0.xml
 Libs\LibSharedMedia-3.0\lib.xml
 Libs\LibLevelGuess-1.0\lib.xml
+Libs\LibDialog-1.0\lib.xml
 #@end-no-lib-strip@
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 #@no-lib-strip@

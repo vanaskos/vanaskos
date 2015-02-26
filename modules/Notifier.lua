@@ -21,6 +21,8 @@ SML:Register("sound", "VanasKoS: Glockenspiel", "Interface\\AddOns\\VanasKoS\\Ar
 
 local flashNotifyFrame = nil;
 local reasonFrame = nil
+local playerDetectEventEnabled = false;
+local reenableTimer = nil;
 
 local function SetProperties(self, profile)
 	if(self == nil) then
@@ -711,7 +713,10 @@ function VanasKoSNotifier:RAID_ROSTER_UPDATE()
 end
 
 function VanasKoSNotifier:OnDisable()
+	self:CancelAllTimers();
 	self:UnregisterAllMessages();
+	reenableTimer = nil;
+	playerDetectEventEnabled = false;
 end
 
 local listsToCheck = {
@@ -895,8 +900,6 @@ function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, grea
 	return msg;
 end
 
-local playerDetectEventEnabled = false;
-local reenableTimer = nil;
 function VanasKoSNotifier:EnablePlayerDetectedEvents(enable)
 	if(enable and (not playerDetectEventEnabled)) then
 		self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected");
@@ -912,18 +915,28 @@ function VanasKoSNotifier:EnablePlayerDetectedEvents(enable)
 end
 
 function VanasKoSNotifier:ZoneChanged(message)
+	local enableEvents = true;
+
 	if (VanasKoS:IsInSanctuary()) then
-		self:EnablePlayerDetectedEvents(self.db.profile.notifyInShattrathEnabled);
+		enableEvents = self.db.profile.notifyInShattrathEnabled;
 	elseif (VanasKoS:IsInCity()) then
-		self:EnablePlayerDetectedEvents(self.db.profile.notifyInCitiesEnabled);
+		enableEvents = self.db.profile.notifyInCitiesEnabled;
 	elseif (VanasKoS:IsInBattleground()) then
-		self:EnablePlayerDetectedEvents(self.db.profile.notifyInBattlegroundEnabled);
+		enableEvents = self.db.profile.notifyInBattlegroundEnabled;
 	elseif (VanasKoS:IsInArena()) then
-		self:EnablePlayerDetectedEvents(self.db.profile.notifyInArenaEnabled);
+		enableEvents = self.db.profile.notifyInArenaEnabled;
 	elseif (VanasKoS:IsInCombatZone()) then
-		self:EnablePlayerDetectedEvents(self.db.profile.notifyInCombatZoneEnabled);
+		enableEvents = self.db.profile.notifyInCombatZoneEnabled;
+	end
+
+	if (reenableTimer) then
+		if (not enableEvents) then
+			self:CancelTimer(reenableTimer);
+			reenableTimer = nil;
+			self:EnablePlayerDetectedEvents(false)
+		end
 	else
-		self:EnablePlayerDetectedEvents(true);
+		self:EnablePlayerDetectedEvents(enableEvents)
 	end
 end
 

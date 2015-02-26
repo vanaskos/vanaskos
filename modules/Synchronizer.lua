@@ -1,5 +1,6 @@
 ﻿-- ex:sw=8:sts=8:ts=8:noet
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/Synchronizer", false);
+local Dialog = LibStub("LibDialog-1.0");
 
 -- Global wow strings
 local NAME, GUILD, ERR_CHAT_PLAYER_NOT_FOUND_S = NAME, GUILD, ERR_CHAT_PLAYER_NOT_FOUND_S
@@ -275,6 +276,31 @@ function VanasKoSSynchronizer:OnInitialize()
 	
 	RegisterConfiguration();
 	
+	Dialog:Register("VanasKoSQuestionAdd", {
+		show_while_dead = true,
+		is_exclusive = true,
+		on_show = function(self, data)
+			self.text:SetText(data.prompt);
+		end,
+		on_hide = function(self, data)
+			VanasKoSSynchronizer:ClearQueuedPlayerList(data.sender, data.listName);
+		end,
+		buttons = {
+			{
+				text = ACCEPT,
+				on_click = function(self, data)
+					VanasKoSSynchronizer:ProcessQueuedPlayerList(data.sender, data.listName);
+				end,
+			},
+			{
+				text = CANCEL,
+				on_click = function(self)
+					Dialog:Dismiss("VanasKoSQuestionAdd");
+				end,
+			},
+		},
+	});
+
 	self:SetEnabledState(self.db.profile.Enabled);
 end
 
@@ -606,12 +632,12 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 				for k,v in pairs(data.list) do
 					count = count + 1;
 				end
-				if(not self.popupOpen) then
-					local dialog = StaticPopup_Show("VANASKOS_QUESTION_ADD",
-							format(L["Accept %d entries for list %s from %s?"], count, VanasKoSGUI:GetListName(data.listName), sender));
-					if(dialog) then
-						dialog.data = {["sender"] = sender, ["listName"] = data.listName};
-					end
+				if(not Dialog:ActiveDialog("VanasKoSQuestionAdd")) then
+					Dialog:Spawn("VanasKoSQuestionAdd", {
+						prompt = format(L["Accept %d entries for list %s from %s?"], count, VanasKoSGUI:GetListName(data.listName), sender),
+						sender = sender,
+						listName = data.listName,
+					});
 				else
 					tinsert(sharedListQueue, {["sender"] = sender, ["count"] = count, ["listName"] = data.listName});
 				end
@@ -629,12 +655,12 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 			for k,v in pairs(data.list) do
 				count = count + 1;
 			end
-			if(not self.popupOpen) then
-				local dialog = StaticPopup_Show("VANASKOS_QUESTION_ADD",
-						format(L["Accept %d entries for list %s from %s?"], count, VanasKoSGUI:GetListName(data.listName), sender));
-				if(dialog) then
-					dialog.data = {["sender"] = sender, ["listName"] = data.listName};
-				end
+			if(not Dialog:ActiveDialog("VanasKoSQuestionAdd")) then
+				Dialog:Spawn("VanasKoSQuestionAdd", {
+					prompt = format(L["Accept %d entries for list %s from %s?"], count, VanasKoSGUI:GetListName(data.listName), sender),
+					sender = sender,
+					listName = data.listName,
+				});
 			else
 				tinsert(sharedListQueue, {["sender"] = sender, ["count"] = count, ["listName"] = data.listName});
 			end
@@ -764,11 +790,11 @@ function VanasKoSSynchronizer:ClearQueuedPlayerList(sender, listName)
 		local listName = sharedListQueue[1].listName;
 		local count = sharedListQueue[1].count;
 		tremove(sharedListQueue, 1);
-		local dialog = StaticPopup_Show("VANASKOS_QUESTION_ADD",
-				format(L["Accept %d entries for list %s from %s?"], count, VanasKoSGUI:GetListName(listName), sender));
-		if(dialog) then
-			dialog.data = {["sender"] = sender, ["listName"] = listName};
-		end
+		Dialog:Spawn("VanasKoSQuestionAdd", {
+			prompt = format(L["Accept %d entries for list %s from %s?"], count, VanasKoSGUI:GetListName(data.listName), sender),
+			sender = sender,
+			listName = data.listName,
+		});
 	end
 end
 
@@ -881,26 +907,3 @@ function VanasKoSSynchronizer:ChatFrame_MessageEventHandler(frame, event, msg, .
 		self.hooks.ChatFrame_MessageEventHandler(frame, event, msg, ...);
 	end
 end
-
-StaticPopupDialogs["VANASKOS_QUESTION_ADD"] = {
-	text = "%s",
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnShow = function(self, data)
-		VanasKoSSynchronizer.popupOpen = true;
-	end,
-	OnHide = function(self, data)
-		VanasKoSSynchronizer.popupOpen = nil;
-		VanasKoSSynchronizer:ClearQueuedPlayerList(data.sender, data.listName);
-	end,
-	OnAccept = function(self, data)
-		VanasKoSSynchronizer:ProcessQueuedPlayerList(data.sender, data.listName);
-	end,
-	onAlt = function(self, data)
-	end,
-	timeout = 0,
-	whileDead = 1,
-	exclusive = 1,
-	hideOnEscape = 1,
-};
-

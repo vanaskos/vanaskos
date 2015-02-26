@@ -1,6 +1,12 @@
 Release Changelog for VanasKoS
 
 latest:
+- Use LibDialog rather than vanilla StaticPopup [ticket #78]
+- Remove modules_old
+- Update LibSharedMedia library to trunk
+- Fixed some bugs in the command line handler
+
+4.49:
 - Update toc and libraries
 
 4.48:

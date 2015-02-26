@@ -17,9 +17,12 @@ externals:
 	Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceGUI-3.0
 	Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceConsole-3.0
 	Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceConfig-3.0
-	Libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/tags/7/LibSharedMedia-3.0
+	Libs/LibSharedMedia-3.0: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk/LibSharedMedia-3.0
 	Libs/LibDBIcon-1.0: svn://svn.wowace.com/wow/libdbicon-1-0/mainline/tags/r44-release/LibDBIcon-1.0
 	Libs/LibLevelGuess-1.0: svn://svn.wowace.com/wow/liblevelguess-1-0/mainline/tags/1.1.1/LibLevelGuess-1.0
+	Libs/LibDialog-1.0:
+		url: http://hg.wowace.com/wow/libdialog-1-0/mainline
+		tag: 6.1.0.2
 
 tools-used:
 	- libdatabroker-1-1

@@ -11,6 +11,7 @@ local VanasKoSGUI = VanasKoSGUI;
 local VanasKoS = VanasKoS;
 local AceConfigDialog = LibStub("AceConfigDialog-3.0");
 local AceConfig = LibStub("AceConfig-3.0");
+local Dialog = LibStub("LibDialog-1.0");
 
 -- Global wow strings
 local NAME, ACCEPT, CANCEL = NAME, ACCEPT, CANCEL
@@ -167,6 +168,141 @@ function VanasKoSGUI:OnInitialize()
 	tooltip = self.tooltipFrame;
 	
 	tooltip:Hide();
+
+	Dialog:Register("VanasKoSAddReasonEntry", {
+		show_while_dead = true,
+		is_exclusive = true,
+		text = L["Reason"],
+		editboxes = {
+			{
+				on_enter_pressed = function(self)
+					local reason = self:GetText();
+					if(reason == "") then
+						reason = nil;
+					end
+					Dialog:Dismiss("VanasKoSAddReasonEntry");
+					VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { ['reason'] = reason });
+					VanasKoSGUI:Update();
+				end,
+				on_escape_pressed = function(self)
+					Dialog:Dismiss("VanasKoSAddReasonEntry");
+				end,
+				auto_focus = true,
+				maxLetters = 100,
+			},
+		},
+		buttons = {
+			{
+				text = ACCEPT,
+				on_click = function(self)
+					local reason = self.editboxes[1]:GetText();
+					if(reason == "") then
+						reason = nil;
+					end
+					Dialog:Dismiss("VanasKoSAddReasonEntry");
+					VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { ['reason'] = reason });
+					VanasKoSGUI:Update();
+				end,
+			},
+			{
+				text = CANCEL,
+				on_click = function(self)
+					Dialog:Dismiss("VanasKoSAddReasonEntry");
+				end,
+			},
+		},
+	});
+
+	Dialog:Register("VanasKoSAddEntry", {
+		show_while_dead = true,
+		is_exclusive = true,
+		text = NAME,
+		editboxes = {
+			{
+				on_enter_pressed = function(self)
+					local name = self:GetText();
+					if(name and name ~= "") then
+						VANASKOS.LastNameEntered = name;
+						if(VANASKOS.showList == "PLAYERSYNC" or VANASKOS.showList == "ACCEPTSYNC" or VANASKOS.showList == "REJECTSYNC") then
+							VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { });
+							Dialog:Dismiss("VanasKoSAddEntry");
+						else
+							Dialog:Spawn("VanasKoSAddReasonEntry");
+						end
+					end
+				end,
+				on_escape_pressed = function(self)
+					Dialog:Dismiss("VanasKoSAddEntry");
+				end,
+				auto_focus = true,
+				maxLetters = 100,
+			},
+		},
+		buttons = {
+			{
+				text = ACCEPT,
+				on_click = function(self)
+					local name = self.editboxes[1]:GetText();
+					if(name and name ~= "") then
+						VANASKOS.LastNameEntered = name;
+						if(VANASKOS.showList == "PLAYERSYNC" or VANASKOS.showList == "ACCEPTSYNC" or VANASKOS.showList == "REJECTSYNC") then
+							VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { });
+							Dialog:Dismiss("VanasKoSAddEntry");
+						else
+							Dialog:Spawn("VanasKoSAddReasonEntry");
+						end
+					end
+				end,
+			},
+			{
+				text = CANCEL,
+				on_click = function(self)
+					Dialog:Dismiss("VanasKoSAddEntry");
+				end,
+			},
+		},
+	});
+
+	Dialog:Register("VanasKoSChangeEntry", {
+		show_while_dead = true,
+		is_exclusive = true,
+		text = L["Reason"],
+		editboxes = {
+			{
+				on_enter_pressed = function(self)
+					VanasKoSGUI:GUIChangeKoSReason(self:GetText());
+					Dialog:Dismiss("VanasKoSChangeEntry");
+				end,
+				on_escape_pressed = function(self)
+					Dialog:Dismiss("VanasKoSChangeEntry");
+				end,
+				on_show = function(self, data)
+					self:SetText(data);
+				end,
+				auto_focus = true,
+				maxLetters = 255,
+			},
+		},
+		buttons = {
+			{
+				text = ACCEPT,
+				on_click = function(self, mouseButton, down)
+					local reason = self.editboxes[1]:GetText();
+					Dialog:Dismiss("VanasKoSChangeEntry");
+					if(reason == "") then
+						reason = nil;
+					end
+					VanasKoSGUI:GUIChangeKoSReason(reason);
+				end,
+			},
+			{
+				text = CANCEL,
+				on_click = function(self, mouseButton, down)
+					Dialog:Dismiss("VanasKoSChangeEntry");
+				end,
+			},
+		},
+	});
 end
 
 function VanasKoSGUI:OpenConfigWindow()
@@ -253,18 +389,14 @@ function VanasKoSGUI:GUIFrame_ShowSubFrame(frameName)
 end
 
 function VanasKoSGUI:GUIShowChangeDialog()
-	local dialog = nil;
 	if(VANASKOS.selectedEntry) then
-		dialog = StaticPopup_Show("VANASKOS_CHANGE_ENTRY");
-		local name = self:GetSelectedEntryName();
 		local reason = "";
 		local list = self:GetCurrentList();
 		if(VANASKOS.showList == "PLAYERKOS" or VANASKOS.showList == "GUILDKOS" or VANASKOS.showList == "HATELIST" or VANASKOS.showList == "NICELIST") then
+			local name = self:GetSelectedEntryName();
 			reason = list[string.lower(name)].reason;
-			if (reason ~= nil and reason ~= "") then
-				_G[dialog:GetName() .. "EditBox"]:SetText(reason);
-			end
 		end
+		Dialog:Spawn("VanasKoSChangeEntry", reason);
 	end
 end
 
@@ -806,25 +938,24 @@ function VanasKoSGUI:ScrollFrameUpdate()
 	oldlist = VANASKOS.showList;
 end
 
-function VanasKoSGUI:AddEntry()
-	local name, realm = UnitName("target");
-	if(VANASKOS.showList == "GUILDKOS") then
-		name = GetGuildInfo("target");
-	end
-	if (name and realm and realm ~= "") then
-		VANASKOS.LastNameEntered = name .. "-" .. realm;
-	else
-		VANASKOS.LastNameEntered = name;
+function VanasKoSGUI:AddEntry(playername)
+	VANASKOS.LastNameEntered = playername;
+	if (not VANASKOS.LastNameEntered and UnitIsPlayer("target")) then
+		local name, realm = UnitName("target");
+		if(VANASKOS.showList == "GUILDKOS") then
+			name = GetGuildInfo("target");
+		end
+		if (name and realm and realm ~= "") then
+			VANASKOS.LastNameEntered = name .. "-" .. realm;
+		else
+			VANASKOS.LastNameEntered = name;
+		end
 	end
 
 	if(VANASKOS.LastNameEntered) then
-		if(UnitIsPlayer("target")) then
-			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
-		else
-			StaticPopup_Show("VANASKOS_ADD_ENTRY");
-		end
+		Dialog:Spawn("VanasKoSAddReasonEntry");
 	else
-		StaticPopup_Show("VANASKOS_ADD_ENTRY");
+		Dialog:Spawn("VanasKoSAddEntry");
 	end
 end
 
@@ -967,118 +1098,3 @@ function VanasKoSGUI:ShowToggleButtons()
 	VanasKoSListFrameToggleLeftButton:Show();
 	VanasKoSListFrameToggleRightButton:Show();
 end
-
---[[---------------------------------------------------------------------------------------------------
-				Popup Dialog
------------------------------------------------------------------------------------------------------]]
-StaticPopupDialogs["VANASKOS_ADD_REASON_ENTRY"] = {
-	text = L["Reason"],
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	maxLetters = 255,
-	OnAccept = function(self, event, ...)
-		local reason = self.editBox:GetText();
-		if(reason == "") then
-			reason = nil;
-		end
-		VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { ['reason'] = reason });
-		VanasKoSGUI:Update();
-	end,
-	EditBoxOnEnterPressed = function(self, event, ...)
-		local reason = self:GetParent().editBox:GetText();
-		if(reason == "") then
-			reason = nil;
-		end
-		VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { ['reason'] = reason });
-		VanasKoSGUI:Update();
-		self:GetParent():Hide();
-	end,
-	OnShow = function(self, event, ...)
-		self.editBox:SetFocus();
-	end,
-	OnHide = function(self, event, ...)
-		self.editBox:SetText("");
-	end,
-	EditBoxOnEscapePressed = function(self, event, ...)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1
-}
-
-StaticPopupDialogs["VANASKOS_ADD_ENTRY"] = {
-	text = NAME,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	maxLetters = 255,
-	OnAccept = function(self, event, ...)
-		VANASKOS.LastNameEntered = self.editBox:GetText();
-		if(VANASKOS.LastNameEntered ~= "") then
-			if(VANASKOS.showList == "PLAYERSYNC" or VANASKOS.showList == "ACCEPTSYNC" or VANASKOS.showList == "REJECTSYNC") then
-				VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { });
-			else
-				StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
-			end
-		end
-	end,
-	EditBoxOnEnterPressed = function(self, event, ...)
-		VANASKOS.LastNameEntered = self:GetParent().editBox:GetText();
-		if(VANASKOS.LastNameEntered ~= "") then
-			if(VANASKOS.showList == "PLAYERSYNC" or VANASKOS.showList == "ACCEPTSYNC" or VANASKOS.showList == "REJECTSYNC") then
-				VanasKoS:AddEntry(VANASKOS.showList, VANASKOS.LastNameEntered, { });
-				VanasKoSGUI:Update();
-				self:GetParent():Hide();
-			else
-				StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
-			end
-		end
-	end,
-	OnShow = function(self, event, ...)
-		self.editBox:SetText("");
-		self.editBox:SetFocus();
-	end,
-	OnHide = function(self, event, ...)
-		self.editBox:SetText("");
-	end,
-	EditBoxOnEscapePressed = function(self, event, ...)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1
-}
-
-StaticPopupDialogs["VANASKOS_CHANGE_ENTRY"] = {
-	text = L["Reason"],
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	hasEditBox = 1,
-	maxLetters = 255,
-	OnAccept = function(self, event, ...)
-		local editBox = self.editBox;
-		VanasKoSGUI:GUIChangeKoSReason(editBox:GetText());
-	end,
-	EditBoxOnEnterPressed = function(self, event, ...)
-		local editBox = self:GetParent().editBox;
-		VanasKoSGUI:GUIChangeKoSReason(editBox:GetText());
-		self:GetParent():Hide();
-	end,
-	OnShow = function(self, event, ...)
-		self.editBox:SetFocus();
-	end,
-	OnHide = function(self, event, ...)
-		self.editBox:SetText("");
-	end,
-	EditBoxOnEscapePressed = function(self, event, ...)
-		self:GetParent():Hide();
-	end,
-	timeout = 0,
-	exclusive = 1,
-	whileDead = 1,
-	hideOnEscape = 1
-}

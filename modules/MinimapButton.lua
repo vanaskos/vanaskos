@@ -19,6 +19,7 @@ local Broker = ldb:NewDataObject("VanasKoS", {
 			VanasKoSMinimapButton:OnTooltipShow(tt);
 		end
 });
+local Dialog = LibStub("LibDialog-1.0");
 local tooltip = nil;
 
 local minimapOptions = {
@@ -159,8 +160,7 @@ function VanasKoSMinimapButton:UpdateOptions()
 				order = #attackerMenu,
 				func = function()
 						VanasKoSGUI:ShowList("PLAYERKOS");
-						VANASKOS.LastNameEntered = v[1];
-						StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
+						VanasKoSGUI:AddEntry(v[1]);
 					end,
 			};
 		end

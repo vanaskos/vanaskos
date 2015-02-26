@@ -23,7 +23,7 @@ local function kaddRetrieveArgs(args)
 	cmd, next_pos = VanasKoS:GetArgs(args, 1, next_pos);
 	if (cmd == nil) then
 		cmd = "kos"
-		return kos;
+		return cmd;
 	elseif (cmd ~= "help" and cmd ~= "?" and cmd ~= "hate" and cmd ~= "nice" and cmd ~= "kos") then
 		name = cmd;
 		guild = strmatch(name, "<(.+)>[-]?(.*)");
@@ -33,7 +33,7 @@ local function kaddRetrieveArgs(args)
 			isGuild = true;
 		end
 		reason = strsub(args, next_pos);
-	else
+	elseif (cmd ~= "help" and cmd ~= "?") then
 		name, next_pos = VanasKoS:GetArgs(args, 1, next_pos);
 		guild = strmatch(name, "<(.+)>[-]?(.*)");
 		if (guild) then
@@ -60,7 +60,8 @@ function VanasKoSCommandLineHandler:KoSAdd(arg0, args)
 
 	if (cmd == "help" or cmd == "?") then
 		VanasKoS:Print(L["KADD_DESC"]);
-		return printKaddUsage(arg0);
+		printKaddUsage(arg0);
+		return;
 	elseif (cmd == "hate") then
 		if (isGuild) then
 			VanasKoS:Print("Guilds unsupported in hatelist");
@@ -84,6 +85,7 @@ function VanasKoSCommandLineHandler:KoSAdd(arg0, args)
 	if(not name) then
 		VanasKoS:AddEntryFromTarget(listName, nil);
 	else
+		VanasKoS:Print(format("AddEntryByName(%s, %s, %s)", listName, name, reason));
 		VanasKoS:AddEntryByName(listName, name, reason);
 	end
 end

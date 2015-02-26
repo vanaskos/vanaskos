@@ -6,6 +6,7 @@ Main Object with database and basic list functionality, handles also Configurati
 VanasKoS = LibStub("AceAddon-3.0"):NewAddon("VanasKoS", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0");
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS", false);
+local Dialog = LibStub("LibDialog-1.0");
 local VanasKoS = VanasKoS;
 
 function VanasKoS:ToggleModuleActive(moduleStr)
@@ -234,7 +235,7 @@ function VanasKoS:AddEntryFromTarget(list)
 	local playername;
 	local realm;
 
-	VANASKOS.showList = list;
+	VanasKoSGUI:ShowList(list);
 	VanasKoSGUI:ScrollFrameUpdate();
 
 	if(UnitIsPlayer("target")) then
@@ -247,23 +248,17 @@ function VanasKoS:AddEntryFromTarget(list)
 		end
 	end
 
-	if(not playername or playername == "") then
-		StaticPopup_Show("VANASKOS_ADD_ENTRY");
-	else
-		VANASKOS.LastNameEntered = playername;
-		StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
-	end
+	VanasKoSGUI:AddEntry(playername)
 end
 
 function VanasKoS:AddEntryByName(list, playername, reason)
 	VanasKoSGUI:ShowList(list);
 
 	if(playername == nil or playername == "") then
-		StaticPopup_Show("VANASKOS_ADD_ENTRY");
+		VanasKoSGUI:AddEntry()
 	else
 		if(reason == nil or reason == "") then
-			VANASKOS.LastNameEntered = playername;
-			StaticPopup_Show("VANASKOS_ADD_REASON_ENTRY");
+			VanasKoSGUI:AddEntry(playername)
 		else
 			VanasKoS:AddEntry(list, playername,  { ['reason'] = reason });
 		end
@@ -364,6 +359,7 @@ local inCity = false;
 local mapContinent = -1;
 local mapZone = -1;
 local mapAreaID = -1;
+local mapLevel = 0;
 
 local CityAreaIDs = {
     -- Alliance cities
@@ -388,12 +384,14 @@ function VanasKoS:UpdateZone()
 	local pvpType, isFFA, faction = GetZonePVPInfo();
 	local inInstance, instanceType = IsInInstance();
 
-	local tmpAreaId, _ = GetCurrentMapAreaID();
+	local lastMapID, lastFloor = GetCurrentMapAreaID(), GetCurrentMapDungeonLevel();
 	SetMapToCurrentZone();
-	mapAreaID, _ = GetCurrentMapAreaID();
+	mapAreaID = GetCurrentMapAreaID();
 	mapContinent = GetCurrentMapContinent();
-	mapZone, _, _, _, _ = GetCurrentMapZone();
-	SetMapByID(tmpAreaId);
+	mapZone = GetCurrentMapZone();
+	mapLevel = GetCurrentMapDungeonLevel();
+	SetMapByID(lastMapID);
+	SetDungeonMapLevel(lastFloor);
 
 	inSanctuary = (pvpType == "sanctuary");
 	inCombatZone = (pvpType == "combat");
@@ -449,4 +447,8 @@ end
 
 function VanasKoS:MapID()
 	return mapAreaID;
+end
+
+function VanasKoS:MapLevel()
+	return mapLevel;
 end

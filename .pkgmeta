@@ -5,18 +5,18 @@ manual-changelog: changelog.txt
 externals:
 	Libs/LibStub: https://repos.wowace.com/wow/libstub/tags/1.0.3-50001
 	Libs/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/tags/1.0.8/CallbackHandler-1.0
-	Libs/AceAddon-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceAddon-3.0
-	Libs/AceHook-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceHook-3.0
-	Libs/AceComm-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceComm-3.0
-	Libs/AceDB-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceDB-3.0
-	Libs/AceDBOptions-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceDBOptions-3.0
-	Libs/AceLocale-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceLocale-3.0
-	Libs/AceEvent-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceEvent-3.0
-	Libs/AceSerializer-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceSerializer-3.0
-	Libs/AceTimer-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceTimer-3.0
-	Libs/AceGUI-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceGUI-3.0
-	Libs/AceConsole-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceConsole-3.0
-	Libs/AceConfig-3.0: svn://svn.wowace.com/wow/ace3/mainline/tags/Release-r1128/AceConfig-3.0
+	Libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
+	Libs/AceHook-3.0: https://repos.wowace.com/wow/ace3/trunk/AceHook-3.0
+	Libs/AceComm-3.0: https://repos.wowace.com/wow/ace3/trunk/AceComm-3.0
+	Libs/AceDB-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
+	Libs/AceDBOptions-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDBOptions-3.0
+	Libs/AceLocale-3.0: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
+	Libs/AceEvent-3.0: https://repos.wowace.com/wow/ace3/trunk/AceEvent-3.0
+	Libs/AceSerializer-3.0: https://repos.wowace.com/wow/ace3/trunk/AceSerializer-3.0
+	Libs/AceTimer-3.0: https://repos.wowace.com/wow/ace3/trunk/AceTimer-3.0
+	Libs/AceGUI-3.0: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
+	Libs/AceConsole-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConsole-3.0
+	Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
 	Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/tags/v8.0.1/LibSharedMedia-3.0
 	Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/tags/v8.0.3/LibDBIcon-1.0
 	Libs/LibLevelGuess-1.0: https://repos.wowace.com/wow/liblevelguess-1-0/trunk/LibLevelGuess-1.0

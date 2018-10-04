@@ -614,7 +614,8 @@ function VanasKoSGUI:UpdateMouseOverFrame(k, v, ty)
 				tooltip:AddLine(format('%s %s', data.race, data.class));
 			end
 			if(data.areaID and data.lastseen) then
-				tooltip:AddLine(format(L['Last seen at |cff00ff00%s|r in |cff00ff00%s|r'], date("%c", data.lastseen), GetMapNameByID(data.areaID)));
+--				tooltip:AddLine(format(L['Last seen at |cff00ff00%s|r in |cff00ff00%s|r'], date("%c", data.lastseen), GetMapNameByID(data.areaID)));
+				tooltip:AddLine(format(L['Last seen at |cff00ff00%s|r'], date("%c", data.lastseen)));
 			end
 		end
 	elseif(ty == "guild") then

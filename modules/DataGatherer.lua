@@ -137,14 +137,17 @@ local function isPlayer(flags)
 	return nil;
 end
 
-function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(event, timestamp, eventType, hideCaster, srcGUID, srcName, srcFlags, srcRaidFlags, dstGUID, dstName, dstFlags, dstRaidFlags, ...)
+function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(...)
 	local offset = 1;
 	local spellID = nil;
 	local spellName = nil;
 	local spellSchool = nil;
 	local amount = nil;
 	local powerType = nil;
-
+	local eventType = "test";
+	
+	local eventType, hideCaster, srcGUID, srcName, srcFlags, srcRaidFlags, dstGUID, dstName, dstFlags, dstRaidFlags = select(2, CombatLogGetCurrentEventInfo());
+	
 	if(string.find(eventType, "SPELL_") or string.find(eventType, "RANGE_")) then
 		spellID, spellName, spellSchool = select(offset, ...);
 		offset = offset + 3;

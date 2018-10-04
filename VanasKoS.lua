@@ -356,10 +356,7 @@ local inDungeon = false;
 local inCombatZone = false;
 local inFfaZone = false;
 local inCity = false;
-local mapContinent = -1;
-local mapZone = -1;
 local mapAreaID = -1;
-local mapLevel = 0;
 
 local CityAreaIDs = {
     -- Alliance cities
@@ -384,14 +381,7 @@ function VanasKoS:UpdateZone()
 	local pvpType, isFFA, faction = GetZonePVPInfo();
 	local inInstance, instanceType = IsInInstance();
 
-	local lastMapID, lastFloor = GetCurrentMapAreaID(), GetCurrentMapDungeonLevel();
-	SetMapToCurrentZone();
-	mapAreaID = GetCurrentMapAreaID();
-	mapContinent = GetCurrentMapContinent();
-	mapZone = GetCurrentMapZone();
-	mapLevel = GetCurrentMapDungeonLevel();
-	SetMapByID(lastMapID);
-	SetDungeonMapLevel(lastFloor);
+	mapAreaID = C_Map.GetBestMapForUnit("player");
 
 	inSanctuary = (pvpType == "sanctuary");
 	inCombatZone = (pvpType == "combat");
@@ -437,18 +427,7 @@ function VanasKoS:IsInCity()
 	return inCity;
 end
 
-function VanasKoS:MapContinent()
-	return mapContinent;
-end
-
-function VanasKoS:MapZone()
-	return mapZone;
-end
-
 function VanasKoS:MapID()
 	return mapAreaID;
 end
 
-function VanasKoS:MapLevel()
-	return mapLevel;
-end

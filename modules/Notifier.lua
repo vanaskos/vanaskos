@@ -585,16 +585,16 @@ end
 local partyEventsEnabled = false;
 function VanasKoSNotifier:EnablePartyEvents(enable)
 	if(enable and (not partyEventsEnabled)) then
-		self:RegisterEvent("PARTY_MEMBERS_CHANGED");
+		self:RegisterEvent("GROUP_ROSTER_UPDATE");
 		self:RegisterEvent("RAID_ROSTER_UPDATE");
 	elseif((not enable) and partyEventsEnabled) then
-		self:UnregisterEvent("PARTY_MEMBERS_CHANGED");
+		self:UnregisterEvent("GROUP_ROSTER_UPDATE");
 		self:UnregisterEvent("RAID_ROSTER_UPDATE");
 	end
 end
 
 local lastPartyUpdate = {}
-function VanasKoSNotifier:PARTY_MEMBERS_CHANGED()
+function VanasKoSNotifier:GROUP_ROSTER_UPDATE()
 	if (UnitInRaid("player")) then
 		return
 	end

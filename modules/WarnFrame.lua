@@ -1317,7 +1317,9 @@ local function GetFactionFont(faction)
 end
 
 local function SetButton(buttonNr, name, faction, data)
-	local zx, zy = GetPlayerMapPosition("player");
+	local pos = C_Map.GetPlayerMapPosition(C_Map.GetBestMapForUnit("player"), "player");
+	local zx = pos.x;
+	local zy = pos.y;
 	local align = VanasKoSWarnFrame.db.profile.FontAlign;
 	if(InCombatLockdown()) then
 		if(buttonData[buttonNr] ~= name) then

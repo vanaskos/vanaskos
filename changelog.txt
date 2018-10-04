@@ -1,10 +1,13 @@
 Release Changelog for VanasKoS
 
-latest:
+4.50:
 - Use LibDialog rather than vanilla StaticPopup [ticket #78]
 - Remove modules_old
 - Update LibSharedMedia library to trunk
 - Fixed some bugs in the command line handler
+- Compatibility for 8.0.1 
+  - disabled some modules that would need extensive rework 
+    (eventmap, distributed tracking, friends frame docking, importer, other modules too, may not work)
 
 4.49:
 - Update toc and libraries

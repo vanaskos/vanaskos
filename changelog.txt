@@ -21,6 +21,7 @@ latest:
     - Previous method of just coloring the name doesn't work because it's
       overriden by class colors
   -  Fixed InCity() call
+  - Fix error when opening ignore list
   - Style cleanup
   - Lots of other things
 

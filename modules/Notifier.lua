@@ -689,8 +689,9 @@ function VanasKoSNotifier:IgnoreList_Update()
 	end
 
 	for i=1, IGNORES_TO_DISPLAY do
-		local ignoreButton = getglobal("FriendsFrameIgnoreButton"..i)
-		if (ignoreButton.type == SQUELCH_TYPE_IGNORE or ignoreButton.type == SQUELCH_TYPE_MUTE) then
+		local ignoreButton = _G["FriendsFrameIgnoreButton"..i]
+		if ((ignoreButton.type == SQUELCH_TYPE_IGNORE or ignoreButton.type == SQUELCH_TYPE_MUTE)
+		    and ignoreButton.index) then
 			local nameText = ignoreButton.name
 			local noteText = getglobal("VanasKoSIgnoreButton"..i.."ReasonText")
 			local fullName = C_FriendList.GetIgnoreName(ignoreButton.index)
@@ -698,9 +699,9 @@ function VanasKoSNotifier:IgnoreList_Update()
 			if not realm then
 				realm = myRealm
 			end
-			local key = hashName(name, realm)
 
 			if(name) then
+				local key = hashName(name, realm)
 				local hate = VanasKoS:IsOnList("HATELIST", key)
 				local nice = VanasKoS:IsOnList("NICELIST", key)
 				if (hate and hate.reason) then

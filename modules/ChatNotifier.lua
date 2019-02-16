@@ -37,7 +37,6 @@ function VanasKoSChatNotifier:OnInitialize()
 		profile = {
 			Enabled = true,
 			OnlyMyEntries = false,
-			AddLookupEntry = true,
 
 			HateListColorR = 1.0,
 			HateListColorG = 0.0,
@@ -93,20 +92,7 @@ function VanasKoSChatNotifier:OnInitialize()
 				get = function()
 					return VanasKoSChatNotifier.db.profile.OnlyMyEntries
 				end,
-			},
-			addLookupEntry = {
-				type = 'toggle',
-				name = L["Add Lookup in VanasKoS"],
-				desc = L["Modifies the Chat Context Menu to add a \"Lookup in VanasKoS\" option."],
-				order = 4,
-				set = function(frame, v)
-					VanasKoSChatNotifier.db.profile.AddLookupEntry = v
-					VanasKoSChatNotifier:SetLookup(v)
-				    end,
-				get = function()
-					return VanasKoSChatNotifier.db.profile.AddLookupEntry
-				end,
-			},
+			}
 		}
 	}
 
@@ -119,26 +105,10 @@ end
 function VanasKoSChatNotifier:OnEnable()
 	self:Update()
 	self:RawHook("ChatFrame_OnEvent", true)
-	self:SetLookup(self.db.profile.AddLookupEntry)
 end
 
 function VanasKoSChatNotifier:OnDisable()
 	self:Unhook("ChatFrame_OnEvent")
-	if(self.db.profile.AddLookupEntry) then
-		self:SetLookup(false)
-	end
-end
-
-function VanasKoSChatNotifier:SetLookup(enable)
-	if(enable) then
-		if(not self:IsHooked("UnitPopup_ShowMenu")) then
-			self:SecureHook("UnitPopup_ShowMenu")
-		end
-	else
-		if(self:IsHooked("UnitPopup_ShowMenu")) then
-			self:Unhook("UnitPopup_ShowMenu")
-		end
-	end
 end
 
 function VanasKoSChatNotifier:GetColor(w)
@@ -155,46 +125,6 @@ function VanasKoSChatNotifier:GetColorHex(which)
 	local r, g, b = self:GetColor(which)
 
 	return format("%02x%02x%02x", r*255, g*255, b*255)
-end
-
-function VanasKoSChatNotifier:UnitPopup_ShowMenu(dropdownMenu, which, unit, fullname, userData)
-	if(which ~= "FRIEND") then
-		return
-	end
-
-	-- Only create menus for the top level
-	if (UIDROPDOWNMENU_MENU_LEVEL > 1) then
-		return
-	end
-
-	local name, realm = splitNameRealm(fullname)
-	local key = hashName(name, realm)
-	local unitData = {
-		name = name,
-		realm = realm
-	}
-
-	local info = UIDropDownMenu_CreateInfo()
-	info.text = L["Lookup in VanasKoS"]
-	info.value = "VANASKOS_LOOKUP"
-	info.owner = which
-	info.func = VanasKoSChatNotifier_UnitPopup_OnClick
-	info.arg1 = key
-	info.arg2 = unitData
-	info.notCheckable = 1
-	UIDropDownMenu_AddButton(info)
-end
-
-function VanasKoSChatNotifier_UnitPopup_OnClick(self, key, unitData)
-	assert(unitData.name)
-
-	local data, list = VanasKoS:IsOnList(nil, key)
-	if(list ~= nil) then
-		VanasKoS:Print(format(L["Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r"],
-				unitData.name, VanasKoS:GetListNameByShortName(list), (data.reason or "")))
-	else
-		VanasKoS:Print(format(L["No entry for |cff00ff00%s|r"], key))
-	end
 end
 
 function VanasKoSChatNotifier:ChatFrame_OnEvent(frame, event, ...)

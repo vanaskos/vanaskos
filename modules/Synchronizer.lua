@@ -171,7 +171,7 @@ local function RegisterConfiguration()
 							if (VanasKoSSynchronizer.db.profile.Enabled) then
 								if(v) then
 									VanasKoS:RegisterList(7, "PLAYERSYNC", L["Sharing"], VanasKoSSynchronizer)
-									VanasKoSGUI:RegisterList("PLAYERSYNC")
+									VanasKoSGUI:RegisterList("PLAYERSYNC", VanasKoSSynchronizer)
 									VanasKoSSynchronizer:StartRequestSync(true)
 								else
 									VanasKoSGUI:UnregisterList("PLAYERSYNC")

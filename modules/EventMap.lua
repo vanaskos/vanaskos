@@ -305,7 +305,7 @@ function VanasKoSEventMap:TrackPlayer(name, realm, mapID, x, y)
 	trackedPlayers[key].y = y
 	trackedPlayers[key].lastseen = time()
 
-	self:RedrawMap()
+	self:RefreshAllData()
 end
 
 function VanasKoSEventMap:CreateTrackingPoints()
@@ -382,7 +382,7 @@ function VanasKoSEventMap:OnInitialize()
 				desc = L["Draws PvP events on map for all characters"],
 				order = 1,
 				set = function(frame, v)
-					VanasKoSEventMap.db.profile.drawAlts = v VanasKoSEventMap:RedrawMap()
+					VanasKoSEventMap.db.profile.drawAlts = v VanasKoSEventMap:RefreshAllData()
 				end,
 				get = function()
 					return VanasKoSEventMap.db.profile.drawAlts

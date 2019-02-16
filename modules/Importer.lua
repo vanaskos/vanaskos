@@ -19,6 +19,7 @@ function VanasKoSImporter:OnInitialize()
 			vanaskos_header = {
 				order = 1,
 				type = "header",
+				name = L["Old VanasKoS"],
 			},
 			oldvanaskos = {
 				order = 2,

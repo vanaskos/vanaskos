@@ -7,6 +7,7 @@ local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "en
 if L then
 	L["Add to %s"] = true
 	L["Context Menu"] = true
+	L["Vanas|cffff0000KoS|r"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PortraitContextMenu", "frFR")

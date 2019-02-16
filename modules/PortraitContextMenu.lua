@@ -63,13 +63,23 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 	local info = UIDropDownMenu_CreateInfo()
 
 	local name, realm = splitNameRealm(fullName)
+	local guild
 	if(unit) then
 		name, realm = UnitName(unit)
+		guild = GetGuildInfo(unit)
 	end
-	local guild = GetGuildInfo(unit)
 	if(realm == nil or realm == "") then
 		realm = myRealm
 	end
+	UIDropDownMenu_AddSeparator(1)
+	info.text = L["Vanas|cffff0000KoS|r"]
+	info.owner = which
+	info.isTitle = true
+	info.notCheckable = true
+	UIDropDownMenu_AddButton(info)
+
+	info.isTitle = nil
+	info.disabled = nil
 	for _, value in ipairs(VanasKoSTargetPopupMenu) do
 		info.text = VanasKoSTargetPopupButtons[value].text
 		info.value = value

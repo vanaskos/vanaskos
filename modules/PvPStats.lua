@@ -327,7 +327,7 @@ function VanasKoSPvPStats:BuildList()
 			elseif(group == GUILDS_LIST) then
 				local playerdata = VanasKoS:GetPlayerData(enemykey)
 				if(playerdata and playerdata.guild) then
-					local guildKey = hashkGuild(playerdata.guild)
+					local guildKey = hashGuild(playerdata.guild, event.realm)
 					if(not pvpStatsList[guildKey]) then
 						pvpStatsList[guildKey] = {
 							name = playerdata.guild,

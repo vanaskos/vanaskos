@@ -66,6 +66,7 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 	if(unit) then
 		name, realm = UnitName(unit)
 	end
+	local guild = GetGuildInfo(unit)
 	if(realm == nil or realm == "") then
 		realm = myRealm
 	end
@@ -78,7 +79,8 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 		info.arg1 = {
 			button = value,
 			name = name,
-			realm = realm
+			realm = realm,
+			guild = guild
 		}
 		UIDropDownMenu_AddButton(info)
 	end
@@ -90,7 +92,7 @@ function VanasKoSPortraitContextMenu_UnitPopup_OnClick(self, info)
 	if(info.button == "VANASKOS_ADD_PLAYERKOS") then
 		VanasKoS:AddEntryByName("PLAYERKOS", info.name, info.realm)
 	elseif(info.button == "VANASKOS_ADD_GUILDKOS") then
-		VanasKoS:AddEntryByName("GUILDKOS", info.name, info.realm)
+		VanasKoS:AddEntryByName("GUILDKOS", info.guild, info.realm)
 	elseif(info.button == "VANASKOS_ADD_HATELIST") then
 		VanasKoS:AddEntryByName("HATELIST", info.name, info.realm)
 	elseif(info.button == "VANASKOS_ADD_NICELIST") then

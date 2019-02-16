@@ -518,6 +518,7 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 
 		local lvl = UnitLevel(unit)
 		local key = hashName(name, realm)
+		local guildKey = gatheredData.guild and hashGuild(gatheredData.guild, gatheredData.realm) or nil
 		if(lvl == -1) then
 			lvl = (UnitLevel("player") or 1) + 10
 			local oldLevel = (playerDataList[key] and playerDataList[key].level) or -1
@@ -533,10 +534,14 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		end
 		gatheredData.level = lvl
 
-		gatheredData.list = select(2, VanasKoS:IsOnList(nil, key))
+		gatheredData.list = select(2, VanasKoS:IsOnList(nil, key)) or (guildKey and select(2, VanasKoS:IsOnList(nil, guildKey)))
 
 		if((gatheredData.list == "PLAYERKOS" or gatheredData.list == "GUILDKOS")) then
 			gatheredData.faction = "kos"
+		elseif((gatheredData.list == "NICELIST" or gatheredData.list == "NICELIST")) then
+			gatheredData.faction = "nice"
+		elseif((gatheredData.list == "HATELIST" or gatheredData.list == "HATELIST")) then
+			gatheredData.faction = "hate"
 		elseif(UnitExists(unit) and UnitIsEnemy("player", unit)) then
 			gatheredData.faction = "enemy"
 		else
@@ -599,9 +604,11 @@ function VanasKoSDataGatherer:SendDataMessage(name, realm, guid, faction, spellI
 		level = oldLevel
 	elseif (level < 1) then
 		level = nil
-	elseif (level < 100) then
+	elseif (level < 110) then
 		level = level .. "+"
 	end
+	gatheredData.guild = playerDataList[key] and playerDataList[key].guild
+	local guildkey = gatheredData.guild and hashGuild(gatheredData.guild, gatheredData.realm) or nil
 	gatheredData.level = level
 	-- print("spellid", spellId, "level", gatheredData.level, "english", classEnglish)
 
@@ -609,6 +616,12 @@ function VanasKoSDataGatherer:SendDataMessage(name, realm, guid, faction, spellI
 	-- /dump VanasKoSDataGatherer.db.realm.data.players['name']
 	if(VanasKoS:BooleanIsOnList("PLAYERKOS", key)) then
 		gatheredData.faction = "kos"
+	elseif(guildKey and VanasKoS:BooleanIsOnList("GUILDKOS", guildKey)) then
+		gatheredData.faction = "kos"
+	elseif(VanasKoS:BooleanIsOnList("HATELIST", key)) then
+		gatheredData.faction = "hate"
+	elseif(VanasKoS:BooleanIsOnList("NICELIST", key)) then
+		gatheredData.faction = "nice"
 	end
 
 	if(gatheredData.faction == "kos") then

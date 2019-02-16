@@ -15,8 +15,6 @@ local min = min
 local format = format
 local wipe = wipe
 local getglobal = getglobal
-local hashName = VanasKoS.hashName
-local splitNameRealm = VanasKoS.splitNameRealm
 local GetRealmName = GetRealmName
 local GetPartyMember = GetPartyMember
 local GetGuildInfo = GetGuildInfo
@@ -25,6 +23,9 @@ local UnitName = UnitName
 local UnitInRaid = UnitInRaid
 local UnitIsPlayer = UnitIsPlayer
 local PlaySoundFile = PlaySoundFile
+local splitNameRealm = VanasKoS.splitNameRealm
+local hashName = VanasKoS.hashName
+local hashGuild = VanasKoS.hashGuild
 
 -- Constants
 local FADE_IN_TIME = 0.2
@@ -33,6 +34,7 @@ local FLASH_TIMES = 1
 
 -- Local Variables
 local flashNotifyFrame = nil
+local flashNotifyTexture = nil
 local reasonFrame = nil
 local playerDetectEventEnabled = false
 local reenableTimer = nil
@@ -233,12 +235,12 @@ function VanasKoSNotifier:OnInitialize()
 	flashNotifyFrame:SetToplevel(1)
 	flashNotifyFrame:SetAlpha(0)
 
-	local texture = flashNotifyFrame:CreateTexture(nil, "BACKGROUND")
-	texture:SetTexture("Interface\\AddOns\\VanasKoS\\Artwork\\KoSFrame")
+	flashNotifyTexture = flashNotifyFrame:CreateTexture(nil, "BACKGROUND")
+	flashNotifyTexture:SetTexture("Interface\\AddOns\\VanasKoS\\Artwork\\KoSFrame")
 
-	texture:SetBlendMode("ADD")
+	flashNotifyTexture:SetBlendMode("ADD")
 	-- important! gets set in the blizzard xml stuff implicit, while we have to do it explicit with .lua
-	texture:SetAllPoints()
+	flashNotifyTexture:SetAllPoints()
 	flashNotifyFrame:Hide()
 
 	self:CreateReasonFrame()
@@ -848,7 +850,7 @@ function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 		realm = myRealm
 	end
 	local key = hashName(name, realm)
-	local guildKey = guild or nil
+	local guildKey = guild and hashGuild(guild, realm) or nil
 
 	-- add the KoS: <text> and KoS (Guild): <text> messages
 	for k,v in pairs(listsToCheck) do
@@ -883,7 +885,7 @@ function VanasKoSNotifier:UpdateReasonFrame(name, realm, guild)
 	if(self.db.profile.notifyExtraReasonFrameEnabled) then
 		if(UnitIsPlayer("target")) then
 			local key = hashName(name, realm)
-			local guildKey = guild or nil
+			local guildKey = guild and hashGuild(guild, realm) or nil
 			if(not VanasKoS_Notifier_ReasonFrame_Text) then
 				return
 			end
@@ -935,7 +937,7 @@ function VanasKoSNotifier:Player_Target_Changed(message, data)
 	if(self.db.profile.notifyTargetFrame) then
 		if(UnitIsPlayer("target")) then
 			local key = hashName(data.name, data.realm)
-			local guildKey = data.guild or nil
+			local guildKey = data.guild and hashGuild(data.guild, data.realm) or nil
 			if(VanasKoS:BooleanIsOnList("PLAYERKOS", key)) then
 				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite")
 				TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha())
@@ -960,21 +962,21 @@ function VanasKoSNotifier:Player_Target_Changed(message, data)
 end
 
 --/script VanasKoS:SendMessage("VanasKoS_Player_Detected", "Apfelherz", nil, "kos")
-function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, greason, gcreator, gowner)
+function VanasKoSNotifier:GetKoSString(name, guild, list_str, reason, creator, owner, greason, gcreator, gowner)
 	local msg = ""
 
 	if(reason ~= nil) then
 		if(creator ~= nil and owner ~= nil) then
 			if(name == nil) then
-				msg = format(L["%sKoS: %s"], creator, reason)
+				msg = format("%s%s: %s", creator, list_str, reason)
 			else
-				msg = format(L["%sKoS: %s"], creator, name .. " (" .. reason .. ")")
+				msg = format("%s%s: %s", creator, list_str, name .. " (" .. reason .. ")")
 			end
 		else
 			if(name == nil) then
-				msg = format(L["KoS: %s"], reason)
+				msg = format("%s: %s", list_str, reason)
 			else
-				msg = format(L["KoS: %s"], name .. " (" .. reason .. ")")
+				msg = format("%s: %s", list_str, name .. " (" .. reason .. ")")
 			end
 		end
 		if(guild) then
@@ -988,15 +990,15 @@ function VanasKoSNotifier:GetKoSString(name, guild, reason, creator, owner, grea
 	else
 		if(creator ~= nil and owner ~= nil) then
 			if(name == nil) then
-				msg = format(L["%sKoS: %s"], creator, "")
+				msg = format("%s%s: %s", creator, lst_str, "")
 			else
-				msg = format(L["%sKoS: %s"], creator, name)
+				msg = format("%s%s: %s", creator, lst_str, name)
 			end
 		else
 			if(name == nil) then
-				msg = format(L["KoS: %s"], "")
+				msg = format("%s: %s", list_str, "")
 			else
-				msg = format(L["KoS: %s"], name)
+				msg = format("%s: %s", list_str, name)
 			end
 		end
 		if(guild) then
@@ -1050,6 +1052,10 @@ end
 function VanasKoSNotifier:Player_Detected(message, data)
 	if (data.faction == "kos") then
 		VanasKoSNotifier:KosPlayer_Detected(data)
+	elseif (data.faction == "hate") then
+		VanasKoSNotifier:HatedPlayer_Detected(data)
+	elseif (data.faction == "nice") then
+		VanasKoSNotifier:NicePlayer_Detected(data)
 	elseif (data.faction == "enemy") then
 		VanasKoSNotifier:EnemyPlayer_Detected(data)
 	end
@@ -1110,7 +1116,7 @@ function VanasKoSNotifier:KosPlayer_Detected(data)
 	assert(data.name)
 	assert(data.realm)
 	local key = hashName(data.name, data.realm)
-	local guildKey = data.guild or nil
+	local guildKey = data.guild and hashGuild(data.guild, data.realm) or nil
 
 	-- VanasKoS:Print("player detected: " .. data.name)
 	-- get reasons for kos (if any)
@@ -1118,7 +1124,7 @@ function VanasKoSNotifier:KosPlayer_Detected(data)
 	local gdata = guildKey and VanasKoS:IsOnList("GUILDKOS", guildKey) or nil
 
 	local msg = self:GetKoSString(data.name, data and data.guild,
-		pdata and pdata.reason, pdata and pdata.creator,
+		L["KoS"], pdata and pdata.reason, pdata and pdata.creator,
 		pdata and pdata.owner, gdata and gdata.reason,
 		gdata and gdata.creator, gdata and gdata.owner)
 
@@ -1142,10 +1148,95 @@ function VanasKoSNotifier:KosPlayer_Detected(data)
 		VanasKoS:Print(msg)
 	end
 	if(self.db.profile.notifyFlashingBorder) then
+		flashNotifyTexture:SetVertexColor(1.0, 0.0, 1.0, flashNotifyTexture:GetAlpha())
 		self:FlashNotify()
 	end
 
 	self:PlaySound(self.db.profile.playName)
+end
+
+function VanasKoSNotifier:HatedPlayer_Detected(data)
+	assert(data.name)
+	assert(data.realm)
+	local key = hashName(data.name, data.realm)
+	local guildKey = data.guild and hashGuild(data.guild, data.realm) or nil
+
+	-- VanasKoS:Print("player detected: " .. data.name)
+	-- get reasons for kos (if any)
+	local pdata = VanasKoS:IsOnList("HATELIST", key)
+
+	local msg = self:GetKoSString(data.name, data and data.guild,
+		L["Hatelist"], pdata and pdata.reason, pdata and pdata.creator,
+		pdata and pdata.owner, gdata and gdata.reason,
+		gdata and gdata.creator, gdata and gdata.owner)
+
+	if(self.db.profile.notifyOnlyMyTargets and ((pdata and pdata.owner ~= nil) or (gdata and gdata.owner ~= nil))) then
+		return
+	end
+
+	if reenableTimer then
+		-- print("oops, should not have detected kos player")
+		return
+	end
+
+	self:EnablePlayerDetectedEvents(false)
+	-- Reallow Notifies in NotifyTimeInterval Time
+	reenableTimer = self:ScheduleTimer(ReenableNotifications, self.db.profile.NotifyTimerInterval)
+
+	if(self.db.profile.notifyVisual) then
+		UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME)
+	end
+	if(self.db.profile.notifyChatframe) then
+		VanasKoS:Print(msg)
+	end
+	if(self.db.profile.notifyFlashingBorder) then
+		flashNotifyTexture:SetVertexColor(1.0, 0.0, 0.0, flashNotifyTexture:GetAlpha())
+		self:FlashNotify()
+	end
+
+	self:PlaySound(self.db.profile.hatePlayName)
+end
+
+function VanasKoSNotifier:NicePlayer_Detected(data)
+	assert(data.name)
+	assert(data.realm)
+	local key = hashName(data.name, data.realm)
+	local guildKey = data.guild and hashGuild(data.guild, data.realm) or nil
+
+	-- VanasKoS:Print("player detected: " .. data.name)
+	-- get reasons for kos (if any)
+	local pdata = VanasKoS:IsOnList("NICELIST", key)
+
+	local msg = self:GetKoSString(data.name, data and data.guild,
+		L["Nicelist"], pdata and pdata.reason, pdata and pdata.creator,
+		pdata and pdata.owner, gdata and gdata.reason,
+		gdata and gdata.creator, gdata and gdata.owner)
+
+	if(self.db.profile.notifyOnlyMyTargets and ((pdata and pdata.owner ~= nil) or (gdata and gdata.owner ~= nil))) then
+		return
+	end
+
+	if reenableTimer then
+		-- print("oops, should not have detected kos player")
+		return
+	end
+
+	self:EnablePlayerDetectedEvents(false)
+	-- Reallow Notifies in NotifyTimeInterval Time
+	reenableTimer = self:ScheduleTimer(ReenableNotifications, self.db.profile.NotifyTimerInterval)
+
+	if(self.db.profile.notifyVisual) then
+		UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME)
+	end
+	if(self.db.profile.notifyChatframe) then
+		VanasKoS:Print(msg)
+	end
+	if(self.db.profile.notifyFlashingBorder) then
+		flashNotifyTexture:SetVertexColor(0.0, 1.0, 0.0, flashNotifyTexture:GetAlpha())
+		self:FlashNotify()
+	end
+
+	self:PlaySound(self.db.profile.nicePlayName)
 end
 
 -- /script VanasKoSNotifier:FlashNotify()

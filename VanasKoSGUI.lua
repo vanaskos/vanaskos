@@ -20,6 +20,7 @@ local tsort = table.sort
 local format = format
 local date = date
 local hashName = VanasKoS.hashName
+local hashGuild = VanasKoS.hashGuild
 
 -- Local Variables
 local tooltip = nil
@@ -110,12 +111,17 @@ function VanasKoSGUI:GetListName(listid)
 	return listid
 end
 
-local function verifyNameRealm(name, realm)
-	if name == nil or name == "" or realm == nil or realm == "" then
+local function verifyNameRealm(list, name, realm)
+	if name == nil or name == "" then
 		return false
 	end
-	if name:find(' ') or name:find('[0-9]') then
-		return false
+	if list ~= "GUILDKOS" then
+		if (realm == nil or realm == "") then
+			return false
+		end
+		if name:find(' ') or name:find('[0-9]') then
+			return false
+		end
 	end
 	return true
 end
@@ -221,7 +227,7 @@ function VanasKoSGUI:OnInitialize()
 				on_text_changed = function(self)
 					local name = self:GetParent().editboxes[1]:GetText()
 					local realm = self:GetParent().editboxes[2]:GetText()
-					if verifyNameRealm(name, realm) then
+					if verifyNameRealm(self:GetParent().list, name, realm) then
 						self:GetParent().buttons[1]:Enable()
 					else
 						self:GetParent().buttons[1]:Disable()
@@ -245,7 +251,7 @@ function VanasKoSGUI:OnInitialize()
 				on_text_changed = function(self)
 					local name = self:GetParent().editboxes[1]:GetText()
 					local realm = self:GetParent().editboxes[2]:GetText()
-					if verifyNameRealm(name, realm) then
+					if verifyNameRealm(self:GetParent().list, name, realm) then
 						self:GetParent().buttons[1]:Enable()
 					else
 						self:GetParent().buttons[1]:Disable()
@@ -260,12 +266,18 @@ function VanasKoSGUI:OnInitialize()
 					local name = self:GetParent().editboxes[1]:GetText()
 					local realm = self:GetParent().editboxes[2]:GetText()
 					local reason = self:GetText()
-					local key = hashName(name, realm)
+					local list = self:GetParent().list
+					local key
+					if list == "GUILDKOS" then
+						key = hashGuild(name, realm)
+					else
+						key = hashName(name, realm)
+					end
 					if(reason == "") then
 						reason = nil
 					end
 
-					if not verifyNameRealm(name, realm) then
+					if not verifyNameRealm(self:GetParent().list, name, realm) then
 						return
 					end
 
@@ -273,7 +285,7 @@ function VanasKoSGUI:OnInitialize()
 						VanasKoS:RemoveEntry(VANASKOS.showList, self.oldKey)
 					end
 
-					VanasKoS:AddEntry(self:GetParent().list, key, {
+					VanasKoS:AddEntry(list, key, {
 						name = name,
 						key = key,
 						reason = reason,
@@ -300,7 +312,13 @@ function VanasKoSGUI:OnInitialize()
 					local name = self.editboxes[1]:GetText()
 					local realm = self.editboxes[2]:GetText()
 					local reason = self.editboxes[3]:GetText()
-					local key = hashName(name, realm)
+					local list = self.list
+					local key
+					if list == "GUILDKOS" then
+						key = hashGuild(name, realm)
+					else
+						key = hashName(name, realm)
+					end
 					if(reason == "") then
 						reason = nil
 					end
@@ -308,7 +326,7 @@ function VanasKoSGUI:OnInitialize()
 					if self.oldKey then
 						VanasKoS:RemoveEntry(VANASKOS.showList, self.oldKey)
 					end
-					VanasKoS:AddEntry(self.list, key,
+					VanasKoS:AddEntry(list, key,
 					{
 						name = name,
 						realm = realm,
@@ -435,6 +453,7 @@ function VanasKoSGUI:GUIShowChangeDialog()
 			reason = list[key].reason
 		end
 		local dialog = Dialog:Spawn("VanasKoSAddEntry")
+		dialog.list = list
 		dialog.oldKey = key
 		dialog.editboxes[1]:SetText(name)
 		dialog.editboxes[2]:SetText(realm)
@@ -978,7 +997,7 @@ end
 function VanasKoSGUI:AddEntry(list, name, realm, reason)
 	if(name == nil or name == "") then
 		name, realm = UnitName("target")
-		if(VANASKOS.showList == "GUILDKOS") then
+		if(list == "GUILDKOS") then
 			name = GetGuildInfo("target")
 		end
 	end

@@ -95,6 +95,7 @@ function VanasKoS.hashName(name, realm)
 	assert(name)
 	assert(realm)
 
+	assert(not strmatch(name, " "))
 	local key
 	if name then
 		key = name:trim():lower()
@@ -138,6 +139,7 @@ function VanasKoS.splitNameRealm(fullname)
 end
 
 local hashName = VanasKoS.hashName
+local hashGuild = VanasKoS.hashGuild
 
 function VanasKoS:ToggleModuleActive(moduleStr)
 	local module = self:GetModule(moduleStr, true)
@@ -364,7 +366,6 @@ function VanasKoS:AddEntryFromTarget(list)
 		if(list == "GUILDKOS") then
 			name = GetGuildInfo("target")
 		end
-		name = name
 	end
 
 	VanasKoSGUI:AddEntry(list, name, realm)
@@ -418,7 +419,7 @@ function VanasKoS:AddKoSGuild(name, realm, reason)
 	if(name==nil or name=="" or realm==nil or realm=="") then
 		VanasKoSGUI:AddEntry("GUILDKOS", name, realm, reason)
 	else
-		local key = hashName(name, realm)
+		local key = hashGuild(name, realm)
 		self:AddEntry("GUILDKOS", key, {
 			['name'] = name,
 			['realm'] = realm,
@@ -436,7 +437,7 @@ end
 
 -- removes the Guild gname from the KoS-List
 function VanasKoS:RemoveKoSGuild(gname, realm)
-	local key = hashName(gname, realm)
+	local key = hashGuild(gname, realm)
 	self:RemoveEntry("GUILDKOS", key)
 end
 

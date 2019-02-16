@@ -1,6 +1,12 @@
 Release Changelog for VanasKoS
 
-latest:
+alpha-547:
+- Fix some guild hashing problems
+- Add notifications for all default lists, need more options to control this
+  - because it could get annoying
+alpha-546:
+- Fix error when opening ignore list
+alpha-545:
 - Big overhaul for really broken features with some pretty major changes
   -  Updated EventMap to use new API
   - All player entries are now stored as name-realm
@@ -21,7 +27,6 @@ latest:
     - Previous method of just coloring the name doesn't work because it's
       overriden by class colors
   -  Fixed InCity() call
-  - Fix error when opening ignore list
   - Style cleanup
   - Lots of other things
 

@@ -77,6 +77,9 @@ if L then
 	L["%sHatelist: %s"]    = "|cffff00ff%s's|r Hatelist: %s"
 	L["%sNicelist: %s"]    = "|cffff00ff%s's|r Nicelist: %s"
 	L["%sWanted: %s"]      = "|cffff00ff%s's|r Wanted: %s"
+	L["KoS"]               = true
+	L["Hatelist"]          = true
+	L["Nicelist"]          = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Notifier", "frFR")

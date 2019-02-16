@@ -1,5 +1,29 @@
 Release Changelog for VanasKoS
 
+latest:
+- Big overhaul for really broken features with some pretty major changes
+  -  Updated EventMap to use new API
+  - All player entries are now stored as name-realm
+    - Including local realm
+- All guild entries are now stored as <guild>
+  - It looks like there is some support for cross-realm guilds on connected servers.
+  - Encoding as guild-realm was too narrow
+- Lists are no longer tracked per realm
+  - DataGatherer and PvPDataGatherer are now global
+  - KOS, Hate, Nice lists are per faction
+- Will not upgrade automatically, requires going through the importer plugin
+  - This is because it's pretty likely it will break things
+- AreaID is no longer useful, switched to using MapIDs
+  - No idea how to import from old versions, so old location data will be lost
+- Some more minor changes
+  - Fixed Chatframe notifications for hate/nice list. It will now display
+    "(hated)" or "(liked)" after a player name.
+    - Previous method of just coloring the name doesn't work because it's
+      overriden by class colors
+  -  Fixed InCity() call
+  - Style cleanup
+  - Lots of other things
+
 4.50:
 - Use LibDialog rather than vanilla StaticPopup [ticket #78]
 - Remove modules_old

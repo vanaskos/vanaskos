@@ -1,4 +1,4 @@
-﻿## Interface: 80000
+﻿## Interface: 80100
 ## Title: Vanas|cffff0000KoS|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS
@@ -35,6 +35,7 @@ Libs\AceTimer-3.0\AceTimer-3.0.xml
 Libs\LibSharedMedia-3.0\lib.xml
 Libs\LibLevelGuess-1.0\lib.xml
 Libs\LibDialog-1.0\lib.xml
+Libs\LibGraph-2.0\LibGraph-2.0.lua
 #@end-no-lib-strip@
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 #@no-lib-strip@
@@ -54,8 +55,8 @@ modules\PvPDataGatherer_Locale.lua
 modules\PvPDataGatherer.lua
 modules\DataGatherer_Locale.lua
 modules\DataGatherer.lua
-#modules\Importer_Locale.lua
-#modules\Importer.lua
+modules\Importer_Locale.lua
+modules\Importer.lua
 modules\ChatNotifier_Locale.lua
 modules\ChatNotifier.lua
 modules\Notifier_Locale.lua
@@ -78,5 +79,5 @@ modules\LastSeenList_Locale.lua
 modules\LastSeenList.lua
 modules\PvPStats_Locale.lua
 modules\PvPStats.lua
-#modules\EventMap_Locale.lua
-#modules\EventMap.lua
+modules\EventMap_Locale.lua
+modules\EventMap.lua

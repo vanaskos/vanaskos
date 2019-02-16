@@ -5,7 +5,7 @@ Displays Stats about PvP in a window
 
 local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "enUS", true)
 if L then
-	L["All Characters (Realm)"] = true
+	L["All Characters"] = true
 	L["All Time"] = true
 	L["Last 24 hours"] = true
 	L["Last Month"] = true

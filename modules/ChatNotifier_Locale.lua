@@ -18,6 +18,8 @@ if L then
 	L["Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r"] = true
 	L["Sets the Foreground Color for Hatelist Entries"] = true
 	L["Sets the Foreground Color for Nicelist Entries"] = true
+	L["Liked"] = true
+	L["Hated"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/ChatNotifier", "frFR")

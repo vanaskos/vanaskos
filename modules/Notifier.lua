@@ -33,6 +33,7 @@ local FADE_OUT_TIME = 0.2
 local FLASH_TIMES = 1
 
 -- Local Variables
+local flasher = nil
 local flashNotifyFrame = nil
 local flashNotifyTexture = nil
 local reasonFrame = nil
@@ -242,6 +243,18 @@ function VanasKoSNotifier:OnInitialize()
 	-- important! gets set in the blizzard xml stuff implicit, while we have to do it explicit with .lua
 	flashNotifyTexture:SetAllPoints()
 	flashNotifyFrame:Hide()
+
+	flasher = flashNotifyFrame:CreateAnimationGroup()
+	local fade1 = flasher:CreateAnimation("Alpha")
+	fade1:SetDuration(0.5)
+	fade1:SetFromAlpha(0)
+	fade1:SetToAlpha(1)
+
+	local fade2 = flasher:CreateAnimation("Alpha")
+	fade2:SetDuration(0.5)
+	fade1:SetFromAlpha(1)
+	fade1:SetToAlpha(0)
+	fade2:SetOrder(2)
 
 	self:CreateReasonFrame()
 
@@ -1242,7 +1255,7 @@ end
 -- /script VanasKoSNotifier:FlashNotify()
 function VanasKoSNotifier:FlashNotify()
 	flashNotifyFrame:Show()
-	UIFrameFlash(VanasKoS_Notifier_Frame, FADE_IN_TIME, FADE_OUT_TIME, FLASH_TIMES*(FADE_IN_TIME + FADE_OUT_TIME))
+	flasher:Play()
 end
 
 function VanasKoSNotifier:PlaySound(value)

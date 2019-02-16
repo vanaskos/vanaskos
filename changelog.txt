@@ -1,13 +1,15 @@
 Release Changelog for VanasKoS
 
-alpha-548:
+alpha-550:
+- Replace UIFrameFlash (finally)
+alpha-549:
 - Fix a few more GUI errors
   - importer, configuration header was missing its value
   - synchronizer was not registering its list correctly with the GUI
 - Remove "Lookup in VanasKoS" option from Chat
 - Add a VanasKoS header to unit popup menu
 - Replace outdated call to RedrawMap with RefreshAllData in eventmap
-alpha-547:
+alpha-548:
 - Fix some guild hashing problems
 - Add notifications for all default lists, need more options to control this
   - because it could get annoying

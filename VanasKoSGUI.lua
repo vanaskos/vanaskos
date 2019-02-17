@@ -112,14 +112,14 @@ function VanasKoSGUI:GetListName(listid)
 end
 
 local function verifyNameRealm(list, name, realm)
-	if name == nil or name == "" then
+	if not name or name == "" then
 		return false
 	end
 	if list ~= "GUILDKOS" then
-		if (realm == nil or realm == "") then
+		if not realm == nil or realm == "" then
 			return false
 		end
-		if name:find(' ') or name:find('[0-9]') then
+		if name:find(' ') or strmatch(name, '%d') or strmatch(name, '%-') then
 			return false
 		end
 	end
@@ -134,7 +134,11 @@ function VanasKoSGUI:OnInitialize()
 		},
 	})
 
-	UIPanelWindows["VanasKoSFrame"] = { area = "left", pushable = 1, whileDead = 1 }
+	UIPanelWindows["VanasKoSFrame"] = {
+		area = "left",
+		pushable = 1,
+		whileDead = 1
+	}
 
 	AceConfig:RegisterOptionsTable("VanasKoS", VanasKoSConfigOptions)
 
@@ -267,6 +271,7 @@ function VanasKoSGUI:OnInitialize()
 					local realm = self:GetParent().editboxes[2]:GetText()
 					local reason = self:GetText()
 					local list = self:GetParent().list
+					local oldKey = self:GetParent().oldKey
 					local key
 					if list == "GUILDKOS" then
 						key = hashGuild(name, realm)
@@ -277,17 +282,17 @@ function VanasKoSGUI:OnInitialize()
 						reason = nil
 					end
 
-					if not verifyNameRealm(self:GetParent().list, name, realm) then
+					if not verifyNameRealm(list, name, realm) then
 						return
 					end
 
-					if self.oldKey then
-						VanasKoS:RemoveEntry(VANASKOS.showList, self.oldKey)
+					if oldKey then
+						VanasKoS:RemoveEntry(list, oldKey)
 					end
 
 					VanasKoS:AddEntry(list, key, {
 						name = name,
-						key = key,
+						realm = realm,
 						reason = reason,
 					})
 					Dialog:Dismiss("VanasKoSAddEntry")
@@ -313,6 +318,7 @@ function VanasKoSGUI:OnInitialize()
 					local realm = self.editboxes[2]:GetText()
 					local reason = self.editboxes[3]:GetText()
 					local list = self.list
+					local oldKey = self.oldKey
 					local key
 					if list == "GUILDKOS" then
 						key = hashGuild(name, realm)
@@ -323,11 +329,15 @@ function VanasKoSGUI:OnInitialize()
 						reason = nil
 					end
 
-					if self.oldKey then
-						VanasKoS:RemoveEntry(VANASKOS.showList, self.oldKey)
+					if not verifyNameRealm(list, name, realm) then
+						return
 					end
-					VanasKoS:AddEntry(list, key,
-					{
+
+					if oldKey then
+						VanasKoS:RemoveEntry(list, oldKey)
+					end
+
+					VanasKoS:AddEntry(list, key, {
 						name = name,
 						realm = realm,
 						reason = reason,
@@ -345,6 +355,15 @@ function VanasKoSGUI:OnInitialize()
 				end,
 			},
 		},
+		on_show = function(self)
+			local name = self.editboxes[1]:GetText()
+			local realm = self.editboxes[2]:GetText()
+			if verifyNameRealm(self.list, name, realm) then
+				self.buttons[1]:Enable()
+			else
+				self.buttons[1]:Disable()
+			end
+		end
 	})
 
 	myRealm = GetRealmName()
@@ -453,13 +472,11 @@ function VanasKoSGUI:GUIShowChangeDialog()
 			reason = list[key].reason
 		end
 		local dialog = Dialog:Spawn("VanasKoSAddEntry")
-		dialog.list = list
+		dialog.list = VANASKOS.showList
 		dialog.oldKey = key
-		dialog.editboxes[1]:SetText(name)
-		dialog.editboxes[2]:SetText(realm)
-		if reason then
-			dialog.editboxes[3]:SetText(reason)
-		end
+		dialog.editboxes[1]:SetText(name or "")
+		dialog.editboxes[2]:SetText(realm or "")
+		dialog.editboxes[3]:SetText(reason or "")
 	end
 end
 
@@ -1014,7 +1031,7 @@ function VanasKoSGUI:AddEntry(list, name, realm, reason)
 		dialog.editboxes[2]:SetText(realm)
 	end
 	if (reason) then
-		dialog.editboxes[3]:SetText(realm)
+		dialog.editboxes[3]:SetText(reason)
 	end
 	if (name ~= nil and name ~= "") then
 		dialog.editboxes[3]:SetFocus()

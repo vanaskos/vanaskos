@@ -19,6 +19,7 @@ end
 
 local function kaddRetrieveArgs(args)
 	local cmd
+	local fullname
 	local name = nil
 	local realm = nil
 	local reason = nil
@@ -30,23 +31,25 @@ local function kaddRetrieveArgs(args)
 	if (cmd == nil) then
 		cmd = "kos"
 		return cmd
-	elseif (cmd ~= "help" and cmd ~= "?" and cmd ~= "hate" and cmd ~= "nice" and cmd ~= "kos") then
-		name = cmd
-		guild = strmatch(name, "<(.+)>[-]?(.*)")
+	elseif cmd == "help" or cmd == "?" then
+		return cmd
+	elseif cmd ~= "hate" or cmd ~= "nice" or cmd ~= "kos" then
+		fullname = cmd
 		cmd = "kos"
-		if (guild) then
-			name = guild
-			isGuild = true
-		end
 		reason = strsub(args, next_pos)
-	elseif (cmd ~= "help" and cmd ~= "?") then
-		name, next_pos = VanasKoS:GetArgs(args, 1, next_pos)
-		guild = strmatch(name, "<(.+)>[-]?(.*)")
-		if (guild) then
-			name = guild
-			isGuild = true
-		end
+	else
+		fullname, next_pos = VanasKoS:GetArgs(args, 1, next_pos)
 		reason = strsub(args, next_pos)
+	end
+
+	name, realm = strmatch(fullname, "^([^<>-]+)%-*(.*)$")
+	if not name then
+		guild, realm = strmatch(fullname, "^<([^>]+)>%-*(.*)$")
+	end
+
+	if (guild) then
+		name = guild
+		isGuild = true
 	end
 
 	return cmd, name, realm, reason, isGuild
@@ -62,7 +65,7 @@ end
 function VanasKoSCommandLineHandler:KoSAdd(arg0, args)
 	local listName
 
-	local cmd, name, reason, isGuild = kaddRetrieveArgs(args)
+	local cmd, name, realm, reason, isGuild = kaddRetrieveArgs(args)
 
 	if (cmd == "help" or cmd == "?") then
 		VanasKoS:Print(L["KADD_DESC"])
@@ -91,8 +94,7 @@ function VanasKoSCommandLineHandler:KoSAdd(arg0, args)
 	if(not name) then
 		VanasKoS:AddEntryFromTarget(listName, nil)
 	else
-		VanasKoS:Print(format("AddEntryByName(%s, %s, %s)", listName, name, reason))
-		VanasKoS:AddEntryByName(listName, name, reason)
+		VanasKoS:AddEntryByName(listName, name, realm, reason)
 	end
 end
 

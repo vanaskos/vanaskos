@@ -1,5 +1,9 @@
 Release Changelog for VanasKoS
 
+alpha-551:
+- Fix "Change Entry" button #88
+- Fix command line entry adding #93
+- Fix debug function to add pvp log entries
 alpha-550:
 - Replace UIFrameFlash (finally)
 alpha-549:

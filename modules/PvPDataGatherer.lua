@@ -299,7 +299,7 @@ function VanasKoSPvPDataGatherer:AddTestData(cnt)
 			guild="Evil is us",
 			guildRank="Recruit",
 			faction = "Alliance",
-			mapID = C_Map.GetBestMapForPlayer("player"),
+			mapID = C_Map.GetBestMapForUnit("player"),
 			class = "Tank",
 			classEnglish = "Warrior",
 			race = "Gerbil",
@@ -315,7 +315,7 @@ function VanasKoSPvPDataGatherer:AddTestData(cnt)
 			myrealm="the good one",
 			mylevel=15,
 			enemylevel=16,
-			mapID=C_Map.GetBestMapForPlayer("player"),
+			mapID=C_Map.GetBestMapForUnit("player"),
 			type=math.random() > 0.5 and "win" or "loss",
 			x=math.random(),
 			y=math.random()

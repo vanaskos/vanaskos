@@ -372,11 +372,12 @@ function VanasKoS:AddEntryFromTarget(list)
 end
 
 function VanasKoS:AddEntryByName(list, name, realm, reason)
-	if name ~=nil and name ~= "" and realm ~= nil and realm ~= "" and reason ~= nil and reason ~= "" then
-		VanasKoS:AddEntry(list, name, realm, {
-			['name'] = name,
-			['realm'] = realm,
-			['reason'] = reason
+	if name and name ~= "" and (list == "GUILDKOS" or (realm and realm ~= "")) and reason and reason ~= "" then
+		local key = hashName(name, realm)
+		VanasKoS:AddEntry(list, key, {
+			name = name,
+			realm = realm,
+			reason = reason
 		})
 	else
 		VanasKoSGUI:AddEntry(list, name, realm, reason)
@@ -392,9 +393,9 @@ function VanasKoS:AddKoSPlayer(name, realm, reason)
 	else
 		local key = hashName(name, realm)
 		self:AddEntry("PLAYERKOS", key, {
-			['name'] = name,
-			['realm'] = realm,
-			['reason'] = reason
+			name = name,
+			realm = realm,
+			reason = reason
 		})
 	end
 end

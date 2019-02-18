@@ -556,9 +556,9 @@ function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
 				removed = true
 			end
 
-			if (pvplog.player[key]) then
+			if (pvplog.players[key]) then
 				-- print("removing " .. list[key].name .. " from pvp player log")
-				for _, eventKey in ipairs(pvplog.player[key]) do
+				for _, eventKey in ipairs(pvplog.players[key]) do
 					-- print("removing " .. eventKey .. " from pvp event log")
 					local event = pvplog.event[eventKey]
 					if (event and event.mapID) then
@@ -576,7 +576,7 @@ function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
 					pvplog.event[eventKey] = nil
 					removed = true
 				end
-				pvplog.player[key] = nil
+				pvplog.players[key] = nil
 			end
 		elseif (group == DATE_LIST) then
 			-- print("brute removing " .. list[key].name)
@@ -585,15 +585,15 @@ function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
 				local remove = nil
 				if (event.time and date("%Y-%m-%d", event.time) == key) then
 					if (event and event.enemykey) then
-						for j, zhash in ipairs(pvplog.player[event.enemykey] or {}) do
+						for j, zhash in ipairs(pvplog.players[event.enemykey] or {}) do
 							if (zhash == eventKey) then
 								--print("removing " .. eventKey .. " from player log")
-								tremove(pvplog.player[event.enemykey], j)
+								tremove(pvplog.players[event.enemykey], j)
 								break
 							end
 						end
-						if (pvplog.player[event.enemykey] and next(pvplog.player[event.enemykey]) == nil) then
-							pvplog.player[event.enemykey] = nil
+						if (pvplog.players[event.enemykey] and next(pvplog.players[event.enemykey]) == nil) then
+							pvplog.players[event.enemykey] = nil
 						end
 					end
 					if (event and event.mapID) then

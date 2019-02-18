@@ -162,14 +162,14 @@ function VanasKoSEventMap:RemoveEventsInPin(Pin)
 		local event = pvplog.event[hash]
 		if (event) then
 			if (event.enemyname) then
-				for j, zhash in ipairs(pvplog.player[event.enemyname] or {}) do
+				for j, zhash in ipairs(pvplog.players[event.enemyname] or {}) do
 					if (zhash == hash) then
 						--print("removing " .. hash .. " from player log")
-						tremove(pvplog.player[event.enemyname], j)
+						tremove(pvplog.players[event.enemyname], j)
 						break
 					end
-					if (pvplog.player[event.enemyname] and next(pvplog.player[event.enemyname]) == nil) then
-						pvplog.player[event.enemyname] = nil
+					if (pvplog.players[event.enemyname] and next(pvplog.players[event.enemyname]) == nil) then
+						pvplog.players[event.enemyname] = nil
 					end
 				end
 			end

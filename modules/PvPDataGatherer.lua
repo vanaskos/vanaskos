@@ -32,13 +32,11 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 			Enabled = true,
 		},
 		global = {
-			pvpstats = {
-				pvplog = {
-					event = {},
-					player = {},
-					map = {},
-				},
-			}
+			pvplog = {
+				event = {},
+				player = {},
+				map = {},
+			},
 		}
 	})
 
@@ -66,7 +64,7 @@ end
 
 function VanasKoSPvPDataGatherer:GetList(list)
 	if(list == "PVPLOG") then
-		return self.db.global.pvpstats.pvplog
+		return self.db.global.pvplog
 	else
 		return nil
 	end
@@ -98,10 +96,10 @@ function VanasKoSPvPDataGatherer:AddEntry(list, key, data)
 			tinsert(pvplog.map[data.mapID], eventkey)
 		end
 
-		if (not pvplog.player[key]) then
-			pvplog.player[key] = {}
+		if (not pvplog.players[key]) then
+			pvplog.players[key] = {}
 		end
-		tinsert(pvplog.player[key], eventkey)
+		tinsert(pvplog.players[key], eventkey)
 	end
 	return true
 end
@@ -128,9 +126,6 @@ end
 function VanasKoSPvPDataGatherer:OnEnable()
 	self:RegisterMessage("VanasKoS_PvPDamage", "PvPDamage")
 	self:RegisterMessage("VanasKoS_PvPDeath", "PvPDeath")
-	if(self.db.global.pvpstats.players) then
-		VanasKoS:Print(L["Old pvp statistics detected. You should import old data by going to importer under VanasKoS configuration"])
-	end
 end
 
 function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, srcRealm, dstName, dstRealm, amount)
@@ -225,7 +220,11 @@ function VanasKoSPvPDataGatherer:LogPvPLoss(name, realm)
 		type = "loss",
 		mapID = mapID,
 		x = x,
-		y = y
+		y = y,
+		inBg = VanasKoS:IsInBattleground(),
+		inArena = VanasKoS:IsInArena(),
+		inCombatZone = VanasKoS:IsInCombatZone(),
+		inFfa = VanasKoS:IsInFfaZone()
 	})
 end
 
@@ -253,7 +252,11 @@ function VanasKoSPvPDataGatherer:LogPvPWin(name, realm)
 		type = "win",
 		mapID  = mapID,
 		x = x,
-		y = y
+		y = y,
+		inBg = VanasKoS:IsInBattleground(),
+		inArena = VanasKoS:IsInArena(),
+		inCombatZone = VanasKoS:IsInCombatZone(),
+		inFfa = VanasKoS:IsInFfaZone()
 	})
 end
 
@@ -312,6 +315,7 @@ function VanasKoSPvPDataGatherer:AddTestData(cnt)
 			gender = FEMALE,
 			guid = "Player-XXXXXXXX",
 		})
+		local special = math.random()
 		VanasKoS:AddEntry("PVPLOG", key, {
 			name=name,
 			realm=realm,
@@ -323,7 +327,11 @@ function VanasKoSPvPDataGatherer:AddTestData(cnt)
 			mapID=C_Map.GetBestMapForUnit("player"),
 			type=math.random() > 0.5 and "win" or "loss",
 			x=math.random(),
-			y=math.random()
+			y=math.random(),
+			inBg = special < 0.2,
+			inArena = special >= 0.2 and special < 0.4
+			inCombatZone = special >=0.4 and special < 0.6
+			inFfa = special >= 0.6 and special < 0.8
 		})
 	end
 end

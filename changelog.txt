@@ -1,5 +1,10 @@
 Release Changelog for VanasKoS
 
+alpha-555:
+- Fix yet another importer issue player is not plural for pvplog
+  - Made new location plural for consistency with other lists
+  - Changed pvplog location no longer underneath pvpstats
+- Re-add "Lookup in VanasKoS" but under portrain context menu instead of ChatNotifier
 alpha-554:
 - Add < > surrounding guild name in guild kos list
 - Change color of guild kos entries with an owner specified

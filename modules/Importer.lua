@@ -69,22 +69,19 @@ function VanasKoSImporter:FromOldVanasKoS()
 	if not VanasKoSDB.namespaces.PvPDataGatherer.global then
 		VanasKoSDB.namespaces.PvPDataGatherer.global = {}
 	end
-	if not VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats then
-		VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats = {}
+	if not VanasKoSDB.namespaces.PvPDataGatherer.global.pvplog then
+		VanasKoSDB.namespaces.PvPDataGatherer.global.pvplog = {}
 	end
-	if not VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog then
-		VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog = {}
+	if not VanasKoSDB.namespaces.PvPDataGatherer.global.pvplog.event then
+		VanasKoSDB.namespaces.PvPDataGatherer.global.pvplog.event = {}
 	end
-	if not VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog.event then
-		VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog.event = {}
+	if not VanasKoSDB.namespaces.PvPDataGatherer.global.pvplog.map then
+		VanasKoSDB.namespaces.PvPDataGatherer.global.pvplog.map = {}
 	end
-	if not VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog.map then
-		VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog.map = {}
+	if not VanasKoSDB.namespaces.PvPDataGatherer.global.pvplog.players then
+		VanasKoSDB.namespaces.PvPDataGatherer.global.pvplog.players = {}
 	end
-	if not VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog.players then
-		VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog.players = {}
-	end
-	local pvplog = VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog
+	local pvplog = VanasKoSDB.namespaces.PvPDataGatherer.global.pvplog
 
 	count = 0
 	invalid = 0
@@ -114,8 +111,8 @@ function VanasKoSImporter:FromOldVanasKoS()
 				end
 				oldlog.event = nil
 			end
-			if oldlog and oldlog.players then
-				for playerFullName,eventkeyTable in pairs(oldlog.players) do
+			if oldlog and oldlog.player then
+				for playerFullName,eventkeyTable in pairs(oldlog.player) do
 					local playerName, playerRealm = splitNameRealm(playerFullName)
 					if not playerRealm then
 						playerRealm = realm
@@ -125,7 +122,7 @@ function VanasKoSImporter:FromOldVanasKoS()
 					count = count + 1
 					oldlog[playerFullName] = nil
 				end
-				oldlog.players = nil
+				oldlog.player = nil
 			end
 
 			if oldlog and oldlog.area then
@@ -337,8 +334,8 @@ function VanasKoSImporter:AddTestData()
 	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.area then
 		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.area = {}
 	end
-	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.players then
-		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.players = {}
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.player then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.player = {}
 	end
 	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats then
 		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats = {}
@@ -352,8 +349,8 @@ function VanasKoSImporter:AddTestData()
 	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.area then
 		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.area = {}
 	end
-	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.players then
-		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.players = {}
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.player then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.player = {}
 	end
 	if not VanasKoSDB.namespaces.DataGatherer then
 		VanasKoSDB.namespaces.DataGatherer = {}
@@ -444,10 +441,10 @@ function VanasKoSImporter:AddTestData()
 				posX=math.random(),
 				posY=math.random()
 			}
-			if not pvplog1.players[playerkey] then
-				pvplog1.players[playerkey] = {}
+			if not pvplog1.player[playerkey] then
+				pvplog1.player[playerkey] = {}
 			end
-			tinsert(pvplog1.players[playerkey], eventkey)
+			tinsert(pvplog1.player[playerkey], eventkey)
 			if not pvplog1.area[areaID] then
 				pvplog1.area[areaID] = {}
 			end
@@ -465,10 +462,10 @@ function VanasKoSImporter:AddTestData()
 				posX=math.random(),
 				posY=math.random()
 			}
-			if not pvplog2.players[playerkey] then
-				pvplog2.players[playerkey] = {}
+			if not pvplog2.player[playerkey] then
+				pvplog2.player[playerkey] = {}
 			end
-			tinsert(pvplog2.players[playerkey], eventkey)
+			tinsert(pvplog2.player[playerkey], eventkey)
 			if not pvplog2.area[areaID] then
 				pvplog2.area[areaID] = {}
 			end
@@ -513,10 +510,10 @@ function VanasKoSImporter:AddTestData()
 			posX=math.random(),
 			posY=math.random()
 		}
-		if not pvplog1.players[playerkey] then
-			pvplog1.players[playerkey] = {}
+		if not pvplog1.player[playerkey] then
+			pvplog1.player[playerkey] = {}
 		end
-		tinsert(pvplog1.players[playerkey], eventkey)
+		tinsert(pvplog1.player[playerkey], eventkey)
 		if not pvplog2.area[areaID] then
 			pvplog2.area[areaID] = {}
 		end
@@ -534,10 +531,10 @@ function VanasKoSImporter:AddTestData()
 			posX=math.random(),
 			posY=math.random()
 		}
-		if not pvplog2.players[playerkey] then
-			pvplog2.players[playerkey] = {}
+		if not pvplog2.player[playerkey] then
+			pvplog2.player[playerkey] = {}
 		end
-		tinsert(pvplog2.players[playerkey], eventkey)
+		tinsert(pvplog2.player[playerkey], eventkey)
 		if not pvplog2.area[areaID] then
 			pvplog2.area[areaID] = {}
 		end

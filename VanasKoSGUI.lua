@@ -733,7 +733,7 @@ function VanasKoSGUI:UpdateMouseOverFrame(key, hoveredType)
 	if (hoveredType == "player") then
 		local pvplog = VanasKoS:GetList("PVPLOG")
 		if(pvplog) then
-			local playerlog = pvplog.player[key]
+			local playerlog = pvplog.players[key]
 			if(playerlog) then
 				local i = #playerlog + 1
 				local iter = function()

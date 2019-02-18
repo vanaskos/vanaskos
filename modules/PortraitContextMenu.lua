@@ -14,6 +14,8 @@ local assert = assert
 local UnitName = UnitName
 local GetRealmName = GetRealmName
 local splitNameRealm = VanasKoS.splitNameRealm
+local hashName = VanasKoS.hashName
+local hashGuild = VanasKoS.hashGuild
 
 -- Local Variables
 local VanasKoSTargetPopupButtons = {}
@@ -37,9 +39,15 @@ function VanasKoSPortraitContextMenu:OnEnable()
 	for i, v in ipairs(defaultLists) do
 		local listname = VanasKoSGUI:GetListName(v)
 		local shortname = "VANASKOS_ADD_" .. v
-		VanasKoSTargetPopupButtons[shortname] = { text = format(L["Add to %s"], listname), dist = 0 }
+		VanasKoSTargetPopupButtons[shortname] = {
+			text = format(L["Add to %s"], listname)
+		}
 		VanasKoSTargetPopupMenu[i] = shortname
 	end
+	VanasKoSTargetPopupButtons["VANASKOS_LOOKUP"] = {
+		text = L["Lookup in VanasKoS"]
+	}
+	VanasKoSTargetPopupMenu[#defaultLists + 1] = "VANASKOS_LOOKUP"
 	self:SecureHook("UnitPopup_ShowMenu")
 end
 
@@ -97,7 +105,10 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 end
 
 function VanasKoSPortraitContextMenu_UnitPopup_OnClick(self, info)
-	assert(info and info.button and info.name and info.realm)
+	assert(info)
+	assert(info.button)
+	assert(info.name)
+	assert(info.realm)
 
 	if(info.button == "VANASKOS_ADD_PLAYERKOS") then
 		VanasKoS:AddEntryByName("PLAYERKOS", info.name, info.realm)
@@ -107,5 +118,16 @@ function VanasKoSPortraitContextMenu_UnitPopup_OnClick(self, info)
 		VanasKoS:AddEntryByName("HATELIST", info.name, info.realm)
 	elseif(info.button == "VANASKOS_ADD_NICELIST") then
 		VanasKoS:AddEntryByName("NICELIST", info.name, info.realm)
+	elseif(info.button == "VANASKOS_LOOKUP") then
+		local data, list = VanasKoS:IsOnList(nil, hashName(info.name, info.realm))
+		if not data and info.guild then
+			data, list = VanasKoS:IsOnList(nil, hashGuild(info.guild, info.realm))
+		end
+		if list then
+			VanasKoS:Print(format(L["Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r"],
+				info.name, VanasKoS:GetListNameByShortName(list), (data.reason or "")))
+		else
+			VanasKoS:Print(format(L["No entry for |cff00ff00%s|r"], info.name))
+		end
 	end
 end

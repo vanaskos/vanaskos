@@ -1,5 +1,9 @@
 Release Changelog for VanasKoS
 
+alpha-552:
+- Fix a couple of importer issues
+- Removed unused guilddata
+- Fix colors in some flash notifications
 alpha-551:
 - Fix "Change Entry" button #88
 - Fix command line entry adding #93

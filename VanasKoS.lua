@@ -94,8 +94,11 @@ local mapID = -1
 function VanasKoS.hashName(name, realm)
 	assert(name)
 	assert(realm)
+	if strmatch(name, " ") or strmatch(name, "-") then
+		print("ignoring illegal name " .. name)
+		return nil
+	end
 
-	assert(not strmatch(name, " "))
 	local key
 	if name then
 		key = name:trim():lower()

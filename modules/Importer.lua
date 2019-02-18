@@ -57,6 +57,7 @@ end
 
 function VanasKoSImporter:FromOldVanasKoS()
 	local count = 0;
+	local invalid = 0;
 
 	if not VanasKoSDB.namespaces then
 		return
@@ -83,14 +84,18 @@ function VanasKoSImporter:FromOldVanasKoS()
 	if not VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog.players then
 		VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog.players = {}
 	end
-	pvplog = VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog
+	local pvplog = VanasKoSDB.namespaces.PvPDataGatherer.global.pvpstats.pvplog
 
 	count = 0
+	invalid = 0
 	if(VanasKoSDB and VanasKoSDB.namespaces and VanasKoSDB.namespaces.PvPDataGatherer and VanasKoSDB.namespaces.PvPDataGatherer.realm) then
 		for realm,v in pairs(VanasKoSDB.namespaces.PvPDataGatherer.realm) do
 			local oldlog = v.pvpstats and v.pvpstats.pvplog;
 			if oldlog and oldlog.event then
 				for eventkey,eventdata in pairs(oldlog.event) do
+					if not pvplog[eventkey] then
+						pvplog[eventkey] = {}
+					end
 					pvplog[eventkey].name, pvplog[eventkey].realm = splitNameRealm(eventdata.enemyname)
 					if not pvplog[eventkey].realm then
 						pvplog[eventkey].realm = realm
@@ -104,7 +109,7 @@ function VanasKoSImporter:FromOldVanasKoS()
 					-- pvplog[eventkey].mapID = convert(eventdata.areaID)
 					-- pvplog[eventKey].x = data.posX,
 					-- pvplog[eventKey].y = data.posY
-					print("Imported " .. eventkey)
+					count = count + 1
 					oldlog[eventkey] = nil
 				end
 				oldlog.event = nil
@@ -117,7 +122,7 @@ function VanasKoSImporter:FromOldVanasKoS()
 					end
 					local playerKey = hashName(playerName, playerRealm)
 					pvplog[playerKey] = eventKeyTable
-					print("Imported " .. playerKey)
+					count = count + 1
 					oldlog[playerFullName] = nil
 				end
 				oldlog.players = nil
@@ -131,7 +136,10 @@ function VanasKoSImporter:FromOldVanasKoS()
 		VanasKoSDB.namespaces.PvPDataGatherer.realm = nil
 	end
 	if (count > 0) then
-		VanasKoS:Print(format(L["Imported %d PvP events"], count));
+		VanasKoS:Print(format(L["Imported %d PVP events"], count))
+	end
+	if (invalid > 0) then
+		VanasKoS:Print(format("%d invalid entries skipped", invalid))
 	end
 
 	if not VanasKoSDB.namespaces.DataGatherer then
@@ -140,19 +148,13 @@ function VanasKoSImporter:FromOldVanasKoS()
 	if not VanasKoSDB.namespaces.DataGatherer.global then
 		VanasKoSDB.namespaces.DataGatherer.global = {}
 	end
-	if not VanasKoSDB.namespaces.DataGatherer.global.pvpstats then
-		VanasKoSDB.namespaces.DataGatherer.global.pvpstats = {}
-	end
 	if not VanasKoSDB.namespaces.DataGatherer.global.players then
 		VanasKoSDB.namespaces.DataGatherer.global.players = {}
 	end
-	if not VanasKoSDB.namespaces.DataGatherer.global.guilds then
-		VanasKoSDB.namespaces.DataGatherer.global.guilds = {}
-	end
-	playerdata = VanasKoSDB.namespaces.DataGatherer.global.players
-	guilddata = VanasKoSDB.namespaces.DataGatherer.global.guilds
+	local playerData = VanasKoSDB.namespaces.DataGatherer.global.players
 
 	count = 0;
+	invalid = 0
 	if(VanasKoSDB and VanasKoSDB.namespaces and VanasKoSDB.namespaces.DataGatherer and VanasKoSDB.namespaces.DataGatherer.realm) then
 		for realm,v in pairs(VanasKoSDB.namespaces.DataGatherer.realm) do
 			if (v.players) then
@@ -162,6 +164,9 @@ function VanasKoSImporter:FromOldVanasKoS()
 						playerRealm = realm
 					end
 					local playerKey = hashName(playerName, playerRealm)
+					if not playerData[playerKey] then
+						playerData[playerKey] = {}
+					end
 					playerData[playerKey].name = playerName
 					playerData[playerKey].realm = playerRealm
 					playerData[playerKey].level = olddata.level
@@ -171,7 +176,8 @@ function VanasKoSImporter:FromOldVanasKoS()
 					playerData[playerKey].gender = olddata.gender
 					playerData[playerKey].mapID = olddata.mapID
 					playerData[playerKey].guid = olddata.guid
-					oldData[fullPlayerName] = nil
+					count = count + 1
+					olddata[fullPlayerName] = nil
 				end
 				v.players = nil
 			end
@@ -180,6 +186,9 @@ function VanasKoSImporter:FromOldVanasKoS()
 	end
 	if (count > 0) then
 		VanasKoS:Print(format(L["Imported %d player data"], count));
+	end
+	if (invalid > 0) then
+		VanasKoS:Print(format("%d invalid entries skipped", invalid))
 	end
 
 	if not VanasKoSDB.namespaces.DefaultLists then
@@ -219,10 +228,8 @@ function VanasKoSImporter:FromOldVanasKoS()
 		end
 	end
 
-	alliancelists = VanasKoSDB.namespaces.DefaultLists.faction.Alliance
-	hordelists = VanasKoSDB.namespaces.DefaultLists.faction.Horde
-
 	count = 0;
+	invalid = 0
 	if(VanasKoSDB and VanasKoSDB.namespaces and VanasKoSDB.namespaces.DefaultLists and VanasKoSDB.namespaces.DefaultLists.factionrealm) then
 		for factionrealm, list in pairs(VanasKoSDB.namespaces.DefaultLists.factionrealm) do
 			local faction, realm = splitFactionRealm(factionrealm)
@@ -235,14 +242,22 @@ function VanasKoSImporter:FromOldVanasKoS()
 								playerRealm = realm
 							end
 							local playerKey = hashName(playerName, playerRealm)
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].name = playerName
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].realm = playerRealm
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].created = olddata.created
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].creator = olddata.creator
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].creatorrealm = realm
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].owner = olddata.owner
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].ownerrealm = realm
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].reason = olddata.reason
+							if playerKey then
+								if not VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey] then
+									VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey] = {}
+								end
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].name = playerName
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].realm = playerRealm
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].created = olddata.created
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].creator = olddata.creator
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].creatorrealm = realm
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].owner = olddata.owner
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].ownerrealm = realm
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].players[playerKey].reason = olddata.reason
+								count = count + 1
+							else
+								invalid = invalid + 1
+							end
 							listdata[fullPlayerName] = nil
 						end
 						listdata.players = nil
@@ -251,13 +266,20 @@ function VanasKoSImporter:FromOldVanasKoS()
 						for fullGuildName, olddata in pairs(listdata.guilds) do
 							local guild, guildRealm = splitNameRealm(fullGuildName)
 							local guildKey = hashGuild(guild, guildRealm)
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].name = guild
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].created = olddata.created
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].creator = olddata.creator
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].creatorrealm = realm
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].owner = olddata.owner
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].ownerrealm = realm
-							VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].reason = olddata.reason
+							if guildKey then
+								if not VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey] then
+									VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey] = {}
+								end
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].name = guild
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].created = olddata.created
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].creator = olddata.creator
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].creatorrealm = realm
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].owner = olddata.owner
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].ownerrealm = realm
+								VanasKoSDB.namespaces.DefaultLists.faction[faction][listname].guilds[guildKey].reason = olddata.reason
+							else
+								invalid = invalid + 1
+							end
 							listdata[fullGuildName] = nil
 						end
 						listdata.guilds = nil
@@ -268,11 +290,312 @@ function VanasKoSImporter:FromOldVanasKoS()
 		VanasKoSDB.namespaces.DefaultLists.factionrealm = nil
 	end
 	if (count > 0) then
-		VanasKoS:Print(format(L["Imported %d list entries"], count));
+		VanasKoS:Print(format(L["Imported %d list entries"], count))
+	end
+	if (invalid > 0) then
+		VanasKoS:Print(format("%d invalid entries skipped", invalid))
 	end
 
 	if VanasKoSDB.namespaces.Synchronizer and VanasKoSDB.namespaces.Synchronizer.factionrealm then
 		-- Just erase the old data
 		VanasKoSDB.namespaces.Synchronizer.factionrealm = nil
+	end
+end
+
+-- /script VanasKoSImporter:AddTestData()
+function VanasKoSImporter:AddTestData()
+	if not VanasKoSDB then
+		VanasKoSDB = {}
+	end
+	if not VanasKoSDB.namespaces then
+		VanasKoSDB.namespaces = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer then
+		VanasKoSDB.namespaces.PvPDataGatherer = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"] then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"] = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"] then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"] = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.event then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.event = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.area then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.area = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.players then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog.players = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.event then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.event = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.area then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.area = {}
+	end
+	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.players then
+		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.players = {}
+	end
+	if not VanasKoSDB.namespaces.DataGatherer then
+		VanasKoSDB.namespaces.DataGatherer = {}
+	end
+	if not VanasKoSDB.namespaces.DataGatherer.realm then
+		VanasKoSDB.namespaces.DataGatherer.realm = {}
+	end
+	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"] then
+		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"] = {}
+	end
+	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].players then
+		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].players = {}
+	end
+	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"] then
+		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"] = {}
+	end
+	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].players then
+		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].players = {}
+	end
+	if not VanasKoSDB.namespaces.DefaultLists then
+		VanasKoSDB.namespaces.DefaultLists = {}
+	end
+	if not VanasKoSDB.namespaces.DefaultLists.factionrealm then
+		VanasKoSDB.namespaces.DefaultLists.factionrealm = {}
+	end
+	for _, factionrealm in pairs({"Alliance - Test Realm 1", "Horde - Test Realm 1", "Alliance - Test Realm 2", "Horde - Test Realm 2"}) do
+		if not VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm] then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm] = {}
+		end
+		if not VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].nicelist then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].nicelist = {}
+		end
+		if not VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].nicelist.players then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].nicelist.players = {}
+		end
+		if not VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].hatelist then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].hatelist = {}
+		end
+		if not VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].hatelist.players then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].hatelist.players = {}
+		end
+		if not VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].koslist then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].koslist = {}
+		end
+		if not VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].koslist.players then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].koslist.players = {}
+		end
+		if not VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].koslist.guilds then
+			VanasKoSDB.namespaces.DefaultLists.factionrealm[factionrealm].koslist.guilds = {}
+		end
+	end
+	local pvplog1 = VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog
+	local pvplog2 = VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog
+	local playerdata1 = VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].players
+	local playerdata2 = VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].players
+	local nicelist1 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 1"].nicelist.players
+	local nicelist2 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Horde - Test Realm 1"].nicelist.players
+	local nicelist3 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 2"].nicelist.players
+	local nicelist4 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Horde - Test Realm 2"].nicelist.players
+	local hatelist1 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 1"].hatelist.players
+	local hatelist2 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Horde - Test Realm 1"].hatelist.players
+	local hatelist3 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 2"].hatelist.players
+	local hatelist4 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Horde - Test Realm 2"].hatelist.players
+	local kos1 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 1"].koslist.players
+	local kos2 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Horde - Test Realm 1"].koslist.players
+	local kos3 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 2"].koslist.players
+	local kos4 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Horde - Test Realm 2"].koslist.players
+	local gkos1 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 1"].koslist.guilds
+	local gkos2 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Horde - Test Realm 1"].koslist.guilds
+	local gkos3 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 2"].koslist.guilds
+	local gkos4 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Horde - Test Realm 2"].koslist.guilds
+
+	for i=1,100 do
+		for j=1,10 do
+			local name = "test" .. i
+			local realm = "some random realm"
+			local playerkey = name .. "-" .. realm
+			local eventkey = playerkey.."-"..math.floor(math.random()*10000000)
+			local areaID=math.floor(math.random()*100)
+			pvplog1.event[eventkey] = {
+				enemyname=playerkey,
+				time=time(),
+				myname="bob",
+				mylevel=15,
+				enemylevel=16,
+				areaID=areaID,
+				type="win",
+				posX=math.random(),
+				posY=math.random()
+			}
+			if not pvplog1.players[playerkey] then
+				pvplog1.players[playerkey] = {}
+			end
+			tinsert(pvplog1.players[playerkey], eventkey)
+			if not pvplog1.area[areaID] then
+				pvplog1.area[areaID] = {}
+			end
+			tinsert(pvplog1.area[areaID], eventkey)
+			local eventkey = playerkey.."-"..math.floor(math.random()*10000000)
+			local areaID=math.floor(math.random()*100)
+			pvplog2.event[eventkey] = {
+				enemyname=playerkey,
+				time=time(),
+				myname="bob",
+				mylevel=15,
+				enemylevel=16,
+				areaID=areaID,
+				type="win",
+				posX=math.random(),
+				posY=math.random()
+			}
+			if not pvplog2.players[playerkey] then
+				pvplog2.players[playerkey] = {}
+			end
+			tinsert(pvplog2.players[playerkey], eventkey)
+			if not pvplog2.area[areaID] then
+				pvplog2.area[areaID] = {}
+			end
+			tinsert(pvplog2.area[areaID], eventkey)
+
+			if not playerdata1[playerkey] then
+				playerdata1[playerkey] = {}
+			end
+			playerdata1[playerkey] = {
+				level = math.floor(math.random()*120),
+				race = "Human",
+				class = "Mage",
+				classEnglish = "Mage",
+				gender = "Female",
+				mapID = areaID,
+				guid = "Player-"..math.floor(math.random()*100000)
+			}
+			playerdata2[playerkey] = {
+				level = math.floor(math.random()*120),
+				race = "Human",
+				class = "Mage",
+				classEnglish = "Mage",
+				gender = "Female",
+				mapID = areaID,
+				guid = "Player-"..math.floor(math.random()*100000)
+			}
+		end
+	end
+	for i=1,50 do
+		local name = "test" .. i
+		local playerkey = name
+		local eventkey = playerkey.."-"..math.floor(math.random()*10000000)
+		local areaID=math.floor(math.random()*100)
+		pvplog1.event[eventkey] = {
+			enemyname=playerkey,
+			time=time(),
+			myname="bob",
+			mylevel=15,
+			enemylevel=16,
+			areaID=areaID,
+			type="win",
+			posX=math.random(),
+			posY=math.random()
+		}
+		if not pvplog1.players[playerkey] then
+			pvplog1.players[playerkey] = {}
+		end
+		tinsert(pvplog1.players[playerkey], eventkey)
+		if not pvplog2.area[areaID] then
+			pvplog2.area[areaID] = {}
+		end
+		tinsert(pvplog2.area[areaID], eventkey)
+		local eventkey = playerkey.."-"..math.floor(math.random()*10000000)
+		local areaID=math.floor(math.random()*100)
+		pvplog2.event[eventkey] = {
+			enemyname=playerkey,
+			time=time(),
+			myname="bob",
+			mylevel=15,
+			enemylevel=16,
+			areaID=areaID,
+			type="win",
+			posX=math.random(),
+			posY=math.random()
+		}
+		if not pvplog2.players[playerkey] then
+			pvplog2.players[playerkey] = {}
+		end
+		tinsert(pvplog2.players[playerkey], eventkey)
+		if not pvplog2.area[areaID] then
+			pvplog2.area[areaID] = {}
+		end
+		tinsert(pvplog2.area[areaID], eventkey)
+		playerdata1[playerkey] = {
+			level = math.floor(math.random()*120),
+			race = "Human",
+			class = "Mage",
+			classEnglish = "Mage",
+			gender = "Female",
+			mapID = areaID,
+			guid = "Player-"..math.floor(math.random()*100000)
+		}
+		playerdata2[playerkey] = {
+			level = math.floor(math.random()*120),
+			race = "Human",
+			class = "Mage",
+			classEnglish = "Mage",
+			gender = "Female",
+			mapID = areaID,
+			guid = "Player-"..math.floor(math.random()*100000)
+		}
+	end
+
+	for i=1,10 do
+		local testdata = {
+			creator="bob",
+			owner="sally",
+			reason="test reason "..i
+		}
+		nicelist1["nice1test" .. i] = testdata
+		nicelist2["nice2test" .. i] = testdata
+		nicelist3["nice3test" .. i] = testdata
+		nicelist4["nice4test" .. i] = testdata
+		nicelist1["nice1test" .. i .. "-Realm W"] = testdata
+		nicelist2["nice2test" .. i .. "-Realm X"] = testdata
+		nicelist3["nice3test" .. i .. "-Realm Y"] = testdata
+		nicelist4["nice4test" .. i .. "-Realm Z"] = testdata
+		hatelist1["hate1test" .. i] = testdata
+		hatelist2["hate2test" .. i] = testdata
+		hatelist3["hate3test" .. i] = testdata
+		hatelist4["hate4test" .. i] = testdata
+		hatelist1["hate1test" .. i .. "-Realm W"] = testdata
+		hatelist2["hate2test" .. i .. "-Realm X"] = testdata
+		hatelist3["hate3test" .. i .. "-Realm Y"] = testdata
+		hatelist4["hate4test" .. i .. "-Realm Z"] = testdata
+		kos1["kos1test" .. i] = testdata
+		kos2["kos2test" .. i] = testdata
+		kos3["kos3test" .. i] = testdata
+		kos4["kos4test" .. i] = testdata
+		kos1["kos1test" .. i .. "-Realm W"] = testdata
+		kos2["kos2test" .. i .. "-Realm X"] = testdata
+		kos3["kos3test" .. i .. "-Realm Y"] = testdata
+		kos4["kos4test" .. i .. "-Realm Z"] = testdata
+		gkos1["gkos1test" .. i] = testdata
+		gkos2["gkos2test" .. i] = testdata
+		gkos3["gkos3test" .. i] = testdata
+		gkos4["gkos4test" .. i] = testdata
+		gkos1["gkos1test" .. i .. "-Realm W"] = testdata
+		gkos2["gkos2test" .. i .. "-Realm X"] = testdata
+		gkos3["gkos3test" .. i .. "-Realm Y"] = testdata
+		gkos4["gkos4test" .. i .. "-Realm Z"] = testdata
 	end
 end

@@ -50,8 +50,6 @@ function VanasKoSDataGatherer:OnInitialize()
 			data = {
 				players = {
 				},
-				guilds = {
-				},
 			},
 		},
 		profile = {
@@ -364,8 +362,6 @@ end
 function VanasKoSDataGatherer:GetList(list)
 	if(list == "PLAYERDATA") then
 		return self.db.global.data.players
-	elseif(list == "GUILDDATA") then
-		return self.db.global.data.guilds
 	else
 		return nil
 	end
@@ -420,14 +416,6 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	playerDataList[key].gender = data.gender
 	playerDataList[key].mapID = data.mapID
 	playerDataList[key].guid = data.guid
-
-	local guildKey = data.guild and hashGuild(data.guild, data.realm)
-	if(guildKey and VanasKoS:BooleanIsOnList("GUILDKOS", guildKey)) then
-		local guildData = VanasKoS:GetList("GUILDDATA")
-		if(not guildData[guildKey]) then
-			guildData[guildKey] = {}
-		end
-	end
 end
 
 function VanasKoSDataGatherer:EnableTargetEvents(enable)

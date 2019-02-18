@@ -771,6 +771,7 @@ function VanasKoSNotifier:GROUP_ROSTER_UPDATE()
 						VanasKoS:Print(msg)
 					end
 					if(self.db.profile.notifyFlashingBorder) then
+						flashNotifyTexture:SetVertexColor(1.0, 0.0, 0.0, flashNotifyTexture:GetAlpha())
 						self:FlashNotify()
 					end
 					self:PlaySound(self.db.profile.hatePlayName)
@@ -790,6 +791,7 @@ function VanasKoSNotifier:GROUP_ROSTER_UPDATE()
 						VanasKoS:Print(msg)
 					end
 					if(self.db.profile.notifyFlashingBorder) then
+						flashNotifyTexture:SetVertexColor(0.0, 1.0, 0.0, flashNotifyTexture:GetAlpha())
 						self:FlashNotify()
 					end
 					self:PlaySound(self.db.profile.nicePlayName)
@@ -821,6 +823,7 @@ function VanasKoSNotifier:RAID_ROSTER_UPDATE()
 						VanasKoS:Print(msg)
 					end
 					if(self.db.profile.notifyFlashingBorder) then
+						flashNotifyTexture:SetVertexColor(1.0, 0.0, 0.0, flashNotifyTexture:GetAlpha())
 						self:FlashNotify()
 					end
 					self:PlaySound(self.db.profile.hatePlayName)
@@ -833,6 +836,7 @@ function VanasKoSNotifier:RAID_ROSTER_UPDATE()
 						VanasKoS:Print(msg)
 					end
 					if(self.db.profile.notifyFlashingBorder) then
+						flashNotifyTexture:SetVertexColor(0.0, 1.0, 0.0, flashNotifyTexture:GetAlpha())
 						self:FlashNotify()
 					end
 					self:PlaySound(self.db.profile.nicePlayName)
@@ -1120,6 +1124,7 @@ function VanasKoSNotifier:EnemyPlayer_Detected(data)
 		VanasKoS:Print(msg)
 	end
 	if(self.db.profile.notifyFlashingBorder) then
+		flashNotifyTexture:SetVertexColor(1.0, 0.0, 1.0, flashNotifyTexture:GetAlpha())
 		self:FlashNotify()
 	end
 	self:PlaySound(self.db.profile.enemyPlayName)
@@ -1161,7 +1166,7 @@ function VanasKoSNotifier:KosPlayer_Detected(data)
 		VanasKoS:Print(msg)
 	end
 	if(self.db.profile.notifyFlashingBorder) then
-		flashNotifyTexture:SetVertexColor(1.0, 0.0, 1.0, flashNotifyTexture:GetAlpha())
+		flashNotifyTexture:SetVertexColor(1.0, 1.0, 0.0, flashNotifyTexture:GetAlpha())
 		self:FlashNotify()
 	end
 

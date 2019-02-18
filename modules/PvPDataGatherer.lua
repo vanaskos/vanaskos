@@ -65,9 +65,8 @@ end
 function VanasKoSPvPDataGatherer:GetList(list)
 	if(list == "PVPLOG") then
 		return self.db.global.pvplog
-	else
-		return nil
 	end
+	return nil
 end
 
 
@@ -329,8 +328,8 @@ function VanasKoSPvPDataGatherer:AddTestData(cnt)
 			x=math.random(),
 			y=math.random(),
 			inBg = special < 0.2,
-			inArena = special >= 0.2 and special < 0.4
-			inCombatZone = special >=0.4 and special < 0.6
+			inArena = special >= 0.2 and special < 0.4,
+			inCombatZone = special >=0.4 and special < 0.6,
 			inFfa = special >= 0.6 and special < 0.8
 		})
 	end

@@ -197,11 +197,10 @@ function VanasKoSMinimapButton:UpdateOptions()
 
 		for _, v in pairs(list) do
 			attackerMenu[#attackerMenu+1] = {
-				text = v[1] .. " " .. date("%c", v[2]),
+				text = format("%s-%s %s", v.name, v.realm, date("%c", v.time)),
 				order = #attackerMenu,
 				func = function()
-					VanasKoSGUI:ShowList("PLAYERKOS")
-					VanasKoSGUI:AddEntry(v[1])
+					VanasKoSGUI:AddEntry("PLAYERKOS", v.name, v.realm, format(L["Attacked %s on %s"], UnitName("player"), date("%c", v.time)))
 				end,
 			}
 		end
@@ -336,7 +335,7 @@ function VanasKoSMinimapButton:OnTooltipShow(tt)
 			tt:AddLine(L["Last Attackers"] .. ":", 1.0, 1.0, 1.0)
 
 			for _, v in pairs(list) do
-				tt:AddDoubleLine(v[1], format(L["%s ago"], SecondsToTime(time() - v[2])), 1.0, 0.0, 0.0, 1.0, 1.0, 1.0)
+				tt:AddDoubleLine(v.name .. "-" .. v.realm, format(L["%s ago"], SecondsToTime(time() - v.time)), 1.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 			end
 		end
 	end

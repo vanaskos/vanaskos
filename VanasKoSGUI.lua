@@ -701,12 +701,7 @@ function VanasKoSGUI:UpdateMouseOverFrame(key, hoveredType)
 			end
 		end
 	elseif(hoveredType == "guild") then
-		local guilddata = VanasKoS:GetGuildData(key)
-		if (guilddata and guilddata.displayName) then
-			tooltip:AddLine("<"..guilddata.displayName..">")
-		else
-			tooltip:AddLine("<"..data.name..">")
-		end
+		tooltip:AddLine("<"..data.name..">")
 	end
 
 	-- infos about creator, sender, owner, last updated
@@ -1023,7 +1018,7 @@ function VanasKoSGUI:AddEntry(list, name, realm, reason)
 	end
 
 	local dialog = Dialog:Spawn("VanasKoSAddEntry")
-	dialog.list = list
+	dialog.list = list or VANASKOS.showList
 	if (name) then
 		dialog.editboxes[1]:SetText(name)
 	end

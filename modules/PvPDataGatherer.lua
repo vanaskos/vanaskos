@@ -259,13 +259,18 @@ end
 
 function VanasKoSPvPDataGatherer:AddLastDamageFrom(name, realm)
 	local key = hashName(name, realm)
-	tinsert(DamageFromArray, 1, {key, time()})
+	tinsert(DamageFromArray, 1, {
+		key = key,
+		name = name,
+		realm = realm,
+		time = time()
+	})
 	if(#DamageFromArray < 2) then
 		return
 	end
 
 	for i=#DamageFromArray,2,-1 do
-		if(DamageFromArray[i] and DamageFromArray[i][1] == key) then
+		if(DamageFromArray[i] and DamageFromArray[i].key == key) then
 			tremove(DamageFromArray, i)
 		end
 	end

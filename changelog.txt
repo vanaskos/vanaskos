@@ -1,5 +1,14 @@
 Release Changelog for VanasKoS
 
+alpha-554:
+- Add < > surrounding guild name in guild kos list
+- Change color of guild kos entries with an owner specified
+- Display "reason" as the default guild kos group
+- Fix pvplog importer using field for name
+- Fix adding entries from last attackers list #94
+- Add a default reason when adding from last attackers list
+- Fix adding entries from "Add Entry" button
+- Fix selecting PvP stats by character
 alpha-553:
 - Fix more importer errors
 - Fix Mouseover data for player pvp stats

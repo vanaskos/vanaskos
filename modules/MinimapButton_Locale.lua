@@ -25,6 +25,7 @@ if L then
 	L["Show information"] = true
 	L["Show Warning Frame Infos as Text and Tooltip"] = true
 	L["Warning Window"] = true
+	L["Attacked %s on %s"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/MinimapButton", "frFR")

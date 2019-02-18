@@ -101,7 +101,7 @@ function VanasKoSImporter:FromOldVanasKoS()
 						pvplog.event[eventkey].realm = realm
 					end
 					pvplog.event[eventkey].enemylevel = eventdata.enemylevel
-					pvplog.event[eventkey].myname = eventdata.name
+					pvplog.event[eventkey].myname = eventdata.myname
 					pvplog.event[eventkey].myrealm = realm
 					pvplog.event[eventkey].mylevel = eventdata.mylevel
 					pvplog.event[eventkey].time = eventdata.time

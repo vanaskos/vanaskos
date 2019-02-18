@@ -292,14 +292,6 @@ function VanasKoS:GetPlayerData(key)
 	return list[key]
 end
 
-function VanasKoS:GetGuildData(key)
-	local list = self:GetList("GUILDDATA")
-	if(list == nil or key == nil or list[key] == nil) then
-		return nil
-	end
-	return list[key]
-end
-
 function VanasKoS:GetPvpLog(key)
 	local list = self:GetList("PVPLOG")
 	if(list == nil or key == nil or list[key] == nil) then

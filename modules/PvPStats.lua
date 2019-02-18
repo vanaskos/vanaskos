@@ -303,9 +303,10 @@ function VanasKoSPvPStats:BuildList()
 	local skipped = 0
 	local count = 0
 	for _, event in pairs(pvplog.event) do
+		local myKey = event.myname and event.myrealm and hashName(event.myname, event.myrealm)
 		if( (not timeSpanStart or event.time >= timeSpanStart) and
 			(not timeSpanEnd or event.time <= timeSpanEnd) and
-			(not selectedCharacter or event.myname == selectedCharacter)) then
+			(not selectedCharacter or myKey == selectedCharacter)) then
 			assert(event.name)
 			assert(event.realm)
 			local enemykey = hashName(event.name, event.realm)
@@ -819,6 +820,10 @@ function VanasKoSPvPStats:OnEnable()
 	local pvplog = VanasKoS:GetList("PVPLOG") or {}
 
 	local twinks = {}
+	twinks[hashName(UnitName("player"), GetRealmName())] = {
+		name = UnitName("player"),
+		realm = GetRealmName()
+	}
 	for _, event in pairs(pvplog.event or {}) do
 		if(event.myname and event.myrealm) then
 			twinks[hashName(event.myname, event.myrealm)] = {
@@ -829,25 +834,22 @@ function VanasKoSPvPStats:OnEnable()
 	end
 	local i = 1
 	for k, v in pairs(twinks) do
-		CharacterChoices[i] = {v.name, k}
+		CharacterChoices[i] = {v.name .. "-" .. v.realm, k}
 		i = i + 1
 	end
 
-	UIDropDownMenu_Initialize(characterDropdown,
-		function(self, level)
-			for _, v in pairs(CharacterChoices) do
-				local button = UIDropDownMenu_CreateInfo()
-				button.text = v[1]
-				button.value = v[2]
-				button.func = function(self)
-					VanasKoSPvPStats:SetCharacter(self.value)
-					UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsCharacterDropDown, self.value)
-				end
-				UIDropDownMenu_AddButton(button)
+	UIDropDownMenu_Initialize(characterDropdown, function(self, level)
+		for _, v in pairs(CharacterChoices) do
+			local button = UIDropDownMenu_CreateInfo()
+			button.text = v[1]
+			button.value = v[2]
+			button.func = function(self)
+				VanasKoSPvPStats:SetCharacter(self.value)
+				UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsCharacterDropDown, self.value)
 			end
-
+			UIDropDownMenu_AddButton(button)
 		end
-	)
+	end)
 	UIDropDownMenu_SetSelectedValue(characterDropdown, "ALLCHARS")
 
 	local timespanDropdown = CreateFrame("Frame", "VanasKoSPvPStatsTimeSpanDropDown", VanasKoSListFrame, "UIDropDownMenuTemplate")
@@ -861,21 +863,18 @@ function VanasKoSPvPStats:OnEnable()
 		[3] = {L["Last Month"], "LASTMONTH"}
 	}
 
-	UIDropDownMenu_Initialize(timespanDropdown,
-		function(self, level)
-			for _, v in VanasKoSGUI:pairsByKeys(TimeSpanChoices, nil) do
-				local button = UIDropDownMenu_CreateInfo()
-				button.text = v[1]
-				button.value = v[2]
-				button.func = function(self)
-					VanasKoSPvPStats:SetTimeSpan(self.value)
-					UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsTimeSpanDropDown, self.value)
-				end
-				UIDropDownMenu_AddButton(button)
+	UIDropDownMenu_Initialize(timespanDropdown, function(self, level)
+		for _, v in VanasKoSGUI:pairsByKeys(TimeSpanChoices, nil) do
+			local button = UIDropDownMenu_CreateInfo()
+			button.text = v[1]
+			button.value = v[2]
+			button.func = function(self)
+				VanasKoSPvPStats:SetTimeSpan(self.value)
+				UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsTimeSpanDropDown, self.value)
 			end
-
+			UIDropDownMenu_AddButton(button)
 		end
-	)
+	end)
 	UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsTimeSpanDropDown, "ALLTIME")
 
 	characterDropdown:Hide()

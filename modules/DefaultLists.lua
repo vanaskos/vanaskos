@@ -354,20 +354,24 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 			buttonText3:SetText(creator)
 		end
 	elseif(list == "GUILDKOS") then
-		local data = VanasKoS:GetGuildData(key)
-		buttonText1:SetText(data and data.name or value.name)
+		local displayname = "<" .. value.name .. ">"
+		if(value.owner ~= nil and value.owner ~= "") then
+			owner = value.owner
+			displayname = "|cffff7700" .. displayname .. "|r"
+		end
+		buttonText1:SetText(displayname)
 		if(self.group == 1) then
 			buttonText2:SetText(value and value.reason or L["_Reason Unknown_"])
 			buttonText3:SetText("")
 			buttonText4:SetText(value.owner and value.owner or "")
 		else
-			if (data and data.owner) then
-				buttonText2:SetText(data.owner)
+			if (value and value.owner) then
+				buttonText2:SetText(value.owner)
 			else
 				buttonText2:SetText("")
 			end
-			if (data and data.creator) then
-				buttonText3:SetText(data.creator)
+			if (value and value.creator) then
+				buttonText3:SetText(value.creator)
 			else
 				buttonText3:SetText("")
 			end
@@ -442,7 +446,7 @@ function VanasKoSDefaultLists:SetupColumns(list)
 		end
 		VanasKoSGUI:ShowToggleButtons()
 	elseif(list == "GUILDKOS") then
-		if(self.group == 1) then
+		if(not self.group or self.group == 1) then
 			VanasKoSGUI:SetNumColumns(2)
 			VanasKoSGUI:SetColumnWidth(1, 105)
 			VanasKoSGUI:SetColumnWidth(2, 208)

@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+alpha-553:
+- Fix more importer errors
+- Fix Mouseover data for player pvp stats
 alpha-552:
 - Fix a couple of importer issues
 - Removed unused guilddata

@@ -94,7 +94,7 @@ function VanasKoSLastSeenList:OnEnable()
 	end
 	if(VanasKoSDataGatherer) then
 		if(VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently == true) then
-			lastseenlist = VanasKoSDataGatherer.db.realm.data.players or {}
+			lastseenlist = VanasKoSDataGatherer.db.global.data.players or {}
 		else
 			-- Copy player data into the volatile lastseenlist
 			for key, data in pairs(VanasKoSDataGatherer.db.global.data.players) do

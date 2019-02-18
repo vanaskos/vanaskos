@@ -93,22 +93,22 @@ function VanasKoSImporter:FromOldVanasKoS()
 			local oldlog = v.pvpstats and v.pvpstats.pvplog;
 			if oldlog and oldlog.event then
 				for eventkey,eventdata in pairs(oldlog.event) do
-					if not pvplog[eventkey] then
-						pvplog[eventkey] = {}
+					if not pvplog.event[eventkey] then
+						pvplog.event[eventkey] = {}
 					end
-					pvplog[eventkey].name, pvplog[eventkey].realm = splitNameRealm(eventdata.enemyname)
-					if not pvplog[eventkey].realm then
-						pvplog[eventkey].realm = realm
+					pvplog.event[eventkey].name, pvplog.event[eventkey].realm = splitNameRealm(eventdata.enemyname)
+					if not pvplog.event[eventkey].realm then
+						pvplog.event[eventkey].realm = realm
 					end
-					pvplog[eventkey].enemylevel = eventdata.enemylevel
-					pvplog[eventkey].myname = eventdata.name
-					pvplog[eventkey].myrealm = realm
-					pvplog[eventkey].mylevel = eventdata.mylevel
-					pvplog[eventkey].time = eventdata.time
-					pvplog[eventkey].type = eventdata.type
-					-- pvplog[eventkey].mapID = convert(eventdata.areaID)
-					-- pvplog[eventKey].x = data.posX,
-					-- pvplog[eventKey].y = data.posY
+					pvplog.event[eventkey].enemylevel = eventdata.enemylevel
+					pvplog.event[eventkey].myname = eventdata.name
+					pvplog.event[eventkey].myrealm = realm
+					pvplog.event[eventkey].mylevel = eventdata.mylevel
+					pvplog.event[eventkey].time = eventdata.time
+					pvplog.event[eventkey].type = eventdata.type
+					-- pvplog.event[eventkey].mapID = convert(eventdata.areaID)
+					-- pvplog.event[eventKey].x = data.posX,
+					-- pvplog.event[eventKey].y = data.posY
 					count = count + 1
 					oldlog[eventkey] = nil
 				end
@@ -121,7 +121,7 @@ function VanasKoSImporter:FromOldVanasKoS()
 						playerRealm = realm
 					end
 					local playerKey = hashName(playerName, playerRealm)
-					pvplog[playerKey] = eventKeyTable
+					pvplog.players[playerKey] = eventKeyTable
 					count = count + 1
 					oldlog[playerFullName] = nil
 				end
@@ -148,10 +148,13 @@ function VanasKoSImporter:FromOldVanasKoS()
 	if not VanasKoSDB.namespaces.DataGatherer.global then
 		VanasKoSDB.namespaces.DataGatherer.global = {}
 	end
-	if not VanasKoSDB.namespaces.DataGatherer.global.players then
-		VanasKoSDB.namespaces.DataGatherer.global.players = {}
+	if not VanasKoSDB.namespaces.DataGatherer.global.data then
+		VanasKoSDB.namespaces.DataGatherer.global.data = {}
 	end
-	local playerData = VanasKoSDB.namespaces.DataGatherer.global.players
+	if not VanasKoSDB.namespaces.DataGatherer.global.data.players then
+		VanasKoSDB.namespaces.DataGatherer.global.data.players = {}
+	end
+	local playerData = VanasKoSDB.namespaces.DataGatherer.global.data.players
 
 	count = 0;
 	invalid = 0

@@ -313,6 +313,7 @@ function VanasKoSPvPStats:BuildList()
 				if(not pvpStatsList[enemykey]) then
 					pvpStatsList[enemykey] = {
 						name = event.name,
+						realm = event.realm,
 						wins = 0,
 						losses = 0
 					}
@@ -560,15 +561,15 @@ function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
 					-- print("removing " .. eventKey .. " from pvp event log")
 					local event = pvplog.event[eventKey]
 					if (event and event.mapID) then
-						for j, zhash in ipairs(pvplog.area[event.mapID]) do
+						for j, zhash in ipairs(pvplog.map[event.mapID]) do
 							if (zhash == eventKey) then
 								--print("removing " .. eventKey .. " from pvp zone log")
-								tremove(pvplog.area[event.mapID], j)
+								tremove(pvplog.map[event.mapID], j)
 								break
 							end
 						end
-						if (next(pvplog.area[event.mapID]) == nil) then
-							pvplog.area[event.mapID] = nil
+						if (next(pvplog.map[event.mapID]) == nil) then
+							pvplog.map[event.mapID] = nil
 						end
 					end
 					pvplog.event[eventKey] = nil
@@ -595,15 +596,15 @@ function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
 						end
 					end
 					if (event and event.mapID) then
-						for j, zhash in ipairs(pvplog.area[event.mapID] or {}) do
+						for j, zhash in ipairs(pvplog.map[event.mapID] or {}) do
 							if (zhash == eventKey) then
 								--print("removing " .. eventKey .. " from pvp zone log")
-								tremove(pvplog.area[event.mapID], j)
+								tremove(pvplog.map[event.mapID], j)
 								break
 							end
 						end
-						if (pvplog.area[event.mapID] and next(pvplog.area[event.mapID]) == nil) then
-							pvplog.area[event.mapID] = nil
+						if (pvplog.map[event.mapID] and next(pvplog.map[event.mapID]) == nil) then
+							pvplog.map[event.mapID] = nil
 						end
 					end
 					pvplog.event[eventKey] = nil

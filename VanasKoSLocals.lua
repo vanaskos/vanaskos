@@ -23,3 +23,7 @@ BINDING_NAME_VANASKOS_TEXT_TOGGLE_MENU = L["Toggle Menu"]
 BINDING_NAME_VANASKOS_TEXT_ADD_PLAYER = L["Add KoS Player"]
 
 VANASKOS.NewVersionNotice = nil
+VANASKOS.Lists = {}
+VANASKOS.selectedEntry = nil
+VANASKOS.showList = nil
+VANASKOS.showGroup = 1

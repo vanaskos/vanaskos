@@ -17,6 +17,16 @@ if L then
 	L["Toggles detection of players in combat zones (Wintergrasp, Tol Barad)"] = true
 	L["Enable in arena"] = true
 	L["Toggles detection of players in arenas"] = true
+	L["Enable in War Mode"] = true
+	L["Toggles detection of players if War Mode is enabled"] = true
+	L["Enable in Normal Mode"] = true
+	L["Toggles detection of players if War Mode is disabled"] = true
+	L["Combat Log Monitoring"] = true
+	L["Player-Data Storage"] = true
+	L["Save data gathered in war mode"] = true
+	L["Toggles if data from players gathered in war mode should be saved."] = true
+	L["Save data gathered in normal mode"] = true
+	L["Toggles if data from players gathered in normal mode should be saved."] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/DataGatherer", "frFR")

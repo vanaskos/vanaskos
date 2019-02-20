@@ -18,6 +18,8 @@ if L then
 	L["Grow list from the bottom of the WarnFrame"] = true
 	L["Grow list upwards"] = true
 	L["Hide if inactive"] = true
+	L["Hide if PvP flag off"] = true
+	L["Hide if War Mode off"] = true
 	L["Hostile"] = true
 	L["How friendly content is shown"] = true
 	L["How hostile content is shown"] = true

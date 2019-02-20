@@ -59,6 +59,14 @@ local tempStatData = {
 
 -- sort functions
 
+-- sorts by key
+local function SortByKey(val1, val2)
+	return (val1 > val2)
+end
+local function SortByNameReverse(val1, val2)
+	return (val1 < val2)
+end
+
 -- sorts by name
 local function SortByName(val1, val2)
 	local list = pvpStatsList
@@ -174,13 +182,13 @@ function VanasKoSPvPStats:OnInitialize()
 	})
 
 	-- register sort options for the lists this module provides
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byname", L["by name"], L["sort by name"], SortByIndex, SortByIndexReverse)
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byname", L["by name"], L["sort by name"], SortByName, SortByNameReverse)
 	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byscore", L["by score"], L["sort by most wins to losses"], SortByScore, SortByScoreReverse)
 	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byencounters", L["by encounters"], L["sort by most PVP encounters"], SortByEncounters, SortByEncountersReverse)
 	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bywins", L["by wins"], L["sort by most wins"], SortByWins, SortByWinsReverse)
 	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bylosses", L["by losses"], L["sort by most losses"], SortByLosses, SortByLossesReverse)
 
-	VanasKoSGUI:SetDefaultSortFunction({"PVPSTATS"}, SortByIndex)
+	VanasKoSGUI:SetDefaultSortFunction({"PVPSTATS"}, SortByKey)
 end
 
 function VanasKoSPvPStats:FilterFunction(key, value, searchBoxText)
@@ -198,7 +206,13 @@ end
 function VanasKoSPvPStats:RenderButton(list, buttonIndex, button, key, value, buttonText1, buttonText2, buttonText3, buttonText4, buttonText5, buttonText6)
 	if(list == "PVPSTATS" and value) then
 		local score = value.score or (value.wins - value.losses)
-		buttonText1:SetText(value.name)
+		if self.group == PLAYERS_LIST then
+			buttonText1:SetText(value.name or "")
+		elseif self.group == PLAYERS_LIST then
+			buttonText1:SetText(value.name and "<" .. value.name .. ">" or "")
+		else
+			buttonText1:SetText(key)
+		end
 		if (self.group ~= GENERAL_LIST or key == L["Total"] or key == MALE or key == FEMALE) then
 			buttonText2:SetText(format("|cff00ff00%d|r", value.wins))
 			buttonText3:SetText(format("|cffff0000%d|r", value.losses))
@@ -231,11 +245,14 @@ function VanasKoSPvPStats:RenderButton(list, buttonIndex, button, key, value, bu
 	end
 end
 
-function VanasKoSPvPStats:ShowList(list)
+function VanasKoSPvPStats:ShowList(list, group)
 	if(list == "PVPSTATS") then
+		if not group then
+			group = self.group
+		end
 		VanasKoSListFrameChangeButton:Disable()
 		VanasKoSListFrameAddButton:Disable()
-		if (self.group == PLAYERS_LIST or self.group == DATE_LIST) then
+		if (group == PLAYERS_LIST or group == DATE_LIST) then
 			VanasKoSListFrameRemoveButton:Enable()
 		else
 			VanasKoSListFrameRemoveButton:Disable()
@@ -259,26 +276,21 @@ end
 
 function VanasKoSPvPStats:GetList(list, group)
 	if(list == "PVPSTATS") then
-		if(group == 1) then
-			return self.db.global.pvpstats.players
-		else
-			if (not pvpStatsList) then
-				self:BuildList()
-			end
-			return pvpStatsList
+		if (not pvpStatsList or self.group ~= group) then
+			self:BuildList(group)
 		end
-	else
-		return nil
+		return pvpStatsList
 	end
+	return nil
 end
 
-function VanasKoSPvPStats:BuildList()
+function VanasKoSPvPStats:BuildList(group)
 	if (not pvpStatsList) then
 		pvpStatsList = {}
 	end
 	wipe(pvpStatsList)
 
-	local pvplog = VanasKoS:GetList("PVPLOG")
+	local pvpEventLog = VanasKoS:GetList("PVPLOG", 1)
 	local wins = 0
 	local losses = 0
 	local winELevelCnt = nil
@@ -298,11 +310,13 @@ function VanasKoSPvPStats:BuildList()
 		self.group = PLAYERS_LIST
 	end
 
-	local group = self.group
+	if not group then
+		group = self.group
+	end
 
 	local skipped = 0
 	local count = 0
-	for _, event in pairs(pvplog.event) do
+	for _, event in pairs(pvpEventLog) do
 		local myKey = event.myname and event.myrealm and hashName(event.myname, event.myrealm)
 		if( (not timeSpanStart or event.time >= timeSpanStart) and
 			(not timeSpanEnd or event.time <= timeSpanEnd) and
@@ -350,7 +364,6 @@ function VanasKoSPvPStats:BuildList()
 				if(playerdata and playerdata.race) then
 					if(not pvpStatsList[playerdata.race]) then
 						pvpStatsList[playerdata.race] = {
-							name = playerdata.race,
 							wins = 0,
 							losses = 0
 						}
@@ -368,7 +381,6 @@ function VanasKoSPvPStats:BuildList()
 				if(playerdata and playerdata.class) then
 					if(not pvpStatsList[playerdata.class]) then
 						pvpStatsList[playerdata.class] = {
-							name = playerdata.class,
 							wins = 0,
 							losses = 0
 						}
@@ -386,7 +398,6 @@ function VanasKoSPvPStats:BuildList()
 					local mapName = C_Map.GetMapInfo(event.mapID).name
 					if(not pvpStatsList[mapName]) then
 						pvpStatsList[mapName] = {
-							name = mapName,
 							wins = 0,
 							losses = 0
 						}
@@ -404,7 +415,6 @@ function VanasKoSPvPStats:BuildList()
 					local day = date("%Y-%m-%d", event.time)
 					if(not pvpStatsList[day]) then
 						pvpStatsList[day] = {
-							name = day,
 							wins = 0,
 							losses = 0
 						}
@@ -423,14 +433,12 @@ function VanasKoSPvPStats:BuildList()
 				local mlevel = event.mylevel or 0
 				if(not pvpStatsList[MALE]) then
 					pvpStatsList[MALE] = {
-						name = MALE,
 						wins = 0,
 						losses = 0
 					}
 				end
 				if(not pvpStatsList[FEMALE]) then
 					pvpStatsList[FEMALE] = {
-						name = FEMALE,
 						wins = 0,
 						losses = 0
 					}
@@ -487,26 +495,22 @@ function VanasKoSPvPStats:BuildList()
 
 	if(group == GENERAL_LIST) then
 		pvpStatsList[L["Total"]] = {
-			name = L["Total"],
 			wins = wins,
 			losses = losses,
 		}
 		pvpStatsList[L["Enemy level"]] = {
-			name = L["Enemy level"],
 			wins = winELevelSum / (winELevelCnt or 1),
 			losses = lossELevelSum / (lossELevelCnt or 1),
 			pvp = (winELevelSum + lossELevelSum) / ((winELevelCnt or 0) + (lossELevelCnt or 1)),
 			score = (lossELevelSum / (lossELevelCnt or 1)) - (winELevelSum / (winELevelCnt or 1))
 		}
 		pvpStatsList[L["My level"]] = {
-			name = L["My level"],
 			wins = winMLevelSum / (winMLevelCnt or 1),
 			losses = lossMLevelSum / (lossMLevelCnt or 1),
 			pvp = (winMLevelSum + lossMLevelSum) / ((winMLevelCnt or 0) + (lossMLevelCnt or 1)),
 			score = (lossMLevelSum / (lossMLevelCnt or 1)) - (winMLevelSum / (winMLevelCnt or 1))
 		}
 		pvpStatsList[L["Level difference"]] = {
-			name = L["Level difference"],
 			wins = winDLevelSum / (winDLevelCnt or 1),
 			losses = lossDLevelSum / (lossDLevelCnt or 1),
 			pvp = (winDLevelSum + lossDLevelSum) / ((winDLevelCnt or 0) + (lossDLevelCnt or 1)),
@@ -544,7 +548,9 @@ end
 function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
 	local removed = nil
 	local group = self.group
-	local pvplog = VanasKoS:GetList("PVPLOG")
+	local pvpEventLog = VanasKoS:GetList("PVPLOG", 1)
+	local pvpPlayersLog = VanasKoS:GetList("PVPLOG", 2)
+	local pvpMapLog = VanasKoS:GetList("PVPLOG", 3)
 
 	if(listname == "PVPSTATS") then
 		if (group == PLAYERS_LIST) then
@@ -556,59 +562,59 @@ function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
 				removed = true
 			end
 
-			if (pvplog.players[key]) then
+			if (pvpPlayersLog[key]) then
 				-- print("removing " .. list[key].name .. " from pvp player log")
-				for _, eventKey in ipairs(pvplog.players[key]) do
+				for _, eventKey in ipairs(pvpPlayersLog[key]) do
 					-- print("removing " .. eventKey .. " from pvp event log")
-					local event = pvplog.event[eventKey]
+					local event = pvpEventLog[eventKey]
 					if (event and event.mapID) then
-						for j, zhash in ipairs(pvplog.map[event.mapID]) do
+						for j, zhash in ipairs(pvpMapLog[event.mapID]) do
 							if (zhash == eventKey) then
 								--print("removing " .. eventKey .. " from pvp zone log")
-								tremove(pvplog.map[event.mapID], j)
+								tremove(pvpMapLog[event.mapID], j)
 								break
 							end
 						end
-						if (next(pvplog.map[event.mapID]) == nil) then
-							pvplog.map[event.mapID] = nil
+						if (next(pvpMapLog[event.mapID]) == nil) then
+							pvpMapLog[event.mapID] = nil
 						end
 					end
-					pvplog.event[eventKey] = nil
+					pvpEventLog[eventKey] = nil
 					removed = true
 				end
-				pvplog.players[key] = nil
+				pvpPlayerLog[key] = nil
 			end
 		elseif (group == DATE_LIST) then
 			-- print("brute removing " .. list[key].name)
 			-- brute force
-			for eventKey, event in pairs(pvplog.event) do
+			for eventKey, event in pairs(pvpEventLog) do
 				local remove = nil
 				if (event.time and date("%Y-%m-%d", event.time) == key) then
 					if (event and event.enemykey) then
-						for j, zhash in ipairs(pvplog.players[event.enemykey] or {}) do
+						for j, zhash in ipairs(pvpPlayerLog[event.enemykey] or {}) do
 							if (zhash == eventKey) then
 								--print("removing " .. eventKey .. " from player log")
-								tremove(pvplog.players[event.enemykey], j)
+								tremove(pvpPlayerLog[event.enemykey], j)
 								break
 							end
 						end
-						if (pvplog.players[event.enemykey] and next(pvplog.players[event.enemykey]) == nil) then
-							pvplog.players[event.enemykey] = nil
+						if (pvpPlayerLog[event.enemykey] and next(pvpPlayerLog[event.enemykey]) == nil) then
+							pvpPlayerLog[event.enemykey] = nil
 						end
 					end
 					if (event and event.mapID) then
-						for j, zhash in ipairs(pvplog.map[event.mapID] or {}) do
+						for j, zhash in ipairs(pvpMapLog[event.mapID] or {}) do
 							if (zhash == eventKey) then
 								--print("removing " .. eventKey .. " from pvp zone log")
-								tremove(pvplog.map[event.mapID], j)
+								tremove(pvpMapLog[event.mapID], j)
 								break
 							end
 						end
-						if (pvplog.map[event.mapID] and next(pvplog.map[event.mapID]) == nil) then
-							pvplog.map[event.mapID] = nil
+						if (pvpMapLog[event.mapID] and next(pvpMapLog[event.mapID]) == nil) then
+							pvpMapLog[event.mapID] = nil
 						end
 					end
-					pvplog.event[eventKey] = nil
+					pvpEventLog[eventKey] = nil
 					removed = true
 				end
 			end
@@ -621,8 +627,12 @@ function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
 	end
 end
 
-function VanasKoSPvPStats:IsOnList(list, key)
-	local listVar = self:GetList(list)
+function VanasKoSPvPStats:IsOnList(list, key, group)
+	if not group then
+		group = self.group
+	end
+
+	local listVar = self:GetList(list, group)
 	if(list == "PVPSTATS") then
 		if(listVar[key]) then
 			return listVar[key]
@@ -634,8 +644,11 @@ function VanasKoSPvPStats:IsOnList(list, key)
 	end
 end
 
-function VanasKoSPvPStats:SetupColumns(list)
+function VanasKoSPvPStats:SetupColumns(list, group)
 	if(list == "PVPSTATS") then
+		if not group then
+			group = self.group
+		end
 		VanasKoSGUI:SetNumColumns(5)
 		VanasKoSGUI:SetColumnWidth(1, 140)
 		VanasKoSGUI:SetColumnWidth(2, 40)
@@ -647,7 +660,11 @@ function VanasKoSPvPStats:SetupColumns(list)
 		VanasKoSGUI:SetColumnName(3, L["Lost"])
 		VanasKoSGUI:SetColumnName(4, PVP)
 		VanasKoSGUI:SetColumnName(5, L["Score"])
-		VanasKoSGUI:SetColumnSort(1, SortByName, SortByNameReverse)
+		if group == PLAYERS_LIST or group == GUILDS_LIST then
+			VanasKoSGUI:SetColumnSort(1, SortByName, SortByNameReverse)
+		else
+			VanasKoSGUI:SetColumnSort(1, SortByKey, SortByKeyReverse)
+		end
 		VanasKoSGUI:SetColumnSort(2, SortByWins, SortByWinsReverse)
 		VanasKoSGUI:SetColumnSort(3, SortByLosses, SortByLossesReverse)
 		VanasKoSGUI:SetColumnSort(4, SortByEncounters, SortByEncountersReverse)
@@ -658,24 +675,24 @@ function VanasKoSPvPStats:SetupColumns(list)
 		VanasKoSGUI:SetColumnType(4, "number")
 		VanasKoSGUI:SetColumnType(5, "number")
 		VanasKoSGUI:ShowToggleButtons()
-		if(not self.group or self.group == PLAYERS_LIST) then
+		if(not group or group == PLAYERS_LIST) then
 			VanasKoSGUI:SetToggleButtonText(L["Players"])
-		elseif(self.group == GUILDS_LIST) then
+		elseif(group == GUILDS_LIST) then
 			VanasKoSGUI:SetColumnName(1, GUILD)
 			VanasKoSGUI:SetToggleButtonText(GUILD)
-		elseif(self.group == CLASS_LIST) then
+		elseif(group == CLASS_LIST) then
 			VanasKoSGUI:SetColumnName(1, CLASS)
 			VanasKoSGUI:SetToggleButtonText(CLASS)
-		elseif(self.group == RACE_LIST) then
+		elseif(group == RACE_LIST) then
 			VanasKoSGUI:SetColumnName(1, RACE)
 			VanasKoSGUI:SetToggleButtonText(RACE)
-		elseif(self.group == MAP_LIST) then
+		elseif(group == MAP_LIST) then
 			VanasKoSGUI:SetColumnName(1, ZONE)
 			VanasKoSGUI:SetToggleButtonText(ZONE)
-		elseif(self.group == DATE_LIST) then
+		elseif(group == DATE_LIST) then
 			VanasKoSGUI:SetColumnName(1, L["Date"])
 			VanasKoSGUI:SetToggleButtonText(L["Date"])
-		elseif(self.group == GENERAL_LIST) then
+		elseif(group == GENERAL_LIST) then
 			VanasKoSGUI:SetColumnName(1, CATEGORY)
 			VanasKoSGUI:SetColumnName(4, L["Total"])
 			VanasKoSGUI:SetToggleButtonText(GENERAL)
@@ -695,8 +712,8 @@ function VanasKoSPvPStats:ToggleLeftButtonOnClick(button, frame)
 	else
 		VanasKoSListFrameRemoveButton:Disable()
 	end
-	self:BuildList()
-	self:SetupColumns(list)
+	self:BuildList(self.group)
+	self:SetupColumns(list, self.group)
 	VanasKoSGUI:UpdateShownList()
 end
 
@@ -712,8 +729,8 @@ function VanasKoSPvPStats:ToggleRightButtonOnClick(button, frame)
 	else
 		VanasKoSListFrameRemoveButton:Disable()
 	end
-	self:BuildList()
-	self:SetupColumns(list)
+	self:BuildList(self.group)
+	self:SetupColumns(list, self.group)
 	VanasKoSGUI:UpdateShownList()
 end
 
@@ -817,14 +834,14 @@ function VanasKoSPvPStats:OnEnable()
 		},
 	}
 
-	local pvplog = VanasKoS:GetList("PVPLOG") or {}
+	local pvpEventLog = VanasKoS:GetList("PVPLOG", 1) or {}
 
 	local twinks = {}
 	twinks[hashName(UnitName("player"), GetRealmName())] = {
 		name = UnitName("player"),
 		realm = GetRealmName()
 	}
-	for _, event in pairs(pvplog.event or {}) do
+	for _, event in pairs(pvpEventLog.event or {}) do
 		if(event.myname and event.myrealm) then
 			twinks[hashName(event.myname, event.myrealm)] = {
 				name = event.myname,

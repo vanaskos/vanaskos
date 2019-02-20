@@ -585,7 +585,6 @@ end
 function VanasKoSDefaultLists:RemoveEntry(listname, key)
 	local list = VanasKoS:GetList(listname)
 	local data
-	-- Try removing exactly as is at first
 	if(list and list[key]) then
 		data = list[key]
 		list[key] = nil

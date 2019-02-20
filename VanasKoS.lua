@@ -196,7 +196,6 @@ end
 ------------------------------------------------------------------------]]
 
 local listHandler = {}
-VANASKOS.Lists = {}
 
 local function sortLists(val1, val2)
 	if (val1[3] == nil) then

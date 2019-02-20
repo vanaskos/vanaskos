@@ -157,36 +157,38 @@ function VanasKoSEventMap:OnShow()
 end
 
 function VanasKoSEventMap:RemoveEventsInPin(Pin)
-	local pvplog = VanasKoS:GetList("PVPLOG")
+	local pvpEventLog = VanasKoS:GetList("PVPLOG", 1)
+	local pvpPlayerLog = VanasKoS:GetList("PVPLOG", 2)
+	local pvpMapLog = VanasKoS:GetList("PVPLOG", 3)
 	for i, hash in ipairs(Pin.event) do
-		local event = pvplog.event[hash]
+		local event = pvpEventLog[hash]
 		if (event) then
 			if (event.enemyname) then
-				for j, zhash in ipairs(pvplog.players[event.enemyname] or {}) do
+				for j, zhash in ipairs(pvpPlayerLog[event.enemyname] or {}) do
 					if (zhash == hash) then
 						--print("removing " .. hash .. " from player log")
-						tremove(pvplog.players[event.enemyname], j)
+						tremove(pvpPlayerLog[event.enemyname], j)
 						break
 					end
-					if (pvplog.players[event.enemyname] and next(pvplog.players[event.enemyname]) == nil) then
-						pvplog.players[event.enemyname] = nil
+					if (pvpPlayerLog[event.enemyname] and next(pvpPlayerLog[event.enemyname]) == nil) then
+						pvpPlayerLog[event.enemyname] = nil
 					end
 				end
 			end
 		end
 		if (event.mapID) then
-			for j, zhash in ipairs(pvplog.map[event.mapID] or {}) do
+			for j, zhash in ipairs(pvpMapLog[event.mapID] or {}) do
 				if (zhash == hash) then
 					--print("removing " .. hash .. " from pvp zone log")
-					tremove(pvplog.map[event.mapID], j)
+					tremove(pvpMapLog[event.mapID], j)
 					break
 				end
 			end
-			if (pvplog.map[event.mapID] and next(pvplog.map[event.mapID]) == nil) then
-				pvplog.map[event.mapID] = nil
+			if (pvpMapLog[event.mapID] and next(pvpMapLog[event.mapID]) == nil) then
+				pvpMapLog[event.mapID] = nil
 			end
 		end
-		pvplog.event[hash] = nil
+		pvpEventLog[hash] = nil
 	end
 	wipe(Pin.event)
 	Pin:Hide()
@@ -212,9 +214,9 @@ function VanasKoSEventMap:Pin_OnEnter(frame, motion)
 	else
 		tooltip:AddLine(format(L["PvP Encounter"]))
 
-		local pvplog = VanasKoS:GetList("PVPLOG")
+		local pvpEventLog = VanasKoS:GetList("PVPLOG", 1)
 		for i, eventIdx in ipairs(frame.event) do
-			local event = pvplog.event[eventIdx]
+			local event = pvpEventLog[eventIdx]
 			local player = ""
 			if (event.myname) then
 				player = player .. event.myname
@@ -328,18 +330,19 @@ end
 function VanasKoSEventMap:CreatePoints(enemyIdx)
 	self:CreateTrackingPoints()
 
-	local pvplog = VanasKoS:GetList("PVPLOG")
 	local mapID = self:GetMap():GetMapID()
 	local drawAlts = self.db.profile.drawAlts
 	local mapWidth = self:GetMap():GetWidth()
 	local mapHeight = self:GetMap():GetHeight()
+	local pvpEventLog = VanasKoS:GetList("PVPLOG", 1)
+	local pvpMapLog = VanasKoS:GetList("PVPLOG", 3)
 
-	if (pvplog and pvplog.map[mapID]) then
+	if (pvpMapLog and pvpMapLog[mapID]) then
 		local i = 0
 		local myname = UnitName("player")
-		local zonelog = pvplog.map[mapID] or {}
+		local zonelog = pvpMapLog[mapID] or {}
 		for idx = enemyIdx, #zonelog do
-			local event = pvplog.event[zonelog[idx]]
+			local event = pvpEventLog[zonelog[idx]]
 			if (drawAlts or event.myname == myname) then
 				local Pin = self:GetPin(event.x, event.y)
 				if (event.type == "loss") then

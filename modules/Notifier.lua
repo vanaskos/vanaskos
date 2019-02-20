@@ -749,53 +749,51 @@ function VanasKoSNotifier:GROUP_ROSTER_UPDATE()
 	end
 
 	local newParty = {}
-	for i = 1, 4 do
-		if(GetPartyMember(i)) then
-			local name, realm = UnitName("party" .. i)
-			local key = hashName(name, realm)
-			newParty[key] = i
-			local hate = VanasKoS:IsOnList("HATELIST", key)
-			local nice = VanasKoS:IsOnList("NICELIST", key)
-			if(hate) then
-				if(self.db.profile.notifyTargetFrame) then
-					local texture = getglobal("PartyMemberFrame"..i.."Texture")
-					texture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSPartyFrame")
-					texture:SetVertexColor(1.0, 0.0, 0.0, texture:GetAlpha())
+	for i = 1, GetNumSubgroupMembers() do
+		local name, realm = UnitName("party" .. i)
+		local key = hashName(name, realm)
+		newParty[key] = i
+		local hate = VanasKoS:IsOnList("HATELIST", key)
+		local nice = VanasKoS:IsOnList("NICELIST", key)
+		if(hate) then
+			if(self.db.profile.notifyTargetFrame) then
+				local texture = getglobal("PartyMemberFrame"..i.."Texture")
+				texture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSPartyFrame")
+				texture:SetVertexColor(1.0, 0.0, 0.0, texture:GetAlpha())
+			end
+			if(not lastPartyUpdate[key]) then
+				local msg = format(L["Hated player \"%s\" (%s) is in your party"], name, hate.reason or "")
+				if(self.db.profile.notifyVisual) then
+					UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME)
 				end
-				if(not lastPartyUpdate[key]) then
-					local msg = format(L["Hated player \"%s\" (%s) is in your party"], name, hate.reason or "")
-					if(self.db.profile.notifyVisual) then
-						UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME)
-					end
-					if(self.db.profile.notifyChatframe) then
-						VanasKoS:Print(msg)
-					end
-					if(self.db.profile.notifyFlashingBorder) then
-						flashNotifyTexture:SetVertexColor(1.0, 0.0, 0.0, flashNotifyTexture:GetAlpha())
-						self:FlashNotify()
-					end
-					self:PlaySound(self.db.profile.hatePlayName)
+				if(self.db.profile.notifyChatframe) then
+					VanasKoS:Print(msg)
 				end
-			elseif(nice) then
-				if(self.db.profile.notifyTargetFrame) then
-					local texture = getglobal("PartyMemberFrame"..i.."Texture")
-					texture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSPartyFrame")
-					texture:SetVertexColor(0.0, 1.0, 0.0, texture:GetAlpha())
+				if(self.db.profile.notifyFlashingBorder) then
+					flashNotifyTexture:SetVertexColor(1.0, 0.0, 0.0, flashNotifyTexture:GetAlpha())
+					self:FlashNotify()
 				end
-				if(not lastPartyUpdate[key]) then
-					local msg = format(L["Nice player \"%s\" (%s) is in your party"], name, nice.reason or "")
-					if(self.db.profile.notifyVisual) then
-						UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME)
-					end
-					if(self.db.profile.notifyChatframe) then
-						VanasKoS:Print(msg)
-					end
-					if(self.db.profile.notifyFlashingBorder) then
-						flashNotifyTexture:SetVertexColor(0.0, 1.0, 0.0, flashNotifyTexture:GetAlpha())
-						self:FlashNotify()
-					end
-					self:PlaySound(self.db.profile.nicePlayName)
+				self:PlaySound(self.db.profile.hatePlayName)
+			end
+		elseif(nice) then
+			if(self.db.profile.notifyTargetFrame) then
+				local texture = getglobal("PartyMemberFrame"..i.."Texture")
+				texture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSPartyFrame")
+				texture:SetVertexColor(0.0, 1.0, 0.0, texture:GetAlpha())
+			end
+			if(not lastPartyUpdate[key]) then
+				local msg = format(L["Nice player \"%s\" (%s) is in your party"], name, nice.reason or "")
+				if(self.db.profile.notifyVisual) then
+					UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME)
 				end
+				if(self.db.profile.notifyChatframe) then
+					VanasKoS:Print(msg)
+				end
+				if(self.db.profile.notifyFlashingBorder) then
+					flashNotifyTexture:SetVertexColor(0.0, 1.0, 0.0, flashNotifyTexture:GetAlpha())
+					self:FlashNotify()
+				end
+				self:PlaySound(self.db.profile.nicePlayName)
 			end
 		end
 	end
@@ -806,41 +804,39 @@ end
 
 function VanasKoSNotifier:RAID_ROSTER_UPDATE()
 	local newParty = {}
-	for i = 1, 40 do
-		if(GetRaidRosterInfo(i)) then
-			local name, realm = UnitName("raid" .. i)
-			local key = hashName(name, realm)
-			newParty[key] = i
-			if(not lastPartyUpdate[key]) then
-				local hate = VanasKoS:IsOnList("HATELIST", key)
-				local nice = VanasKoS:IsOnList("NICELIST", key)
-				if(hate) then
-					local msg = format(L["Hated player \"%s\" (%s) is in your raid"], name, hate.reason or "")
-					if(self.db.profile.notifyVisual) then
-						UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME)
-					end
-					if(self.db.profile.notifyChatframe) then
-						VanasKoS:Print(msg)
-					end
-					if(self.db.profile.notifyFlashingBorder) then
-						flashNotifyTexture:SetVertexColor(1.0, 0.0, 0.0, flashNotifyTexture:GetAlpha())
-						self:FlashNotify()
-					end
-					self:PlaySound(self.db.profile.hatePlayName)
-				elseif(nice) then
-					local msg = format(L["Nice player \"%s\" (%s) is in your raid"], name, nice.reason or "")
-					if(self.db.profile.notifyVisual) then
-						UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME)
-					end
-					if(self.db.profile.notifyChatframe) then
-						VanasKoS:Print(msg)
-					end
-					if(self.db.profile.notifyFlashingBorder) then
-						flashNotifyTexture:SetVertexColor(0.0, 1.0, 0.0, flashNotifyTexture:GetAlpha())
-						self:FlashNotify()
-					end
-					self:PlaySound(self.db.profile.nicePlayName)
+	for i = 1, GetNumGroupMembers() do
+		local name, realm = UnitName("raid" .. i)
+		local key = hashName(name, realm)
+		newParty[key] = i
+		if(not lastPartyUpdate[key]) then
+			local hate = VanasKoS:IsOnList("HATELIST", key)
+			local nice = VanasKoS:IsOnList("NICELIST", key)
+			if(hate) then
+				local msg = format(L["Hated player \"%s\" (%s) is in your raid"], name, hate.reason or "")
+				if(self.db.profile.notifyVisual) then
+					UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME)
 				end
+				if(self.db.profile.notifyChatframe) then
+					VanasKoS:Print(msg)
+				end
+				if(self.db.profile.notifyFlashingBorder) then
+					flashNotifyTexture:SetVertexColor(1.0, 0.0, 0.0, flashNotifyTexture:GetAlpha())
+					self:FlashNotify()
+				end
+				self:PlaySound(self.db.profile.hatePlayName)
+			elseif(nice) then
+				local msg = format(L["Nice player \"%s\" (%s) is in your raid"], name, nice.reason or "")
+				if(self.db.profile.notifyVisual) then
+					UIErrorsFrame:AddMessage(msg, 1.0, 1.0, 1.0, 1.0, UIERRORS_HOLD_TIME)
+				end
+				if(self.db.profile.notifyChatframe) then
+					VanasKoS:Print(msg)
+				end
+				if(self.db.profile.notifyFlashingBorder) then
+					flashNotifyTexture:SetVertexColor(0.0, 1.0, 0.0, flashNotifyTexture:GetAlpha())
+					self:FlashNotify()
+				end
+				self:PlaySound(self.db.profile.nicePlayName)
 			end
 		end
 	end

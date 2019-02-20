@@ -1,5 +1,9 @@
 Release Changelog for VanasKoS
 
+alpha-557:
+- Add list to show detailed pvp log
+- Add options for handling war mode and pvp flags
+- Fix notifier for Party API changes
 alpha-555:
 - Fix yet another importer issue player is not plural for pvplog
   - Made new location plural for consistency with other lists

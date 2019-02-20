@@ -500,11 +500,37 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 					return VanasKoSWarnFrame.db.profile.HideIfInactive
 				end,
 			},
+			hideifpvpflagoff = {
+				type = 'toggle',
+				name = L["Hide if PvP flag off"],
+				desc = L["Hide if PvP flag off"],
+				order = 3,
+				set = function(frame, v)
+					VanasKoSWarnFrame.db.profile.HideIfPvPOff = v
+					VanasKoSWarnFrame:Update()
+				end,
+				get = function()
+					return VanasKoSWarnFrame.db.profile.HideIfPvPOff
+				end,
+			},
+			hideifwarmodeoff = {
+				type = 'toggle',
+				name = L["Hide if War Mode off"],
+				desc = L["Hide if War Mode off"],
+				order = 4,
+				set = function(frame, v)
+					VanasKoSWarnFrame.db.profile.HideIfNotWar = v
+					VanasKoSWarnFrame:Update()
+				end,
+				get = function()
+					return VanasKoSWarnFrame.db.profile.HideIfNotWar
+				end,
+			},
 			showBorder = {
 				type = 'toggle',
 				name = L["Show border"],
 				desc = L["Show border"],
-				order = 3,
+				order = 5,
 				set = function(frame, v)
 					VanasKoSWarnFrame.db.profile.WarnFrameBorder = v
 					if (v == true) then
@@ -528,7 +554,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 				type = 'toggle',
 				name = L["Grow list upwards"],
 				desc = L["Grow list from the bottom of the WarnFrame"],
-				order = 4,
+				order = 6,
 				get = function()
 					return VanasKoSWarnFrame.db.profile.GrowUp
 				end,
@@ -1096,6 +1122,8 @@ function VanasKoSWarnFrame:OnInitialize()
 		profile = {
 			Enabled = true,
 			HideIfInactive = false,
+			HideIfPvPOff = true,
+			HideIfNotWar = false,
 			Locked = false,
 			WarnFrameBorder = true,
 
@@ -1103,7 +1131,7 @@ function VanasKoSWarnFrame:OnInitialize()
 			ShowKoS = true,
 			ShowHostile = true,
 			ShowFriendly = true,
-			ShowMouseOverInfos = false,
+			ShowMouseOverInfos = true,
 			ShowClassIcons = true,
 			GrowUp = false,
 
@@ -1199,6 +1227,9 @@ function VanasKoSWarnFrame:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_DEAD")
+	self:RegisterEvent("UNIT_FACTION")
+	self:RegisterEvent("HONOR_LEVEL_UPDATE")
+	self:RegisterEvent("WAR_MODE_STATUS_UPDATE")
 
 	self:ZoneChanged()
 end
@@ -1238,6 +1269,21 @@ function VanasKoSWarnFrame:PLAYER_REGEN_DISABLED() -- event, ...
 end
 
 function VanasKoSWarnFrame:PLAYER_DEAD() -- event, ...
+	self:Update()
+end
+
+function VanasKoSWarnFrame:UNIT_FACTION(...)
+	local unit = select(2, ...)
+	if unit == "player" then
+		self:Update()
+	end
+end
+
+function VanasKoSWarnFrame:HONOR_LEVEL_UPDATE()
+	self:Update()
+end
+
+function VanasKoSWarnFrame:WAR_MODE_STATUS_UPDATE()
 	self:Update()
 end
 
@@ -1585,6 +1631,10 @@ function VanasKoSWarnFrame:Update()
 		if(self.db.profile.hideInBg and VanasKoS:IsInBattleground()) then
 			HideWarnFrame()
 		elseif(self.db.profile.hideInInstance and VanasKoS:IsInDungeon()) then
+			HideWarnFrame()
+		elseif(self.db.profile.HideIfPvPOff and not UnitIsPVP("player")) then
+			HideWarnFrame()
+		elseif(self.db.profile.HideIfNotWar and not C_PvP.IsWarModeActive()) then
 			HideWarnFrame()
 		elseif(self.db.profile.HideIfInactive) then
 			if((counter > 0 and self.db.profile.GrowUp == false) or (counter < (currentButtonCount - 1) and self.db.profile.GrowUp == true)) then

@@ -56,11 +56,15 @@ function VanasKoSDataGatherer:OnInitialize()
 			UseCombatLog = true,
 			StorePlayerDataPermanently = false,
 			GatherInCities = false,
+			GatherInWarMode = true,
+			GatherInNormalMode = true,
 			EnableInSanctuary = false,
 			EnableInCity = true,
 			EnableInBattleground = false,
 			EnableInCombatZone = false,
 			EnableInArena = false,
+			EnableInWarMode = true,
+			EnableInNormalMode = true,
 		},
 	})
 
@@ -69,9 +73,14 @@ function VanasKoSDataGatherer:OnInitialize()
 			name = L["Data Gathering"],
 			type = "group",
 			args = {
+				combatlog_header = {
+					order = 1,
+					type = "header",
+					name = L["Combat Log Monitoring"],
+				},
 				combatlog = {
 					type = "toggle",
-					order = 1,
+					order = 2,
 					name = L["Use Combat Log"],
 					desc = L["Toggles if the combatlog should be used to detect nearby player"],
 					get = function()
@@ -82,9 +91,105 @@ function VanasKoSDataGatherer:OnInitialize()
 						VanasKoSDataGatherer:EnableCombatEvents(v)
 					end,
 				},
+				enableinsanctuary = {
+					type = "toggle",
+					order = 3,
+					name = L["Enable in Sanctuaries"],
+					desc = L["Toggles detection of players in sanctuaries"],
+					get = function()
+						return VanasKoSDataGatherer.db.profile.EnableInSanctuary
+					end,
+					set = function(frame, v)
+						VanasKoSDataGatherer.db.profile.EnableInSanctuary = v
+						VanasKoSDataGatherer:Update()
+					end,
+				},
+				enableincity = {
+					type = "toggle",
+					order = 4,
+					name = L["Enable in Cities"],
+					desc = L["Toggles detection of players in cities"],
+					get = function()
+						return VanasKoSDataGatherer.db.profile.EnableInCity
+					end,
+					set = function(frame, v)
+						VanasKoSDataGatherer.db.profile.EnableInCity = v
+						VanasKoSDataGatherer:Update()
+					end,
+				},
+				enableinbg = {
+					type = "toggle",
+					order = 5,
+					name = L["Enable in Battleground"],
+					desc = L["Toggles detection of players in battlegrounds"],
+					get = function()
+						return VanasKoSDataGatherer.db.profile.EnableInBattleground
+					end,
+					set = function(frame, v)
+						VanasKoSDataGatherer.db.profile.EnableInBattleground = v
+						VanasKoSDataGatherer:Update()
+					end,
+				},
+				enableincombatzone = {
+					type = "toggle",
+					order = 6,
+					name = L["Enable in combat zone"],
+					desc = L["Toggles detection of players in combat zones (Wintergrasp, Tol Barad)"],
+				get = function()
+					return VanasKoSDataGatherer.db.profile.EnableInCombatZone
+				end,
+				set = function(frame, v)
+					VanasKoSDataGatherer.db.profile.EnableInCombatZone = v
+					VanasKoSDataGatherer:Update()
+				end,
+				},
+				enableinarena = {
+					type = "toggle",
+					order = 7,
+					name = L["Enable in arena"],
+					desc = L["Toggles detection of players in arenas"],
+					get = function()
+						return VanasKoSDataGatherer.db.profile.EnableInArena
+					end,
+					set = function(frame, v)
+						VanasKoSDataGatherer.db.profile.EnableInArena = v
+						VanasKoSDataGatherer:Update()
+					end,
+				},
+				enableinwarmode = {
+					type = "toggle",
+					order = 8,
+					name = L["Enable in War Mode"],
+					desc = L["Toggles detection of players if War Mode is enabled"],
+					get = function()
+						return VanasKoSDataGatherer.db.profile.EnableInWarMode
+					end,
+					set = function(frame, v)
+						VanasKoSDataGatherer.db.profile.EnableInWarMode = v
+						VanasKoSDataGatherer:Update()
+					end,
+				},
+				enableinnormalmode = {
+					type = "toggle",
+					order = 9,
+					name = L["Enable in Normal Mode"],
+					desc = L["Toggles detection of players if War Mode is disabled"],
+					get = function()
+						return VanasKoSDataGatherer.db.profile.EnableInNormalMode
+					end,
+					set = function(frame, v)
+						VanasKoSDataGatherer.db.profile.EnableInNormalMode = v
+						VanasKoSDataGatherer:Update()
+					end,
+				},
+				datastorage_header = {
+					order = 10,
+					type = "header",
+					name = L["Player-Data Storage"],
+				},
 				playerdatastore = {
 					type = "toggle",
-					order = 2,
+					order = 11,
 					name = L["Permanent Player-Data-Storage"],
 					desc = L["Toggles if the data about players (level, class, etc) should be saved permanently."],
 					get = function()
@@ -96,7 +201,7 @@ function VanasKoSDataGatherer:OnInitialize()
 				},
 				gatherincities = {
 					type = "toggle",
-					order = 3,
+					order = 12,
 					name = L["Save data gathered in cities"],
 					desc = L["Toggles if data from players gathered in cities should be saved."],
 					get = function()
@@ -104,74 +209,35 @@ function VanasKoSDataGatherer:OnInitialize()
 					end,
 					set = function(frame, v)
 						VanasKoSDataGatherer.db.profile.GatherInCities = v
-						VanasKoSDataGatherer:ZoneChanged()
+						VanasKoSDataGatherer:Update()
 					end,
 				},
-				enableinsanctuary = {
+				gatherinwarmode = {
 					type = "toggle",
-					order = 4,
-					name = L["Enable in Sanctuaries"],
-					desc = L["Toggles detection of players in sanctuaries"],
+					order = 13,
+					name = L["Save data gathered in war mode"],
+					desc = L["Toggles if data from players gathered in war mode should be saved."],
 					get = function()
-						return VanasKoSDataGatherer.db.profile.EnableInSanctuary
+						return VanasKoSDataGatherer.db.profile.GatherInWarMode
 					end,
 					set = function(frame, v)
-						VanasKoSDataGatherer.db.profile.EnableInSanctuary = v
-						VanasKoSDataGatherer:ZoneChanged()
+						VanasKoSDataGatherer.db.profile.GatherInWarMode = v
+						VanasKoSDataGatherer:Update()
 					end,
 				},
-				enableincity = {
+				gatherinnormalmode = {
 					type = "toggle",
-					order = 5,
-					name = L["Enable in Cities"],
-					desc = L["Toggles detection of players in cities"],
+					order = 14,
+					name = L["Save data gathered in normal mode"],
+					desc = L["Toggles if data from players gathered in normal mode should be saved."],
 					get = function()
-						return VanasKoSDataGatherer.db.profile.EnableInCity
+						return VanasKoSDataGatherer.db.profile.GatherInNormalMode
 					end,
 					set = function(frame, v)
-						VanasKoSDataGatherer.db.profile.EnableInCity = v
-						VanasKoSDataGatherer:ZoneChanged()
+						VanasKoSDataGatherer.db.profile.GatherInNormalMode = v
+						VanasKoSDataGatherer:Update()
 					end,
 				},
-				enableinbg = {
-					type = "toggle",
-					order = 6,
-					name = L["Enable in Battleground"],
-					desc = L["Toggles detection of players in battlegrounds"],
-					get = function()
-						return VanasKoSDataGatherer.db.profile.EnableInBattleground
-					end,
-					set = function(frame, v)
-						VanasKoSDataGatherer.db.profile.EnableInBattleground = v
-						VanasKoSDataGatherer:ZoneChanged()
-					end,
-				},
-				enableincombatzone = {
-					type = "toggle",
-					order = 7,
-					name = L["Enable in combat zone"],
-					desc = L["Toggles detection of players in combat zones (Wintergrasp, Tol Barad)"],
-				get = function()
-					return VanasKoSDataGatherer.db.profile.EnableInCombatZone
-				end,
-				set = function(frame, v)
-					VanasKoSDataGatherer.db.profile.EnableInCombatZone = v
-					VanasKoSDataGatherer:ZoneChanged()
-				end,
-				},
-				enableinarena = {
-					type = "toggle",
-					order = 8,
-					name = L["Enable in arena"],
-					desc = L["Toggles detection of players in arenas"],
-					get = function()
-						return VanasKoSDataGatherer.db.profile.EnableInArena
-					end,
-					set = function(frame, v)
-						VanasKoSDataGatherer.db.profile.EnableInArena = v
-						VanasKoSDataGatherer:ZoneChanged()
-					end,
-				}
 			},
 		},
 	})
@@ -299,10 +365,10 @@ end
 
 function VanasKoSDataGatherer:OnEnable()
 	-- on areachange update area
-	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged")
+	self:RegisterMessage("VanasKoS_Zone_Changed", "Update")
 	self:RegisterMessage("VanasKoS_Player_Detected", "Player_Detected")
 
-	self:ZoneChanged()
+	self:Update()
 
 	playerDataList = self.db.global.data.players
 	local count = 0
@@ -453,7 +519,7 @@ function VanasKoSDataGatherer:EnableDataGathering(enable)
 end
 
 
-function VanasKoSDataGatherer:ZoneChanged()
+function VanasKoSDataGatherer:Update()
 	if (VanasKoS:IsInSanctuary()) then
 		self:EnableTargetEvents(self.db.profile.EnableInSanctuary)
 		self:EnableCombatEvents(self.db.profile.EnableInSanctuary and self.db.profile.UseCombatLog)
@@ -481,6 +547,20 @@ function VanasKoSDataGatherer:ZoneChanged()
 		self:EnableDataGathering(self.db.profile.GatherInCities)
 	else
 		self:EnableDataGathering(true)
+	end
+
+	if (C_PvP.IsWarModeActive() and not self.db.profile.EnableInWarMode) then
+		self:EnableTargetEvents(false)
+		self:EnableCombatEvents(false)
+	elseif (not C_PvP.IsWarModeActive() and self.db.profile.EnableInNormalMode) then
+		self:EnableTargetEvents(false)
+		self:EnableCombatEvents(false)
+	end
+
+	if (C_PvP.IsWarModeActive() and not self.db.profile.GatherInWarMode) then
+		self:EnableDataGathering(false)
+	elseif (not C_PvP.IsWarModeActive() and self.db.profile.GatherInNormalMode) then
+		self:EnableDataGathering(false)
 	end
 end
 

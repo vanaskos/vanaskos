@@ -7,6 +7,11 @@ local L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "enUS",
 if L then
 	L["Lost"] = true
 	L["Score"] = true
+	L["Enemy"] = true
+	L["Player"] = true
+	L["Date"] = true
+	L["Type"] = true
+	L["PvP Log"] = true
 	L["PvP Data Gathering"] = true
 	L["PvP Loss versus %s registered."] = true
 	L["PvP Stats"] = true
@@ -23,6 +28,12 @@ if L then
 	L["sort by name"] = true
 	L["wins: |cff00ff00%d|r - losses: |cffff0000%d|r"] = true
 	L["Old pvp statistics detected. You should import old data by going to importer under VanasKoS configuration"] = true
+	L["Events"] = true
+	L["Players"] = true
+	L["Zone"] = true
+	L["unknown"] = true
+	L["by name"] = true
+	L["sort by name"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPDataGatherer", "frFR")

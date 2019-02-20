@@ -384,8 +384,8 @@ function VanasKoSGUI:InitializeDropDowns()
 				button.text = v[2]
 				button.value = v[1]
 				button.func = function(self, event, ...)
-						UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, self.value)
-						VanasKoSGUI:ShowList(self.value)
+					UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, self.value)
+					VanasKoSGUI:ShowList(self.value, 1)
 				end
 				UIDropDownMenu_AddButton(button)
 			end
@@ -418,16 +418,17 @@ end
 		GUI Functions
 ------------------------------------------------------------------------]]
 
-VANASKOS.selectedEntry = nil
-
 local VANASKOSFRAME_SUBFRAMES = { "VanasKoSListFrame", "VanasKoSAboutFrame" }
 
 local shownList = nil
 local displayedList = nil
 
-function VanasKoSGUI:ShowList(list)
+function VanasKoSGUI:ShowList(list, group)
 	VANASKOS.showList = list
-	shownList = VanasKoS:GetList(VANASKOS.showList)
+	if group then
+		VANASKOS.showGroup = group
+	end
+	shownList = VanasKoS:GetList(VANASKOS.showList, VANASKOS.showGroup)
 
 	self:SetSortFunction(defaultSortFunction[list], defaultRevSortFunction[list])
 end
@@ -731,9 +732,11 @@ function VanasKoSGUI:UpdateMouseOverFrame(key, hoveredType)
 	end
 
 	if (hoveredType == "player") then
-		local pvplog = VanasKoS:GetList("PVPLOG")
-		if(pvplog) then
-			local playerlog = pvplog.players[key]
+		local pvpEventLog = VanasKoS:GetList("PVPLOG", 1)
+		local pvpPlayerLog = VanasKoS:GetList("PVPLOG", 2)
+		local pvpPlayerLog = VanasKoS:GetList("PVPLOG", 2)
+		if(pvpEventLog) then
+			local playerlog = pvpPlayerLog[key]
 			if(playerlog) then
 				local i = #playerlog + 1
 				local iter = function()
@@ -749,7 +752,7 @@ function VanasKoSGUI:UpdateMouseOverFrame(key, hoveredType)
 					tooltip:AddLine("|cffffffff" .. L["PvP Encounter:"] .. "|r")
 				end
 				for i,k in iter do
-					local event = pvplog.event[k]
+					local event = pvpEventLog[k]
 					local mapInfo = event and event.mapID and C_Map.GetMapInfo(event.mapID) or nil
 					if event and event.type == 'win' then
 						tooltip:AddLine(format(L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), mapInfo.name, event.myname or ""))

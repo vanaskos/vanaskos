@@ -475,7 +475,6 @@ function VanasKoSImporter:FromOldVanasKoS()
 	end
 end
 
---@debug@
 -- /script VanasKoSImporter:AddTestData()
 function VanasKoSImporter:AddTestData()
 	if not VanasKoSDB then
@@ -810,4 +809,3 @@ function VanasKoSImporter:AddTestData()
 		}
 	end
 end
---@end-debug@

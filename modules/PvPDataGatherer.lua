@@ -668,7 +668,6 @@ function VanasKoSPvPDataGatherer:HoverType()
 	end
 end
 
---@debug@
 -- /script VanasKoSPvPDataGatherer:AddTestData(100)
 function VanasKoSPvPDataGatherer:AddTestData(cnt)
 	for i=1,cnt do
@@ -709,4 +708,3 @@ function VanasKoSPvPDataGatherer:AddTestData(cnt)
 		})
 	end
 end
---@end-debug@

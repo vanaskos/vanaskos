@@ -671,10 +671,13 @@ function VanasKoSGUI:UpdateMouseOverFrame(key, hoveredType)
 	-- name
 	local data
 	data = VanasKoS:GetList(VANASKOS.showList)[key]
+	if not data then
+		tooltip:AddLine("----")
+		return
+	end
 
 	if (hoveredType == "player") then
-		tooltip:AddLine(data.name)
-		tooltip:AddLine(data.realm)
+		tooltip:AddLine(data.name .. " - " .. data.realm)
 
 		local playerdata = VanasKoS:GetPlayerData(key)
 
@@ -754,10 +757,11 @@ function VanasKoSGUI:UpdateMouseOverFrame(key, hoveredType)
 				for i,k in iter do
 					local event = pvpEventLog[k]
 					local mapInfo = event and event.mapID and C_Map.GetMapInfo(event.mapID) or nil
+					local mapName = mapInfo and mapInfo.name or L["Unknown area"]
 					if event and event.type == 'win' then
-						tooltip:AddLine(format(L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), mapInfo.name, event.myname or ""))
+						tooltip:AddLine(format(L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), mapName, event.myname or L["Unknown player"]))
 					elseif event and event.type == 'loss' then
-						tooltip:AddLine(format(L["%s: |cffff0000Loss|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), mapInfo.name, event.myname or ""))
+						tooltip:AddLine(format(L["%s: |cffff0000Loss|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"], date("%c", event.time), mapName, event.myname or L["Unknown player"]))
 					end
 					if(i < #playerlog - 15) then
 						return

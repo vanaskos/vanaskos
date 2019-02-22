@@ -174,11 +174,6 @@ function VanasKoSPvPStats:OnInitialize()
 		profile = {
 			Enabled = true,
 		},
-		global = {
-			pvpstats = {
-				players = {},
-			},
-		}
 	})
 
 	-- register sort options for the lists this module provides
@@ -582,7 +577,7 @@ function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
 					pvpEventLog[eventKey] = nil
 					removed = true
 				end
-				pvpPlayerLog[key] = nil
+				pvpPlayersLog[key] = nil
 			end
 		elseif (group == DATE_LIST) then
 			-- print("brute removing " .. list[key].name)
@@ -591,15 +586,15 @@ function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
 				local remove = nil
 				if (event.time and date("%Y-%m-%d", event.time) == key) then
 					if (event and event.enemykey) then
-						for j, zhash in ipairs(pvpPlayerLog[event.enemykey] or {}) do
+						for j, zhash in ipairs(pvpPlayersLog[event.enemykey] or {}) do
 							if (zhash == eventKey) then
 								--print("removing " .. eventKey .. " from player log")
-								tremove(pvpPlayerLog[event.enemykey], j)
+								tremove(pvpPlayersLog[event.enemykey], j)
 								break
 							end
 						end
-						if (pvpPlayerLog[event.enemykey] and next(pvpPlayerLog[event.enemykey]) == nil) then
-							pvpPlayerLog[event.enemykey] = nil
+						if (pvpPlayersLog[event.enemykey] and next(pvpPlayersLog[event.enemykey]) == nil) then
+							pvpPlayersLog[event.enemykey] = nil
 						end
 					end
 					if (event and event.mapID) then
@@ -818,9 +813,6 @@ function VanasKoSPvPStats:OnDisable()
 end
 
 function VanasKoSPvPStats:OnEnable()
-	self:RegisterMessage("VanasKoS_PvPWin", "PvPWin")
-	self:RegisterMessage("VanasKoS_PvPLoss", "PvPLoss")
-
 	VanasKoS:RegisterList(6, "PVPSTATS", L["PvP Stats"], self)
 	VanasKoSGUI:RegisterList("PVPSTATS", self)
 
@@ -914,52 +906,12 @@ function VanasKoSPvPStats:OnEnable()
 
 		self.statPie:Hide()
 	end
-end
 
-
-function VanasKoSPvPStats:PvPLoss(message, name, realm)
-	if(name == nil or realm == nil) then
-		return
+	if(self.db.global.pvpstats) then
+		VanasKoS:Print(L["Old pvp statistics detected. You should import old data by going to importer under VanasKoS configuration"])
 	end
-
-	local key = hashName(name, realm)
-	tempStatData.name = name
-	tempStatData.realm = realm
-	tempStatData.wins = 0
-	tempStatData.losses = 1
-	tempStatData.bgwins = 0
-	tempStatData.bglosses = VanasKoS:IsInBattleground() and 1 or 0
-	tempStatData.arenawins = 0
-	tempStatData.arenalosses = VanasKoS:IsInArena() and 1 or 0
-	tempStatData.combatwins = 0
-	tempStatData.combatlosses = VanasKoS:IsInCombatZone() and 1 or 0
-	tempStatData.ffawins = 0
-	tempStatData.ffalosses = VanasKoS:IsInFfaZone() and 1 or 0
-
-	VanasKoS:AddEntry("PVPSTATS", key, tempStatData)
 end
 
-function VanasKoSPvPStats:PvPWin(message, name, realm)
-	if(name == nil or realm == nil) then
-		return
-	end
-
-	local key = hashName(name, realm)
-	tempStatData.name = name
-	tempStatData.realm = realm
-	tempStatData.wins = 1
-	tempStatData.losses = 0
-	tempStatData.bgwins = VanasKoS:IsInBattleground() and 1 or 0
-	tempStatData.bglosses = 0
-	tempStatData.arenawins = VanasKoS:IsInArena() and 1 or 0
-	tempStatData.arenalosses = 0
-	tempStatData.combatwins = VanasKoS:IsInCombatZone() and 1 or 0
-	tempStatData.combatlosses = 0
-	tempStatData.ffawins = VanasKoS:IsInFfaZone() and 1 or 0
-	tempStatData.ffalosses = 0
-
-	VanasKoS:AddEntry("PVPSTATS", key, tempStatData)
-end
 
 function VanasKoSPvPStats:HoverType()
 	if (self.group == PLAYERS_LIST) then

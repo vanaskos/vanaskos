@@ -26,6 +26,8 @@ if L then
 	L['Received from: |cffffffff%s|r'] = true
 	L['Last updated: |cffffffff%s|r'] = true
 	L["PvP Encounter:"] = true
+	L["Unknown area"] = true
+	L["Unknown player"] = true
 	L["%s: |cff00ff00Win|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"] = true
 	L["%s: |cffff0000Loss|r |cffffffffin %s (|r|cffff00ff%s|r|cffffffff)|r"] = true
 	L["Lists"] = true

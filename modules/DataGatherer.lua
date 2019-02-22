@@ -275,12 +275,12 @@ local function isPlayer(flags)
 	return nil
 end
 
-function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(...)
+function VanasKoSDataGatherer:CombatEvent(timestamp, eventType, hideCaster, srcGUID, srcNameRealm, srcFlags, srcRaidFlags, dstGUID, dstNameRealm, dstFlags, dstRaidFlags, ...)
 	local offset = 1
 	local spellID = nil
 	local amount = nil
 	local powerType = nil
-	local eventType, _, srcGUID, srcNameRealm, srcFlags, _, dstGUID, dstNameRealm, dstFlags, _ = select(2, CombatLogGetCurrentEventInfo())
+
 	local srcName, srcRealm = splitNameRealm(srcNameRealm)
 	if srcName and srcRealm == nil then
 		srcRealm = myRealm
@@ -295,12 +295,12 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(...)
 		offset = offset + 3
 	end
 	if(strfind(eventType, "_DAMAGE")) then
---		amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing = select(offset, ...)
 		amount = select(offset, ...)
+		--print("_DAMAGE Amount is " .. amount)
 		offset = offset + 9
 	elseif(strfind(eventType, "_LEECH") or strfind(eventType, "DRAIN")) then
---		amount, powerType, extraAmount = select(offset, ...)
 		amount, powerType = select(offset, ...)
+		--print("_LEECH Amount is " .. amount)
 		offset = offset + 3
 	end
 
@@ -361,6 +361,10 @@ function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED(...)
 	if(eventType == "UNIT_DIED" and isPlayer(dstFlags)) then
 		self:SendMessage("VanasKoS_PvPDeath", dstName, dstRealm)
 	end
+end
+
+function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED()
+	self:CombatEvent(CombatLogGetCurrentEventInfo())
 end
 
 function VanasKoSDataGatherer:OnEnable()
@@ -596,7 +600,7 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 			end
 			if(oldLevelNum > lvl) then
 				lvl = oldLevel
-			elseif(lvl < 110) then
+			elseif(lvl < 120) then
 				lvl = lvl .. "+"
 			end
 		end
@@ -672,7 +676,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, realm, guid, faction, spellI
 		level = oldLevel
 	elseif (level < 1) then
 		level = nil
-	elseif (level < 110) then
+	elseif (level < 120) then
 		level = level .. "+"
 	end
 	gatheredData.guild = playerDataList[key] and playerDataList[key].guild

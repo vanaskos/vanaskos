@@ -85,34 +85,34 @@ function VanasKoSImporter:FromOldVanasKoS()
 
 	count = 0
 	invalid = 0
-	if(VanasKoSDB and VanasKoSDB.namespaces and VanasKoSDB.namespaces.PvPDataGatherer and VanasKoSDB.namespaces.PvPDataGatherer.realm) then
+	if(VanasKoSDB.namespaces.PvPDataGatherer.realm) then
 		for realm,v in pairs(VanasKoSDB.namespaces.PvPDataGatherer.realm) do
 			local oldlog = v.pvpstats and v.pvpstats.pvplog;
 			if oldlog and oldlog.event then
-				for eventkey,eventdata in pairs(oldlog.event) do
-					if not pvplog.event[eventkey] then
-						pvplog.event[eventkey] = {}
+				for eventKey,eventdata in pairs(oldlog.event) do
+					if not pvplog.event[eventKey] then
+						pvplog.event[eventKey] = {}
 					end
-					pvplog.event[eventkey].name, pvplog.event[eventkey].realm = splitNameRealm(eventdata.enemyname)
-					if not pvplog.event[eventkey].realm then
-						pvplog.event[eventkey].realm = realm
+					pvplog.event[eventKey].name, pvplog.event[eventKey].realm = splitNameRealm(eventdata.enemyname)
+					if not pvplog.event[eventKey].realm then
+						pvplog.event[eventKey].realm = realm
 					end
-					pvplog.event[eventkey].enemylevel = eventdata.enemylevel
-					pvplog.event[eventkey].myname = eventdata.myname
-					pvplog.event[eventkey].myrealm = realm
-					pvplog.event[eventkey].mylevel = eventdata.mylevel
-					pvplog.event[eventkey].time = eventdata.time
-					pvplog.event[eventkey].type = eventdata.type
-					-- pvplog.event[eventkey].mapID = convert(eventdata.areaID)
+					pvplog.event[eventKey].enemylevel = eventdata.enemylevel
+					pvplog.event[eventKey].myname = eventdata.myname
+					pvplog.event[eventKey].myrealm = realm
+					pvplog.event[eventKey].mylevel = eventdata.mylevel
+					pvplog.event[eventKey].time = eventdata.time
+					pvplog.event[eventKey].type = eventdata.type
+					-- pvplog.event[eventKey].mapID = convert(eventdata.areaID)
 					-- pvplog.event[eventKey].x = data.posX,
 					-- pvplog.event[eventKey].y = data.posY
 					count = count + 1
-					oldlog[eventkey] = nil
+					oldlog[eventKey] = nil
 				end
 				oldlog.event = nil
 			end
 			if oldlog and oldlog.player then
-				for playerFullName,eventkeyTable in pairs(oldlog.player) do
+				for playerFullName,eventKeyTable in pairs(oldlog.player) do
 					local playerName, playerRealm = splitNameRealm(playerFullName)
 					if not playerRealm then
 						playerRealm = realm
@@ -155,7 +155,7 @@ function VanasKoSImporter:FromOldVanasKoS()
 
 	count = 0;
 	invalid = 0
-	if(VanasKoSDB and VanasKoSDB.namespaces and VanasKoSDB.namespaces.DataGatherer and VanasKoSDB.namespaces.DataGatherer.realm) then
+	if (VanasKoSDB.namespaces.DataGatherer.realm) then
 		for realm,v in pairs(VanasKoSDB.namespaces.DataGatherer.realm) do
 			if (v.players) then
 				for fullPlayerName, olddata in pairs(v.players) do
@@ -230,7 +230,7 @@ function VanasKoSImporter:FromOldVanasKoS()
 
 	count = 0;
 	invalid = 0
-	if(VanasKoSDB and VanasKoSDB.namespaces and VanasKoSDB.namespaces.DefaultLists and VanasKoSDB.namespaces.DefaultLists.factionrealm) then
+	if(VanasKoSDB.namespaces.DefaultLists.factionrealm) then
 		for factionrealm, list in pairs(VanasKoSDB.namespaces.DefaultLists.factionrealm) do
 			local faction, realm = splitFactionRealm(factionrealm)
 			if list then
@@ -300,6 +300,179 @@ function VanasKoSImporter:FromOldVanasKoS()
 		-- Just erase the old data
 		VanasKoSDB.namespaces.Synchronizer.factionrealm = nil
 	end
+
+	count = 0
+	invalid = 0
+	local eventId = 1
+	if(VanasKoSDB.namespaces.PvPStats and VanasKoSDB.namespaces.PvPStats.global and VanasKoSDB.namespaces.PvPStats.global.pvpstats and VanasKoSDB.namespaces.PvPStats.global.pvpstats.players) then
+		local pvpStats = VanasKoSDB.namespaces.PvPStats.global.pvpstats.players
+		for playerFullName, statData in pairs(pvpStats) do
+			local playerName, playerRealm = splitNameRealm(playerFullName)
+			if not playerRealm then
+				playerRealm = L["unknown"]
+			end
+			local playerKey = hashName(playerName, playerRealm)
+			if not pvplog.players[playerKey] then
+				pvplog.players[playerKey] = {}
+			end
+			local wins = 0
+			local losses = 0
+			local ffawins = 0
+			local combatwins = 0
+			local arenawins = 0
+			local bgwins = 0
+			local ffalosses = 0
+			local combatlosses = 0
+			local arenalosses = 0
+			local bglosses = 0
+
+			print("Converting PvP stats for " .. playerKey)
+			for i, eventKey in pairs(pvplog.players[playerKey]) do
+				local event = pvplog.event[eventKey]
+				if event and event.type == "win" then
+					wins = wins + 1
+					if event.inBg then
+						bgwins = bgwins + 1
+					end
+					if event.inArena then
+						arenawins = arenawins + 1
+					end
+					if event.inCombatZone then
+						combatwins = combatwins + 1
+					end
+					if event.inFfa then
+						ffawins = ffawins + 1
+					end
+				elseif event and event.type == "loss" then
+					losses = losses + 1
+					if event.inBg then
+						bglosses = bglosses + 1
+					end
+					if event.inArena then
+						arenalosses = arenalosses + 1
+					end
+					if event.inCombatZone then
+						combatlosses = combatlosses + 1
+					end
+					if event.inFfa then
+						ffalosses = ffalosses + 1
+					end
+				end
+			end
+
+			wins = statData.wins - wins
+			ffawins = statData.ffawins - ffawins
+			combatwins = statData.combatwins - combatwins
+			arenawins = statData.arenawins - arenawins
+			bgwins = statData.bgwins - bgwins
+			losses = statData.losses - losses
+			ffalosses = statData.ffalosses - ffalosses
+			combatlosses = statData.combatlosses - combatlosses
+			arenalosses = statData.arenalosses - arenalosses
+			bglosses = statData.bglosses - bglosses
+
+			if wins > 0 then
+				for i=1,wins do
+					local eventKey = "pvpstatimport-" .. eventId
+					eventId = eventId + 1
+					print("Adding PvP win event " .. eventKey)
+					pvplog.event[eventKey] = {
+						name = playerName,
+						realm = playerRealm,
+						type = "win"
+					}
+					if bgwins > 1 then
+						pvplog.event[eventKey].inBg = true
+						bgwins = bgwins - 1
+					elseif arenawins > 1 then
+						pvplog.event[eventKey].inArena = true
+						arenawins = arenawins - 1
+					elseif combatwins > 1 then
+						pvplog.event[eventKey].inCombatZone = true
+						combatwins = combatwins - 1
+					elseif ffawins > 1 then
+						pvplog.event[eventKey].inFfa = true
+						combatwins = combatwins - 1
+					end
+					tinsert(pvplog.players[playerKey], eventKey)
+				end
+			end
+			if losses > 0 then
+				for i=1,losses do
+					local eventKey = "pvpstatimport-" .. eventId
+					eventId = eventId + 1
+					print("Adding PvP loss evnt " .. eventKey)
+					pvplog.event[eventKey] = {
+						name = playerName,
+						realm = playerRealm,
+						type = "loss"
+					}
+					if bglosses > 1 then
+						pvplog.event[eventKey].inBg = true
+						bglosses = bglosses - 1
+					elseif arenalosses > 1 then
+						pvplog.event[eventKey].inArena = true
+						arenalosses = arenalosses - 1
+					elseif combatlosses > 1 then
+						pvplog.event[eventKey].inCombatZone = true
+						combatlosses = combatlosses - 1
+					elseif ffalosses > 1 then
+						pvplog.event[eventKey].inFfa = true
+						combatlosses = combatlosses - 1
+					end
+					tinsert(pvplog.players[playerKey], eventKey)
+				end
+			end
+
+			-- Add flags to already existing wins if the counts don't add up
+			if ffawins + combatwins + arenawins + bgwins + ffalosses + combatlosses + arenalosses + bglosses > 0 then
+				for i, eventKey in pairs(pvplog.players[playerKey]) do
+					local event = pvplog.event[eventKey]
+					if event and not (event.mapId or event.inBg or event.inArena or event.inCombatZone or event.inFfa) then
+						if event.type == "win" then
+							if bgwins > 1 then
+								event.inBg = true
+								bgwins = bgwins - 1
+							elseif arenawins > 1 then
+								event.inArena = true
+								arenawins = arenawins - 1
+							elseif combatwins > 1 then
+								event.inCombatZone = true
+								combatwins = combatwins - 1
+							elseif ffawins > 1 then
+								event.inFfa = true
+								combatwins = combatwins - 1
+							end
+						elseif event.type == "loss" then
+							if bglossess > 1 then
+								event.inBg = true
+								bglossess = bglossess - 1
+							elseif arenalossess > 1 then
+								event.inArena = true
+								arenalossess = arenalossess - 1
+							elseif combatlossess > 1 then
+								event.inCombatZone = true
+								combatlossess = combatlossess - 1
+							elseif ffalosses > 1 then
+								event.inFfa = true
+								combatlossess = combatlossess - 1
+							end
+						end
+					end
+				end
+			end
+			count = count + 1
+			pvpStats[playerFullName] = nil
+		end
+		VanasKoSDB.namespaces.PvPStats.global = nil
+	end
+
+	if (count > 0) then
+		VanasKoS:Print(format(L["Converted %d PvP stats to %d PvP log events"], count, eventId))
+	end
+	if (invalid > 0) then
+		VanasKoS:Print(format("%d invalid PvP stats skipped", invalid))
+	end
 end
 
 -- /script VanasKoSImporter:AddTestData()
@@ -351,6 +524,18 @@ function VanasKoSImporter:AddTestData()
 	end
 	if not VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.player then
 		VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog.player = {}
+	end
+	if not VanasKoSDB.namespaces.PvPStats then
+		VanasKoSDB.namespaces.PvPStats = {}
+	end
+	if not VanasKoSDB.namespaces.PvPStats.global then
+		VanasKoSDB.namespaces.PvPStats.global = {}
+	end
+	if not VanasKoSDB.namespaces.PvPStats.global.pvpstats then
+		VanasKoSDB.namespaces.PvPStats.global.pvpstats = {}
+	end
+	if not VanasKoSDB.namespaces.PvPStats.global.pvpstats.players then
+		VanasKoSDB.namespaces.PvPStats.global.pvpstats.players = {}
 	end
 	if not VanasKoSDB.namespaces.DataGatherer then
 		VanasKoSDB.namespaces.DataGatherer = {}
@@ -404,6 +589,7 @@ function VanasKoSImporter:AddTestData()
 	end
 	local pvplog1 = VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog
 	local pvplog2 = VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog
+	local pvpstats = VanasKoSDB.namespaces.PvPStats.global.pvpstats.players
 	local playerdata1 = VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].players
 	local playerdata2 = VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].players
 	local nicelist1 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 1"].nicelist.players
@@ -427,11 +613,11 @@ function VanasKoSImporter:AddTestData()
 		for j=1,10 do
 			local name = "test" .. i
 			local realm = "some random realm"
-			local playerkey = name .. "-" .. realm
-			local eventkey = playerkey.."-"..math.floor(math.random()*10000000)
+			local playerKey = name .. "-" .. realm
+			local eventKey = playerKey.."-"..math.floor(math.random()*10000000)
 			local areaID=math.floor(math.random()*100)
-			pvplog1.event[eventkey] = {
-				enemyname=playerkey,
+			pvplog1.event[eventKey] = {
+				enemyname=playerKey,
 				time=time(),
 				myname="bob",
 				mylevel=15,
@@ -441,18 +627,18 @@ function VanasKoSImporter:AddTestData()
 				posX=math.random(),
 				posY=math.random()
 			}
-			if not pvplog1.player[playerkey] then
-				pvplog1.player[playerkey] = {}
+			if not pvplog1.player[playerKey] then
+				pvplog1.player[playerKey] = {}
 			end
-			tinsert(pvplog1.player[playerkey], eventkey)
+			tinsert(pvplog1.player[playerKey], eventKey)
 			if not pvplog1.area[areaID] then
 				pvplog1.area[areaID] = {}
 			end
-			tinsert(pvplog1.area[areaID], eventkey)
-			local eventkey = playerkey.."-"..math.floor(math.random()*10000000)
+			tinsert(pvplog1.area[areaID], eventKey)
+			local eventKey = playerKey.."-"..math.floor(math.random()*10000000)
 			local areaID=math.floor(math.random()*100)
-			pvplog2.event[eventkey] = {
-				enemyname=playerkey,
+			pvplog2.event[eventKey] = {
+				enemyname=playerKey,
 				time=time(),
 				myname="bob",
 				mylevel=15,
@@ -462,19 +648,19 @@ function VanasKoSImporter:AddTestData()
 				posX=math.random(),
 				posY=math.random()
 			}
-			if not pvplog2.player[playerkey] then
-				pvplog2.player[playerkey] = {}
+			if not pvplog2.player[playerKey] then
+				pvplog2.player[playerKey] = {}
 			end
-			tinsert(pvplog2.player[playerkey], eventkey)
+			tinsert(pvplog2.player[playerKey], eventKey)
 			if not pvplog2.area[areaID] then
 				pvplog2.area[areaID] = {}
 			end
-			tinsert(pvplog2.area[areaID], eventkey)
+			tinsert(pvplog2.area[areaID], eventKey)
 
-			if not playerdata1[playerkey] then
-				playerdata1[playerkey] = {}
+			if not playerdata1[playerKey] then
+				playerdata1[playerKey] = {}
 			end
-			playerdata1[playerkey] = {
+			playerdata1[playerKey] = {
 				level = math.floor(math.random()*120),
 				race = "Human",
 				class = "Mage",
@@ -483,7 +669,7 @@ function VanasKoSImporter:AddTestData()
 				mapID = areaID,
 				guid = "Player-"..math.floor(math.random()*100000)
 			}
-			playerdata2[playerkey] = {
+			playerdata2[playerKey] = {
 				level = math.floor(math.random()*120),
 				race = "Human",
 				class = "Mage",
@@ -496,11 +682,11 @@ function VanasKoSImporter:AddTestData()
 	end
 	for i=1,50 do
 		local name = "test" .. i
-		local playerkey = name
-		local eventkey = playerkey.."-"..math.floor(math.random()*10000000)
+		local playerKey = name
+		local eventKey = playerKey.."-"..math.floor(math.random()*10000000)
 		local areaID=math.floor(math.random()*100)
-		pvplog1.event[eventkey] = {
-			enemyname=playerkey,
+		pvplog1.event[eventKey] = {
+			enemyname=playerKey,
 			time=time(),
 			myname="bob",
 			mylevel=15,
@@ -510,18 +696,18 @@ function VanasKoSImporter:AddTestData()
 			posX=math.random(),
 			posY=math.random()
 		}
-		if not pvplog1.player[playerkey] then
-			pvplog1.player[playerkey] = {}
+		if not pvplog1.player[playerKey] then
+			pvplog1.player[playerKey] = {}
 		end
-		tinsert(pvplog1.player[playerkey], eventkey)
+		tinsert(pvplog1.player[playerKey], eventKey)
 		if not pvplog2.area[areaID] then
 			pvplog2.area[areaID] = {}
 		end
-		tinsert(pvplog2.area[areaID], eventkey)
-		local eventkey = playerkey.."-"..math.floor(math.random()*10000000)
+		tinsert(pvplog2.area[areaID], eventKey)
+		local eventKey = playerKey.."-"..math.floor(math.random()*10000000)
 		local areaID=math.floor(math.random()*100)
-		pvplog2.event[eventkey] = {
-			enemyname=playerkey,
+		pvplog2.event[eventKey] = {
+			enemyname=playerKey,
 			time=time(),
 			myname="bob",
 			mylevel=15,
@@ -531,15 +717,15 @@ function VanasKoSImporter:AddTestData()
 			posX=math.random(),
 			posY=math.random()
 		}
-		if not pvplog2.player[playerkey] then
-			pvplog2.player[playerkey] = {}
+		if not pvplog2.player[playerKey] then
+			pvplog2.player[playerKey] = {}
 		end
-		tinsert(pvplog2.player[playerkey], eventkey)
+		tinsert(pvplog2.player[playerKey], eventKey)
 		if not pvplog2.area[areaID] then
 			pvplog2.area[areaID] = {}
 		end
-		tinsert(pvplog2.area[areaID], eventkey)
-		playerdata1[playerkey] = {
+		tinsert(pvplog2.area[areaID], eventKey)
+		playerdata1[playerKey] = {
 			level = math.floor(math.random()*120),
 			race = "Human",
 			class = "Mage",
@@ -548,7 +734,7 @@ function VanasKoSImporter:AddTestData()
 			mapID = areaID,
 			guid = "Player-"..math.floor(math.random()*100000)
 		}
-		playerdata2[playerkey] = {
+		playerdata2[playerKey] = {
 			level = math.floor(math.random()*120),
 			race = "Human",
 			class = "Mage",
@@ -597,5 +783,29 @@ function VanasKoSImporter:AddTestData()
 		gkos2["gkos2test" .. i .. "-Realm X"] = testdata
 		gkos3["gkos3test" .. i .. "-Realm Y"] = testdata
 		gkos4["gkos4test" .. i .. "-Realm Z"] = testdata
+		pvpstats["name" .. i .. "-arealm"] = {
+			wins = math.random() * 10 + 1,
+			losses = math.random() * 10 + 1,
+			ffawins = math.random() * 10 + 1,
+			combatwins = math.random() * 10 + 1,
+			arenawins = math.random() * 10 + 1,
+			bgwins = math.random() * 10 + 1,
+			ffalosses = math.random() * 10 + 1,
+			combatlosses = math.random() * 10 + 1,
+			arenalosses = math.random() * 10 + 1,
+			bglosses = math.random() * 10 + 1
+		}
+		pvpstats["realmlessguy" .. i] = {
+			wins = math.random() * 10 + 1,
+			losses = math.random() * 10 + 1,
+			ffawins = math.random() * 10 + 1,
+			combatwins = math.random() * 10 + 1,
+			arenawins = math.random() * 10 + 1,
+			bgwins = math.random() * 10 + 1,
+			ffalosses = math.random() * 10 + 1,
+			combatlosses = math.random() * 10 + 1,
+			arenalosses = math.random() * 10 + 1,
+			bglosses = math.random() * 10 + 1
+		}
 	end
 end

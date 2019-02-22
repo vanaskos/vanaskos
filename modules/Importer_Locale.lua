@@ -10,8 +10,10 @@ if L then
 	L["Imported %d player data"] = true
 	L["Imported %d list entries"] = true
 	L["Imports KoS Data from other KoS tools"] = true
+	L["Converted %d PvP stats to %d PvP log events"] = true
 	L["Old VanasKoS"] = true
 	L["Imports Data from old VanasKoS (backup WTF first)"] = true
+	L["unknown"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/Importer", "frFR")

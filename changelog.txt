@@ -1,5 +1,11 @@
 Release Changelog for VanasKoS
 
+alpha-558:
+- Fix bugs in combat log monitoring
+- Fix bug not adding to the player event crossreference table
+- Add all the most recent attackers (<5s) to pvplog on death
+- Add conversion from old pvpstats to importer
+- Remove old pvp stats
 alpha-557:
 - Add list to show detailed pvp log
 - Add options for handling war mode and pvp flags

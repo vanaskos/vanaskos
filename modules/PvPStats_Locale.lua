@@ -43,6 +43,8 @@ if L then
 	L["Add to Hatelist"] = true
 	L["Add to Nicelist"] = true
 	L["Remove Entry"] = true
+
+	L["Old pvp statistics detected. You should import old data by going to importer under VanasKoS configuration"] = true
 end
 
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS/PvPStats", "frFR")

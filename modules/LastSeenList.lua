@@ -281,21 +281,21 @@ local function ListButtonOnRightClickMenu()
 		{
 			text = L["Add to Player KoS"],
 			func = function()
-				VanasKoS:AddEntryByName("PLAYERKOS", entryKey)
+				VanasKoS:AddEntryByName("PLAYERKOS", entryValue.name, entryValue.realm)
 			end,
 			order = 2,
 		},
 		{
 			text = L["Add to Hatelist"],
 			func = function()
-				VanasKoS:AddEntryByName("HATELIST", entryKey)
+				VanasKoS:AddEntryByName("HATELIST", entryValue.name, entryValue.realm)
 			end,
 			order = 3,
 		},
 		{
 			text = L["Add to Nicelist"],
 			func = function()
-				VanasKoS:AddEntryByName("NICELIST", entryKey)
+				VanasKoS:AddEntryByName("NICELIST", entryValue.name, entryValue.realm)
 			end,
 			order = 4,
 		},

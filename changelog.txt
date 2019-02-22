@@ -1,5 +1,7 @@
 Release Changelog for VanasKoS
 
+alpha-559:
+- Fix last seen list right click menu
 alpha-558:
 - Fix bugs in combat log monitoring
 - Fix bug not adding to the player event crossreference table

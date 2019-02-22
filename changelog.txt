@@ -1,5 +1,7 @@
 Release Changelog for VanasKoS
 
+alpha-561:
+- Fix curse packager issues
 alpha-559:
 - Fix last seen list right click menu
 alpha-558:

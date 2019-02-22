@@ -81,3 +81,6 @@ modules\PvPStats_Locale.lua
 modules\PvPStats.lua
 modules\EventMap_Locale.lua
 modules\EventMap.lua
+#@do-not-package@
+tests.lua
+#@end-do-not-package@

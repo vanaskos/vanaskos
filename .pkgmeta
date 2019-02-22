@@ -25,5 +25,8 @@ externals:
 		url: https://repos.wowace.com/wow/libdialog-1-0
 		tag: 8.0.1.1
 
+ignore:
+	- tests.lua
+
 tools-used:
 	- libdatabroker-1-1

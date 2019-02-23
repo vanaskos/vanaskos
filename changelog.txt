@@ -1,5 +1,10 @@
 Release Changelog for VanasKoS
 
+alpha-562:
+- Fix error with NPC party members as happens in some missions
+- Fix error in warning window code if GetBestMapForUnit returns nil
+- Change IsWarModeActive() calls to IsWarModeDesired()
+- Fix reverse logic for enabling/disabling data gatherer in normal mode
 alpha-561:
 - Fix curse packager issues
 alpha-559:

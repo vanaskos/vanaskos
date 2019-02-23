@@ -1469,9 +1469,11 @@ local function GetFactionFont(faction)
 end
 
 local function SetButton(buttonNr, key, faction, data)
-	local pos = C_Map.GetPlayerMapPosition(C_Map.GetBestMapForUnit("player"), "player")
-	local zx = pos.x
-	local zy = pos.y
+	-- Sometimes when changing zones GetBestMapForUnit can return nil
+	local mapId = C_Map.GetBestMapForUnit("player")
+	local pos = mapId and C_Map.GetPlayerMapPosition(mapId, "player")
+	local zx = pos and pos.x
+	local zy = pos and pos.y
 	local align = VanasKoSWarnFrame.db.profile.FontAlign
 	if(InCombatLockdown()) then
 		if(buttonData[buttonNr] ~= key) then
@@ -1509,8 +1511,8 @@ local function SetButton(buttonNr, key, faction, data)
 			macroText = macroText:gsub("${gender}", (data and data.gender) or "")
 			macroText = macroText:gsub("${genderText}", data and (data.gender == 2 and L["male"]) or (data.gender == 3 and L["female"]) or "")
 			macroText = macroText:gsub("${realm}", (data and data.realm) or "")
-			macroText = macroText:gsub("${zoneX}", floor(zx * 100 + 0.5))
-			macroText = macroText:gsub("${zoneY}", floor(zy * 100 + 0.5))
+			macroText = macroText:gsub("${zoneX}", zx and floor(zx * 100 + 0.5)) or ""
+			macroText = macroText:gsub("${zoneY}", zy and floor(zy * 100 + 0.5)) or ""
 			macroText = macroText:gsub("${zone}", GetZoneText())
 			warnButtonsOOC[buttonNr]:SetAttribute("macrotext", macroText)
 			UpdateButtonAlignment(buttonNr, align)
@@ -1634,7 +1636,7 @@ function VanasKoSWarnFrame:Update()
 			HideWarnFrame()
 		elseif(self.db.profile.HideIfPvPOff and not UnitIsPVP("player")) then
 			HideWarnFrame()
-		elseif(self.db.profile.HideIfNotWar and not C_PvP.IsWarModeActive()) then
+		elseif(self.db.profile.HideIfNotWar and not C_PvP.IsWarModeDesired()) then
 			HideWarnFrame()
 		elseif(self.db.profile.HideIfInactive) then
 			if((counter > 0 and self.db.profile.GrowUp == false) or (counter < (currentButtonCount - 1) and self.db.profile.GrowUp == true)) then

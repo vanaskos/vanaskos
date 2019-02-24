@@ -395,11 +395,12 @@ function VanasKoS:AddKoSPlayer(name, realm, reason)
 end
 
 function VanasKoS:List_Entry_Added(message, list, key, data)
-	-- TODO: make this nicer
-	if(list == "PLAYERSYNC" or list == "ACCEPTSYNC" or list == "REJECTSYNC") then
-		self:Print(format(L["Entry %s added."], key))
-	elseif(list ~= nil and list~= "LASTSEEN") then
-		self:Print(format(L["Entry %s (Reason: %s) added."], key, data and data['reason'] or ""))
+	if key then
+		if data and data.reason then
+			self:Print(format(L["Entry %s (Reason: %s) added."], key, data.reason))
+		else
+			self:Print(format(L["Entry %s added."], key))
+		end
 	end
 end
 

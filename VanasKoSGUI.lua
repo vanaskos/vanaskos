@@ -396,19 +396,8 @@ end
 function VanasKoSGUI:OnEnable()
 	VanasKoSGUI.dropDownFrame = CreateFrame("Frame", "VanasKoSGUIDropDownFrame", UIParent, "UIDropDownMenuTemplate")
 
-	self:RegisterMessage("VanasKoS_List_Entry_Added",
-		function(listname, name, data)
-			VanasKoSGUI:UpdateShownList()
-		end)
-	self:RegisterMessage("VanasKoS_List_Entry_Removed",
-		function(listname, name, data)
-			VanasKoSGUI:UpdateShownList()
-		end)
-
---[[	for k,v in pairs(self.ConfigurationOptions.args) do
-		AceConfig:RegisterOptionsTable(k, self.ConfigurationOptions.args[k])
-		AceConfigDialog:AddToBlizOptions(k, self.ConfigurationOptions.args[k].name, "VanasKoS")
-	end ]]
+	self:RegisterMessage("VanasKoS_List_Entry_Added", "UpdateShownList")
+	self:RegisterMessage("VanasKoS_List_Entry_Removed", "UpdateShownList")
 end
 
 function VanasKoSGUI:OnDisable()

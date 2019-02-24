@@ -343,22 +343,24 @@ function VanasKoSEventMap:CreatePoints(enemyIdx)
 		local zonelog = pvpMapLog[mapID] or {}
 		for idx = enemyIdx, #zonelog do
 			local event = pvpEventLog[zonelog[idx]]
-			if (drawAlts or event.myname == myname) then
-				local Pin = self:GetPin(event.x, event.y)
-				if (event.type == "loss") then
-					Pin.score = Pin.score - 1
-				elseif (event.type == "win") then
-					Pin.score = Pin.score + 1
-				end
-				Pin.show = true
+			if event.x and event.y then
+				if (drawAlts or event.myname == myname) then
+					local Pin = self:GetPin(event.x, event.y)
+					if (event.type == "loss") then
+						Pin.score = Pin.score - 1
+					elseif (event.type == "win") then
+						Pin.score = Pin.score + 1
+					end
+					Pin.show = true
 
-				tinsert(Pin.event, zonelog[idx])
-				self:drawPin(Pin)
-			end
-			i = i + 1
-			if (i >= 100) then
-				self:ScheduleTimer("CreatePoints", 0, idx + 1)
-				return
+					tinsert(Pin.event, zonelog[idx])
+					self:drawPin(Pin)
+				end
+				i = i + 1
+				if (i >= 100) then
+					self:ScheduleTimer("CreatePoints", 0, idx + 1)
+					return
+				end
 			end
 		end
 	end

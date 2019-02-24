@@ -283,20 +283,7 @@ function VanasKoSPvPDataGatherer:AddEntry(list, key, data)
 		local pvpMapLog = VanasKoS:GetList("PVPLOG", MAP_LIST)
 		local eventkey = key .. (data.time or time())
 		local playerkey = hashName(data.name, data.realm)
-		pvpEventLog[eventkey] = {
-			name = data.name,
-			realm = data.realm,
-			time = data.time,
-			myname = data.myname,
-			myrealm = data.myrealm,
-			mylevel = data.mylevel,
-			enemylevel = data.enemylevel,
-			type = data.type,
-			mapID  = data.mapID,
-			x = data.x,
-			y = data.y
-		}
-
+		pvpEventLog[eventkey] = data
 		if (data.mapID) then
 			if (not pvpMapLog[data.mapID]) then
 				pvpMapLog[data.mapID] = {}
@@ -308,6 +295,7 @@ function VanasKoSPvPDataGatherer:AddEntry(list, key, data)
 			pvpPlayersLog[playerkey] = {}
 		end
 		tinsert(pvpPlayersLog[playerkey], eventkey)
+		self:SendMessage("VanasKoS_List_Entry_Added", list, key, data)
 	end
 	return true
 end
@@ -518,12 +506,13 @@ function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, srcRealm, dstName, 
 	end
 end
 
+-- /script VanasKoSPvPDataGatherer:LogPvPEvent("test", "test", true)
 function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 	if (lastDamageTo and not (name == myName and realm == myRealm)) then
 		for i=1,#lastDamageTo do
 			if(lastDamageTo[i] and lastDamageTo[i].name == name and lastDamageTo[i].realm == realm) then
 				self:SendMessage("VanasKoS_PvPWin", name, realm)
-				self:LogPvPWin(name, realm)
+				self:LogPvPEvent(name, realm, true)
 				tremove(lastDamageTo, i)
 			end
 		end
@@ -531,7 +520,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 		for i=1,#lastDamageFrom do
 			if (lastDamageFrom[i].time and (time() - lastDamageFrom[i].time) < 5) then
 				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[i].name, lastDamageFrom[i].realm)
-				self:LogPvPLoss(lastDamageFrom[i].name, lastDamageFrom[i].realm)
+				self:LogPvPEvent(lastDamageFrom[i].name, lastDamageFrom[i].realm, false)
 			end
 		end
 		wipe(lastDamageFrom)
@@ -588,65 +577,50 @@ function VanasKoSPvPDataGatherer:DamageDoneTo(name, realm, amount)
 	end
 end
 
-function VanasKoSPvPDataGatherer:LogPvPLoss(name, realm)
+function VanasKoSPvPDataGatherer:LogPvPEvent(name, realm, isWin)
 	assert(name)
 	assert(realm)
 
-	VanasKoS:Print(format(L["PvP Loss versus %s registered."], name))
+	if isWin then
+		VanasKoS:Print(format(L["PvP Win versus %s registered."], name))
+	else
+		VanasKoS:Print(format(L["PvP Loss versus %s registered."], name))
+	end
 
-	-- /script local t = C_Map.GetPlayerMapPosition(C_Map.GetBestMapForUnit("player"), "player") for k,v in pairs(t) do print("k" .. k) end
+	-- /script local m = C_Map.GetBestMapForUnit("player"); local p = m and C_Map.GetPlayerMapPosition(m, "player"); x, y = p:GetXY(); print(x, y)
 	local mapID = C_Map.GetBestMapForUnit("player")
-	local x, y = C_Map.GetPlayerMapPosition(mapID, "player"):GetXY()
+	local mapPos = mapID and C_Map.GetPlayerMapPosition(mapID, "player")
+	local x, y, cID, wPos, wx, wy
+	if mapPos then
+		x, y = mapPos:GetXY()
+		cID, wPos = C_Map.GetWorldPosFromMapPos(mapID, mapPos)
+		if wPos then
+			wx, wy = wPos:GetXY()
+		end
+	end
 	local key = hashName(name, realm)
 	local data = VanasKoS:GetPlayerData(key)
 
 	VanasKoS:AddEntry("PVPLOG", key, {
-		time = time(),
+		name = name,
+		realm = realm,
+		enemylevel = data and data.level or nil,
+		enemyguild = data and data.guild or nil,
 		myname = myName,
 		myrealm = myRealm,
 		mylevel = UnitLevel("player"),
-		name = name,
-		enemyguild = data and data.guild or nil,
-		realm = realm,
-		enemylevel = data and data.level or 0,
-		type = "loss",
+		time = time(),
+		type = isWin and "win" or "loss",
 		mapID = mapID,
 		x = x,
 		y = y,
-		inBg = VanasKoS:IsInBattleground(),
-		inArena = VanasKoS:IsInArena(),
-		inCombatZone = VanasKoS:IsInCombatZone(),
-		inFfa = VanasKoS:IsInFfaZone()
-	})
-end
-
-function VanasKoSPvPDataGatherer:LogPvPWin(name, realm)
-	assert(name)
-	assert(realm)
-
-	VanasKoS:Print(format(L["PvP Win versus %s registered."], name))
-
-	local mapID = C_Map.GetBestMapForUnit("player")
-	local x, y = GetPlayerMapPosition(mapID, "player")
-	local key = hashName(name, realm)
-	local data = VanasKoS:GetPlayerData(key)
-
-	VanasKoS:AddEntry("PVPLOG", key, {
-		time = time(),
-		myname = myName,
-		myrealm = myRealm,
-		mylevel = UnitLevel("player"),
-		name = name,
-		realm = realm,
-		enemylevel = data and data.level or 0,
-		type = "win",
-		mapID  = mapID,
-		x = x,
-		y = y,
-		inBg = VanasKoS:IsInBattleground(),
-		inArena = VanasKoS:IsInArena(),
-		inCombatZone = VanasKoS:IsInCombatZone(),
-		inFfa = VanasKoS:IsInFfaZone()
+		cID = cID,
+		wx = wx,
+		wy = wy,
+		inBg = VanasKoS:IsInBattleground() or nil,
+		inArena = VanasKoS:IsInArena() or nil,
+		inCombatZone = VanasKoS:IsInCombatZone() or nil,
+		inFfa = VanasKoS:IsInFfaZone() or nil
 	})
 end
 

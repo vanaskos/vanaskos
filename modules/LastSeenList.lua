@@ -246,8 +246,8 @@ function VanasKoSLastSeenList:Player_Detected(message, data)
 		lastseenlist[key].lastseen = time()
 	end
 
-	-- update the frame
-	self:SendMessage("VanasKoS_List_Entry_Added", "LASTSEEN", nil, nil)
+	-- update the frame (don't send key/data to prevent excessive log messages)
+	self:SendMessage("VanasKoS_List_Entry_Added", "LASTSEEN")
 end
 
 function VanasKoSLastSeenList:ShowList(list)

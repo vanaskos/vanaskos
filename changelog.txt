@@ -1,5 +1,9 @@
 Release Changelog for VanasKoS
 
+alpha-563:
+- Fix PvP stats in battlegrounds
+- Add continent, and world position to pvp events (may use in future)
+- Refresh PVP stats and PVP log on PVP win or loss
 alpha-562:
 - Fix error with NPC party members as happens in some missions
 - Fix error in warning window code if GetBestMapForUnit returns nil

@@ -1,5 +1,6 @@
--- /script VanasKoSImporter:AddTestData()
-function VanasKoSImporter:AddTestData()
+-- /script VanasKoSAddOldTestData()
+-- For testing importer
+function VanasKoSAddOldTestData()
 	if not VanasKoSDB then
 		VanasKoSDB = {}
 	end
@@ -334,7 +335,8 @@ function VanasKoSImporter:AddTestData()
 end
 
 -- /script VanasKoSPvPDataGatherer:AddTestData(100)
-function VanasKoSPvPDataGatherer:AddTestData(cnt)
+-- For testing data gathering
+function VanasKoSAddPvPTestData(cnt)
 	for i=1,cnt do
 		local name = "test" .. i
 		local realm = "some random realm"

@@ -141,7 +141,9 @@ local function ShowTooltip(self, buttonNr)
 
 	GameTooltip:Hide()
 	GameTooltip:SetOwner(self)
-	GameTooltip:SetHyperlink("unit:" .. data.guid)
+	if data.guid then
+		GameTooltip:SetHyperlink("unit:" .. data.guid)
+	end
 
 	-- add the KoS: <text> and KoS (Guild): <text> messages
 	for k,v in pairs(listsToCheck) do
@@ -1472,8 +1474,11 @@ local function SetButton(buttonNr, key, faction, data)
 	-- Sometimes when changing zones GetBestMapForUnit can return nil
 	local mapId = C_Map.GetBestMapForUnit("player")
 	local pos = mapId and C_Map.GetPlayerMapPosition(mapId, "player")
-	local zx = pos and pos.x
-	local zy = pos and pos.y
+	local zx, zy
+	if pos then
+		zx, zy = pos:GetXY()
+	end
+
 	local align = VanasKoSWarnFrame.db.profile.FontAlign
 	if(InCombatLockdown()) then
 		if(buttonData[buttonNr] ~= key) then
@@ -1511,8 +1516,8 @@ local function SetButton(buttonNr, key, faction, data)
 			macroText = macroText:gsub("${gender}", (data and data.gender) or "")
 			macroText = macroText:gsub("${genderText}", data and (data.gender == 2 and L["male"]) or (data.gender == 3 and L["female"]) or "")
 			macroText = macroText:gsub("${realm}", (data and data.realm) or "")
-			macroText = macroText:gsub("${zoneX}", zx and floor(zx * 100 + 0.5)) or ""
-			macroText = macroText:gsub("${zoneY}", zy and floor(zy * 100 + 0.5)) or ""
+			macroText = macroText:gsub("${zoneX}", zx and floor(zx * 100 + 0.5) or "")
+			macroText = macroText:gsub("${zoneY}", zy and floor(zy * 100 + 0.5) or "")
 			macroText = macroText:gsub("${zone}", GetZoneText())
 			warnButtonsOOC[buttonNr]:SetAttribute("macrotext", macroText)
 			UpdateButtonAlignment(buttonNr, align)

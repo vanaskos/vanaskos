@@ -271,7 +271,7 @@ end
 
 function VanasKoSPvPStats:GetList(list, group)
 	if(list == "PVPSTATS") then
-		if (not pvpStatsList or self.group ~= group) then
+		if (not pvpStatsList or self.group ~= group or self.needUpdate) then
 			self:BuildList(group)
 		end
 		return pvpStatsList
@@ -513,31 +513,15 @@ function VanasKoSPvPStats:BuildList(group)
 		}
 	end
 
+	self.needUpdate = false
+
 	if Graph then
 		self:SetWinLossStatsPie(wins, losses)
 	end
 end
 
 function VanasKoSPvPStats:AddEntry(list, key, data)
-	if(list == "PVPSTATS") then
-		local listVar = VanasKoS:GetList("PVPSTATS", 1)
-		if(not listVar[key]) then
-			listVar[key] = {}
-		end
-		local pstat = listVar[key]
-
-		listVar[key].wins = (pstat.wins or 0) + data.wins
-		listVar[key].losses = (pstat.losses or 0) + data.losses
-		listVar[key].bgwins = (pstat.bgwins or 0) + data.bgwins
-		listVar[key].bglosses = (pstat.bglosses or 0) + data.bglosses
-		listVar[key].arenawins = (pstat.arenawins or 0) + data.arenawins
-		listVar[key].arenalosses = (pstat.arenalosses or 0) + data.arenalosses
-		listVar[key].combatwins = (pstat.combatwins or 0) + data.combatwins
-		listVar[key].combatlosses = (pstat.combatlosses or 0) + data.combatlosses
-		listVar[key].ffawins = (pstat.ffawins or 0) + data.ffawins
-		listVar[key].ffalosses = (pstat.ffalosses or 0) + data.ffalosses
-	end
-	return true
+	return nil
 end
 
 function VanasKoSPvPStats:RemoveEntry(listname, key, guild)
@@ -952,4 +936,16 @@ function VanasKoSPvPStats:SetWinLossStatsPie(wins, losses)
 	if(losspercent ~= 0 and losspercent ~= 1) then
 		self.statPie:CompletePie(GREEN)
 	end
+end
+
+-- Refresh list on Win
+function VanasKoSPvPDataGatherer:PvPWin(name, realm)
+	self.needUpdate = true
+	self:SendMessage("VanasKoS_List_Entry_Added", "PVPLOG")
+end
+
+-- Refresh list on Loss
+function VanasKoSPvPDataGatherer:PvPLoss(name, realm)
+	self.needUpdate = true
+	self:SendMessage("VanasKoS_List_Entry_Added", "PVPLOG")
 end

@@ -1,94 +1,38 @@
 Release Changelog for VanasKoS
 
-alpha-564:
-- Convert old areaIDs in importer
-- Fix an occasional error in the warning window code
-alpha-563:
-- Fix PvP stats in battlegrounds
-- Add continent, and world position to pvp events (may use in future)
-- Refresh PVP stats and PVP log on PVP win or loss
-alpha-562:
+5.00 beta:
+- Big overhaul for really broken features with some pretty major changes
+-  Updated EventMap to use new API
+- All player entries are now stored as name-realm (including local realm)
+- All guild entries are now stored as <guild> (no realm data
+- KOS, Hate, Nice lists are now per faction instead of per faction/realm
+- DataGatherer and PvPDataGatherer are now global instead of per realm
+- Import old data (manually right now to give users a chance to backup first)
+- Convert old AreaID to using UiMapIDs
+- Fixed Chatframe notifications for hate/nice list.
+-  Fixed checks for being in a city
+- Style cleanup
 - Fix error with NPC party members as happens in some missions
-- Fix error in warning window code if GetBestMapForUnit returns nil
-- Change IsWarModeActive() calls to IsWarModeDesired()
-- Fix reverse logic for enabling/disabling data gatherer in normal mode
-alpha-561:
-- Fix curse packager issues
-alpha-559:
-- Fix last seen list right click menu
-alpha-558:
 - Fix bugs in combat log monitoring
-- Fix bug not adding to the player event crossreference table
 - Add all the most recent attackers (<5s) to pvplog on death
 - Add conversion from old pvpstats to importer
 - Remove old pvp stats
-alpha-557:
 - Add list to show detailed pvp log
 - Add options for handling war mode and pvp flags
 - Fix notifier for Party API changes
-alpha-555:
-- Fix yet another importer issue player is not plural for pvplog
-  - Made new location plural for consistency with other lists
-  - Changed pvplog location no longer underneath pvpstats
-- Re-add "Lookup in VanasKoS" but under portrain context menu instead of ChatNotifier
-alpha-554:
 - Add < > surrounding guild name in guild kos list
 - Change color of guild kos entries with an owner specified
 - Display "reason" as the default guild kos group
-- Fix pvplog importer using field for name
-- Fix adding entries from last attackers list #94
 - Add a default reason when adding from last attackers list
-- Fix adding entries from "Add Entry" button
 - Fix selecting PvP stats by character
-alpha-553:
-- Fix more importer errors
-- Fix Mouseover data for player pvp stats
-alpha-552:
-- Fix a couple of importer issues
 - Removed unused guilddata
-- Fix colors in some flash notifications
-alpha-551:
-- Fix "Change Entry" button #88
 - Fix command line entry adding #93
-- Fix debug function to add pvp log entries
-alpha-550:
-- Replace UIFrameFlash (finally)
-alpha-549:
-- Fix a few more GUI errors
-  - importer, configuration header was missing its value
-  - synchronizer was not registering its list correctly with the GUI
-- Remove "Lookup in VanasKoS" option from Chat
+- Replace UIFrameFlash (finally), now with different colors
 - Add a VanasKoS header to unit popup menu
-- Replace outdated call to RedrawMap with RefreshAllData in eventmap
-alpha-548:
-- Fix some guild hashing problems
+- Fix event map
 - Add notifications for all default lists, need more options to control this
-  - because it could get annoying
-alpha-546:
 - Fix error when opening ignore list
-alpha-545:
-- Big overhaul for really broken features with some pretty major changes
-  -  Updated EventMap to use new API
-  - All player entries are now stored as name-realm
-    - Including local realm
-- All guild entries are now stored as <guild>
-  - It looks like there is some support for cross-realm guilds on connected servers.
-  - Encoding as guild-realm was too narrow
-- Lists are no longer tracked per realm
-  - DataGatherer and PvPDataGatherer are now global
-  - KOS, Hate, Nice lists are per faction
-- Will not upgrade automatically, requires going through the importer plugin
-  - This is because it's pretty likely it will break things
-- AreaID is no longer useful, switched to using MapIDs
-  - No idea how to import from old versions, so old location data will be lost
-- Some more minor changes
-  - Fixed Chatframe notifications for hate/nice list. It will now display
-    "(hated)" or "(liked)" after a player name.
-    - Previous method of just coloring the name doesn't work because it's
-      overriden by class colors
-  -  Fixed InCity() call
-  - Style cleanup
-  - Lots of other things
+- Lots of other minor things
 
 4.50:
 - Use LibDialog rather than vanilla StaticPopup [ticket #78]

@@ -1,5 +1,8 @@
 Release Changelog for VanasKoS
 
+alpha-564:
+- Convert old areaIDs in importer
+- Fix an occasional error in the warning window code
 alpha-563:
 - Fix PvP stats in battlegrounds
 - Add continent, and world position to pvp events (may use in future)

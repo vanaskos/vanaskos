@@ -132,7 +132,7 @@ local function HideTooltip()
 end
 
 local function ShowTooltip(self, buttonNr)
-	if(not VanasKoSWarnFrame.db.profile.ShowMouseOverInfos) then
+	if(not VanasKoSWarnFrame.db.profile.ShowMouseOverInfos or not data) then
 		return
 	end
 

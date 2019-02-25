@@ -139,7 +139,7 @@ function VanasKoSAddOldTestData()
 			local realm = "some random realm"
 			local playerKey = name .. "-" .. realm
 			local eventKey = playerKey.."-"..math.floor(math.random()*10000000)
-			local areaID=math.floor(math.random()*100)
+			local areaID=math.floor(math.random()*1220)
 			pvplog1.event[eventKey] = {
 				enemyname=playerKey,
 				time=time(),
@@ -160,7 +160,7 @@ function VanasKoSAddOldTestData()
 			end
 			tinsert(pvplog1.area[areaID], eventKey)
 			local eventKey = playerKey.."-"..math.floor(math.random()*10000000)
-			local areaID=math.floor(math.random()*100)
+			local areaID=math.floor(math.random()*1220)
 			pvplog2.event[eventKey] = {
 				enemyname=playerKey,
 				time=time(),
@@ -190,7 +190,7 @@ function VanasKoSAddOldTestData()
 				class = "Mage",
 				classEnglish = "Mage",
 				gender = "Female",
-				mapID = areaID,
+				areaID = areaID,
 				guid = "Player-"..math.floor(math.random()*100000)
 			}
 			playerdata2[playerKey] = {
@@ -199,7 +199,7 @@ function VanasKoSAddOldTestData()
 				class = "Mage",
 				classEnglish = "Mage",
 				gender = "Female",
-				mapID = areaID,
+				areaID = areaID,
 				guid = "Player-"..math.floor(math.random()*100000)
 			}
 		end
@@ -208,7 +208,7 @@ function VanasKoSAddOldTestData()
 		local name = "test" .. i
 		local playerKey = name
 		local eventKey = playerKey.."-"..math.floor(math.random()*10000000)
-		local areaID=math.floor(math.random()*100)
+		local areaID=math.floor(math.random()*1220)
 		pvplog1.event[eventKey] = {
 			enemyname=playerKey,
 			time=time(),
@@ -229,7 +229,7 @@ function VanasKoSAddOldTestData()
 		end
 		tinsert(pvplog2.area[areaID], eventKey)
 		local eventKey = playerKey.."-"..math.floor(math.random()*10000000)
-		local areaID=math.floor(math.random()*100)
+		local areaID=math.floor(math.random()*1220)
 		pvplog2.event[eventKey] = {
 			enemyname=playerKey,
 			time=time(),

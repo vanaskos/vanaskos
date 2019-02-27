@@ -27,10 +27,17 @@ local MAX_LIST = 3
 local TXT_RED = "|cffff0000"
 local TXT_GREEN = "|cff00ff00"
 local TXT_YELLOW = "|cffffff00"
+local KILLING_BLOW = 1
+local MOST_DAMAGE = 2
+local ALL_ATTACKERS = 3
+local KILLING_BLOW_TIMEOUT = 5
+local MOST_DAMAGE_TIMEOUT = 30
+local ALL_ATTACKERS_TIMEOUT = 5
 
 -- Local Variables
 local myName = nil
 local myRealm = nil
+local pvpLoggingEnabled = nil
 local shownList = nil
 local lastDamageFrom = {}
 local lastDamageTo = {}
@@ -177,6 +184,10 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("PvPDataGatherer", {
 		profile = {
 			Enabled = true,
+			EnableInBattleground = true,
+			EnableInCombatZone = true,
+			EnableInArena = true,
+			deathOption = KILLING_BLOW,
 		},
 		global = {
 			pvplog = {
@@ -185,6 +196,73 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 				map = {},
 			},
 		}
+	})
+
+	VanasKoSGUI:AddMainMenuConfigOptions({
+		pvp_log_group = {
+			name = L["PvP Log"],
+			desc = L["PvP Log"],
+			type = "group",
+			args = {
+				enableinbg = {
+					type = "toggle",
+					order = 1,
+					name = L["Enable in Battleground"],
+					desc = L["Toggles logging of PvP events in battlegrounds"],
+					get = function()
+						return VanasKoSPvPDataGatherer.db.profile.EnableInBattleground
+					end,
+					set = function(frame, v)
+						VanasKoSPvPDataGatherer.db.profile.EnableInBattleground = v
+						VanasKoSPvPDataGatherer:Update()
+					end,
+				},
+				enableincombatzone = {
+					type = "toggle",
+					order = 2,
+					name = L["Enable in combat zone"],
+					desc = L["Toggles logging of PvP events in combat zones (Wintergrasp, Tol Barad)"],
+					get = function()
+						return VanasKoSPvPDataGatherer.db.profile.EnableInCombatZone
+					end,
+					set = function(frame, v)
+						VanasKoSPvPDataGatherer.db.profile.EnableInCombatZone = v
+						VanasKoSPvPDataGatherer:Update()
+					end,
+				},
+				enableinarena = {
+					type = "toggle",
+					order = 3,
+					name = L["Enable in arena"],
+					desc = L["Toggles logging of PvP events in arenas"],
+					get = function()
+						return VanasKoSPvPDataGatherer.db.profile.EnableInArena
+					end,
+					set = function(frame, v)
+						VanasKoSPvPDataGatherer.db.profile.EnableInArena = v
+						VanasKoSPvPDataGatherer:Update()
+					end,
+				},
+				deathOptions = {
+					type = "select",
+					order = 4,
+					name = L["Defeat Logging Method"],
+					desc = L["Method used to record defeats"],
+					style = "radio",
+					values = {
+						[KILLING_BLOW] = L["Killing Blow"],
+						[MOST_DAMAGE] = L["Most Damage"],
+						[ALL_ATTACKERS] = L["All Attackers"],
+					},
+					get = function()
+						return VanasKoSPvPDataGatherer.db.profile.deathOption
+					end,
+					set = function(frame, v)
+						VanasKoSPvPDataGatherer.db.profile.deathOption = v
+					end,
+				},
+			},
+		},
 	})
 
 	VanasKoSGUI:AddModuleToggle("PvPDataGatherer", L["PvP Data Gathering"])
@@ -201,6 +279,31 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 	self.group = EVENT_LIST
 	myName = UnitName("player")
 	myRealm = GetRealmName()
+end
+
+function VanasKoSPvPDataGatherer:EnablePvPLog(enable)
+	if enable and not pvpLoggingEnabled then
+		self:RegisterMessage("VanasKoS_PvPDamage", "PvPDamage")
+		self:RegisterMessage("VanasKoS_PvPDeath", "PvPDeath")
+		pvpLoggingEnabled = true
+	elseif not enable then
+		self:UnregisterAllMessages()
+		pvpLoggingEnabled = nil
+	end
+end
+
+function VanasKoSPvPDataGatherer:Update()
+	if (VanasKoS:IsInBattleground()) then
+		self:EnablePvPLog(self.db.profile.EnableInBattleground)
+	elseif (VanasKoS:IsInCombatZone()) then
+		self:EnablePvPLog(self.db.profile.EnableInCombatZone)
+	elseif (VanasKoS:IsInArena()) then
+		self:EnablePvPLog(self.db.profile.EnableInArena)
+	elseif (VanasKoS:IsInDungeon()) then
+		self:EnablePvPLog(false)
+	else
+		self:EnablePvPLog(true)
+	end
 end
 
 function VanasKoSPvPDataGatherer:FilterFunction(key, value, searchBoxText)
@@ -495,22 +598,22 @@ end
 
 function VanasKoSPvPDataGatherer:OnDisable()
 	self:UnregisterAllMessages()
+	pvpLoggingEnabled = nil
 end
 
 function VanasKoSPvPDataGatherer:OnEnable()
-	self:RegisterMessage("VanasKoS_PvPDamage", "PvPDamage")
-	self:RegisterMessage("VanasKoS_PvPDeath", "PvPDeath")
+	self:Update()
 end
 
 function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, srcRealm, dstName, dstRealm, amount)
 	if (srcName == myName and srcRealm == myRealm) then
 		self:DamageDoneTo(dstName, dstRealm, amount)
-	elseif (dstName == myName) then
+	elseif (dstName == myName and dstRealm == myRealm) then
 		self:DamageDoneFrom(srcName, srcRealm, amount)
 	end
 end
 
--- /script VanasKoSPvPDataGatherer:LogPvPEvent("test", "test", true)
+-- /script VanasKoSPvPDataGatherer:PvPDeath("DEATH", UnitName("player"), GetRealmName())
 function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 	if (lastDamageTo and not (name == myName and realm == myRealm)) then
 		for i=1,#lastDamageTo do
@@ -521,10 +624,31 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 			end
 		end
 	elseif lastDamageFrom then
-		for i=1,#lastDamageFrom do
-			if (lastDamageFrom[i].time and (time() - lastDamageFrom[i].time) < 5) then
-				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[i].name, lastDamageFrom[i].realm)
-				self:LogPvPEvent(lastDamageFrom[i].name, lastDamageFrom[i].realm, false)
+		if self.db.profile.deathOption == KILLING_BLOW then
+			if (lastDamageFrom[1].time and (time() - lastDamageFrom[1].time) < KILLING_BLOW_TIMEOUT) then
+				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[1].name, lastDamageFrom[1].realm)
+				self:LogPvPEvent(lastDamageFrom[1].name, lastDamageFrom[1].realm, false)
+			end
+		elseif self.db.profile.deathOption == MOST_DAMAGE then
+			local mostDamageIdx = nil
+			local mostDamage = 0
+			for i=1,#lastDamageFrom do
+				if (lastDamageFrom[i] and lastDamageFrom[i].amount > mostDamage
+				    and (time() - lastDamageFrom[i].time) < MOST_DAMAGE_TIMEOUT) then
+					mostDamageIdx = i
+					mostDamage = lastDamageFrom[i].amount
+				end
+			end
+			if mostDamageIdx then
+				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[mostDamageIdx].name, lastDamageFrom[mostDamageIdx].realm)
+				self:LogPvPEvent(lastDamageFrom[mostDamageIdx].name, lastDamageFrom[mostDamageIdx].realm, false)
+			end
+		elseif self.db.profile.deathOption == ALL_ATTACKERS then
+			for i=1,#lastDamageFrom do
+				if (lastDamageFrom[i].time and (time() - lastDamageFrom[i].time) < ALL_ATTACKERS_TIMEOUT) then
+					self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[i].name, lastDamageFrom[i].realm)
+					self:LogPvPEvent(lastDamageFrom[i].name, lastDamageFrom[i].realm, false)
+				end
 			end
 		end
 		wipe(lastDamageFrom)
@@ -532,6 +656,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 	end
 end
 
+-- /script local f=VanasKoSPvPDataGatherer.DamageDoneFrom; f(v, "test0", "realm0", 1500); f(v, "test1", "realm1", 1000); f(v, "test2", "realm2", 500); VanasKoS:SendMessage("VanasKoS_PvPDeath", UnitName("player"), GetRealmName())
 function VanasKoSPvPDataGatherer:DamageDoneFrom(name, realm, amount)
 	if(name and realm) then
 		tinsert(lastDamageFrom, 1, {
@@ -548,6 +673,9 @@ function VanasKoSPvPDataGatherer:DamageDoneFrom(name, realm, amount)
 			if(lastDamageFrom[i] and lastDamageFrom[i].name == name and lastDamageFrom[i].realm == realm) then
 				lastDamageFrom[1].amount = (amount or 0) + lastDamageFrom[i].amount
 				tremove(lastDamageFrom, i)
+			end
+			if (lastDamageFrom[i] and (time() - lastDamageFrom[i].time) < MOST_DAMAGE_TIMEOUT) then
+				lastDamageFrom[i].amount = 0
 			end
 		end
 
@@ -581,6 +709,7 @@ function VanasKoSPvPDataGatherer:DamageDoneTo(name, realm, amount)
 	end
 end
 
+-- /script VanasKoSPvPDataGatherer:LogPvPEvent("test", "test", true)
 function VanasKoSPvPDataGatherer:LogPvPEvent(name, realm, isWin)
 	assert(name)
 	assert(realm)

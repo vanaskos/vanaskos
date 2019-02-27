@@ -135,13 +135,13 @@ function VanasKoSDataGatherer:OnInitialize()
 					order = 6,
 					name = L["Enable in combat zone"],
 					desc = L["Toggles detection of players in combat zones (Wintergrasp, Tol Barad)"],
-				get = function()
-					return VanasKoSDataGatherer.db.profile.EnableInCombatZone
-				end,
-				set = function(frame, v)
-					VanasKoSDataGatherer.db.profile.EnableInCombatZone = v
-					VanasKoSDataGatherer:Update()
-				end,
+					get = function()
+						return VanasKoSDataGatherer.db.profile.EnableInCombatZone
+					end,
+					set = function(frame, v)
+						VanasKoSDataGatherer.db.profile.EnableInCombatZone = v
+						VanasKoSDataGatherer:Update()
+					end,
 				},
 				enableinarena = {
 					type = "toggle",
@@ -389,6 +389,9 @@ end
 function VanasKoSDataGatherer:OnDisable()
 	self:UnregisterAllEvents()
 	self:UnregisterAllMessages()
+	gatherEventEnabled = false
+	combatEventsEnabled = false
+	targetEventsEnabled = false
 end
 
 function VanasKoSDataGatherer:CleanupPlayerDataDatabase()

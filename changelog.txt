@@ -4,6 +4,8 @@ alpha:
 - Fix importer error for unknown areas
 - Fix error when joining party members from your realm
 - Color KoS players yellow by default (some places still had magenta)
+- Add PvP defeat method logging options
+- Minor cleanups to configuration menu
 
 5.00-beta:
 - Big overhaul for really broken features with some pretty major changes

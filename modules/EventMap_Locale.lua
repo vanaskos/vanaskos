@@ -10,6 +10,7 @@ if L then
 	L["Draw Alts"] = true
 	L["Draws PvP events on map for all characters"] = true
 	L["PvP Encounter"] = true
+	L["Event Map"] = true
 	L["PvP Event Map"] = true
 	L["Reset"] = true
 	L["Show tooltips when hovering over PvP events"] = true

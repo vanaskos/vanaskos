@@ -3,8 +3,8 @@ if L then
 	L["Enable in Sanctuaries"] = true
 	L["Enable in Cities"] = true
 	L["Data Gathering"] = true
-	L["Permanent Player-Data-Storage"] = true
-	L["Save data gathered in cities"] = true
+	L["Permanent Player-Data-Storage"] = "Store Permanently"
+	L["Save data gathered in cities"] = "Gather in cities"
 	L["Toggles detection of players in sanctuaries"] = true
 	L["Toggles detection of players in cities"] = true
 	L["Toggles if data from players gathered in cities should be saved."] = true
@@ -23,9 +23,9 @@ if L then
 	L["Toggles detection of players if War Mode is disabled"] = true
 	L["Combat Log Monitoring"] = true
 	L["Player-Data Storage"] = true
-	L["Save data gathered in war mode"] = true
+	L["Save data gathered in war mode"] = "Gather in War Mode"
 	L["Toggles if data from players gathered in war mode should be saved."] = true
-	L["Save data gathered in normal mode"] = true
+	L["Save data gathered in normal mode"] = "Gather in Normal Mode"
 	L["Toggles if data from players gathered in normal mode should be saved."] = true
 end
 

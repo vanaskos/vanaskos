@@ -376,34 +376,36 @@ function VanasKoSEventMap:OnInitialize()
 	})
 
 	VanasKoSGUI:AddModuleToggle("EventMap", L["PvP Event Map"])
-	VanasKoSGUI:AddConfigOption("EventMap", {
-		type = 'group',
-		name = L["PvP Event Map"],
-		desc = L["PvP Event Map"],
-		args = {
-			drawAlts = {
-				type = 'toggle',
-				name = L["Draw Alts"],
-				desc = L["Draws PvP events on map for all characters"],
-				order = 1,
-				set = function(frame, v)
-					VanasKoSEventMap.db.profile.drawAlts = v VanasKoSEventMap:RefreshAllData()
-				end,
-				get = function()
-					return VanasKoSEventMap.db.profile.drawAlts
-				end,
-			},
-			showTooltip = {
-				type = 'toggle',
-				name = L["Tooltips"],
-				desc = L["Show tooltips when hovering over PvP events"],
-				order = 3,
-				set = function(frame, v)
-					VanasKoSEventMap.db.profile.showTooltip = v
-				end,
-				get = function()
-					return VanasKoSEventMap.db.profile.showTooltip
-				end,
+	VanasKoSGUI:AddMainMenuConfigOptions({
+		pvp_event_map_group = {
+			name = L["Event Map"],
+			desc = L["PvP Event Map"],
+			type = 'group',
+			args = {
+				drawAlts = {
+					type = 'toggle',
+					name = L["Draw Alts"],
+					desc = L["Draws PvP events on map for all characters"],
+					order = 1,
+					set = function(frame, v)
+						VanasKoSEventMap.db.profile.drawAlts = v VanasKoSEventMap:RefreshAllData()
+					end,
+					get = function()
+						return VanasKoSEventMap.db.profile.drawAlts
+					end,
+				},
+				showTooltip = {
+					type = 'toggle',
+					name = L["Tooltips"],
+					desc = L["Show tooltips when hovering over PvP events"],
+					order = 2,
+					set = function(frame, v)
+						VanasKoSEventMap.db.profile.showTooltip = v
+					end,
+					get = function()
+						return VanasKoSEventMap.db.profile.showTooltip
+					end,
+				}
 			}
 		}
 	})

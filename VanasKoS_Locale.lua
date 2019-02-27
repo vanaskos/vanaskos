@@ -35,11 +35,10 @@ if L then
 	L["Vanas KoS"] = true
 	L["Toggle Menu"] = true
 	L["Add KoS Player"] = true
-	L["_Reason Unknown_"] = true
 	L["Entry %s added."] = true
 	L["Entry %s (Reason: %s) added."] = true
 	L["Entry \"%s\" removed from list"] = true
-	L["_Reason Unknown_"] = true
+	L["_Reason Unknown_"] = "unknown"
 	L["KoS List for Realm \"%s\" - %s now purged."] = true
 	L["Add/Set List Entry"] = true
 	L["Realm"] = true

@@ -24,6 +24,9 @@ local EVENT_LIST = 1
 local PLAYERS_LIST = 2
 local MAP_LIST = 3
 local MAX_LIST = 3
+local TXT_RED = "|cffff0000"
+local TXT_GREEN = "|cff00ff00"
+local TXT_YELLOW = "|cffffff00"
 
 -- Local Variables
 local myName = nil
@@ -36,10 +39,10 @@ local lastDamageTo = {}
 
 -- sorts by index
 local function SortByKey(val1, val2)
-	return (val1 > val2)
+	return (tostring(val1) > tostring(val2))
 end
 local function SortByKeyReverse(val1, val2)
-	return (val1 < val2)
+	return (tostring(val1) < tostring(val2))
 end
 
 -- sorts by name
@@ -192,7 +195,7 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 	-- register sort options for the lists this module provides
 --	VanasKoSGUI:RegisterSortOption({"PVPLOG"}, "byname", L["by name"], L["sort by name"], SortByIndex, SortByIndexReverse)
 
---	VanasKoSGUI:SetDefaultSortFunction({"PVPLOG"}, SortByKey)
+	VanasKoSGUI:SetDefaultSortFunction({"PVPLOG"}, SortByKey)
 
 	self:SetEnabledState(self.db.profile.Enabled)
 	self.group = EVENT_LIST
@@ -208,6 +211,7 @@ function VanasKoSPvPDataGatherer:RenderButton(list, buttonIndex, button, key, va
 	local group = self.group
 	if(list == "PVPLOG" and value) then
 		local playerKey = nil
+		local playerName = nil
 		if group == EVENT_LIST then
 			playerKey = value.name and hashName(value.name, value.realm)
 			playerName = value.name
@@ -219,11 +223,11 @@ function VanasKoSPvPDataGatherer:RenderButton(list, buttonIndex, button, key, va
 		if group == EVENT_LIST or group == PLAYERS_LIST then
 			local listname = select(2, VanasKoS:IsOnList(nil, playerKey))
 			if(listname == "PLAYERKOS") then
-				buttonText1:SetText(format("%s%s|r", PURPLE, playerName))
+				buttonText1:SetText(format("%s%s|r", TXT_YELLOW, playerName))
 			elseif(listname == "HATELIST") then
-				buttonText1:SetText(format("%s%s|r", RED, playerName))
+				buttonText1:SetText(format("%s%s|r", TXT_RED, playerName))
 			elseif(listname == "NICELIST") then
-				buttonText1:SetText(format("%s%s|r", GREEN, playerName))
+				buttonText1:SetText(format("%s%s|r", TXT_GREEN, playerName))
 			else
 				buttonText1:SetText(playerName or L["unknown"])
 			end

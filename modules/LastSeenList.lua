@@ -21,11 +21,12 @@ local GetCursorPosition = GetCursorPosition
 local hashName = VanasKoS.hashName
 
 -- Constants
-local PURPLE = "|cffff00ff"
-local RED = "|cffff0000"
-local GREEN = "|cff00ff00"
-local WHITE = "|cffffffff"
-local ORANGE = "|cffff7f00"
+local TXT_MAGENTA = "|cffff00ff"
+local TXT_RED = "|cffff0000"
+local TXT_GREEN = "|cff00ff00"
+local TXT_YELLOW = "|cffffff00"
+local TXT_WHITE = "|cffffffff"
+local TXT_ORANGE = "|cffff7f00"
 
 -- Local Variables
 local lastseenlist = {}
@@ -156,15 +157,15 @@ function VanasKoSLastSeenList:RenderButton(list, buttonIndex, button, key, value
 	if(list == "LASTSEEN") then
 		local listname = select(2, VanasKoS:IsOnList(nil, key))
 		if(listname == "PLAYERKOS") then
-			buttonText1:SetText(format("%s%s|r", PURPLE, value.name))
+			buttonText1:SetText(format("%s%s|r", TXT_YELLOW, value.name))
 		elseif(listname == "HATELIST") then
-			buttonText1:SetText(format("%s%s|r", RED, value.name))
+			buttonText1:SetText(format("%s%s|r", TXT_RED, value.name))
 		elseif(listname == "NICELIST") then
-			buttonText1:SetText(format("%s%s|r", GREEN, value.name))
+			buttonText1:SetText(format("%s%s|r", TXT_GREEN, value.name))
 		elseif(value.faction == "friendly") then
-			buttonText1:SetText(format("%s%s|r", WHITE, value.name))
+			buttonText1:SetText(format("%s%s|r", TXT_WHITE, value.name))
 		elseif(value.faction == "enemy") then
-			buttonText1:SetText(format("%s%s|r", ORANGE, value.name))
+			buttonText1:SetText(format("%s%s|r", TXT_ORANGE, value.name))
 		elseif(value and value.name) then
 			buttonText1:SetText(format("%s%s|r", "", value.name))
 		else

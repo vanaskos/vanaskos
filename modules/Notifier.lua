@@ -753,6 +753,9 @@ function VanasKoSNotifier:GROUP_ROSTER_UPDATE()
 		-- Certain missions places you in a party with an NPC
 		if UnitIsPlayer("party" .. i) then
 			local name, realm = UnitName("party" .. i)
+			if not realm then
+				realm = myRealm
+			end
 			local key = hashName(name, realm)
 			newParty[key] = i
 			local hate = VanasKoS:IsOnList("HATELIST", key)
@@ -809,6 +812,9 @@ function VanasKoSNotifier:RAID_ROSTER_UPDATE()
 	local newParty = {}
 	for i = 1, GetNumGroupMembers() do
 		local name, realm = UnitName("raid" .. i)
+		if not realm then
+			realm = myRealm
+		end
 		local key = hashName(name, realm)
 		newParty[key] = i
 		if(not lastPartyUpdate[key]) then

@@ -1,6 +1,11 @@
 Release Changelog for VanasKoS
 
-5.00 beta:
+alpha:
+- Fix importer error for unknown areas
+- Fix error when joining party members from your realm
+- Color KoS players yellow by default (some places still had magenta)
+
+5.00-beta:
 - Big overhaul for really broken features with some pretty major changes
 -  Updated EventMap to use new API
 - All player entries are now stored as name-realm (including local realm)

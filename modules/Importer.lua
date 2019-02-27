@@ -535,6 +535,7 @@ function VanasKoSImporter:FromOldVanasKoS()
 
 	count = 0
 	invalid = 0
+	local unknownAreas = {}
 	if(VanasKoSDB.namespaces.PvPDataGatherer.realm) then
 		for realm,v in pairs(VanasKoSDB.namespaces.PvPDataGatherer.realm) do
 			local oldlog = v.pvpstats and v.pvpstats.pvplog;
@@ -554,6 +555,10 @@ function VanasKoSImporter:FromOldVanasKoS()
 					pvplog.event[eventKey].time = eventdata.time
 					pvplog.event[eventKey].type = eventdata.type
 					pvplog.event[eventKey].mapID = areaIdToUiMapId[eventdata.areaID]
+					if not pvplog.event[eventKey].mapID and eventdata.areaID then
+						unknownAreas[eventdata.areaID] = (unknownAreas[eventdata.areaID] or 0) + 1
+						pvplog.event[eventKey].areaID = eventdata.areaID -- Save the old info, maybe the areaID can be found later?
+					end
 					pvplog.event[eventKey].x = eventdata.posX
 					pvplog.event[eventKey].y = eventdata.posY
 					if pvplog.event[eventKey].mapID and eventdata.posX and eventdata.posY then
@@ -587,14 +592,23 @@ function VanasKoSImporter:FromOldVanasKoS()
 			if oldlog and oldlog.area then
 				for areaID,eventKeyTable in pairs(oldlog.area) do
 					local mapId = areaIdToUiMapId[areaID]
-					pvplog.map[mapId] = eventKeyTable
-					count = count + 1
-					oldlog.area[areaID] = nil
+					if mapId then
+						pvplog.map[mapId] = eventKeyTable
+						count = count + 1
+						oldlog.area[areaID] = nil
+					else
+						unknownAreas[areaID] = (unknownAreas[areaID] or 0) + 1
+						invalid = invalid + 1
+					end
 				end
 				oldlog.area = nil
 			end
 		end
 		VanasKoSDB.namespaces.PvPDataGatherer.realm = nil
+	end
+
+	for areaID, count in pairs(unknownAreas) do
+		VanasKoS:Print(format("Unknown area ID: %d, events: %d", areaID, count))
 	end
 	if (count > 0) then
 		VanasKoS:Print(format(L["Imported %d PVP events"], count))
@@ -790,7 +804,6 @@ function VanasKoSImporter:FromOldVanasKoS()
 			local arenalosses = 0
 			local bglosses = 0
 
-			print("Converting PvP stats for " .. playerKey)
 			for i, eventKey in pairs(pvplog.players[playerKey]) do
 				local event = pvplog.event[eventKey]
 				if event and event.type == "win" then
@@ -839,7 +852,6 @@ function VanasKoSImporter:FromOldVanasKoS()
 				for i=1,wins do
 					local eventKey = "pvpstatimport-" .. eventId
 					eventId = eventId + 1
-					print("Adding PvP win event " .. eventKey)
 					pvplog.event[eventKey] = {
 						name = playerName,
 						realm = playerRealm,
@@ -865,7 +877,6 @@ function VanasKoSImporter:FromOldVanasKoS()
 				for i=1,losses do
 					local eventKey = "pvpstatimport-" .. eventId
 					eventId = eventId + 1
-					print("Adding PvP loss evnt " .. eventKey)
 					pvplog.event[eventKey] = {
 						name = playerName,
 						realm = playerRealm,

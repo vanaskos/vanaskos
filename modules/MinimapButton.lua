@@ -323,7 +323,7 @@ function VanasKoSMinimapButton:RemovePlayer(key)
 end
 
 function VanasKoSMinimapButton:UpdateMyText()
-	Broker.text = "|cffff00ff" .. nearbyKoSCount .. "|r |cffff0000" .. nearbyEnemyCount .. "|r |cff00ff00" .. nearbyFriendlyCount .. "|r"
+	Broker.text = "|cffffff00" .. nearbyKoSCount .. "|r |cffff0000" .. nearbyEnemyCount .. "|r |cff00ff00" .. nearbyFriendlyCount .. "|r"
 end
 
 function VanasKoSMinimapButton:OnTooltipShow(tt)

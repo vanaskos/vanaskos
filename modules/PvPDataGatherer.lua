@@ -625,7 +625,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 		end
 	elseif lastDamageFrom then
 		if self.db.profile.deathOption == KILLING_BLOW then
-			if (lastDamageFrom[1].time and (time() - lastDamageFrom[1].time) < KILLING_BLOW_TIMEOUT) then
+			if (lastDamageFrom[1] and (time() - lastDamageFrom[1].time) < KILLING_BLOW_TIMEOUT) then
 				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[1].name, lastDamageFrom[1].realm)
 				self:LogPvPEvent(lastDamageFrom[1].name, lastDamageFrom[1].realm, false)
 			end
@@ -645,7 +645,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 			end
 		elseif self.db.profile.deathOption == ALL_ATTACKERS then
 			for i=1,#lastDamageFrom do
-				if (lastDamageFrom[i].time and (time() - lastDamageFrom[i].time) < ALL_ATTACKERS_TIMEOUT) then
+				if (lastDamageFrom[i] and (time() - lastDamageFrom[i].time) < ALL_ATTACKERS_TIMEOUT) then
 					self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[i].name, lastDamageFrom[i].realm)
 					self:LogPvPEvent(lastDamageFrom[i].name, lastDamageFrom[i].realm, false)
 				end

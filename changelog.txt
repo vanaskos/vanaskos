@@ -6,6 +6,8 @@ alpha:
 - Color KoS players yellow by default (some places still had magenta)
 - Add PvP defeat method logging options
 - Minor cleanups to configuration menu
+- Fix adding to player lists from PvP stats list
+- Fix error on death with no recent PvP
 
 5.00-beta:
 - Big overhaul for really broken features with some pretty major changes

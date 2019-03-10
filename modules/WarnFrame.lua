@@ -1347,6 +1347,9 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 
 	local key = hashName(data.name, data.realm)
 	local faction = data.faction
+	if data.list == "PLAYERKOS" or data.list == "GUILDKOS" then
+		faction = "kos"
+	end
 
 	-- exclude unknown entitity entries
 	if(key == UNKNOWNLOWERCASE) then

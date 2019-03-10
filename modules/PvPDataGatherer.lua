@@ -767,10 +767,10 @@ end
 
 function VanasKoSPvPDataGatherer:HoverType()
 	if (self.group == PLAYERS_LIST) then
-		return "playerlog"
+		return nil
 	elseif (self.group == EVENT_LIST) then
 		return "eventlog"
 	elseif (self.group == MAP_LIST) then
-		return "maplog"
+		return nil
 	end
 end

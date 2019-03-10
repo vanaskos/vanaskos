@@ -398,11 +398,10 @@ function VanasKoSDataGatherer:CleanupPlayerDataDatabase()
 	local pkos = VanasKoS:GetList("PLAYERKOS") or {}
 	local hl = VanasKoS:GetList("HATELIST") or {}
 	local nl = VanasKoS:GetList("NICELIST") or {}
-	local ps = VanasKoS:GetList("PVPSTATS", 1) or {}
-	local pl = VanasKoS:GetList("PVPLOG") or {}
+	local pl = VanasKoS:GetList("PVPLOG", 2) or {}
 
 	for k, _ in pairs(playerDataList) do
-		if(not (pkos[k] or hl[k] or nl[k] or ps[k] or pl[k])) then -- entry isn't in any of these lists.
+		if(not (pkos[k] or hl[k] or nl[k] or pl[k])) then -- entry isn't in any of these lists.
 			wipe(playerDataList[k])
 			playerDataList[k] = nil
 		end
@@ -435,8 +434,6 @@ end
 function VanasKoSDataGatherer:GetList(list)
 	if(list == "PLAYERDATA") then
 		return self.db.global.data.players
-	else
-		return nil
 	end
 end
 
@@ -489,6 +486,7 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	playerDataList[key].gender = data.gender
 	playerDataList[key].mapID = data.mapID
 	playerDataList[key].guid = data.guid
+	playerDataList[key].faction = data.faction
 end
 
 function VanasKoSDataGatherer:EnableTargetEvents(enable)
@@ -611,18 +609,13 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 
 		gatheredData.list = select(2, VanasKoS:IsOnList(nil, key)) or (guildKey and select(2, VanasKoS:IsOnList(nil, guildKey)))
 
-		if((gatheredData.list == "PLAYERKOS" or gatheredData.list == "GUILDKOS")) then
-			gatheredData.faction = "kos"
-		elseif((gatheredData.list == "NICELIST" or gatheredData.list == "NICELIST")) then
-			gatheredData.faction = "nice"
-		elseif((gatheredData.list == "HATELIST" or gatheredData.list == "HATELIST")) then
-			gatheredData.faction = "hate"
-		elseif(UnitExists(unit) and UnitIsEnemy("player", unit)) then
+		if(UnitExists(unit) and UnitIsEnemy("player", unit)) then
 			gatheredData.faction = "enemy"
 		else
 			gatheredData.faction = "friendly"
 		end
 
+		assert(gatheredData.faction, "faction must be present")
 		self:SendMessage("VanasKoS_Player_Data_Gathered", gatheredData.list, gatheredData)
 
 		return true
@@ -684,26 +677,12 @@ function VanasKoSDataGatherer:SendDataMessage(name, realm, guid, faction, spellI
 	end
 	gatheredData.guild = playerDataList[key] and playerDataList[key].guild
 	local guildkey = gatheredData.guild and hashGuild(gatheredData.guild, gatheredData.realm) or nil
+	gatheredData.list = select(2, VanasKoS:IsOnList(nil, key)) or (guildKey and select(2, VanasKoS:IsOnList(nil, guildKey)))
 	gatheredData.level = level
 	-- print("spellid", spellId, "level", gatheredData.level, "english", classEnglish)
 
 	-- /script VanasKoSDataGatherer:SendDataMessage("name", "realm", "enemy", nil)
 	-- /dump VanasKoSDataGatherer.db.realm.data.players['name']
-	if(VanasKoS:BooleanIsOnList("PLAYERKOS", key)) then
-		gatheredData.faction = "kos"
-	elseif(guildKey and VanasKoS:BooleanIsOnList("GUILDKOS", guildKey)) then
-		gatheredData.faction = "kos"
-	elseif(VanasKoS:BooleanIsOnList("HATELIST", key)) then
-		gatheredData.faction = "hate"
-	elseif(VanasKoS:BooleanIsOnList("NICELIST", key)) then
-		gatheredData.faction = "nice"
-	end
-
-	if(gatheredData.faction == "kos") then
-		gatheredData.list = "PLAYERKOS"
-	else
-		gatheredData.list = nil
-	end
 
 	self:SendMessage("VanasKoS_Player_Data_Gathered", gatheredData.list, gatheredData)
 	self:SendMessage("VanasKoS_Player_Detected", gatheredData)

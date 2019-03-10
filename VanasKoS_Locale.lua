@@ -42,6 +42,25 @@ if L then
 	L["KoS List for Realm \"%s\" - %s now purged."] = true
 	L["Add/Set List Entry"] = true
 	L["Realm"] = true
+	L["Battleground win"] = true
+	L["Battleground loss"] = true
+	L["Battleground encounter"] = true
+	L["Arena win"] = true
+	L["Arena loss"] = true
+	L["Arena encounter"] = true
+	L["Combat zone win"] = true
+	L["Combat zone loss"] = true
+	L["Combat zone encounter"] = true
+	L["Free-for-all win"] = true
+	L["Free-for-all loss"] = true
+	L["Free-for-all encounter"] = true
+	L["World PvP win"] = true
+	L["World PvP loss"] = true
+	L["World PvP encounter"] = true
+	L["Player: %s-%s (%s)"] = true
+	L["Enemy: %s-%s (%s)"] = true
+	L["_UNKNOWN_NAME_"] = "unknown"
+	L["_UNKNOWN_REALM_"] = "unknown"
 end
 L = LibStub("AceLocale-3.0"):NewLocale("VanasKoS", "frFR")
 if L then

@@ -281,6 +281,9 @@ function VanasKoSMinimapButton:Player_Detected(message, data)
 		faction = data.faction,
 		time = time()
 	}
+	if data.list == "PLAYERKOS" or data.list == "GUILDKOS" then
+		faction = "kos"
+	end
 
 	local key = hashName(data.name, data.realm)
 

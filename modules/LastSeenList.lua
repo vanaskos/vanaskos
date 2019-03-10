@@ -4,7 +4,7 @@ Keeps track of recently seen players
 ------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/LastSeenList", false)
-VanasKoSLastSeenList = VanasKoS:NewModule("LastSeenList", "AceEvent-3.0")
+VanasKoSLastSeenList = VanasKoS:NewModule("LastSeenList", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Global wow strings
 local NAME = NAME
@@ -27,6 +27,7 @@ local TXT_GREEN = "|cff00ff00"
 local TXT_YELLOW = "|cffffff00"
 local TXT_WHITE = "|cffffffff"
 local TXT_ORANGE = "|cffff7f00"
+local TXT_GRAY = "|cff808080"
 
 -- Local Variables
 local lastseenlist = {}
@@ -167,7 +168,7 @@ function VanasKoSLastSeenList:RenderButton(list, buttonIndex, button, key, value
 		elseif(value.faction == "enemy") then
 			buttonText1:SetText(format("%s%s|r", TXT_ORANGE, value.name))
 		elseif(value and value.name) then
-			buttonText1:SetText(format("%s%s|r", "", value.name))
+			buttonText1:SetText(format("%s%s|r", TXT_GRAY, value.name))
 		else
 			buttonText1:SetText("unknown")
 		end
@@ -224,13 +225,11 @@ end
 -- /script for k,v in pairs(VanasKoS:GetList("LASTSEEN")) do for f,j in pairs(v) do print("key: " .. f .. ", val: " .. j) end end
 function VanasKoSLastSeenList:IsOnList(listname, key)
 	if(listname == "LASTSEEN") then
-		if(lastseenlist[key]) then
-			return lastseenlist[key]
-		end
+		return lastseenlist[key]
 	end
-	return nil
 end
 
+local updateScheduled = 0
 function VanasKoSLastSeenList:Player_Detected(message, data)
 	assert(data.name)
 	assert(data.realm)
@@ -247,8 +246,15 @@ function VanasKoSLastSeenList:Player_Detected(message, data)
 		lastseenlist[key].lastseen = time()
 	end
 
-	-- update the frame (don't send key/data to prevent excessive log messages)
+	if not updateScheduled then
+		self:ScheduleTimer("NotifyEntryAdded", 10)
+		updateScheduled = true
+	end
+end
+
+function VanasKoSLastSeenList:NotifyEntryAdded()
 	self:SendMessage("VanasKoS_List_Entry_Added", "LASTSEEN")
+	updateScheduled = nil
 end
 
 function VanasKoSLastSeenList:ShowList(list)

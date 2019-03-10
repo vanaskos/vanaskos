@@ -607,9 +607,7 @@ function VanasKoSNotifier:OnEnable()
 	self:RegisterMessage("VanasKoS_Mob_Target_Changed", "Player_Target_Changed")
 	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged")
 
-	local frame = _G["FriendsFrameFriendsScrollFrame"]
-	self:SecureHook("FriendsFrame_UpdateFriends")
-	frame.buttonFunc = FriendsFrame_UpdateFriends
+	self:SecureHook("FriendsFrame_UpdateFriendButton")
 	self:SecureHook("FriendsFrameTooltip_Show")
 	self:SecureHook("IgnoreList_Update")
 	for i=1, FRIENDS_TO_DISPLAY do
@@ -632,37 +630,32 @@ function VanasKoSNotifier:RefreshConfig()
 	self:EnablePartyEvents(self.db.profile.notifyParty)
 end
 
-function VanasKoSNotifier:FriendsFrame_UpdateFriends()
+function VanasKoSNotifier:FriendsFrame_UpdateFriendButton(button)
 	if (self.db.profile.friendlist ~= true) then
 		return
 	end
 
-	local scrollFrame = FriendsFrameFriendsScrollFrame
-	local buttons = scrollFrame.buttons
-	local numButtons = #buttons
+	if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
+		local friendInfo = C_FriendList.GetFriendInfoByIndex(button.id)
+		local nameText = button.name
+		local name, realm = splitNameRealm(friendInfo.name)
+		if not realm then
+			realm = GetRealmName()
+		end
 
-	for i = 1, numButtons do
-		local button = buttons[i]
-		if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
-			-- name, level, class, area, connected, status, note, RAF, guid
-			local fullName, _, _, _, connected, _, _ = C_FriendlList.GetFriendInfoByIndex(button.id)
-			local nameText = button.name
-			local name, realm = splitNameRealm(fullName)
+		if(name) then
 			local key = hashName(name, realm)
-
-			if(name) then
-				if (VanasKoS:IsOnList("HATELIST", key)) then
-					if (connected) then
-						nameText:SetTextColor(1, 0, 0)
-					else
-						nameText:SetTextColor(0.5, 0, 0)
-					end
-				elseif (VanasKoS:IsOnList("NICELIST", key)) then
-					if (connected) then
-						nameText:SetTextColor(0, 1, 0)
-					else
-						nameText:SetTextColor(0, 0.5, 0)
-					end
+			if (VanasKoS:IsOnList("HATELIST", key)) then
+				if (friendInfo.connected) then
+					nameText:SetTextColor(1, 0, 0)
+				else
+					nameText:SetTextColor(0.5, 0, 0)
+				end
+			elseif (VanasKoS:IsOnList("NICELIST", key)) then
+				if (friendInfo.connected) then
+					nameText:SetTextColor(0, 1, 0)
+				else
+					nameText:SetTextColor(0, 0.5, 0)
 				end
 			end
 		end
@@ -672,26 +665,41 @@ end
 function VanasKoSNotifier:FriendsFrameTooltip_Show(button)
 	if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
 		-- name, level, class, area, connected, status, note, RAF, guid
-		local fullName, _, _, _, _, _, noteText = C_FriendList.GetFriendInfoByIndex(button.id)
-		local name, realm = splitNameRealm(fullName)
+		local friendInfo = C_FriendList.GetFriendInfoByIndex(button.id)
+		local name, realm = splitNameRealm(friendInfo.name)
 		if not realm then
 			realm = myRealm
 		end
-		local key = hashName(name, realm)
 
-		if (name and not noteText) then
+		if (name) then
+			local noteText
+			local key = hashName(name, realm)
 			local hate = VanasKoS:IsOnList("HATELIST", key)
 			local nice = VanasKoS:IsOnList("NICELIST", key)
-			local tooltip = FriendsTooltip
-			if (hate and hate.reason) then
-				FriendsFrameTooltip_SetLine(FriendsTooltipNoteText, nil, "|cffff0000" .. hate.reason .. "|r")
-				tooltip:SetHeight(tooltip.height + FRIENDS_TOOLTIP_MARGIN_WIDTH * 2)
-				tooltip:SetWidth(min(FRIENDS_TOOLTIP_MAX_WIDTH, tooltip.maxWidth + FRIENDS_TOOLTIP_MARGIN_WIDTH * 2))
-				tooltip:Show()
-			elseif (nice and nice.reason) then
-				FriendsFrameTooltip_SetLine(FriendsTooltipNoteText, nil, "|cff00ff00" .. nice.reason .. "|r")
-				tooltip:SetHeight(tooltip.height + FRIENDS_TOOLTIP_MARGIN_WIDTH * 2)
-				tooltip:SetWidth(min(FRIENDS_TOOLTIP_MAX_WIDTH, tooltip.maxWidth + FRIENDS_TOOLTIP_MARGIN_WIDTH * 2))
+			if (hate) then
+				noteText = friendInfo.notes or ""
+				if noteText ~= "" then
+					noteText = noteText .. "\n"
+				end
+				noteText = noteText .. format(L["Hatelist: %s"], "|cffff0000" .. (hate.reason or "") .. "|r")
+			elseif (nice) then
+				noteText = friendInfo.notes or ""
+				if noteText ~= "" then
+					noteText = noteText .. "\n"
+				end
+				noteText = noteText .. format(L["Nicelist: %s"], "|cff00ff00" .. (nice.reason or "") .. "|r")
+			end
+
+			if noteText then
+				local tooltip = FriendsTooltip
+				local anchor = FriendsTooltipHeader
+				if friendInfo.connected then
+					anchor = FriendsTooltipGameAccount1Info
+				end
+				FriendsTooltipNoteIcon:Show()
+				FriendsFrameTooltip_SetLine(FriendsTooltipNoteText, anchor, noteText, -8)
+				tooltip:SetHeight(tooltip.height + FRIENDS_TOOLTIP_MARGIN_WIDTH)
+				tooltip:SetWidth(min(FRIENDS_TOOLTIP_MAX_WIDTH, tooltip.maxWidth + FRIENDS_TOOLTIP_MARGIN_WIDTH))
 				tooltip:Show()
 			end
 		end
@@ -875,12 +883,12 @@ function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 	local guildKey = guild and hashGuild(guild, realm) or nil
 
 	-- add the KoS: <text> and KoS (Guild): <text> messages
-	for k,v in pairs(listsToCheck) do
+	for listname,v in pairs(listsToCheck) do
 		local data
-		if(k ~= "GUILDKOS") then
-			data = guildKey and VanasKoS:IsOnList(k, guildKey) or nil
+		if(listname == "GUILDKOS") then
+			data = guildKey and VanasKoS:IsOnList(listname, guildKey) or nil
 		else
-			data = VanasKoS:IsOnList(k, key)
+			data = VanasKoS:IsOnList(listname, key)
 		end
 		if(data) then
 			if(data.owner == nil) then
@@ -1072,13 +1080,13 @@ function VanasKoSNotifier:ZoneChanged(message)
 end
 
 function VanasKoSNotifier:Player_Detected(message, data)
-	if (data.faction == "kos") then
+	if data.list == "PLAYERKOS" or data.list == "GUILDKOS" then
 		VanasKoSNotifier:KosPlayer_Detected(data)
-	elseif (data.faction == "hate") then
+	elseif data.list == "HATELIST" then
 		VanasKoSNotifier:HatedPlayer_Detected(data)
-	elseif (data.faction == "nice") then
+	elseif data.list == "NICELIST" then
 		VanasKoSNotifier:NicePlayer_Detected(data)
-	elseif (data.faction == "enemy") then
+	elseif data.faction == "enemy" then
 		VanasKoSNotifier:EnemyPlayer_Detected(data)
 	end
 end

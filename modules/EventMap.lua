@@ -62,7 +62,7 @@ function VanasKoSEventMap:RemoveAllData()
 end
 
 function VanasKoSEventMap:RefreshAllData(fromOnShow)
-	if self.showEncounters then
+	if self:IsEnabled() and self.showEncounters then
 		local mapID = self:GetMap():GetMapID()
 		-- Only draw if the zone has changed
 		if (self.lastMapID == mapID) then
@@ -430,10 +430,11 @@ end
 function VanasKoSEventMap:OnEnable()
 	self:RegisterMessage("VanasKoS_PvPDeath", "PvPDeath")
 	PINGRIDALIGN = ICONSIZE
+	self:RefreshAllData()
 end
 
 function VanasKoSEventMap:OnDisable()
-	self:UnregisterEvent("WORLD_MAP_UPDATE")
+	self:UnregisterAllMessages()
 	self:RemoveAllData()
 end
 

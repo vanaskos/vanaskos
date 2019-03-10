@@ -8,6 +8,10 @@ alpha:
 - Minor cleanups to configuration menu
 - Fix adding to player lists from PvP stats list
 - Fix error on death with no recent PvP
+- Add tooltip info for pvp log event list
+- Fix enable/disable of event map without reloading UI
+- Only update last seen list every 10 seconds (if being shown)
+- Fix coloring entries and tooltips in friends list
 
 5.00-beta:
 - Big overhaul for really broken features with some pretty major changes

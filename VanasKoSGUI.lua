@@ -636,7 +636,7 @@ function VanasKoSGUI:ToggleRightButton_OnLeave(button, frame)
 end
 
 function VanasKoSGUI:ShowTooltip(key, hoveredType)
-	if (hoveredType == "player" or hoveredType == "guild") then
+	if (hoveredType) then
 		tooltip:ClearLines()
 		tooltip:SetOwner(VanasKoSListFrame, "ANCHOR_CURSOR")
 		tooltip:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -30)
@@ -695,6 +695,66 @@ function VanasKoSGUI:UpdateMouseOverFrame(key, hoveredType)
 		end
 	elseif(hoveredType == "guild") then
 		tooltip:AddLine("<"..data.name..">")
+	elseif(hoveredType == "eventlog") then
+		if data.inBg then
+			if data.type == "win" then
+				tooltip:AddLine(L["Battleground win"])
+			elseif data.type == "loss" then
+				tooltip:AddLine(L["Battleground loss"])
+			else
+				tooltip:AddLine(L["Battleground encounter"])
+			end
+		elseif data.inArena then
+			if data.type == "win" then
+				tooltip:AddLine(L["Arena win"])
+			elseif data.type == "loss" then
+				tooltip:AddLine(L["Arena loss"])
+			else
+				tooltip:AddLine(L["Arena encounter"])
+			end
+		elseif data.inCombatZone then
+			if data.type == "win" then
+				tooltip:AddLine(L["Combat zone win"])
+			elseif data.type == "loss" then
+				tooltip:AddLine(L["Combat zone loss"])
+			else
+				tooltip:AddLine(L["Combat zone encounter"])
+			end
+		elseif data.inFfa then
+			if data.type == "win" then
+				tooltip:AddLine(L["Free-for-all win"])
+			elseif data.type == "loss" then
+				tooltip:AddLine(L["Free-for-all loss"])
+			else
+				tooltip:AddLine(L["Free-for-all encounter"])
+			end
+		else
+			if data.type == "win" then
+				tooltip:AddLine(L["World PvP win"])
+			elseif data.type == "loss" then
+				tooltip:AddLine(L["World PvP loss"])
+			else
+				tooltip:AddLine(L["World PvP encounter"])
+			end
+		end
+
+		if data.time then
+			tooltip:AddLine(date("%c", data.time))
+		end
+		tooltip:AddLine(format(L["Player: %s-%s (%s)"], data.myname or L["_UNKNOWN_NAME_"], data.myrealm or L["_UNKNOWN_REALM_"], data.mylevel or "??"))
+		tooltip:AddLine(format(L["Enemy: %s-%s (%s)"], data.name or L["_UNKNOWN_NAME_"], data.realm or L["_UNKNOWN_REALM_"], data.enemylevel or "??"))
+		if data.enemyguild then
+			tooltip:AddLine("<|cffffffff" .. data.enemyguild .. "|r>")
+		end
+
+		local mapInfo = data.mapID and C_Map.GetMapInfo(data.mapID) or nil
+		if mapInfo then
+			local text = mapInfo.name
+			if data.x and data.y then
+				text = text .. format(" (%d, %d)", data.x * 100, data.y * 100)
+			end
+			tooltip:AddLine(text)
+		end
 	end
 
 	-- infos about creator, sender, owner, last updated
@@ -885,12 +945,13 @@ end
 
 function VanasKoSGUI:SortedList(list)
 	local sortFn = self:GetCurrentSortFunction()
+	local filterFn = nil
 
-	if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].FilterFunction) then
-		return self:sortList(list, sortFn, listHandler[VANASKOS.showList].FilterFunction)
+	if(listHandler[VANASKOS.showList]) then
+		filterFn = listHandler[VANASKOS.showList].FilterFunction
 	end
 
-	return self:sortList(list, sortFn, nil)
+	return self:sortList(list, sortFn, filterFn)
 end
 
 function VanasKoSGUI:RegisterList(listName, handlerObject)

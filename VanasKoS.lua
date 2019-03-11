@@ -243,7 +243,8 @@ function VanasKoS:RegisterList(position, listNameInternal, listNameHuman, listHa
 	if(listNameHuman ~= nil) then
 		tinsert(VANASKOS.Lists, {
 			listNameInternal,
-			listNameHuman, position
+			listNameHuman,
+			position
 		})
 		tsort(VANASKOS.Lists, sortLists)
 		self:SendMessage("VanasKoS_List_Added")

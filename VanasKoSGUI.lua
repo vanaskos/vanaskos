@@ -376,21 +376,15 @@ function VanasKoSGUI:OpenConfigWindow()
 end
 
 function VanasKoSGUI:InitializeDropDowns()
-	UIDropDownMenu_Initialize(VanasKoSFrameChooseListDropDown,
-		function()
-			local lists = VANASKOS.Lists
-			for _,v in self:pairsByKeys(lists, nil) do
-				local button = UIDropDownMenu_CreateInfo()
-				button.text = v[2]
-				button.value = v[1]
-				button.func = function(self, event, ...)
-					UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, self.value)
-					VanasKoSGUI:ShowList(self.value, 1)
-				end
-				UIDropDownMenu_AddButton(button)
-			end
-		end, nil, nil)
-	UIDropDownMenu_SetSelectedValue(VanasKoSFrameChooseListDropDown, "PLAYERKOS")
+	local list = {}
+	local order = {}
+	local lists = VANASKOS.Lists
+	for _,v in self:pairsByKeys(lists, nil) do
+		list[v[1]] = v[2]
+		order[v[3]] = v[1]
+	end
+	VanasKoSFrameChooseListDropDown:SetList(list, order)
+	VanasKoSFrameChooseListDropDown:SetValue("PLAYERKOS")
 end
 
 function VanasKoSGUI:OnEnable()

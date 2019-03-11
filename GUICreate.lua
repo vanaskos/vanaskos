@@ -4,6 +4,7 @@ GUI Creation code
 ------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS")
+local GUI = LibStub("AceGUI-3.0")
 VanasKoSGUICreate = VanasKoS:NewModule("GUICreate")
 
 function VanasKoSGUICreate:OnInitialize()
@@ -113,12 +114,14 @@ function VanasKoSGUICreate:CreateListFrame()
 	local listFrame = CreateFrame("Frame", "VanasKoSListFrame", VanasKoSFrame)
 	listFrame:SetAllPoints(VanasKoSFrame)
 
-	local chooseListDropDown = CreateFrame("Frame", "VanasKoSFrameChooseListDropDown", VanasKoSListFrame, "UIDropDownMenuTemplate")
-	chooseListDropDown:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPLEFT", 65, -43)
-	VanasKoSFrameChooseListDropDownButton:SetScript("OnClick", function()
-		ToggleDropDownMenu(1, nil, VanasKoSFrameChooseListDropDown, VanasKoSFrameChooseListDropDown, 15, 10)
+	local dropdown = GUI:Create("Dropdown")
+	dropdown.frame:SetParent(VanasKoSListFrame)
+	dropdown:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPLEFT", 72, -38)
+	dropdown:SetWidth(120)
+	dropdown:SetCallback("OnValueChanged", function(self)
+		VanasKoSGUI:ShowList(self:GetValue())
 	end)
-	UIDropDownMenu_SetWidth(chooseListDropDown, 100, 15)
+	VanasKoSFrameChooseListDropDown = dropdown
 
 	local checkButton = CreateFrame("CheckButton", "VanasKoSListFrameCheckBox", VanasKoSListFrame, "UICheckButtonTemplate")
 	local checkButtonText = checkButton:CreateFontString(checkButton:GetName() .. "Text", "BORDER")

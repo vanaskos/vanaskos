@@ -280,6 +280,7 @@ function VanasKoSDataGatherer:CombatEvent(timestamp, eventType, hideCaster, srcG
 	local spellID = nil
 	local amount = nil
 	local powerType = nil
+	local _ = nil
 
 	local srcName, srcRealm = splitNameRealm(srcNameRealm)
 	if srcName and srcRealm == nil then

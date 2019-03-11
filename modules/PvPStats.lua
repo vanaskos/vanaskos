@@ -4,6 +4,7 @@ Displays Stats about PvP in a window
 ------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/PvPStats", false)
+local GUI = LibStub("AceGUI-3.0")
 local Graph = LibStub("LibGraph-2.0", true)
 VanasKoSPvPStats = VanasKoS:NewModule("PvPStats", "AceEvent-3.0")
 
@@ -16,8 +17,8 @@ local ipairs = ipairs
 local tonumber = tonumber
 local strgsub = string.gsub
 local wipe = wipe
-local tinsert = tremove
-local tremove = tinsert
+local tinsert = tinsert
+local tremove = tremove
 local next = next
 local date = date
 local time = time
@@ -252,8 +253,8 @@ function VanasKoSPvPStats:ShowList(list, group)
 		else
 			VanasKoSListFrameRemoveButton:Disable()
 		end
-		VanasKoSPvPStatsCharacterDropDown:Show()
-		VanasKoSPvPStatsTimeSpanDropDown:Show()
+		VanasKoSPvPStatsCharacterDropDown.frame:Show()
+		VanasKoSPvPStatsTimeSpanDropDown.frame:Show()
 		self.statPie:Show()
 	end
 end
@@ -263,8 +264,8 @@ function VanasKoSPvPStats:HideList(list)
 		VanasKoSListFrameChangeButton:Enable()
 		VanasKoSListFrameAddButton:Enable()
 		VanasKoSListFrameRemoveButton:Enable()
-		VanasKoSPvPStatsCharacterDropDown:Hide()
-		VanasKoSPvPStatsTimeSpanDropDown:Hide()
+		VanasKoSPvPStatsCharacterDropDown.frame:Hide()
+		VanasKoSPvPStatsTimeSpanDropDown.frame:Hide()
 		self.statPie:Hide()
 	end
 end
@@ -796,27 +797,29 @@ function VanasKoSPvPStats:OnDisable()
 	VanasKoSGUI:UnregisterList("PVPSTATS")
 end
 
+local PieText1
+local PieText2
 function VanasKoSPvPStats:OnEnable()
 	VanasKoS:RegisterList(6, "PVPSTATS", L["PvP Stats"], self)
 	VanasKoSGUI:RegisterList("PVPSTATS", self)
 
-	local characterDropdown = CreateFrame("Frame", "VanasKoSPvPStatsCharacterDropDown", VanasKoSListFrame, "UIDropDownMenuTemplate")
-	characterDropdown:SetPoint("RIGHT", VanasKoSListFrameToggleLeftButton, "LEFT", 10, -2)
-	UIDropDownMenu_SetWidth(characterDropdown, 60)
+	local characterDropdown = GUI:Create("Dropdown")
+	VanasKoSPvPStatsCharacterDropDown = characterDropdown
+	characterDropdown.frame:SetParent(VanasKoSListFrame)
+	characterDropdown:SetWidth(80)
+	characterDropdown:SetPulloutWidth(200)
+	characterDropdown:SetPoint("RIGHT", VanasKoSListFrameToggleLeftButton, "LEFT", -5, 0)
 
-	local CharacterChoices = {
-		[0] = {
-			L["All Characters"], "ALLCHARS"
-		},
-	}
-
-	local pvpEventLog = VanasKoS:GetList("PVPLOG", 1) or {}
+	local CharacterChoices = {["ALLCHARS"] = L["All Characters"]}
+	local CharacterChoicesOrder = {}
 
 	local twinks = {}
 	twinks[hashName(UnitName("player"), GetRealmName())] = {
 		name = UnitName("player"),
 		realm = GetRealmName()
 	}
+
+	local pvpEventLog = VanasKoS:GetList("PVPLOG", 1) or {}
 	for _, event in pairs(pvpEventLog.event or {}) do
 		if(event.myname and event.myrealm) then
 			twinks[hashName(event.myname, event.myrealm)] = {
@@ -825,68 +828,52 @@ function VanasKoSPvPStats:OnEnable()
 			}
 		end
 	end
-	local i = 1
 	for k, v in pairs(twinks) do
-		CharacterChoices[i] = {v.name .. "-" .. v.realm, k}
-		i = i + 1
+		CharacterChoices[k] = v.name .. "-" .. v.realm
+		tinsert(CharacterChoicesOrder, k)
 	end
-
-	UIDropDownMenu_Initialize(characterDropdown, function(self, level)
-		for _, v in pairs(CharacterChoices) do
-			local button = UIDropDownMenu_CreateInfo()
-			button.text = v[1]
-			button.value = v[2]
-			button.func = function(self)
-				VanasKoSPvPStats:SetCharacter(self.value)
-				UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsCharacterDropDown, self.value)
-			end
-			UIDropDownMenu_AddButton(button)
-		end
+	tinsert(CharacterChoicesOrder, 1, "ALLCHARS")
+	characterDropdown:SetList(CharacterChoices, CharacterChoicesOrder)
+	characterDropdown:SetCallback("OnValueChanged", function(self)
+		VanasKoSPvPStats:SetCharacter(self:GetValue())
 	end)
-	UIDropDownMenu_SetSelectedValue(characterDropdown, "ALLCHARS")
+	characterDropdown:SetValue("ALLCHARS")
 
-	local timespanDropdown = CreateFrame("Frame", "VanasKoSPvPStatsTimeSpanDropDown", VanasKoSListFrame, "UIDropDownMenuTemplate")
-	timespanDropdown:SetPoint("RIGHT", characterDropdown, "LEFT", 30, 0)
-	UIDropDownMenu_SetWidth(timespanDropdown, 60)
-
-	local TimeSpanChoices = {
-		[0] = {L["All Time"], "ALLTIME"},
-		[1] = {L["Last 24 hours"], "LAST24HOURS"},
-		[2] = {L["Last Week"], "LASTWEEK"},
-		[3] = {L["Last Month"], "LASTMONTH"}
-	}
-
-	UIDropDownMenu_Initialize(timespanDropdown, function(self, level)
-		for _, v in VanasKoSGUI:pairsByKeys(TimeSpanChoices, nil) do
-			local button = UIDropDownMenu_CreateInfo()
-			button.text = v[1]
-			button.value = v[2]
-			button.func = function(self)
-				VanasKoSPvPStats:SetTimeSpan(self.value)
-				UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsTimeSpanDropDown, self.value)
-			end
-			UIDropDownMenu_AddButton(button)
-		end
+	local timespanDropdown = GUI:Create("Dropdown")
+	VanasKoSPvPStatsTimeSpanDropDown = timespanDropdown
+	timespanDropdown.frame:SetParent(VanasKoSListFrame)
+	timespanDropdown:SetPoint("RIGHT", VanasKoSPvPStatsCharacterDropDown.frame, "LEFT", 0, 0)
+	timespanDropdown:SetWidth(80)
+	timespanDropdown:SetPulloutWidth(200)
+	timespanDropdown:SetList({
+		["ALLTIME"] = L["All Time"],
+		["LAST24HOURS"] = L["Last 24 hours"],
+		["LASTWEEK"] = L["Last Week"],
+		["LASTMONTH"] = L["Last Month"]
+	}, {"ALLTIME", "LAST24HOURS", "LASTWEEK", "LASTMONTH"}
+	)
+	timespanDropdown:SetCallback("OnValueChanged", function(self)
+		VanasKoSPvPStats:SetTimeSpan(self:GetValue())
 	end)
-	UIDropDownMenu_SetSelectedValue(VanasKoSPvPStatsTimeSpanDropDown, "ALLTIME")
+	timespanDropdown:SetValue("ALLTIME")
 
-	characterDropdown:Hide()
-	timespanDropdown:Hide()
+	characterDropdown.frame:Hide()
+	timespanDropdown.frame:Hide()
 
 	if Graph then
 		self.statPie = Graph:CreateGraphPieChart("VanasKoS_PvP_StatPie", VanasKoSFrame, "LEFT", "RIGHT", 0, 0, 150, 150)
 
-		text1 = self.statPie:CreateFontString(nil, "ARTWORK")
-		text1:SetFontObject("GameFontNormal")
-		text1:SetPoint("TOPLEFT", self.statPie, "TOPRIGHT", 0, 0)
-		text1:SetText("|cff00ff00Wins:" .. 0 .. "|r")
-		self.statPie.line1 = text1
+		PieText1 = self.statPie:CreateFontString(nil, "ARTWORK")
+		PieText1:SetFontObject("GameFontNormal")
+		PieText1:SetPoint("TOPLEFT", self.statPie, "TOPRIGHT", 0, 0)
+		PieText1:SetText("|cff00ff00Wins:" .. 0 .. "|r")
+		self.statPie.line1 = PieText1
 
-		text2 = self.statPie:CreateFontString(nil, "ARTWORK")
-		text2:SetFontObject("GameFontNormal")
-		text2:SetPoint("TOPLEFT", text1, "BOTTOMLEFT", 0, 0)
-		text2:SetText("|cffff0000Wins:" .. 0 .. "|r")
-		self.statPie.line2 = text2
+		PieText2 = self.statPie:CreateFontString(nil, "ARTWORK")
+		PieText2:SetFontObject("GameFontNormal")
+		PieText2:SetPoint("TOPLEFT", PieText1, "BOTTOMLEFT", 0, 0)
+		PieText2:SetText("|cffff0000Wins:" .. 0 .. "|r")
+		self.statPie.line2 = PieText2
 
 		self.statPie:Hide()
 	end
@@ -929,8 +916,8 @@ function VanasKoSPvPStats:SetWinLossStatsPie(wins, losses)
 		self.statPie.line1:SetText(format(L["Wins: |cff00ff00%d|r (%.1f%%)"], wins, winpercent*100))
 		self.statPie.line2:SetText(format(L["Losses: |cffff0000%d|r (%.1f%%)"], losses, losspercent*100))
 	else
-		text1:SetText("")
-		text2:SetText("")
+		PieText1:SetText("")
+		PieText2:SetText("")
 	end
 
 	if(losspercent ~= 0 and losspercent ~= 1) then

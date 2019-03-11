@@ -12,6 +12,7 @@ alpha:
 - Fix enable/disable of event map without reloading UI
 - Only update last seen list every 10 seconds (if being shown)
 - Fix coloring entries and tooltips in friends list
+- Remove a couple of UI taints
 
 5.00-beta:
 - Big overhaul for really broken features with some pretty major changes

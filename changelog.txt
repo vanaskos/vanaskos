@@ -13,6 +13,8 @@ alpha:
 - Only update last seen list every 10 seconds (if being shown)
 - Fix coloring entries and tooltips in friends list
 - Remove a couple of UI taints
+- Add ability to remove zones from pvp stats list
+- Fix option to disabe pvp events in arena/bg
 
 5.00-beta:
 - Big overhaul for really broken features with some pretty major changes

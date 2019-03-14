@@ -287,7 +287,8 @@ function VanasKoSPvPDataGatherer:EnablePvPLog(enable)
 		self:RegisterMessage("VanasKoS_PvPDeath", "PvPDeath")
 		pvpLoggingEnabled = true
 	elseif not enable then
-		self:UnregisterAllMessages()
+		self:UnregisterMessage("VanasKoS_PvPDamage")
+		self:UnregisterMessage("VanasKoS_PvPDeath")
 		pvpLoggingEnabled = nil
 	end
 end
@@ -482,7 +483,7 @@ function VanasKoSPvPDataGatherer:RemoveEntry(listname, key)
 						for j, zhash in ipairs(pvpPlayersLog[playerKey]) do
 							if (zhash == eventKey) then
 								--VanasKoS:Print("removing " .. playerKey .. "-" .. j .. " from pvp player log")
-								tremove(pvpMapLog[playerKey], j)
+								tremove(pvpPlayersLog[playerKey], j)
 								break
 							end
 						end
@@ -603,6 +604,7 @@ end
 
 function VanasKoSPvPDataGatherer:OnEnable()
 	self:Update()
+	self:RegisterMessage("VanasKoS_Zone_Changed", "Update")
 end
 
 function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, srcRealm, dstName, dstRealm, amount)

@@ -46,10 +46,20 @@ local lastDamageTo = {}
 
 -- sorts by index
 local function SortByKey(val1, val2)
-	return (tostring(val1) > tostring(val2))
+	if val1 and val2 then
+		return (val1 > val2)
+	elseif val1 then
+		return true
+	end
+	return false
 end
 local function SortByKeyReverse(val1, val2)
-	return (tostring(val1) < tostring(val2))
+	if val1 and val2 then
+		return (val1 < val2)
+	elseif val2 then
+		return true
+	end
+	return false
 end
 
 -- sorts by name

@@ -62,28 +62,54 @@ local tempStatData = {
 
 -- sorts by key
 local function SortByKey(val1, val2)
-	return (val1 > val2)
+	if val1 and val2 then
+		return (val1 > val2)
+	elseif val1 then
+		return true
+	end
+	return false
 end
-local function SortByNameReverse(val1, val2)
-	return (val1 < val2)
+local function SortByKeyReverse(val1, val2)
+	if val1 and val2 then
+		return (val1 < val2)
+	elseif val2 then
+		return true
+	end
+	return false
 end
 
 -- sorts by name
 local function SortByName(val1, val2)
 	local list = pvpStatsList
+	local cmp1, cmp2
 	if (list) then
-		local cmp1 = list[val1].name
-		local cmp2 = list[val2].name
+		cmp1 = list[val1].name
+		cmp2 = list[val2].name
+	else
+		cmp1 = val1
+		cmp2 = val2
+	end
+	if cmp1 and cmp2 then
 		return (cmp1 > cmp2)
+	elseif cmp1 then
+		return true
 	end
 	return false
 end
 local function SortByNameReverse(val1, val2)
 	local list = pvpStatsList
+	local cmp1, cmp2
 	if (list) then
-		local cmp1 = list[val1].name
-		local cmp2 = list[val2].name
+		cmp1 = list[val1].name
+		cmp2 = list[val2].name
+	else
+		cmp1 = val1
+		cmp2 = val2
+	end
+	if cmp1 and cmp2 then
 		return (cmp1 < cmp2)
+	elseif cmp2 then
+		return true
 	end
 	return false
 end

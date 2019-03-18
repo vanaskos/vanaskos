@@ -343,7 +343,7 @@ function VanasKoSEventMap:CreatePoints(enemyIdx)
 		local zonelog = pvpMapLog[mapID] or {}
 		for idx = enemyIdx, #zonelog do
 			local event = pvpEventLog[zonelog[idx]]
-			if event.x and event.y then
+			if event and event.x and event.y then
 				if (drawAlts or event.myname == myname) then
 					local Pin = self:GetPin(event.x, event.y)
 					if (event.type == "loss") then

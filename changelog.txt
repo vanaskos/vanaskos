@@ -14,7 +14,9 @@ alpha:
 - Fix coloring entries and tooltips in friends list
 - Remove a couple of UI taints
 - Add ability to remove zones from pvp stats list
-- Fix option to disabe pvp events in arena/bg
+- Fix option to disable pvp events in arena/bg
+- Fix warning window mouseover
+- Attempt a fix at a reported sorting issue in pvp stats
 
 5.00-beta:
 - Big overhaul for really broken features with some pretty major changes

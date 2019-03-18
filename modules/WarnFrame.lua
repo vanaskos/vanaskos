@@ -132,12 +132,12 @@ local function HideTooltip()
 end
 
 local function ShowTooltip(self, buttonNr)
+	local buttonName = buttonData[buttonNr]
+	local data = dataCache[buttonName]
+
 	if(not VanasKoSWarnFrame.db.profile.ShowMouseOverInfos or not data) then
 		return
 	end
-
-	local buttonName = buttonData[buttonNr]
-	local data = dataCache[buttonName]
 
 	GameTooltip:Hide()
 	GameTooltip:SetOwner(self)

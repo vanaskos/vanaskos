@@ -27,6 +27,7 @@ local GetMapNameByID = GetMapNameByID
 local GetCursorPosition = GetCursorPosition
 local hashName = VanasKoS.hashName
 local hashGuild = VanasKoS.hashGuild
+local VanasKoSPvPStats = VanasKoSPvPStats
 
 -- Constants
 local PLAYERS_LIST = 1

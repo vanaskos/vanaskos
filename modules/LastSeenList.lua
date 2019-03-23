@@ -19,6 +19,7 @@ local wipe = wipe
 local SecondsToTime = SecondsToTime
 local GetCursorPosition = GetCursorPosition
 local hashName = VanasKoS.hashName
+local VanasKoSLastSeenList = VanasKoSLastSeenList
 
 -- Constants
 local TXT_MAGENTA = "|cffff00ff"

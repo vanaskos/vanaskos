@@ -635,8 +635,8 @@ function VanasKoSImporter:FromOldVanasKoS()
 	invalid = 0
 	if (VanasKoSDB.namespaces.DataGatherer.realm) then
 		for realm,v in pairs(VanasKoSDB.namespaces.DataGatherer.realm) do
-			if (v.players) then
-				for fullPlayerName, olddata in pairs(v.players) do
+			if (v.data and v.data.players) then
+				for fullPlayerName, olddata in pairs(v.data.players) do
 					local playerName, playerRealm = splitNameRealm(fullPlayerName)
 					if not playerRealm then
 						playerRealm = realm
@@ -657,7 +657,7 @@ function VanasKoSImporter:FromOldVanasKoS()
 					count = count + 1
 					olddata[fullPlayerName] = nil
 				end
-				v.players = nil
+				v.data = nil
 			end
 		end
 		VanasKoSDB.namespaces.DataGatherer.realm = nil
@@ -782,164 +782,168 @@ function VanasKoSImporter:FromOldVanasKoS()
 	count = 0
 	invalid = 0
 	local eventId = 1
-	if(VanasKoSDB.namespaces.PvPStats and VanasKoSDB.namespaces.PvPStats.global and VanasKoSDB.namespaces.PvPStats.global.pvpstats and VanasKoSDB.namespaces.PvPStats.global.pvpstats.players) then
-		local pvpStats = VanasKoSDB.namespaces.PvPStats.global.pvpstats.players
-		for playerFullName, statData in pairs(pvpStats) do
-			local playerName, playerRealm = splitNameRealm(playerFullName)
-			if not playerRealm then
-				playerRealm = L["unknown"]
-			end
-			local playerKey = hashName(playerName, playerRealm)
-			if not pvplog.players[playerKey] then
-				pvplog.players[playerKey] = {}
-			end
-			local wins = 0
-			local losses = 0
-			local ffawins = 0
-			local combatwins = 0
-			local arenawins = 0
-			local bgwins = 0
-			local ffalosses = 0
-			local combatlosses = 0
-			local arenalosses = 0
-			local bglosses = 0
+	if(VanasKoSDB.namespaces.PvPStats and VanasKoSDB.namespaces.PvPStats.realm) then
+		for realm, realmdata in pairs(VanasKoSDB.namespaces.PvPStats.realm) do
+			if(realmdata.pvpstats and realmdata.pvpstats.players) then
+				local pvpStats = realmdata.pvpstats.players
+				for playerFullName, statData in pairs(pvpStats) do
+					local playerName, playerRealm = splitNameRealm(playerFullName)
+					if not playerRealm then
+						playerRealm = L["unknown"]
+					end
+					local playerKey = hashName(playerName, playerRealm)
+					if not pvplog.players[playerKey] then
+						pvplog.players[playerKey] = {}
+					end
+					local wins = 0
+					local losses = 0
+					local ffawins = 0
+					local combatwins = 0
+					local arenawins = 0
+					local bgwins = 0
+					local ffalosses = 0
+					local combatlosses = 0
+					local arenalosses = 0
+					local bglosses = 0
 
-			for i, eventKey in pairs(pvplog.players[playerKey]) do
-				local event = pvplog.event[eventKey]
-				if event and event.type == "win" then
-					wins = wins + 1
-					if event.inBg then
-						bgwins = bgwins + 1
-					end
-					if event.inArena then
-						arenawins = arenawins + 1
-					end
-					if event.inCombatZone then
-						combatwins = combatwins + 1
-					end
-					if event.inFfa then
-						ffawins = ffawins + 1
-					end
-				elseif event and event.type == "loss" then
-					losses = losses + 1
-					if event.inBg then
-						bglosses = bglosses + 1
-					end
-					if event.inArena then
-						arenalosses = arenalosses + 1
-					end
-					if event.inCombatZone then
-						combatlosses = combatlosses + 1
-					end
-					if event.inFfa then
-						ffalosses = ffalosses + 1
-					end
-				end
-			end
-
-			wins = statData.wins - wins
-			ffawins = statData.ffawins - ffawins
-			combatwins = statData.combatwins - combatwins
-			arenawins = statData.arenawins - arenawins
-			bgwins = statData.bgwins - bgwins
-			losses = statData.losses - losses
-			ffalosses = statData.ffalosses - ffalosses
-			combatlosses = statData.combatlosses - combatlosses
-			arenalosses = statData.arenalosses - arenalosses
-			bglosses = statData.bglosses - bglosses
-
-			if wins > 0 then
-				for i=1,wins do
-					local eventKey = "pvpstatimport-" .. eventId
-					eventId = eventId + 1
-					pvplog.event[eventKey] = {
-						name = playerName,
-						realm = playerRealm,
-						type = "win"
-					}
-					if bgwins > 1 then
-						pvplog.event[eventKey].inBg = true
-						bgwins = bgwins - 1
-					elseif arenawins > 1 then
-						pvplog.event[eventKey].inArena = true
-						arenawins = arenawins - 1
-					elseif combatwins > 1 then
-						pvplog.event[eventKey].inCombatZone = true
-						combatwins = combatwins - 1
-					elseif ffawins > 1 then
-						pvplog.event[eventKey].inFfa = true
-						combatwins = combatwins - 1
-					end
-					tinsert(pvplog.players[playerKey], eventKey)
-				end
-			end
-			if losses > 0 then
-				for i=1,losses do
-					local eventKey = "pvpstatimport-" .. eventId
-					eventId = eventId + 1
-					pvplog.event[eventKey] = {
-						name = playerName,
-						realm = playerRealm,
-						type = "loss"
-					}
-					if bglosses > 1 then
-						pvplog.event[eventKey].inBg = true
-						bglosses = bglosses - 1
-					elseif arenalosses > 1 then
-						pvplog.event[eventKey].inArena = true
-						arenalosses = arenalosses - 1
-					elseif combatlosses > 1 then
-						pvplog.event[eventKey].inCombatZone = true
-						combatlosses = combatlosses - 1
-					elseif ffalosses > 1 then
-						pvplog.event[eventKey].inFfa = true
-						combatlosses = combatlosses - 1
-					end
-					tinsert(pvplog.players[playerKey], eventKey)
-				end
-			end
-
-			-- Add flags to already existing wins if the counts don't add up
-			if ffawins + combatwins + arenawins + bgwins + ffalosses + combatlosses + arenalosses + bglosses > 0 then
-				for i, eventKey in pairs(pvplog.players[playerKey]) do
-					local event = pvplog.event[eventKey]
-					if event and not (event.mapId or event.inBg or event.inArena or event.inCombatZone or event.inFfa) then
-						if event.type == "win" then
-							if bgwins > 1 then
-								event.inBg = true
-								bgwins = bgwins - 1
-							elseif arenawins > 1 then
-								event.inArena = true
-								arenawins = arenawins - 1
-							elseif combatwins > 1 then
-								event.inCombatZone = true
-								combatwins = combatwins - 1
-							elseif ffawins > 1 then
-								event.inFfa = true
-								combatwins = combatwins - 1
+					for i, eventKey in pairs(pvplog.players[playerKey]) do
+						local event = pvplog.event[eventKey]
+						if event and event.type == "win" then
+							wins = wins + 1
+							if event.inBg then
+								bgwins = bgwins + 1
 							end
-						elseif event.type == "loss" then
-							if bglossess > 1 then
-								event.inBg = true
-								bglossess = bglossess - 1
-							elseif arenalossess > 1 then
-								event.inArena = true
-								arenalossess = arenalossess - 1
-							elseif combatlossess > 1 then
-								event.inCombatZone = true
-								combatlossess = combatlossess - 1
-							elseif ffalosses > 1 then
-								event.inFfa = true
-								combatlossess = combatlossess - 1
+							if event.inArena then
+								arenawins = arenawins + 1
+							end
+							if event.inCombatZone then
+								combatwins = combatwins + 1
+							end
+							if event.inFfa then
+								ffawins = ffawins + 1
+							end
+						elseif event and event.type == "loss" then
+							losses = losses + 1
+							if event.inBg then
+								bglosses = bglosses + 1
+							end
+							if event.inArena then
+								arenalosses = arenalosses + 1
+							end
+							if event.inCombatZone then
+								combatlosses = combatlosses + 1
+							end
+							if event.inFfa then
+								ffalosses = ffalosses + 1
 							end
 						end
 					end
+
+					wins = statData.wins - wins
+					ffawins = statData.ffawins - ffawins
+					combatwins = statData.combatwins - combatwins
+					arenawins = statData.arenawins - arenawins
+					bgwins = statData.bgwins - bgwins
+					losses = statData.losses - losses
+					ffalosses = statData.ffalosses - ffalosses
+					combatlosses = statData.combatlosses - combatlosses
+					arenalosses = statData.arenalosses - arenalosses
+					bglosses = statData.bglosses - bglosses
+
+					if wins > 0 then
+						for i=1,wins do
+							local eventKey = "pvpstatimport-" .. eventId
+							eventId = eventId + 1
+							pvplog.event[eventKey] = {
+								name = playerName,
+								realm = playerRealm,
+								type = "win"
+							}
+							if bgwins > 1 then
+								pvplog.event[eventKey].inBg = true
+								bgwins = bgwins - 1
+							elseif arenawins > 1 then
+								pvplog.event[eventKey].inArena = true
+								arenawins = arenawins - 1
+							elseif combatwins > 1 then
+								pvplog.event[eventKey].inCombatZone = true
+								combatwins = combatwins - 1
+							elseif ffawins > 1 then
+								pvplog.event[eventKey].inFfa = true
+								combatwins = combatwins - 1
+							end
+							tinsert(pvplog.players[playerKey], eventKey)
+						end
+					end
+					if losses > 0 then
+						for i=1,losses do
+							local eventKey = "pvpstatimport-" .. eventId
+							eventId = eventId + 1
+							pvplog.event[eventKey] = {
+								name = playerName,
+								realm = playerRealm,
+								type = "loss"
+							}
+							if bglosses > 1 then
+								pvplog.event[eventKey].inBg = true
+								bglosses = bglosses - 1
+							elseif arenalosses > 1 then
+								pvplog.event[eventKey].inArena = true
+								arenalosses = arenalosses - 1
+							elseif combatlosses > 1 then
+								pvplog.event[eventKey].inCombatZone = true
+								combatlosses = combatlosses - 1
+							elseif ffalosses > 1 then
+								pvplog.event[eventKey].inFfa = true
+								combatlosses = combatlosses - 1
+							end
+							tinsert(pvplog.players[playerKey], eventKey)
+						end
+					end
+
+					-- Add flags to already existing wins if the counts don't add up
+					if ffawins + combatwins + arenawins + bgwins + ffalosses + combatlosses + arenalosses + bglosses > 0 then
+						for i, eventKey in pairs(pvplog.players[playerKey]) do
+							local event = pvplog.event[eventKey]
+							if event and not (event.mapId or event.inBg or event.inArena or event.inCombatZone or event.inFfa) then
+								if event.type == "win" then
+									if bgwins > 1 then
+										event.inBg = true
+										bgwins = bgwins - 1
+									elseif arenawins > 1 then
+										event.inArena = true
+										arenawins = arenawins - 1
+									elseif combatwins > 1 then
+										event.inCombatZone = true
+										combatwins = combatwins - 1
+									elseif ffawins > 1 then
+										event.inFfa = true
+										combatwins = combatwins - 1
+									end
+								elseif event.type == "loss" then
+									if bglosses > 1 then
+										event.inBg = true
+										bglosses = bglosses - 1
+									elseif arenalosses > 1 then
+										event.inArena = true
+										arenalosses = arenalosses - 1
+									elseif combatlosses > 1 then
+										event.inCombatZone = true
+										combatlosses = combatlosses - 1
+									elseif ffalosses > 1 then
+										event.inFfa = true
+										combatlosses = combatlosses - 1
+									end
+								end
+							end
+						end
+					end
+					count = count + 1
+					pvpStats[playerFullName] = nil
 				end
 			end
-			count = count + 1
-			pvpStats[playerFullName] = nil
 		end
-		VanasKoSDB.namespaces.PvPStats.global = nil
+		VanasKoSDB.namespaces.PvPStats.realm = nil
 	end
 
 	if (count > 0) then

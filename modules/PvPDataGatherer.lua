@@ -18,6 +18,7 @@ local GetRealmName = GetRealmName
 local GetPlayerMapPosition = GetPlayerMapPosition
 local GetCurrentMapAreaID = GetCurrentMapAreaID
 local hashName = VanasKoS.hashName
+local VanasKoSPvPDataGatherer = VanasKoSPvPDataGatherer
 
 -- Constants
 local EVENT_LIST = 1
@@ -68,7 +69,11 @@ local function SortByName(val1, val2)
 	if (list) then
 		local cmp1 = list[val1].name
 		local cmp2 = list[val2].name
-		return (cmp1 > cmp2)
+		if cmp1 and cmp2 then
+			return (cmp1 > cmp2)
+		elseif cmp1 then
+			return true
+		end
 	end
 	return false
 end
@@ -77,7 +82,11 @@ local function SortByNameReverse(val1, val2)
 	if (list) then
 		local cmp1 = list[val1].name
 		local cmp2 = list[val2].name
-		return (cmp1 < cmp2)
+		if cmp1 and cmp2 then
+			return (cmp1 < cmp2)
+		elseif cmp2 then
+			return true
+		end
 	end
 	return false
 end
@@ -88,7 +97,11 @@ local function SortByMyName(val1, val2)
 	if (list) then
 		local cmp1 = list[val1].myname
 		local cmp2 = list[val2].myname
-		return (cmp1 > cmp2)
+		if cmp1 and cmp2 then
+			return (cmp1 > cmp2)
+		elseif cmp1 then
+			return true
+		end
 	end
 	return false
 end
@@ -97,7 +110,11 @@ local function SortByMyNameReverse(val1, val2)
 	if (list) then
 		local cmp1 = list[val1].myname
 		local cmp2 = list[val2].myname
-		return (cmp1 < cmp2)
+		if cmp1 and cmp2 then
+			return (cmp1 < cmp2)
+		elseif cmp2 then
+			return true
+		end
 	end
 	return false
 end
@@ -108,7 +125,11 @@ local function SortByTime(val1, val2)
 	if (list) then
 		local cmp1 = list[val1].time
 		local cmp2 = list[val2].time
-		return (cmp1 > cmp2)
+		if cmp1 and cmp2 then
+			return (cmp1 > cmp2)
+		elseif cmp1 then
+			return true
+		end
 	end
 	return false
 end
@@ -117,7 +138,11 @@ local function SortByTimeReverse(val1, val2)
 	if (list) then
 		local cmp1 = list[val1].time
 		local cmp2 = list[val2].time
-		return (cmp1 < cmp2)
+		if cmp1 and cmp2 then
+			return (cmp1 < cmp2)
+		elseif cmp2 then
+			return true
+		end
 	end
 	return false
 end
@@ -128,7 +153,11 @@ local function SortByType(val1, val2)
 	if (list) then
 		local cmp1 = list[val1].type
 		local cmp2 = list[val2].type
-		return (cmp1 > cmp2)
+		if cmp1 and cmp2 then
+			return (cmp1 > cmp2)
+		elseif cmp1 then
+			return true
+		end
 	end
 	return false
 end
@@ -137,26 +166,11 @@ local function SortByTypeReverse(val1, val2)
 	if (list) then
 		local cmp1 = list[val1].type
 		local cmp2 = list[val2].type
-		return (cmp1 < cmp2)
-	end
-	return false
-end
-
--- sorts by type map
-local function SortByMap(val1, val2)
-	local list = shownList
-	if (list) then
-		local cmp1 = val1
-		local cmp2 = val2
-		return (cmp1 > cmp2)
-	end
-	return false
-end
-local function SortByMapCount(val1, val2)
-	if (list) then
-		local cmp1 = val1
-		local cmp2 = val2
-		return (cmp1 < cmp2)
+		if cmp1 and cmp2 then
+			return (cmp1 < cmp2)
+		elseif cmp2 then
+			return true
+		end
 	end
 	return false
 end
@@ -573,7 +587,7 @@ function VanasKoSPvPDataGatherer:SetupColumns(list)
 			VanasKoSGUI:SetColumnType(2, "number")
 			VanasKoSGUI:SetColumnName(1, L["Zone"])
 			VanasKoSGUI:SetColumnName(2, L["Events"])
-			VanasKoSGUI:SetColumnSort(1, SortByMap, SortByMapReverse)
+			VanasKoSGUI:SetColumnSort(1, SortByKey, SortByKeyReverse)
 			VanasKoSGUI:SetColumnSort(2, SortByCount, SortByCountReverse)
 			shownList = self:GetList("PVPLOG", MAP_LIST)
 			VanasKoSGUI:SetToggleButtonText(L["Zone"])

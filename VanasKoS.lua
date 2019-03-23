@@ -24,6 +24,7 @@ local GetGuildInfo = GetGuildInfo
 local UnitName = UnitName
 local UnitFactionGroup = UnitFactionGroup
 local UnitIsPlayer = UnitIsPlayer
+local VanasKoS = VanasKoS
 
 -- Constants
 local CityMapIDs = {

@@ -21,6 +21,7 @@ local format = format
 local date = date
 local hashName = VanasKoS.hashName
 local hashGuild = VanasKoS.hashGuild
+local VanasKosGUI = VanasKoSGUI
 
 -- Local Variables
 local tooltip = nil
@@ -31,6 +32,7 @@ local defaultSortFunction = {}
 local defaultRevSortFunction = {}
 local configFrameInner = nil
 local oldlist = ""
+local buttonList = {}
 
 VanasKoSGUI.numConfigOptions = 8
 VanasKoSGUI.dropDownFrame = nil
@@ -392,6 +394,22 @@ function VanasKoSGUI:OnEnable()
 
 	self:RegisterMessage("VanasKoS_List_Entry_Added", "UpdateShownList")
 	self:RegisterMessage("VanasKoS_List_Entry_Removed", "UpdateShownList")
+
+	-- Save for faster lookup
+	for i=1,VANASKOS.MAX_LIST_BUTTONS do
+		buttonList[i] = {
+			button = _G["VanasKoSListFrameListButton" .. i],
+			text1 = _G["VanasKoSListFrameListButton" ..  i .. "Text1"],
+			text2 = _G["VanasKoSListFrameListButton" ..  i .. "Text2"],
+			text3 = _G["VanasKoSListFrameListButton" ..  i .. "Text3"],
+			text4 = _G["VanasKoSListFrameListButton" ..  i .. "Text4"],
+			text5 = _G["VanasKoSListFrameListButton" ..  i .. "Text5"],
+			text6 = _G["VanasKoSListFrameListButton" ..  i .. "Text6"],
+			text7 = _G["VanasKoSListFrameListButton" ..  i .. "Text7"],
+			text8 = _G["VanasKoSListFrameListButton" ..  i .. "Text8"],
+			text9 = _G["VanasKoSListFrameListButton" ..  i .. "Text9"]
+		}
+	end
 end
 
 function VanasKoSGUI:OnDisable()
@@ -981,8 +999,11 @@ function VanasKoSGUI:ScrollFrameUpdate()
 	end
 	local listOffset = FauxScrollFrame_GetOffset(VanasKoSListScrollFrame)
 	local listVar = self:GetCurrentShownListIterator()
+	local showList = VANASKOS.showList
+	local showListHandler = listHandler[showList]
 	local listIndex = 1
 	local buttonIndex = 1
+	local maxButtonIndex = VANASKOS.MAX_LIST_BUTTONS
 
 	if(listVar == nil) then
 		VANASKOS.selectedEntry = nil
@@ -990,42 +1011,32 @@ function VanasKoSGUI:ScrollFrameUpdate()
 		return nil
 	end
 
-	if(oldlist ~= VANASKOS.showList) then
+	if(oldlist ~= showList) then
 		if(listHandler[oldlist] and listHandler[oldlist].HideList) then
 			listHandler[oldlist]:HideList(oldlist)
 		end
-		if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].ShowList) then
-			listHandler[VANASKOS.showList]:ShowList(VANASKOS.showList)
+		if(showListHandler and showListHandler.ShowList) then
+			showListHandler:ShowList(showList)
 		end
-		if(listHandler[VANASKOS.showList] and listHandler[VANASKOS.showList].SetupColumns) then
-			listHandler[VANASKOS.showList]:SetupColumns(VANASKOS.showList)
+		if(showListHandler and showListHandler.SetupColumns) then
+			showListHandler:SetupColumns(showList)
 		end
 	end
 
 	for k,v in listVar do
 		if((listIndex-1) >= listOffset) then
-			if(buttonIndex <= VANASKOS.MAX_LIST_BUTTONS) then
-				local buttonText1 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text1"]
-				local buttonText2 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text2"]
-				local buttonText3 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text3"]
-				local buttonText4 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text4"]
-				local buttonText5 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text5"]
-				local buttonText6 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text6"]
-				local buttonText7 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text7"]
-				local buttonText8 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text8"]
-				local buttonText9 = _G["VanasKoSListFrameListButton" ..  buttonIndex .. "Text9"]
-				local button = _G["VanasKoSListFrameListButton" .. buttonIndex]
-				button:SetID(listIndex)
+			if(buttonIndex <= maxButtonIndex) then
+				local button = buttonList[buttonIndex]
+				button.button:SetID(listIndex)
 				if(listIndex == VANASKOS.selectedEntry) then
-					button:LockHighlight()
+					button.button:LockHighlight()
 				else
-					button:UnlockHighlight()
+					button.button:UnlockHighlight()
 				end
 
-				if(listHandler[VANASKOS.showList] ~= nil) then
-					listHandler[VANASKOS.showList]:RenderButton(VANASKOS.showList, buttonIndex, button, k, v, buttonText1, buttonText2, buttonText3, buttonText4, buttonText5, buttonText6, buttonText7, buttonText8, buttonText9)
+				if(showListHandler) then
+					showListHandler:RenderButton(showList, buttonIndex, button.button, k, v, button.text1, button.text2, button.text3, button.text4, button.text5, button.text6, button.text7, button.text8, button.text9)
 				end
-
 				buttonIndex = buttonIndex + 1
 			end
 		end
@@ -1053,7 +1064,7 @@ function VanasKoSGUI:ScrollFrameUpdate()
 	-- scrollframe, maxnum, to_display, height
 	FauxScrollFrame_Update(VanasKoSListScrollFrame, listIndex-1, VANASKOS.MAX_LIST_BUTTONS, 16)
 
-	oldlist = VANASKOS.showList
+	oldlist = showList
 end
 
 function VanasKoSGUI:AddEntry(list, name, realm, reason)

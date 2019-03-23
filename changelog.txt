@@ -16,7 +16,9 @@ alpha:
 - Add ability to remove zones from pvp stats list
 - Fix option to disable pvp events in arena/bg
 - Fix warning window mouseover
-- Attempt a fix at a reported sorting issue in pvp stats
+- Fix import of player data and PvP stats
+- Speed improvements for large lists
+- Fix pvp log list sorting with nil entries
 
 5.00-beta:
 - Big overhaul for really broken features with some pretty major changes

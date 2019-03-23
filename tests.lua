@@ -52,14 +52,26 @@ function VanasKoSAddOldTestData()
 	if not VanasKoSDB.namespaces.PvPStats then
 		VanasKoSDB.namespaces.PvPStats = {}
 	end
-	if not VanasKoSDB.namespaces.PvPStats.global then
-		VanasKoSDB.namespaces.PvPStats.global = {}
+	if not VanasKoSDB.namespaces.PvPStats.realm then
+		VanasKoSDB.namespaces.PvPStats.realm = {}
 	end
-	if not VanasKoSDB.namespaces.PvPStats.global.pvpstats then
-		VanasKoSDB.namespaces.PvPStats.global.pvpstats = {}
+	if not VanasKoSDB.namespaces.PvPStats.realm["Test Realm 1"] then
+		VanasKoSDB.namespaces.PvPStats.realm["Test Realm 1"] = {}
 	end
-	if not VanasKoSDB.namespaces.PvPStats.global.pvpstats.players then
-		VanasKoSDB.namespaces.PvPStats.global.pvpstats.players = {}
+	if not VanasKoSDB.namespaces.PvPStats.realm["Test Realm 1"].pvpstats then
+		VanasKoSDB.namespaces.PvPStats.realm["Test Realm 1"].pvpstats = {}
+	end
+	if not VanasKoSDB.namespaces.PvPStats.realm["Test Realm 1"].pvpstats.players then
+		VanasKoSDB.namespaces.PvPStats.realm["Test Realm 1"].pvpstats.players = {}
+	end
+	if not VanasKoSDB.namespaces.PvPStats.realm["Test Realm 2"] then
+		VanasKoSDB.namespaces.PvPStats.realm["Test Realm 2"] = {}
+	end
+	if not VanasKoSDB.namespaces.PvPStats.realm["Test Realm 2"].pvpstats then
+		VanasKoSDB.namespaces.PvPStats.realm["Test Realm 2"].pvpstats = {}
+	end
+	if not VanasKoSDB.namespaces.PvPStats.realm["Test Realm 2"].pvpstats.players then
+		VanasKoSDB.namespaces.PvPStats.realm["Test Realm 2"].pvpstats.players = {}
 	end
 	if not VanasKoSDB.namespaces.DataGatherer then
 		VanasKoSDB.namespaces.DataGatherer = {}
@@ -70,14 +82,20 @@ function VanasKoSAddOldTestData()
 	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"] then
 		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"] = {}
 	end
-	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].players then
-		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].players = {}
+	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].data then
+		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].data = {}
+	end
+	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].data.players then
+		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].data.players = {}
 	end
 	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"] then
 		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"] = {}
 	end
-	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].players then
-		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].players = {}
+	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].data then
+		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].data = {}
+	end
+	if not VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].data.players then
+		VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].data.players = {}
 	end
 	if not VanasKoSDB.namespaces.DefaultLists then
 		VanasKoSDB.namespaces.DefaultLists = {}
@@ -113,9 +131,10 @@ function VanasKoSAddOldTestData()
 	end
 	local pvplog1 = VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 1"].pvpstats.pvplog
 	local pvplog2 = VanasKoSDB.namespaces.PvPDataGatherer.realm["Test Realm 2"].pvpstats.pvplog
-	local pvpstats = VanasKoSDB.namespaces.PvPStats.global.pvpstats.players
-	local playerdata1 = VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].players
-	local playerdata2 = VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].players
+	local pvpstats = VanasKoSDB.namespaces.PvPStats.realm["Test Realm 1"].pvpstats.players
+	local pvpstats = VanasKoSDB.namespaces.PvPStats.realm["Test Realm 2"].pvpstats.players
+	local playerdata1 = VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 1"].data.players
+	local playerdata2 = VanasKoSDB.namespaces.DataGatherer.realm["Test Realm 2"].data.players
 	local nicelist1 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 1"].nicelist.players
 	local nicelist2 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Horde - Test Realm 1"].nicelist.players
 	local nicelist3 = VanasKoSDB.namespaces.DefaultLists.factionrealm["Alliance - Test Realm 2"].nicelist.players

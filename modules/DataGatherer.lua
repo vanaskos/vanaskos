@@ -34,6 +34,7 @@ local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local splitNameRealm = VanasKoS.splitNameRealm
 local hashName = VanasKoS.hashName
 local hashGuild = VanasKoS.hashGuild
+local VanasKoSDataGatherer = VanasKoSDataGatherer
 
 -- Local Variables
 local myName = nil

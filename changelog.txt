@@ -19,6 +19,7 @@ alpha:
 - Fix import of player data and PvP stats
 - Speed improvements for large lists
 - Fix pvp log list sorting with nil entries
+- Fix the timer to update the last seen list
 
 5.00-beta:
 - Big overhaul for really broken features with some pretty major changes

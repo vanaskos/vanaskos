@@ -230,7 +230,7 @@ function VanasKoSLastSeenList:IsOnList(listname, key)
 	end
 end
 
-local updateScheduled = 0
+local updateScheduled
 function VanasKoSLastSeenList:Player_Detected(message, data)
 	assert(data.name)
 	assert(data.realm)

@@ -1,6 +1,6 @@
 Release Changelog for VanasKoS
 
-alpha:
+5.00:
 - Fix importer error for unknown areas
 - Fix error when joining party members from your realm
 - Color KoS players yellow by default (some places still had magenta)

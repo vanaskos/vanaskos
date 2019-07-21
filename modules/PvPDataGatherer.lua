@@ -651,7 +651,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 		end
 	elseif lastDamageFrom then
 		if self.db.profile.deathOption == KILLING_BLOW then
-			if (lastDamageFrom[1] and (time() - lastDamageFrom[1].time) < KILLING_BLOW_TIMEOUT) then
+			if (lastDamageFrom[1] and (lastDamageFrom[1].deaths or 0) > 0 and (time() - lastDamageFrom[1].time) < KILLING_BLOW_TIMEOUT) then
 				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[1].name, lastDamageFrom[1].realm)
 				self:LogPvPEvent(lastDamageFrom[1].name, lastDamageFrom[1].realm, false)
 			end
@@ -659,7 +659,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 			local mostDamageIdx = nil
 			local mostDamage = 0
 			for i=1,#lastDamageFrom do
-				if (lastDamageFrom[i] and lastDamageFrom[i].amount > mostDamage
+				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) > 0 and lastDamageFrom[i].amount > mostDamage
 				    and (time() - lastDamageFrom[i].time) < MOST_DAMAGE_TIMEOUT) then
 					mostDamageIdx = i
 					mostDamage = lastDamageFrom[i].amount
@@ -671,14 +671,18 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 			end
 		elseif self.db.profile.deathOption == ALL_ATTACKERS then
 			for i=1,#lastDamageFrom do
-				if (lastDamageFrom[i] and (time() - lastDamageFrom[i].time) < ALL_ATTACKERS_TIMEOUT) then
+				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) > 0 and (time() - lastDamageFrom[i].time) < ALL_ATTACKERS_TIMEOUT) then
 					self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[i].name, lastDamageFrom[i].realm)
 					self:LogPvPEvent(lastDamageFrom[i].name, lastDamageFrom[i].realm, false)
 				end
 			end
 		end
-		wipe(lastDamageFrom)
 		wipe(lastDamageTo)
+		for i=1,#lastDamageFrom do
+			if lastDamageFrom[i] then
+				lastDamageFrom[i].deaths = lastDamageFrom[i].deaths or 0 + 1
+			end
+		end
 	end
 end
 
@@ -689,7 +693,8 @@ function VanasKoSPvPDataGatherer:DamageDoneFrom(name, realm, amount)
 			name = name,
 			realm = realm,
 			time = time(),
-			amount = amount or 0
+			amount = amount or 0,
+			deaths = 0
 		})
 		if(#lastDamageFrom < 2) then
 			return

@@ -566,7 +566,7 @@ function VanasKoSGUI:RemoveEntry()
 end
 
 function VanasKoSGUI:ColButton_OnClick(button, frame)
-	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+	PlaySound(856) -- SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	self:SetSortFunction(frame.sortFunction, frame.revSortFunction)
 	self:ScrollFrameUpdate()
 end
@@ -651,6 +651,7 @@ function VanasKoSGUI:ShowTooltip(key, hoveredType)
 	if (hoveredType) then
 		tooltip:ClearLines()
 		tooltip:SetOwner(VanasKoSListFrame, "ANCHOR_CURSOR")
+		tooltip:ClearAllPoints()
 		tooltip:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -30)
 		tooltip:SetPoint("BOTTOMLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -390)
 

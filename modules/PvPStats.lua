@@ -934,8 +934,10 @@ function VanasKoSPvPStats:OnEnable()
 	if(self.db.global.pvpstats) then
 		VanasKoS:Print(L["Old pvp statistics detected. You should import old data by going to importer under VanasKoS configuration"])
 	end
-end
 
+	self:RegisterMessage("VanasKoS_PvPWin", "PvPWin")
+	self:RegisterMessage("VanasKoS_PvPLoss", "PvPLoss")
+end
 
 function VanasKoSPvPStats:HoverType()
 	if (self.group == PLAYERS_LIST) then

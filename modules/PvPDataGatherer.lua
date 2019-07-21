@@ -48,7 +48,7 @@ local lastDamageTo = {}
 -- sorts by index
 local function SortByKey(val1, val2)
 	if val1 and val2 then
-		return (val1 > val2)
+		return (val1 < val2)
 	elseif val1 then
 		return true
 	end
@@ -56,7 +56,7 @@ local function SortByKey(val1, val2)
 end
 local function SortByKeyReverse(val1, val2)
 	if val1 and val2 then
-		return (val1 < val2)
+		return (val1 > val2)
 	elseif val2 then
 		return true
 	end
@@ -70,7 +70,7 @@ local function SortByName(val1, val2)
 		local cmp1 = list[val1].name
 		local cmp2 = list[val2].name
 		if cmp1 and cmp2 then
-			return (cmp1 > cmp2)
+			return (cmp1 < cmp2)
 		elseif cmp1 then
 			return true
 		end
@@ -83,7 +83,7 @@ local function SortByNameReverse(val1, val2)
 		local cmp1 = list[val1].name
 		local cmp2 = list[val2].name
 		if cmp1 and cmp2 then
-			return (cmp1 < cmp2)
+			return (cmp1 > cmp2)
 		elseif cmp2 then
 			return true
 		end
@@ -98,7 +98,7 @@ local function SortByMyName(val1, val2)
 		local cmp1 = list[val1].myname
 		local cmp2 = list[val2].myname
 		if cmp1 and cmp2 then
-			return (cmp1 > cmp2)
+			return (cmp1 < cmp2)
 		elseif cmp1 then
 			return true
 		end
@@ -111,7 +111,7 @@ local function SortByMyNameReverse(val1, val2)
 		local cmp1 = list[val1].myname
 		local cmp2 = list[val2].myname
 		if cmp1 and cmp2 then
-			return (cmp1 < cmp2)
+			return (cmp1 > cmp2)
 		elseif cmp2 then
 			return true
 		end
@@ -126,7 +126,7 @@ local function SortByTime(val1, val2)
 		local cmp1 = list[val1].time
 		local cmp2 = list[val2].time
 		if cmp1 and cmp2 then
-			return (cmp1 > cmp2)
+			return (cmp1 < cmp2)
 		elseif cmp1 then
 			return true
 		end
@@ -139,7 +139,7 @@ local function SortByTimeReverse(val1, val2)
 		local cmp1 = list[val1].time
 		local cmp2 = list[val2].time
 		if cmp1 and cmp2 then
-			return (cmp1 < cmp2)
+			return (cmp1 > cmp2)
 		elseif cmp2 then
 			return true
 		end
@@ -154,7 +154,7 @@ local function SortByType(val1, val2)
 		local cmp1 = list[val1].type
 		local cmp2 = list[val2].type
 		if cmp1 and cmp2 then
-			return (cmp1 > cmp2)
+			return (cmp1 < cmp2)
 		elseif cmp1 then
 			return true
 		end
@@ -167,10 +167,32 @@ local function SortByTypeReverse(val1, val2)
 		local cmp1 = list[val1].type
 		local cmp2 = list[val2].type
 		if cmp1 and cmp2 then
-			return (cmp1 < cmp2)
+			return (cmp1 > cmp2)
 		elseif cmp2 then
 			return true
 		end
+	end
+	return false
+end
+
+-- sorts by map
+local function SortByMap(val1, val2)
+	local cmp1 = C_Map.GetMapInfo(val1).name
+	local cmp2 = C_Map.GetMapInfo(val2).name
+	if cmp1 and cmp2 then
+		return (cmp1 < cmp2)
+	elseif cmp1 then
+		return true
+	end
+	return false
+end
+local function SortByMapReverse(val1, val2)
+	local cmp1 = C_Map.GetMapInfo(val1).name
+	local cmp2 = C_Map.GetMapInfo(val2).name
+	if cmp1 and cmp2 then
+		return (cmp1 > cmp2)
+	elseif cmp2 then
+		return true
 	end
 	return false
 end
@@ -190,7 +212,7 @@ local function SortByCount(val1, val2)
 	if (list) then
 		local cmp1 = countEntries(list[val1])
 		local cmp2 = countEntries(list[val2])
-		return (cmp1 > cmp2)
+		return (cmp1 < cmp2)
 	end
 	return false
 end
@@ -199,7 +221,7 @@ local function SortByCountReverse(val1, val2)
 	if (list) then
 		local cmp1 = countEntries(list[val1])
 		local cmp2 = countEntries(list[val2])
-		return (cmp1 < cmp2)
+		return (cmp1 > cmp2)
 	end
 	return false
 end
@@ -563,7 +585,7 @@ function VanasKoSPvPDataGatherer:SetupColumns(list)
 			VanasKoSGUI:SetColumnName(4, L["Type"])
 			VanasKoSGUI:SetColumnSort(1, SortByName, SortByNameReverse)
 			VanasKoSGUI:SetColumnSort(2, SortByMyName, SortByMyNameReverse)
-			VanasKoSGUI:SetColumnSort(3, SortByTime, SortByTimeReverse)
+			VanasKoSGUI:SetColumnSort(3, SortByTimeReverse, SortByTime)
 			VanasKoSGUI:SetColumnSort(4, SortByType, SortByTypeReverse)
 			shownList = self:GetList("PVPLOG", EVENT_LIST)
 			VanasKoSGUI:SetToggleButtonText(L["Events"])
@@ -575,8 +597,8 @@ function VanasKoSPvPDataGatherer:SetupColumns(list)
 			VanasKoSGUI:SetColumnType(2, "number")
 			VanasKoSGUI:SetColumnName(1, NAME)
 			VanasKoSGUI:SetColumnName(2, L["Events"])
-			VanasKoSGUI:SetColumnSort(1, SortByKey, SortByMyKeyReverse)
-			VanasKoSGUI:SetColumnSort(2, SortByCount, SortByCountReverse)
+			VanasKoSGUI:SetColumnSort(1, SortByKey, SortByKeyReverse)
+			VanasKoSGUI:SetColumnSort(2, SortByCountReverse, SortByCount)
 			shownList = self:GetList("PVPLOG", PLAYERS_LIST)
 			VanasKoSGUI:SetToggleButtonText(L["Players"])
 		elseif(self.group == MAP_LIST) then
@@ -587,8 +609,8 @@ function VanasKoSPvPDataGatherer:SetupColumns(list)
 			VanasKoSGUI:SetColumnType(2, "number")
 			VanasKoSGUI:SetColumnName(1, L["Zone"])
 			VanasKoSGUI:SetColumnName(2, L["Events"])
-			VanasKoSGUI:SetColumnSort(1, SortByKey, SortByKeyReverse)
-			VanasKoSGUI:SetColumnSort(2, SortByCount, SortByCountReverse)
+			VanasKoSGUI:SetColumnSort(1, SortByMap, SortByMapReverse)
+			VanasKoSGUI:SetColumnSort(2, SortByCountReverse, SortByCount)
 			shownList = self:GetList("PVPLOG", MAP_LIST)
 			VanasKoSGUI:SetToggleButtonText(L["Zone"])
 		end

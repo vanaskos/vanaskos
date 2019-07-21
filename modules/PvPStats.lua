@@ -64,7 +64,7 @@ local tempStatData = {
 -- sorts by key
 local function SortByKey(val1, val2)
 	if val1 and val2 then
-		return (val1 > val2)
+		return (val1 < val2)
 	elseif val1 then
 		return true
 	end
@@ -72,7 +72,7 @@ local function SortByKey(val1, val2)
 end
 local function SortByKeyReverse(val1, val2)
 	if val1 and val2 then
-		return (val1 < val2)
+		return (val1 > val2)
 	elseif val2 then
 		return true
 	end
@@ -91,7 +91,7 @@ local function SortByName(val1, val2)
 		cmp2 = val2
 	end
 	if cmp1 and cmp2 then
-		return (cmp1 > cmp2)
+		return (cmp1 < cmp2)
 	elseif cmp1 then
 		return true
 	end
@@ -108,7 +108,7 @@ local function SortByNameReverse(val1, val2)
 		cmp2 = val2
 	end
 	if cmp1 and cmp2 then
-		return (cmp1 < cmp2)
+		return (cmp1 > cmp2)
 	elseif cmp2 then
 		return true
 	end
@@ -121,7 +121,7 @@ local function SortByScore(val1, val2)
 	if (list) then
 		local cmp1 = list[val1] and (list[val1].score or ((list[val1].wins or 0) - (list[val1].losses or 0))) or 0
 		local cmp2 = list[val2] and (list[val2].score or ((list[val2].wins or 0) - (list[val2].losses or 0))) or 0
-		return (cmp1 > cmp2)
+		return (cmp1 < cmp2)
 	end
 	return false
 end
@@ -130,7 +130,7 @@ local function SortByScoreReverse(val1, val2)
 	if (list) then
 		local cmp1 = list[val1] and (list[val1].score or ((list[val1].wins or 0) - (list[val1].losses or 0))) or 0
 		local cmp2 = list[val2] and (list[val2].score or ((list[val2].wins or 0) - (list[val2].losses or 0))) or 0
-		return (cmp1 < cmp2)
+		return (cmp1 > cmp2)
 	end
 	return false
 end
@@ -141,7 +141,7 @@ local function SortByEncounters(val1, val2)
 	if (list ~= nil) then
 		local cmp1 = list[val1] and (list[val1].pvp or ((list[val1].wins or 0) + (list[val1].losses or 0))) or 0
 		local cmp2 = list[val2] and (list[val2].pvp or ((list[val2].wins or 0) + (list[val2].losses or 0))) or 0
-		return (cmp1 > cmp2)
+		return (cmp1 < cmp2)
 	end
 	return false
 end
@@ -150,7 +150,7 @@ local function SortByEncountersReverse(val1, val2)
 	if (list ~= nil) then
 		local cmp1 = list[val1] and (list[val1].pvp or ((list[val1].wins or 0) + (list[val1].losses or 0))) or 0
 		local cmp2 = list[val2] and (list[val2].pvp or ((list[val2].wins or 0) + (list[val2].losses or 0))) or 0
-		return (cmp1 < cmp2)
+		return (cmp1 > cmp2)
 	end
 	return false
 end
@@ -161,7 +161,7 @@ local function SortByWins(val1, val2)
 	if (list ~= nil) then
 		local cmp1 = list[val1] and list[val1].wins or 0
 		local cmp2 = list[val2] and list[val2].wins or 0
-		return (cmp1 > cmp2)
+		return (cmp1 < cmp2)
 	end
 	return false
 end
@@ -170,7 +170,7 @@ local function SortByWinsReverse(val1, val2)
 	if (list ~= nil) then
 		local cmp1 = list[val1] and list[val1].wins or 0
 		local cmp2 = list[val2] and list[val2].wins or 0
-		return (cmp1 < cmp2)
+		return (cmp1 > cmp2)
 	end
 	return false
 end
@@ -181,7 +181,7 @@ local function SortByLosses(val1, val2)
 	if (list ~= nil) then
 		local cmp1 = list[val1] and list[val1].losses or 0
 		local cmp2 = list[val2] and list[val2].losses or 0
-		return (cmp1 > cmp2)
+		return (cmp1 < cmp2)
 	end
 	return false
 end
@@ -190,7 +190,7 @@ local function SortByLossesReverse(val1, val2)
 	if (list ~= nil) then
 		local cmp1 = list[val1] and list[val1].losses or 0
 		local cmp2 = list[val2] and list[val2].losses or 0
-		return (cmp1 < cmp2)
+		return (cmp1 > cmp2)
 	end
 	return false
 end
@@ -206,10 +206,10 @@ function VanasKoSPvPStats:OnInitialize()
 
 	-- register sort options for the lists this module provides
 	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byname", L["by name"], L["sort by name"], SortByName, SortByNameReverse)
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byscore", L["by score"], L["sort by most wins to losses"], SortByScore, SortByScoreReverse)
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byencounters", L["by encounters"], L["sort by most PVP encounters"], SortByEncounters, SortByEncountersReverse)
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bywins", L["by wins"], L["sort by most wins"], SortByWins, SortByWinsReverse)
-	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bylosses", L["by losses"], L["sort by most losses"], SortByLosses, SortByLossesReverse)
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byscore", L["by score"], L["sort by most wins to losses"], SortByScoreReverse, SortByScore)
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "byencounters", L["by encounters"], L["sort by most PVP encounters"], SortByEncountersReverse, SortByEncounters)
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bywins", L["by wins"], L["sort by most wins"], SortByWinsReverse, SortByWins)
+	VanasKoSGUI:RegisterSortOption({"PVPSTATS"}, "bylosses", L["by losses"], L["sort by most losses"], SortByLossesReverse, SortByLosses)
 
 	VanasKoSGUI:SetDefaultSortFunction({"PVPSTATS"}, SortByKey)
 end
@@ -698,10 +698,10 @@ function VanasKoSPvPStats:SetupColumns(list, group)
 		else
 			VanasKoSGUI:SetColumnSort(1, SortByKey, SortByKeyReverse)
 		end
-		VanasKoSGUI:SetColumnSort(2, SortByWins, SortByWinsReverse)
-		VanasKoSGUI:SetColumnSort(3, SortByLosses, SortByLossesReverse)
-		VanasKoSGUI:SetColumnSort(4, SortByEncounters, SortByEncountersReverse)
-		VanasKoSGUI:SetColumnSort(5, SortByScore, SortByScoreReverse)
+		VanasKoSGUI:SetColumnSort(2, SortByWinsReverse, SortByWins)
+		VanasKoSGUI:SetColumnSort(3, SortByLossesReverse, SortByLosses)
+		VanasKoSGUI:SetColumnSort(4, SortByEncountersReverse, SortByEncounters)
+		VanasKoSGUI:SetColumnSort(5, SortByScoreReverse, SortByScore)
 		VanasKoSGUI:SetColumnType(1, "normal")
 		VanasKoSGUI:SetColumnType(2, "number")
 		VanasKoSGUI:SetColumnType(3, "number")
@@ -981,13 +981,13 @@ function VanasKoSPvPStats:SetWinLossStatsPie(wins, losses)
 end
 
 -- Refresh list on Win
-function VanasKoSPvPDataGatherer:PvPWin(name, realm)
+function VanasKoSPvPStats:PvPWin(name, realm)
 	self.needUpdate = true
 	self:SendMessage("VanasKoS_List_Entry_Added", "PVPLOG")
 end
 
 -- Refresh list on Loss
-function VanasKoSPvPDataGatherer:PvPLoss(name, realm)
+function VanasKoSPvPStats:PvPLoss(name, realm)
 	self.needUpdate = true
 	self:SendMessage("VanasKoS_List_Entry_Added", "PVPLOG")
 end

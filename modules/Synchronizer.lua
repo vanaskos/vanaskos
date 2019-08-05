@@ -373,24 +373,24 @@ local function GetSerializedString(command, listName, list)
 			["list"] = list,
 			["version"] = 1,
 		}
-		return self:Serialize(VANASKOS.VERSION, 1, command, data)
+		return VanasKoSSynchronizer:Serialize(VANASKOS.VERSION, 1, command, data)
 	elseif (command == REQUEST_LIST) then
 		local data = {
 			["listName"] = listName,
 			["version"] = 1,
 		}
-		return self:Serialize(VANASKOS.VERSION, 1, command, data)
+		return VanasKoSSynchronizer:Serialize(VANASKOS.VERSION, 1, command, data)
 	elseif (command == DENY_REQUEST) then
 		local data = {
 			["listName"] = listName,
 			["version"] = 1,
 		}
-		return self:Serialize(VANASKOS.VERSION, 1, command, data)
+		return VanasKoSSynchronizer:Serialize(VANASKOS.VERSION, 1, command, data)
 	end
 end
 
 local function DeserializeString(serializedString)
-	local _, vanasKoSVersion, protocolVersion, command, data = self:Deserialize(serializedString)
+	local _, vanasKoSVersion, protocolVersion, command, data = VanasKoSSynchronizer:Deserialize(serializedString)
 	if(protocolVersion ~= 1) then
 		return false, format("Unknown protocol version '%s'", protocolVersion or "nil")
 	end

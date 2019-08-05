@@ -19,7 +19,7 @@ externals:
 	Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/tags/Release-r1214/AceConfig-3.0
 	Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/tags/v8.2.0/LibSharedMedia-3.0
 	Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/tags/v8.2.0/LibDBIcon-1.0
-	Libs/LibLevelGuess-1.0: https://repos.wowace.com/wow/liblevelguess-1-0/tags/1.2.2/LibLevelGuess-1.0
+	Libs/LibLevelGuess-1.0: https://repos.wowace.com/wow/liblevelguess-1-0/tags/1.2.3/LibLevelGuess-1.0
 	Libs/LibGraph-2.0: https://repos.wowace.com/wow/libgraph-2-0/tags/v2.0.4/LibGraph-2.0
 	Libs/LibDialog-1.0:
 		url: https://repos.wowace.com/wow/libdialog-1-0

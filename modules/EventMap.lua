@@ -13,7 +13,6 @@ local WIN, LOSS = WIN, LOSS
 -- Declare some common global functions local
 local ipairs = ipairs
 local pairs = pairs
-local hashName = VanasKoS.hashName
 
 -- Constants
 local pinTemplate = "VanasKoSEventMapPinsTemplate"
@@ -225,9 +224,9 @@ function VanasKoSEventMap:Pin_OnEnter(frame, motion)
 				player = player .. " (" .. event.mylevel .. ")"
 			end
 
-			local key = hashName(event.name, event.realm)
+			local key = event.name
 			local playerdata = VanasKoS:GetPlayerData(key)
-			local enemy = event.name .. "-" .. event.realm
+			local enemy = event.name
 			local enemyNote = event.enemylevel or ""
 
 			if (playerdata) then
@@ -290,18 +289,16 @@ function VanasKoSEventMap:drawPin(Pin)
 	Pin:Show()
 end
 
-function VanasKoSEventMap:TrackPlayer(name, realm, mapID, x, y)
+function VanasKoSEventMap:TrackPlayer(name, mapID, x, y)
 	--VanasKoS:Print(format("%s %d %d %f %f", playername, mapID, x, y))
-	local key = hashName(name, realm)
+	local key = name
 	local playerData = trackedPlayers[key]
 	if not trackedPlayers[key] then
 		trackedPlayers[key] = {
 			name = name,
-			realm = realm
 		}
 	end
 	trackedPlayers[key].name = name
-	trackedPlayers[key].realm = realm
 	trackedPlayers[key].mapID = mapID
 	trackedPlayers[key].x = x
 	trackedPlayers[key].y = y

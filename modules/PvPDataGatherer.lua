@@ -1,4 +1,4 @@
-﻿--[[---------------------------------------------------------------------------------------------
+--[[---------------------------------------------------------------------------------------------
       PvPDataGatherer Module - Part of VanasKoS
 Gathers PvP Wins and Losses
 ---------------------------------------------------------------------------------------------]]
@@ -14,10 +14,8 @@ local wipe = wipe
 local UnitName = UnitName
 local UnitLevel = UnitLevel
 local SetMapToCurrentZone = SetMapToCurrentZone
-local GetRealmName = GetRealmName
 local GetPlayerMapPosition = GetPlayerMapPosition
 local GetCurrentMapAreaID = GetCurrentMapAreaID
-local hashName = VanasKoS.hashName
 local VanasKoSPvPDataGatherer = VanasKoSPvPDataGatherer
 
 -- Constants
@@ -37,7 +35,6 @@ local ALL_ATTACKERS_TIMEOUT = 5
 
 -- Local Variables
 local myName = nil
-local myRealm = nil
 local pvpLoggingEnabled = nil
 local shownList = nil
 local lastDamageFrom = {}
@@ -235,7 +232,7 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 			EnableInArena = true,
 			deathOption = KILLING_BLOW,
 		},
-		global = {
+		realm = {
 			pvplog = {
 				event = {},
 				player = {},
@@ -324,7 +321,6 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 	self:SetEnabledState(self.db.profile.Enabled)
 	self.group = EVENT_LIST
 	myName = UnitName("player")
-	myRealm = GetRealmName()
 end
 
 function VanasKoSPvPDataGatherer:EnablePvPLog(enable)
@@ -363,7 +359,7 @@ function VanasKoSPvPDataGatherer:RenderButton(list, buttonIndex, button, key, va
 		local playerKey = nil
 		local playerName = nil
 		if group == EVENT_LIST then
-			playerKey = value.name and hashName(value.name, value.realm)
+			playerKey = value.name
 			playerName = value.name
 		elseif group == PLAYERS_LIST then
 			playerKey = key
@@ -419,11 +415,11 @@ function VanasKoSPvPDataGatherer:GetList(list, group)
 	end
 	if(list == "PVPLOG") then
 		if group == EVENT_LIST then
-			return self.db.global.pvplog.event
+			return self.db.realm.pvplog.event
 		elseif group == PLAYERS_LIST then
-			return self.db.global.pvplog.players
+			return self.db.realm.pvplog.players
 		elseif group == MAP_LIST then
-			return self.db.global.pvplog.map
+			return self.db.realm.pvplog.map
 		end
 	end
 	return nil
@@ -436,7 +432,7 @@ function VanasKoSPvPDataGatherer:AddEntry(list, key, data)
 		local pvpPlayersLog = VanasKoS:GetList("PVPLOG", PLAYERS_LIST)
 		local pvpMapLog = VanasKoS:GetList("PVPLOG", MAP_LIST)
 		local eventkey = key .. (data.time or time())
-		local playerkey = hashName(data.name, data.realm)
+		local playerkey = data.name
 		pvpEventLog[eventkey] = data
 		if (data.mapID) then
 			if (not pvpMapLog[data.mapID]) then
@@ -464,7 +460,7 @@ function VanasKoSPvPDataGatherer:RemoveEntry(listname, key)
 	if(listname == "PVPLOG") then
 		if (group == EVENT_LIST) then
 			if (pvpEventLog[key]) then
-				local playerKey = hashName(pvpEventLog[key].name, pvpEventLog[key].realm)
+				local playerKey = pvpEventLog[key].name
 				local mapKey = pvpEventLog[key].mapID
 
 				--VanasKoS:Print("removing " .. key .. " from pvp event log")
@@ -524,8 +520,8 @@ function VanasKoSPvPDataGatherer:RemoveEntry(listname, key)
 			if (pvpMapLog[key]) then
 				for _, eventKey in ipairs(pvpMapLog[key]) do
 					local event = pvpEventLog[eventKey]
-					if (event and event.name and event.realm) then
-						local playerKey = hashName(event.name, event.realm)
+					if (event and event.name) then
+						local playerKey = event.name
 						for j, zhash in ipairs(pvpPlayersLog[playerKey]) do
 							if (zhash == eventKey) then
 								--VanasKoS:Print("removing " .. playerKey .. "-" .. j .. " from pvp player log")
@@ -653,29 +649,29 @@ function VanasKoSPvPDataGatherer:OnEnable()
 	self:RegisterMessage("VanasKoS_Zone_Changed", "Update")
 end
 
-function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, srcRealm, dstName, dstRealm, amount)
-	if (srcName == myName and srcRealm == myRealm) then
-		self:DamageDoneTo(dstName, dstRealm, amount)
-	elseif (dstName == myName and dstRealm == myRealm) then
-		self:DamageDoneFrom(srcName, srcRealm, amount)
+function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, dstName, amount)
+	if (srcName == myName) then
+		self:DamageDoneTo(dstName, amount)
+	elseif (dstName == myName) then
+		self:DamageDoneFrom(srcName, amount)
 	end
 end
 
--- /script VanasKoSPvPDataGatherer:PvPDeath("DEATH", UnitName("player"), GetRealmName())
-function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
-	if (lastDamageTo and not (name == myName and realm == myRealm)) then
+-- /script VanasKoSPvPDataGatherer:PvPDeath("DEATH", UnitName("player"))
+function VanasKoSPvPDataGatherer:PvPDeath(message, name)
+	if (lastDamageTo and not (name == myName)) then
 		for i=1,#lastDamageTo do
-			if(lastDamageTo[i] and lastDamageTo[i].name == name and lastDamageTo[i].realm == realm) then
-				self:SendMessage("VanasKoS_PvPWin", name, realm)
-				self:LogPvPEvent(name, realm, true)
+			if(lastDamageTo[i] and lastDamageTo[i].name == name) then
+				self:SendMessage("VanasKoS_PvPWin", name)
+				self:LogPvPEvent(name, true)
 				tremove(lastDamageTo, i)
 			end
 		end
 	elseif lastDamageFrom then
 		if self.db.profile.deathOption == KILLING_BLOW then
 			if (lastDamageFrom[1] and (lastDamageFrom[1].deaths or 0) > 0 and (time() - lastDamageFrom[1].time) < KILLING_BLOW_TIMEOUT) then
-				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[1].name, lastDamageFrom[1].realm)
-				self:LogPvPEvent(lastDamageFrom[1].name, lastDamageFrom[1].realm, false)
+				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[1].name)
+				self:LogPvPEvent(lastDamageFrom[1].name, false)
 			end
 		elseif self.db.profile.deathOption == MOST_DAMAGE then
 			local mostDamageIdx = nil
@@ -688,14 +684,14 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 				end
 			end
 			if mostDamageIdx then
-				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[mostDamageIdx].name, lastDamageFrom[mostDamageIdx].realm)
-				self:LogPvPEvent(lastDamageFrom[mostDamageIdx].name, lastDamageFrom[mostDamageIdx].realm, false)
+				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[mostDamageIdx].name)
+				self:LogPvPEvent(lastDamageFrom[mostDamageIdx].name, false)
 			end
 		elseif self.db.profile.deathOption == ALL_ATTACKERS then
 			for i=1,#lastDamageFrom do
 				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) > 0 and (time() - lastDamageFrom[i].time) < ALL_ATTACKERS_TIMEOUT) then
-					self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[i].name, lastDamageFrom[i].realm)
-					self:LogPvPEvent(lastDamageFrom[i].name, lastDamageFrom[i].realm, false)
+					self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[i].name)
+					self:LogPvPEvent(lastDamageFrom[i].name, false)
 				end
 			end
 		end
@@ -708,12 +704,11 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 	end
 end
 
--- /script local f=VanasKoSPvPDataGatherer.DamageDoneFrom; f(v, "test0", "realm0", 1500); f(v, "test1", "realm1", 1000); f(v, "test2", "realm2", 500); VanasKoS:SendMessage("VanasKoS_PvPDeath", UnitName("player"), GetRealmName())
-function VanasKoSPvPDataGatherer:DamageDoneFrom(name, realm, amount)
-	if(name and realm) then
+-- /script local f=VanasKoSPvPDataGatherer.DamageDoneFrom; f(v, "test0", 1500); f(v, "test1", 1000); f(v, "test2", 500); VanasKoS:SendMessage("VanasKoS_PvPDeath", UnitName("player"))
+function VanasKoSPvPDataGatherer:DamageDoneFrom(name, amount)
+	if(name) then
 		tinsert(lastDamageFrom, 1, {
 			name = name,
-			realm = realm,
 			time = time(),
 			amount = amount or 0,
 			deaths = 0
@@ -723,7 +718,7 @@ function VanasKoSPvPDataGatherer:DamageDoneFrom(name, realm, amount)
 		end
 
 		for i=#lastDamageFrom,2,-1 do
-			if(lastDamageFrom[i] and lastDamageFrom[i].name == name and lastDamageFrom[i].realm == realm) then
+			if(lastDamageFrom[i] and lastDamageFrom[i].name == name) then
 				lastDamageFrom[1].amount = (amount or 0) + lastDamageFrom[i].amount
 				tremove(lastDamageFrom, i)
 			end
@@ -738,10 +733,9 @@ function VanasKoSPvPDataGatherer:DamageDoneFrom(name, realm, amount)
 	end
 end
 
-function VanasKoSPvPDataGatherer:DamageDoneTo(name, realm, amount)
+function VanasKoSPvPDataGatherer:DamageDoneTo(name, amount)
 	tinsert(lastDamageTo, 1,  {
 		name = name,
-		realm = realm,
 		time = time(),
 		amount = amount or 0
 	})
@@ -751,7 +745,7 @@ function VanasKoSPvPDataGatherer:DamageDoneTo(name, realm, amount)
 	end
 
 	for i=2,#lastDamageTo do
-		if(lastDamageTo[i] and lastDamageTo[i].name == name and lastDamageTo[i].realm == realm) then
+		if(lastDamageTo[i] and lastDamageTo[i].name == name) then
 			lastDamageTo[1].amount = (amount or 0) + lastDamageTo[i].amount
 			tremove(lastDamageTo, i)
 		end
@@ -763,9 +757,8 @@ function VanasKoSPvPDataGatherer:DamageDoneTo(name, realm, amount)
 end
 
 -- /script VanasKoSPvPDataGatherer:LogPvPEvent("test", "test", true)
-function VanasKoSPvPDataGatherer:LogPvPEvent(name, realm, isWin)
+function VanasKoSPvPDataGatherer:LogPvPEvent(name, isWin)
 	assert(name)
-	assert(realm)
 
 	if isWin then
 		VanasKoS:Print(format(L["PvP Win versus %s registered."], name))
@@ -784,16 +777,14 @@ function VanasKoSPvPDataGatherer:LogPvPEvent(name, realm, isWin)
 			wx, wy = wPos:GetXY()
 		end
 	end
-	local key = hashName(name, realm)
+	local key = name
 	local data = VanasKoS:GetPlayerData(key)
 
 	VanasKoS:AddEntry("PVPLOG", key, {
 		name = name,
-		realm = realm,
 		enemylevel = data and data.level or nil,
 		enemyguild = data and data.guild or nil,
 		myname = myName,
-		myrealm = myRealm,
 		mylevel = UnitLevel("player"),
 		time = time(),
 		type = isWin and "win" or "loss",

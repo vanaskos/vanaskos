@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       VanasKoSGUI - Part of VanasKoS
 Handles the main gui frame
 ------------------------------------------------------------------------]]
@@ -19,13 +19,10 @@ local tinsert = tinsert
 local tsort = table.sort
 local format = format
 local date = date
-local hashName = VanasKoS.hashName
-local hashGuild = VanasKoS.hashGuild
 local VanasKosGUI = VanasKoSGUI
 
 -- Local Variables
 local tooltip = nil
-local myRealm = nil
 local listHandler = {}
 local sortOptions = {}
 local defaultSortFunction = {}
@@ -113,14 +110,11 @@ function VanasKoSGUI:GetListName(listid)
 	return listid
 end
 
-local function verifyNameRealm(list, name, realm)
+local function verifyName(list, name)
 	if not name or name == "" then
 		return false
 	end
 	if list ~= "GUILDKOS" then
-		if not realm == nil or realm == "" then
-			return false
-		end
 		if name:find(' ') or strmatch(name, '%d') or strmatch(name, '%-') then
 			return false
 		end
@@ -212,7 +206,6 @@ function VanasKoSGUI:OnInitialize()
 		show_while_dead = true,
 		is_exclusive = true,
 		nameText = "",
-		realmText = "",
 		reasonText = "",
 		oldKey = nil,
 		list = nil,
@@ -232,8 +225,7 @@ function VanasKoSGUI:OnInitialize()
 				end,
 				on_text_changed = function(self)
 					local name = self:GetParent().editboxes[1]:GetText()
-					local realm = self:GetParent().editboxes[2]:GetText()
-					if verifyNameRealm(self:GetParent().list, name, realm) then
+					if verifyName(self:GetParent().list, name) then
 						self:GetParent().buttons[1]:Enable()
 					else
 						self:GetParent().buttons[1]:Disable()
@@ -243,48 +235,18 @@ function VanasKoSGUI:OnInitialize()
 				maxLetters = 100,
 			},
 			{
-				label = L["Realm"],
-				on_enter_pressed = function(self)
-					self:GetParent().editboxes[3]:SetFocus()
-				end,
-				on_tab_pressed = function(self)
-					self:GetParent().editboxes[2]:SetFocus()
-				end,
-				on_escape_pressed = function(self)
-					Dialog:Dismiss("VanasKoSAddEntry")
-					self.oldKey = nil
-				end,
-				on_text_changed = function(self)
-					local name = self:GetParent().editboxes[1]:GetText()
-					local realm = self:GetParent().editboxes[2]:GetText()
-					if verifyNameRealm(self:GetParent().list, name, realm) then
-						self:GetParent().buttons[1]:Enable()
-					else
-						self:GetParent().buttons[1]:Disable()
-					end
-				end,
-				auto_focus = false,
-				maxLetters = 100,
-			},
-			{
 				label = L["Reason"],
 				on_enter_pressed = function(self)
 					local name = self:GetParent().editboxes[1]:GetText()
-					local realm = self:GetParent().editboxes[2]:GetText()
 					local reason = self:GetText()
 					local list = self:GetParent().list
 					local oldKey = self:GetParent().oldKey
-					local key
-					if list == "GUILDKOS" then
-						key = hashGuild(name, realm)
-					else
-						key = hashName(name, realm)
-					end
+					local key = name
 					if(reason == "") then
 						reason = nil
 					end
 
-					if not verifyNameRealm(list, name, realm) then
+					if not verifyName(list, name) then
 						return
 					end
 
@@ -294,7 +256,6 @@ function VanasKoSGUI:OnInitialize()
 
 					VanasKoS:AddEntry(list, key, {
 						name = name,
-						realm = realm,
 						reason = reason,
 					})
 					Dialog:Dismiss("VanasKoSAddEntry")
@@ -317,21 +278,15 @@ function VanasKoSGUI:OnInitialize()
 				text = ACCEPT,
 				on_click = function(self)
 					local name = self.editboxes[1]:GetText()
-					local realm = self.editboxes[2]:GetText()
-					local reason = self.editboxes[3]:GetText()
+					local reason = self.editboxes[2]:GetText()
 					local list = self.list
 					local oldKey = self.oldKey
-					local key
-					if list == "GUILDKOS" then
-						key = hashGuild(name, realm)
-					else
-						key = hashName(name, realm)
-					end
+					local key = name
 					if(reason == "") then
 						reason = nil
 					end
 
-					if not verifyNameRealm(list, name, realm) then
+					if not verifyName(list, name) then
 						return
 					end
 
@@ -341,7 +296,6 @@ function VanasKoSGUI:OnInitialize()
 
 					VanasKoS:AddEntry(list, key, {
 						name = name,
-						realm = realm,
 						reason = reason,
 					})
 					Dialog:Dismiss("VanasKoSAddEntry")
@@ -359,16 +313,13 @@ function VanasKoSGUI:OnInitialize()
 		},
 		on_show = function(self)
 			local name = self.editboxes[1]:GetText()
-			local realm = self.editboxes[2]:GetText()
-			if verifyNameRealm(self.list, name, realm) then
+			if verifyName(self.list, name) then
 				self.buttons[1]:Enable()
 			else
 				self.buttons[1]:Disable()
 			end
 		end
 	})
-
-	myRealm = GetRealmName()
 end
 
 function VanasKoSGUI:OpenConfigWindow()
@@ -465,20 +416,18 @@ function VanasKoSGUI:GUIShowChangeDialog()
 	if(VANASKOS.selectedEntry) then
 		local reason = ""
 		local list = self:GetCurrentList()
-		local name, realm
+		local name
 		local key
 		if(defaultListNames[VANASKOS.showList]) then
 			key = self:GetSelectedKey()
 			name = list[key].name
-			realm = list[key].realm
 			reason = list[key].reason
 		end
 		local dialog = Dialog:Spawn("VanasKoSAddEntry")
 		dialog.list = VANASKOS.showList
 		dialog.oldKey = key
 		dialog.editboxes[1]:SetText(name or "")
-		dialog.editboxes[2]:SetText(realm or "")
-		dialog.editboxes[3]:SetText(reason or "")
+		dialog.editboxes[2]:SetText(reason or "")
 	end
 end
 
@@ -679,7 +628,7 @@ function VanasKoSGUI:UpdateMouseOverFrame(key, hoveredType)
 	end
 
 	if (hoveredType == "player") then
-		tooltip:AddLine(data.name .. " - " .. data.realm)
+		tooltip:AddLine(data.name)
 
 		local playerdata = VanasKoS:GetPlayerData(key)
 
@@ -754,8 +703,8 @@ function VanasKoSGUI:UpdateMouseOverFrame(key, hoveredType)
 		if data.time then
 			tooltip:AddLine(date("%c", data.time))
 		end
-		tooltip:AddLine(format(L["Player: %s-%s (%s)"], data.myname or L["_UNKNOWN_NAME_"], data.myrealm or L["_UNKNOWN_REALM_"], data.mylevel or "??"))
-		tooltip:AddLine(format(L["Enemy: %s-%s (%s)"], data.name or L["_UNKNOWN_NAME_"], data.realm or L["_UNKNOWN_REALM_"], data.enemylevel or "??"))
+		tooltip:AddLine(format(L["Player: %s (%s)"], data.myname or L["_UNKNOWN_NAME_"], data.mylevel or "??"))
+		tooltip:AddLine(format(L["Enemy: %s (%s)"], data.name or L["_UNKNOWN_NAME_"], data.enemylevel or "??"))
 		if data.enemyguild then
 			tooltip:AddLine("<|cffffffff" .. data.enemyguild .. "|r>")
 		end
@@ -1068,15 +1017,12 @@ function VanasKoSGUI:ScrollFrameUpdate()
 	oldlist = showList
 end
 
-function VanasKoSGUI:AddEntry(list, name, realm, reason)
+function VanasKoSGUI:AddEntry(list, name, reason)
 	if(name == nil or name == "") then
-		name, realm = UnitName("target")
+		name = UnitName("target")
 		if(list == "GUILDKOS") then
 			name = GetGuildInfo("target")
 		end
-	end
-	if(realm == nil or realm == "") then
-		realm = myRealm
 	end
 
 	local dialog = Dialog:Spawn("VanasKoSAddEntry")
@@ -1084,14 +1030,11 @@ function VanasKoSGUI:AddEntry(list, name, realm, reason)
 	if (name) then
 		dialog.editboxes[1]:SetText(name)
 	end
-	if (realm) then
-		dialog.editboxes[2]:SetText(realm)
-	end
 	if (reason) then
-		dialog.editboxes[3]:SetText(reason)
+		dialog.editboxes[2]:SetText(reason)
 	end
 	if (name ~= nil and name ~= "") then
-		dialog.editboxes[3]:SetFocus()
+		dialog.editboxes[2]:SetFocus()
 	end
 end
 

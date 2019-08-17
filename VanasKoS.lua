@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
 	VanasKoS - Kill on Sight Management
 Main Object with database and basic list functionality, handles also Configuration
 ------------------------------------------------------------------------]]
@@ -37,16 +37,6 @@ local CityMapIDs = {
     [1361] = true, --OldIronforge
     [89] = true, --Darnassus
     [1324] = true, --Darnassus
-    [103] = true, --The Exodar
-    [775] = true, --The Exodar
-    [831] = true, --The Exodar
-    [832] = true, --The Exodar
-    [1326] = true, --The Exodar
-    [1331] = true, --The Exodar
-    [393] = true, --Shrine of Seven Stars
-    [394] = true, --Shrine of Seven Stars
-    [622] = true, -- Stormshield
-    [1161] = true, -- Boralus
 
     -- Horde cities
     [85] = true, --Orgrimmar
@@ -56,30 +46,6 @@ local CityMapIDs = {
     [90] = true, --Undercity
     [998] = true, --Undercity
     [1266] = true, --Undercity
-    [110] = true, --Silvermoon City
-    [1269] = true, -- Stormwind City
-    [391] = true, --Shrine of Two Moons
-    [392] = true, --Shrine of Two Moons
-    [624] = true, -- Warspear
-    [1163] = true, -- Dazar'alor
-    [1164] = true, -- Dazar'alor
-    [1165] = true, -- Dazar'alor
-
-    -- Neutral city names
-    [41] = true, -- Dalaran
-    [125] = true, -- Dalaran
-    [126] = true, -- Dalaran
-    [501] = true, -- Dalaran
-    [502] = true, -- Dalaran
-    [625] = true, -- Dalaran
-    [626] = true, -- Dalaran
-    [627] = true, -- Dalaran
-    [628] = true, -- Dalaran
-    [629] = true, -- Dalaran
-    [111] = true, -- Shattrath City
-    [594] = true, -- Shattrath City
-    [652] = true, -- Thunder Totem
-    [750] = true, -- Thunder Totem
 }
 
 -- Local Variables
@@ -91,59 +57,6 @@ local inCombatZone = false
 local inFfaZone = false
 local inCity = false
 local mapID = -1
-
-function VanasKoS.hashName(name, realm)
-	assert(name)
-	assert(realm)
-	if strmatch(name, " ") or strmatch(name, "-") then
-		print("ignoring illegal name " .. name)
-		return nil
-	end
-
-	local key
-	if name then
-		key = name:trim():lower()
-	end
-
-	if realm then
-		key = key .. "-" .. realm:trim():lower():gsub(" ", "")
-	end
-
-	return key
-end
-
-function VanasKoS.hashGuild(guild, realm)
-	assert(guild)
-
-	local key
-	if guild then
-		key = guild:trim():lower()
-	end
-
-	key = "<" .. key .. ">"
-
-	return key
-end
-
-function VanasKoS.splitNameRealm(fullname)
-	if not fullname then
-		return nil, nil
-	end
-
-	local name, realm
-	name = fullname
-	realm = nil
-	local strSep = fullname:find("-")
-	if strSep then
-		name = fullname:sub(1, strSep - 1)
-		realm = fullname:sub(strSep + 1)
-	end
-
-	return name, realm
-end
-
-local hashName = VanasKoS.hashName
-local hashGuild = VanasKoS.hashGuild
 
 function VanasKoS:ToggleModuleActive(moduleStr)
 	local module = self:GetModule(moduleStr, true)
@@ -353,44 +266,37 @@ end
 ------------------------------------------------------------------------]]
 function VanasKoS:AddEntryFromTarget(list)
 	local name
-	local realm
 
 	VanasKoSGUI:ScrollFrameUpdate()
 
 	if(UnitIsPlayer("target")) then
-		name, realm = UnitName("target")
+		name = UnitName("target")
 		if(list == "GUILDKOS") then
 			name = GetGuildInfo("target")
 		end
 	end
 
-	VanasKoSGUI:AddEntry(list, name, realm)
+	VanasKoSGUI:AddEntry(list, name)
 end
 
-function VanasKoS:AddEntryByName(list, name, realm, reason)
-	if name and name ~= "" and (list == "GUILDKOS" or (realm and realm ~= "")) and reason and reason ~= "" then
-		local key = hashName(name, realm)
-		VanasKoS:AddEntry(list, key, {
-			name = name,
-			realm = realm,
+function VanasKoS:AddEntryByName(list, name, reason)
+	if name and name ~= "" and list == "GUILDKOS" and reason and reason ~= "" then
+		VanasKoS:AddEntry(list, name, {
 			reason = reason
 		})
 	else
-		VanasKoSGUI:AddEntry(list, name, realm, reason)
+		VanasKoSGUI:AddEntry(list, name, reason)
 	end
 end
 
-function VanasKoS:AddKoSPlayer(name, realm, reason)
+function VanasKoS:AddKoSPlayer(name, reason)
 	if(reason == nil or reason == "") then
 		reason = L["_Reason Unknown_"]
 	end
-	if(name==nil or name=="" or realm==nil or realm=="") then
-		VanasKoSGUI:AddEntry("PLAYERKOS", name, realm, reason)
+	if(name==nil or name=="") then
+		VanasKoSGUI:AddEntry("PLAYERKOS", name, reason)
 	else
-		local key = hashName(name, realm)
-		self:AddEntry("PLAYERKOS", key, {
-			name = name,
-			realm = realm,
+		self:AddEntry("PLAYERKOS", name, {
 			reason = reason
 		})
 	end
@@ -410,33 +316,28 @@ function VanasKoS:List_Entry_Removed(message, list, key, data)
 	self:Print(format(L["Entry \"%s\" removed from list"], key))
 end
 
-function VanasKoS:AddKoSGuild(name, realm, reason)
+function VanasKoS:AddKoSGuild(name, reason)
 	if(reason == nil or reason == "") then
 		reason = L["_Reason Unknown_"]
 	end
-	if(name==nil or name=="" or realm==nil or realm=="") then
-		VanasKoSGUI:AddEntry("GUILDKOS", name, realm, reason)
+	if(name==nil or name=="") then
+		VanasKoSGUI:AddEntry("GUILDKOS", name, reason)
 	else
-		local key = hashGuild(name, realm)
-		self:AddEntry("GUILDKOS", key, {
-			['name'] = name,
-			['realm'] = realm,
-			['reason'] = reason
+		self:AddEntry("GUILDKOS", name, {
+			reason = reason
 		})
 	end
 end
 
 
 -- removes the Player pname from the KoS-List
-function VanasKoS:RemoveKoSPlayer(pname, realm)
-	local key = hashName(pname, realm)
-	self:RemoveEntry("PLAYERKOS", key)
+function VanasKoS:RemoveKoSPlayer(pname)
+	self:RemoveEntry("PLAYERKOS", pname)
 end
 
 -- removes the Guild gname from the KoS-List
-function VanasKoS:RemoveKoSGuild(gname, realm)
-	local key = hashGuild(gname, realm)
-	self:RemoveEntry("GUILDKOS", key)
+function VanasKoS:RemoveKoSGuild(gname)
+	self:RemoveEntry("GUILDKOS", gname)
 end
 
 -- resets the database

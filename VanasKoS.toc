@@ -1,8 +1,8 @@
-﻿## Interface: 80200
-## Title: Vanas|cffff0000KoS|r
+## Interface: 11302
+## Title: Vanas|cffff0000KoS|r -Classic-
 ## Author: Vane of EU-Aegwynn et al.
-## Name: Vanas KoS
-## Version: 5.03-@project-revision@
+## Name: Vanas KoS Classic
+## Version: 1.00-@project-revision@
 ## Notes: KoS-Management Tool
 ## Notes-deDE: KoS-Management
 ## Notes-esES: Herramienta de gestión de KoS (Matar al Ver)
@@ -55,8 +55,6 @@ modules\PvPDataGatherer_Locale.lua
 modules\PvPDataGatherer.lua
 modules\DataGatherer_Locale.lua
 modules\DataGatherer.lua
-modules\Importer_Locale.lua
-modules\Importer.lua
 modules\ChatNotifier_Locale.lua
 modules\ChatNotifier.lua
 modules\Notifier_Locale.lua
@@ -79,8 +77,6 @@ modules\LastSeenList_Locale.lua
 modules\LastSeenList.lua
 modules\PvPStats_Locale.lua
 modules\PvPStats.lua
-modules\EventMap_Locale.lua
-modules\EventMap.lua
 #@do-not-package@
 tests.lua
 #@end-do-not-package@

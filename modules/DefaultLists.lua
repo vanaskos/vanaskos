@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       DefaultLists Module - Part of VanasKoS
 Handles the Default lists (KOS, GUILDKOS, HATE, NICE)
 ------------------------------------------------------------------------]]
@@ -195,7 +195,7 @@ end
 
 function VanasKoSDefaultLists:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("DefaultLists", {
-		faction = {
+		factionrealm = {
 			koslist = {
 				players = {},
 				guilds = {}
@@ -252,9 +252,6 @@ function VanasKoSDefaultLists:OnInitialize()
 end
 
 function VanasKoSDefaultLists:OnEnable()
-	if(VanasKoSDB.namespaces.DefaultLists.factionrealm) then
-		VanasKoS:Print(L["Old list entries detected. You should import old data by going to importer under VanasKoS configuration"])
-	end
 end
 
 function VanasKoSDefaultLists:OnDisable()
@@ -531,22 +528,18 @@ function VanasKoSDefaultLists:AddEntry(list, key, data)
 	end
 
 	if(list == "PLAYERKOS") then
-		self.db.faction.koslist.players[key] = {
+		self.db.factionrealm.koslist.players[key] = {
 			name = data.name,
-			realm = data.realm,
 			reason = data.reason,
 			created = time(),
 			creator = UnitName("player"),
-			creatorrealm = GetRealmName()
 		}
 	elseif(list == "GUILDKOS") then
-		self.db.faction.koslist.guilds[key] = {
+		self.db.factionrealm.koslist.guilds[key] = {
 			name = data.name,
-			realm = data.realm,
 			reason = data.reason,
 			created = time(),
 			creator = UnitName("player"),
-			creatorrealm = GetRealmName()
 
 		}
 	elseif(list == "HATELIST") then
@@ -554,13 +547,11 @@ function VanasKoSDefaultLists:AddEntry(list, key, data)
 			VanasKoS:Print(format(L["Entry %s is already on Nicelist"], key))
 			return
 		end
-		self.db.faction.hatelist.players[key] = {
+		self.db.factionrealm.hatelist.players[key] = {
 			name = data.name,
-			realm = data.realm,
 			reason = data.reason,
 			created = time(),
 			creator = UnitName("player"),
-			creatorrealm = GetRealmName()
 
 		}
 	elseif(list == "NICELIST") then
@@ -568,13 +559,11 @@ function VanasKoSDefaultLists:AddEntry(list, key, data)
 			VanasKoS:Print(format(L["Entry %s is already on Hatelist"], key))
 			return
 		end
-		self.db.faction.nicelist.players[key] = {
+		self.db.factionrealm.nicelist.players[key] = {
 			name = data.name,
-			realm = data.realm,
 			reason = data.reason,
 			created = time(),
 			creator = UnitName("player"),
-			creatorrealm = GetRealmName()
 
 		}
 	end
@@ -594,13 +583,13 @@ end
 
 function VanasKoSDefaultLists:GetList(list)
 	if(list == "PLAYERKOS") then
-		return self.db.faction.koslist.players
+		return self.db.factionrealm.koslist.players
 	elseif(list == "GUILDKOS") then
-		return self.db.faction.koslist.guilds
+		return self.db.factionrealm.koslist.guilds
 	elseif(list == "HATELIST") then
-		return self.db.faction.hatelist.players
+		return self.db.factionrealm.hatelist.players
 	elseif(list == "NICELIST") then
-		return self.db.faction.nicelist.players
+		return self.db.factionrealm.nicelist.players
 	else
 		return nil
 	end

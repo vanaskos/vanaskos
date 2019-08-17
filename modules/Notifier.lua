@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       Notifier Module - Part of VanasKoS
 Notifies the user via Tooltip, Chat and Upper Area of a KoS/other List Target
 ------------------------------------------------------------------------]]
@@ -15,7 +15,6 @@ local min = min
 local format = format
 local wipe = wipe
 local getglobal = getglobal
-local GetRealmName = GetRealmName
 local GetPartyMember = GetPartyMember
 local GetGuildInfo = GetGuildInfo
 local GetRaidRosterInfo = GetRaidRosterInfo
@@ -23,9 +22,6 @@ local UnitName = UnitName
 local UnitInRaid = UnitInRaid
 local UnitIsPlayer = UnitIsPlayer
 local PlaySoundFile = PlaySoundFile
-local splitNameRealm = VanasKoS.splitNameRealm
-local hashName = VanasKoS.hashName
-local hashGuild = VanasKoS.hashGuild
 
 -- Constants
 local FADE_IN_TIME = 0.2
@@ -40,7 +36,6 @@ local reasonFrame = nil
 local playerDetectEventEnabled = false
 local reenableTimer = nil
 local mediaList = {}
-local myRealm = nil
 local partyEventsEnabled = false
 local lastPartyUpdate = {}
 local listsToCheck = {
@@ -595,8 +590,6 @@ function VanasKoSNotifier:OnInitialize()
 	self.db.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
 	self.db.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 	self:SetEnabledState(self.db.profile.Enabled)
-
-	myRealm = GetRealmName()
 end
 
 function VanasKoSNotifier:OnEnable()
@@ -638,13 +631,10 @@ function VanasKoSNotifier:FriendsFrame_UpdateFriendButton(button)
 	if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
 		local friendInfo = C_FriendList.GetFriendInfoByIndex(button.id)
 		local nameText = button.name
-		local name, realm = splitNameRealm(friendInfo.name)
-		if not realm then
-			realm = GetRealmName()
-		end
+		local name = friendInfo.name
 
 		if(name) then
-			local key = hashName(name, realm)
+			local key = name
 			if (VanasKoS:IsOnList("HATELIST", key)) then
 				if (friendInfo.connected) then
 					nameText:SetTextColor(1, 0, 0)
@@ -666,14 +656,11 @@ function VanasKoSNotifier:FriendsFrameTooltip_Show(button)
 	if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
 		-- name, level, class, area, connected, status, note, RAF, guid
 		local friendInfo = C_FriendList.GetFriendInfoByIndex(button.id)
-		local name, realm = splitNameRealm(friendInfo.name)
-		if not realm then
-			realm = myRealm
-		end
+		local name = friendInfo.name
 
 		if (name) then
 			local noteText
-			local key = hashName(name, realm)
+			local key = name
 			local hate = VanasKoS:IsOnList("HATELIST", key)
 			local nice = VanasKoS:IsOnList("NICELIST", key)
 			if (hate) then
@@ -717,14 +704,10 @@ function VanasKoSNotifier:IgnoreList_Update()
 		    and ignoreButton.index) then
 			local nameText = ignoreButton.name
 			local noteText = getglobal("VanasKoSIgnoreButton"..i.."ReasonText")
-			local fullName = C_FriendList.GetIgnoreName(ignoreButton.index)
-			local name, realm = splitNameRealm(fullName)
-			if not realm then
-				realm = myRealm
-			end
+			local name = C_FriendList.GetIgnoreName(ignoreButton.index)
 
 			if(name) then
-				local key = hashName(name, realm)
+				local key = name
 				local hate = VanasKoS:IsOnList("HATELIST", key)
 				local nice = VanasKoS:IsOnList("NICELIST", key)
 				if (hate and hate.reason) then
@@ -760,11 +743,8 @@ function VanasKoSNotifier:GROUP_ROSTER_UPDATE()
 	for i = 1, GetNumSubgroupMembers() do
 		-- Certain missions places you in a party with an NPC
 		if UnitIsPlayer("party" .. i) then
-			local name, realm = UnitName("party" .. i)
-			if not realm then
-				realm = myRealm
-			end
-			local key = hashName(name, realm)
+			local name = UnitName("party" .. i)
+			local key = name
 			newParty[key] = i
 			local hate = VanasKoS:IsOnList("HATELIST", key)
 			local nice = VanasKoS:IsOnList("NICELIST", key)
@@ -819,11 +799,8 @@ end
 function VanasKoSNotifier:RAID_ROSTER_UPDATE()
 	local newParty = {}
 	for i = 1, GetNumGroupMembers() do
-		local name, realm = UnitName("raid" .. i)
-		if not realm then
-			realm = myRealm
-		end
-		local key = hashName(name, realm)
+		local name = UnitName("raid" .. i)
+		local key = name
 		newParty[key] = i
 		if(not lastPartyUpdate[key]) then
 			local hate = VanasKoS:IsOnList("HATELIST", key)
@@ -874,13 +851,10 @@ function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 		return
 	end
 
-	local name, realm = UnitName("mouseover")
+	local name = UnitName("mouseover")
 	local guild = GetGuildInfo("mouseover")
-	if not realm then
-		realm = myRealm
-	end
-	local key = hashName(name, realm)
-	local guildKey = guild and hashGuild(guild, realm) or nil
+	local key = name
+	local guildKey = guild
 
 	-- add the KoS: <text> and KoS (Guild): <text> messages
 	for listname,v in pairs(listsToCheck) do
@@ -911,11 +885,11 @@ function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
 	end
 end
 
-function VanasKoSNotifier:UpdateReasonFrame(name, realm, guild)
+function VanasKoSNotifier:UpdateReasonFrame(name, guild)
 	if(self.db.profile.notifyExtraReasonFrameEnabled) then
 		if(UnitIsPlayer("target")) then
-			local key = hashName(name, realm)
-			local guildKey = guild and hashGuild(guild, realm) or nil
+			local key = name
+			local guildKey = guild
 			if(not VanasKoS_Notifier_ReasonFrame_Text) then
 				return
 			end
@@ -961,13 +935,13 @@ function VanasKoSNotifier:UpdateReasonFrame(name, realm, guild)
 end
 
 function VanasKoSNotifier:Player_Target_Changed(message, data)
-	if not data or not data.name or not data.realm then
+	if not data or not data.name then
 		return
 	end
 	if(self.db.profile.notifyTargetFrame) then
 		if(UnitIsPlayer("target")) then
-			local key = hashName(data.name, data.realm)
-			local guildKey = data.guild and hashGuild(data.guild, data.realm) or nil
+			local key = data.name
+			local guildKey = data.guild
 			if(VanasKoS:BooleanIsOnList("PLAYERKOS", key)) then
 				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite")
 				TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha())
@@ -988,7 +962,7 @@ function VanasKoSNotifier:Player_Target_Changed(message, data)
 			TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha())
 		end
 	end
-	self:UpdateReasonFrame(data and data.name or nil, data and data.realm or nil, data and data.guild or nil)
+	self:UpdateReasonFrame(data and data.name or nil, data and data.guild or nil)
 end
 
 --/script VanasKoS:SendMessage("VanasKoS_Player_Detected", "Apfelherz", nil, "kos")
@@ -1145,9 +1119,8 @@ end
 
 function VanasKoSNotifier:KosPlayer_Detected(data)
 	assert(data.name)
-	assert(data.realm)
-	local key = hashName(data.name, data.realm)
-	local guildKey = data.guild and hashGuild(data.guild, data.realm) or nil
+	local key = data.name
+	local guildKey = data.guild
 
 	-- VanasKoS:Print("player detected: " .. data.name)
 	-- get reasons for kos (if any)
@@ -1188,9 +1161,8 @@ end
 
 function VanasKoSNotifier:HatedPlayer_Detected(data)
 	assert(data.name)
-	assert(data.realm)
-	local key = hashName(data.name, data.realm)
-	local guildKey = data.guild and hashGuild(data.guild, data.realm) or nil
+	local key = data.name
+	local guildKey = data.guild
 
 	-- VanasKoS:Print("player detected: " .. data.name)
 	-- get reasons for kos (if any)
@@ -1230,9 +1202,8 @@ end
 
 function VanasKoSNotifier:NicePlayer_Detected(data)
 	assert(data.name)
-	assert(data.realm)
-	local key = hashName(data.name, data.realm)
-	local guildKey = data.guild and hashGuild(data.guild, data.realm) or nil
+	local key = data.name
+	local guildKey = data.guild
 
 	-- VanasKoS:Print("player detected: " .. data.name)
 	-- get reasons for kos (if any)

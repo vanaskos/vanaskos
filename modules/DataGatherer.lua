@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       DataGatherer Module - Part of VanasKoS
 Handles all external Player Data from Chat and Target Changes/Mouseovers
 ------------------------------------------------------------------------]]
@@ -29,17 +29,12 @@ local UnitGUID = UnitGUID
 local UnitLevel = UnitLevel
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local GetGuildInfo = GetGuildInfo
-local GetRealmName = GetRealmName
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
-local splitNameRealm = VanasKoS.splitNameRealm
-local hashName = VanasKoS.hashName
-local hashGuild = VanasKoS.hashGuild
 local VanasKoSDataGatherer = VanasKoSDataGatherer
 
 -- Local Variables
 local myName = nil
-local myRealm = nil
-local playerDataList = nil
+local playerDataList = {}
 local targetEventsEnabled = false
 local combatEventsEnabled = false
 local gatherEventEnabled = false
@@ -47,7 +42,7 @@ local gatheredData = {}
 
 function VanasKoSDataGatherer:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("DataGatherer", {
-		global = {
+		realm = {
 			data = {
 				players = {
 				},
@@ -57,15 +52,11 @@ function VanasKoSDataGatherer:OnInitialize()
 			UseCombatLog = true,
 			StorePlayerDataPermanently = false,
 			GatherInCities = false,
-			GatherInWarMode = true,
-			GatherInNormalMode = true,
 			EnableInSanctuary = false,
 			EnableInCity = true,
 			EnableInBattleground = false,
 			EnableInCombatZone = false,
 			EnableInArena = false,
-			EnableInWarMode = true,
-			EnableInNormalMode = true,
 		},
 	})
 
@@ -157,32 +148,6 @@ function VanasKoSDataGatherer:OnInitialize()
 						VanasKoSDataGatherer:Update()
 					end,
 				},
-				enableinwarmode = {
-					type = "toggle",
-					order = 8,
-					name = L["Enable in War Mode"],
-					desc = L["Toggles detection of players if War Mode is enabled"],
-					get = function()
-						return VanasKoSDataGatherer.db.profile.EnableInWarMode
-					end,
-					set = function(frame, v)
-						VanasKoSDataGatherer.db.profile.EnableInWarMode = v
-						VanasKoSDataGatherer:Update()
-					end,
-				},
-				enableinnormalmode = {
-					type = "toggle",
-					order = 9,
-					name = L["Enable in Normal Mode"],
-					desc = L["Toggles detection of players if War Mode is disabled"],
-					get = function()
-						return VanasKoSDataGatherer.db.profile.EnableInNormalMode
-					end,
-					set = function(frame, v)
-						VanasKoSDataGatherer.db.profile.EnableInNormalMode = v
-						VanasKoSDataGatherer:Update()
-					end,
-				},
 				datastorage_header = {
 					order = 10,
 					type = "header",
@@ -213,32 +178,6 @@ function VanasKoSDataGatherer:OnInitialize()
 						VanasKoSDataGatherer:Update()
 					end,
 				},
-				gatherinwarmode = {
-					type = "toggle",
-					order = 13,
-					name = L["Save data gathered in war mode"],
-					desc = L["Toggles if data from players gathered in war mode should be saved."],
-					get = function()
-						return VanasKoSDataGatherer.db.profile.GatherInWarMode
-					end,
-					set = function(frame, v)
-						VanasKoSDataGatherer.db.profile.GatherInWarMode = v
-						VanasKoSDataGatherer:Update()
-					end,
-				},
-				gatherinnormalmode = {
-					type = "toggle",
-					order = 14,
-					name = L["Save data gathered in normal mode"],
-					desc = L["Toggles if data from players gathered in normal mode should be saved."],
-					get = function()
-						return VanasKoSDataGatherer.db.profile.GatherInNormalMode
-					end,
-					set = function(frame, v)
-						VanasKoSDataGatherer.db.profile.GatherInNormalMode = v
-						VanasKoSDataGatherer:Update()
-					end,
-				},
 			},
 		},
 	})
@@ -246,7 +185,6 @@ function VanasKoSDataGatherer:OnInitialize()
 	VanasKoS:RegisterList(nil, "PLAYERDATA", nil, self)
 	VanasKoS:RegisterList(nil, "GUILDDATA", nil, self)
 	myName = UnitName("player")
-	myRealm = GetRealmName()
 end
 
 local COMBATLOG_FILTER_PLAYER = bor(COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PLAYER)
@@ -276,21 +214,12 @@ local function isPlayer(flags)
 	return nil
 end
 
-function VanasKoSDataGatherer:CombatEvent(timestamp, eventType, hideCaster, srcGUID, srcNameRealm, srcFlags, srcRaidFlags, dstGUID, dstNameRealm, dstFlags, dstRaidFlags, ...)
+function VanasKoSDataGatherer:CombatEvent(timestamp, eventType, hideCaster, srcGUID, srcName, srcFlags, srcRaidFlags, dstGUID, dstName, dstFlags, dstRaidFlags, ...)
 	local offset = 1
 	local spellID = nil
 	local amount = nil
 	local powerType = nil
 	local _ = nil
-
-	local srcName, srcRealm = splitNameRealm(srcNameRealm)
-	if srcName and srcRealm == nil then
-		srcRealm = myRealm
-	end
-	local dstName, dstRealm = splitNameRealm(dstNameRealm)
-	if dstName and dstRealm == nil then
-		dstRealm = myRealm
-	end
 
 	if(strfind(eventType, "SPELL_") or strfind(eventType, "RANGE_")) then
 		spellID, _, _ = select(offset, ...)
@@ -306,14 +235,14 @@ function VanasKoSDataGatherer:CombatEvent(timestamp, eventType, hideCaster, srcG
 		offset = offset + 3
 	end
 
-	--self:PrintLiteral(eventType, srcNameRealm, srcFlags, dstNameRealm, dstFlags)
-	--if(dstNameRealm and srcNameRealm and dstNameRealm ~= srcNameRealm) then
-	--	ChatFrame2:AddMessage(eventType .. " " .. (srcNameRealm or "nil") .. " -> " .. (dstNameRealm or "nil") .. "  -  " .. (spellName or "nil"))
+	--self:PrintLiteral(eventType, srcName, srcFlags, dstName, dstFlags)
+	--if(dstName and srcName and dstName ~= srcName) then
+	--	ChatFrame2:AddMessage(eventType .. " " .. (srcName or "nil") .. " -> " .. (dstName or "nil") .. "  -  " .. (spellName or "nil"))
 	--end
 	if(strfind(eventType, "SPELL_AURA_")) then
 		-- in case a auro is removed or applied it may be that the auro was gained from someone else and spellID is therefore from the class who casted the aura
 		--(and because we don't know where that player is, ignore him)
-		if(srcNameRealm ~= dstNameRealm) then
+		if(srcName ~= dstName) then
 			spellID = nil
 		end
 
@@ -330,38 +259,38 @@ function VanasKoSDataGatherer:CombatEvent(timestamp, eventType, hideCaster, srcG
 		]]
 
 		local fOrE = isFriendlyOrEnemy(dstFlags)
-		if(dstNameRealm and fOrE and dstNameRealm ~= myName) then
-			VanasKoSDataGatherer:SendDataMessage(dstName, dstRealm, dstGUID, fOrE, spellID)
+		if(dstName and fOrE and dstName ~= myName) then
+			VanasKoSDataGatherer:SendDataMessage(dstName, dstGUID, fOrE, spellID)
 			return
 		end
 	end
 
 	-- try source and destination  if source or destination is friendly, register as event
-	if(srcNameRealm ~= nil and srcNameRealm ~= myName) then
+	if(srcName ~= nil and srcName ~= myName) then
 		local fOrE = isFriendlyOrEnemy(srcFlags)
 		if(fOrE) then
-			VanasKoSDataGatherer:SendDataMessage(srcName, srcRealm, srcGUID, fOrE, spellID)
+			VanasKoSDataGatherer:SendDataMessage(srcName, srcGUID, fOrE, spellID)
 		end
 	end
 
-	if(dstNameRealm ~= nil and dstNameRealm ~= myName) then
+	if(dstName ~= nil and dstName ~= myName) then
 		local fOrE = isFriendlyOrEnemy(dstFlags)
 		if(fOrE) then
-			VanasKoSDataGatherer:SendDataMessage(dstName, dstRealm, dstGUID, fOrE, spellID)
+			VanasKoSDataGatherer:SendDataMessage(dstName, dstGUID, fOrE, spellID)
 		end
 	end
 
-	if((dstNameRealm == myName and isFriendlyOrEnemy(srcFlags) == "enemy") or
-		(srcNameRealm == myName and isFriendlyOrEnemy(dstFlags) == "enemy")) then
+	if((dstName == myName and isFriendlyOrEnemy(srcFlags) == "enemy") or
+		(srcName == myName and isFriendlyOrEnemy(dstFlags) == "enemy")) then
 		if(strfind(eventType, "_DAMAGE")) then
-			self:SendMessage("VanasKoS_PvPDamage", srcName, srcRealm, dstName, dstRealm, amount)
+			self:SendMessage("VanasKoS_PvPDamage", srcName, dstName, amount)
 		elseif ((strfind(eventType, "_DRAIN") or (strfind(eventType, "_LEECH"))) and powerType == COMBATLOG_POWERTYPE_HEALTH) then
-			self:SendMessage("VanasKoS_PvPDamage", srcName, srcRealm, dstName, dstRealm, amount)
+			self:SendMessage("VanasKoS_PvPDamage", srcName, dstName, amount)
 		end
 	end
 
 	if(eventType == "UNIT_DIED" and isPlayer(dstFlags)) then
-		self:SendMessage("VanasKoS_PvPDeath", dstName, dstRealm)
+		self:SendMessage("VanasKoS_PvPDeath", dstName)
 	end
 end
 
@@ -376,7 +305,7 @@ function VanasKoSDataGatherer:OnEnable()
 
 	self:Update()
 
-	playerDataList = self.db.global.data.players
+	playerDataList = self.db.realm.data.players
 	local count = 0
 	for _ in pairs(playerDataList) do
 		count = count + 1
@@ -411,16 +340,15 @@ function VanasKoSDataGatherer:CleanupPlayerDataDatabase()
 end
 
 function VanasKoSDataGatherer:PurgeData()
-	self.db.global.data.players = {}
+	self.db.realm.data.players = {}
 	playerDataList = {}
 end
 
 -- if a player was detected nearby through chat or mouseover, update lastseen
 function VanasKoSDataGatherer:Player_Detected(message, data)
 	assert(data.name)
-	assert(data.realm)
 	-- if the player is on a relevant list, update last seen
-	self:UpdateLastSeen(data.name, data.realm)
+	self:UpdateLastSeen(data.name)
 end
 
 function VanasKoSDataGatherer:IsOnList(listname, key)
@@ -435,7 +363,7 @@ end
 
 function VanasKoSDataGatherer:GetList(list)
 	if(list == "PLAYERDATA") then
-		return self.db.global.data.players
+		return self.db.realm.data.players
 	end
 end
 
@@ -451,23 +379,21 @@ function VanasKoSDataGatherer:RemoveEntry(listname, key)
 	end
 end
 
-function VanasKoSDataGatherer:UpdateLastSeen(name, realm)
-	local key = hashName(name, realm)
-	if(playerDataList[key] ~= nil) then
-		if (time() - (playerDataList[key].lastseen or 0) > 300) then
-			playerDataList[key].seen = (playerDataList[key].seen or 0) + 1
+function VanasKoSDataGatherer:UpdateLastSeen(name)
+	if playerDataList and playerDataList[name] then
+		if (time() - (playerDataList[name].lastseen or 0) > 300) then
+			playerDataList[name].seen = (playerDataList[name].seen or 0) + 1
 		end
-		playerDataList[key].lastseen = time()
+		playerDataList[name].lastseen = time()
 	end
 end
 
 function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	-- self:PrintLiteral(list, name, guild, level, race, class, gender)
 	assert(data.name)
-	assert(data.realm)
-	local key = hashName(data.name, data.realm)
+	local key = data.name
 
-	if(not playerDataList[key]) then
+	if not playerDataList[key] then
 		playerDataList[key] = {}
 	end
 
@@ -480,7 +406,6 @@ function VanasKoSDataGatherer:Data_Gathered(message, list, data)
 	end
 
 	playerDataList[key].name = data.name
-	playerDataList[key].realm = data.realm
 	playerDataList[key].level = data.level
 	playerDataList[key].race = data.race
 	playerDataList[key].class = data.class
@@ -555,33 +480,14 @@ function VanasKoSDataGatherer:Update()
 	else
 		self:EnableDataGathering(true)
 	end
-
-	if (C_PvP.IsWarModeDesired() and not self.db.profile.EnableInWarMode) then
-		self:EnableTargetEvents(false)
-		self:EnableCombatEvents(false)
-	elseif (not C_PvP.IsWarModeDesired() and not self.db.profile.EnableInNormalMode) then
-		self:EnableTargetEvents(false)
-		self:EnableCombatEvents(false)
-	end
-
-	if (C_PvP.IsWarModeDesired() and not self.db.profile.GatherInWarMode) then
-		self:EnableDataGathering(false)
-	elseif (not C_PvP.IsWarModeDesired() and not self.db.profile.GatherInNormalMode) then
-		self:EnableDataGathering(false)
-	end
 end
 
 function VanasKoSDataGatherer:Get_Player_Data(unit)
 	if(UnitIsPlayer(unit) and UnitName(unit) ~= myName) then
-		local name, realm = UnitName(unit)
+		local name = UnitName(unit)
 		assert(name)
-		if not realm then
-			--print(name .. " ( " .. unit .. ") has no realm, assuming local")
-			realm = myRealm
-		end
 		wipe(gatheredData)
 		gatheredData.name = name
-		gatheredData.realm = realm
 		gatheredData.pvp = UnitIsPVP(unit)
 		gatheredData.guild, gatheredData.guildrank = GetGuildInfo(unit)
 		gatheredData.race = UnitRace(unit)
@@ -592,8 +498,8 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 		gatheredData.guid = UnitGUID(unit)
 
 		local lvl = UnitLevel(unit)
-		local key = hashName(name, realm)
-		local guildKey = gatheredData.guild and hashGuild(gatheredData.guild, gatheredData.realm) or nil
+		local key = name
+		local guildKey = gatheredData.guild
 		if(lvl == -1) then
 			lvl = (UnitLevel("player") or 1) + 10
 			local oldLevel = (playerDataList[key] and playerDataList[key].level) or -1
@@ -644,12 +550,11 @@ function VanasKoSDataGatherer:UPDATE_MOUSEOVER_UNIT()
 	end
 end
 
-function VanasKoSDataGatherer:SendDataMessage(name, realm, guid, faction, spellId)
+function VanasKoSDataGatherer:SendDataMessage(name, guid, faction, spellId)
 	local mapID = VanasKoS:MapID()
 	local class, classEnglish, race, raceEnglish, gender = GetPlayerInfoByGUID(guid)
 	wipe(gatheredData)
 	gatheredData.name = name
-	gatheredData.realm = realm
 	gatheredData.faction = faction
 	gatheredData.mapID = mapID
 	gatheredData.class = class
@@ -660,11 +565,11 @@ function VanasKoSDataGatherer:SendDataMessage(name, realm, guid, faction, spellI
 	gatheredData.guid = guid
 
 	local level = -1
-	if(spellId and tonumber(spellId)) then
+	if(LevelGuess and spellId and tonumber(spellId)) then
 		level = LevelGuess:GetEstimatedLevelAndClassFromSpellId(spellId) or -1
 	end
-	local key = hashName(gatheredData.name, gatheredData.realm)
-	local oldLevel = (playerDataList[key] and playerDataList[key].level) or -1
+	local key = gatheredData.name
+	local oldLevel = (playerDataList and playerDataList[key] and playerDataList[key].level) or -1
 	local oldLevelNum = oldLevel
 	if (type(oldLevel) == "string") then
 		oldLevelNum = tonumber(select(3, strfind(oldLevel, "(%d+)[+]"))) or -1
@@ -677,13 +582,13 @@ function VanasKoSDataGatherer:SendDataMessage(name, realm, guid, faction, spellI
 	elseif (level < 120) then
 		level = level .. "+"
 	end
-	gatheredData.guild = playerDataList[key] and playerDataList[key].guild
-	local guildkey = gatheredData.guild and hashGuild(gatheredData.guild, gatheredData.realm) or nil
+	gatheredData.guild = playerDataList and playerDataList[key] and playerDataList[key].guild
+	local guildkey = gatheredData.guild
 	gatheredData.list = select(2, VanasKoS:IsOnList(nil, key)) or (guildKey and select(2, VanasKoS:IsOnList(nil, guildKey)))
 	gatheredData.level = level
 	-- print("spellid", spellId, "level", gatheredData.level, "english", classEnglish)
 
-	-- /script VanasKoSDataGatherer:SendDataMessage("name", "realm", "enemy", nil)
+	-- /script VanasKoSDataGatherer:SendDataMessage("name", "enemy", nil)
 	-- /dump VanasKoSDataGatherer.db.realm.data.players['name']
 
 	self:SendMessage("VanasKoS_Player_Data_Gathered", gatheredData.list, gatheredData)

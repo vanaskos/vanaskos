@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       MinimapButton Module - Part of VanasKoS
 Creates a MinimapButton with a menu for VanasKoS
 ------------------------------------------------------------------------]]
@@ -17,7 +17,6 @@ local wipe = wipe
 local SecondsToTime = SecondsToTime
 local IsShiftKeyDown = IsShiftKeyDown
 local GetCursorPosition = GetCursorPosition
-local hashName = VanasKoS.hashName
 
 -- Local Variables
 local attackerMenu = {}
@@ -197,10 +196,10 @@ function VanasKoSMinimapButton:UpdateOptions()
 
 		for _, v in pairs(list) do
 			attackerMenu[#attackerMenu+1] = {
-				text = format("%s-%s %s", v.name, v.realm, date("%c", v.time)),
+				text = format("%s %s", v.name, date("%c", v.time)),
 				order = #attackerMenu,
 				func = function()
-					VanasKoSGUI:AddEntry("PLAYERKOS", v.name, v.realm, format(L["Attacked %s on %s"], UnitName("player"), date("%c", v.time)))
+					VanasKoSGUI:AddEntry("PLAYERKOS", v.name, format(L["Attacked %s on %s"], UnitName("player"), date("%c", v.time)))
 				end,
 			}
 		end
@@ -271,13 +270,12 @@ function VanasKoSMinimapButton:DisableWarnFrameText()
 end
 
 function VanasKoSMinimapButton:Player_Detected(message, data)
-	if(data.name == nil or data.realm == nil or showWarnFrameInfoText == false) then
+	if(data.name == nil or showWarnFrameInfoText == false) then
 		return
 	end
 
 	local unitData = {
 		name = data.name,
-		realm = data.realm,
 		faction = data.faction,
 		time = time()
 	}
@@ -285,7 +283,7 @@ function VanasKoSMinimapButton:Player_Detected(message, data)
 		faction = "kos"
 	end
 
-	local key = hashName(data.name, data.realm)
+	local key = data.name
 
 	if(data.faction == "kos") then
 		if(not nearbyKoS[key]) then
@@ -338,7 +336,7 @@ function VanasKoSMinimapButton:OnTooltipShow(tt)
 			tt:AddLine(L["Last Attackers"] .. ":", 1.0, 1.0, 1.0)
 
 			for _, v in pairs(list) do
-				tt:AddDoubleLine(v.name .. "-" .. v.realm, format(L["%s ago"], SecondsToTime(time() - v.time)), 1.0, 0.0, 0.0, 1.0, 1.0, 1.0)
+				tt:AddDoubleLine(v.name, format(L["%s ago"], SecondsToTime(time() - v.time)), 1.0, 0.0, 0.0, 1.0, 1.0, 1.0)
 			end
 		end
 	end

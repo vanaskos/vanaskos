@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       PvPStats Module - Part of VanasKoS
 Displays Stats about PvP in a window
 ------------------------------------------------------------------------]]
@@ -25,8 +25,6 @@ local time = time
 local format = format
 local GetMapNameByID = GetMapNameByID
 local GetCursorPosition = GetCursorPosition
-local hashName = VanasKoS.hashName
-local hashGuild = VanasKoS.hashGuild
 local VanasKoSPvPStats = VanasKoSPvPStats
 
 -- Constants
@@ -282,7 +280,9 @@ function VanasKoSPvPStats:ShowList(list, group)
 		end
 		VanasKoSPvPStatsCharacterDropDown.frame:Show()
 		VanasKoSPvPStatsTimeSpanDropDown.frame:Show()
-		self.statPie:Show()
+		if Graph then
+			self.statPie:Show()
+		end
 	end
 end
 
@@ -293,7 +293,9 @@ function VanasKoSPvPStats:HideList(list)
 		VanasKoSListFrameRemoveButton:Enable()
 		VanasKoSPvPStatsCharacterDropDown.frame:Hide()
 		VanasKoSPvPStatsTimeSpanDropDown.frame:Hide()
-		self.statPie:Hide()
+		if Graph then
+			self.statPie:Hide()
+		end
 	end
 end
 
@@ -340,18 +342,16 @@ function VanasKoSPvPStats:BuildList(group)
 	local skipped = 0
 	local count = 0
 	for _, event in pairs(pvpEventLog) do
-		local myKey = event.myname and event.myrealm and hashName(event.myname, event.myrealm)
+		local myKey = event.myname
 		if( (not timeSpanStart or event.time >= timeSpanStart) and
 			(not timeSpanEnd or event.time <= timeSpanEnd) and
 			(not selectedCharacter or myKey == selectedCharacter)) then
 			assert(event.name)
-			assert(event.realm)
-			local enemykey = hashName(event.name, event.realm)
+			local enemykey = event.name
 			if(group == PLAYERS_LIST) then
 				if(not pvpStatsList[enemykey]) then
 					pvpStatsList[enemykey] = {
 						name = event.name,
-						realm = event.realm,
 						wins = 0,
 						losses = 0
 					}
@@ -366,7 +366,7 @@ function VanasKoSPvPStats:BuildList(group)
 			elseif(group == GUILDS_LIST) then
 				local playerdata = VanasKoS:GetPlayerData(enemykey)
 				if(playerdata and playerdata.guild) then
-					local guildKey = hashGuild(playerdata.guild, event.realm)
+					local guildKey = playerdata.guild
 					if(not pvpStatsList[guildKey]) then
 						pvpStatsList[guildKey] = {
 							name = playerdata.guild,
@@ -630,8 +630,8 @@ function VanasKoSPvPStats:RemoveEntry(listname, key)
 			if (pvpMapLog[key]) then
 				for _, eventKey in ipairs(pvpMapLog[key]) do
 					local event = pvpEventLog[eventKey]
-					if (event and event.name and event.realm) then
-						local playerKey = hashName(event.name, event.realm)
+					if event and event.name then
+						local playerKey = event.name
 						for j, zhash in ipairs(pvpPlayersLog[playerKey]) do
 							if (zhash == eventKey) then
 								--VanasKoS:Print("removing " .. playerKey .. "-" .. j .. " from pvp player log")
@@ -784,19 +784,19 @@ function VanasKoSPvPStats:ListButtonOnClick(button, frame)
 			{
 				text = L["Add to Player KoS"],
 				func = function()
-					VanasKoS:AddEntryByName("PLAYERKOS", entryValue.name, entryValue.realm)
+					VanasKoS:AddEntryByName("PLAYERKOS", entryValue.name)
 				end,
 			},
 			{
 				text = L["Add to Hatelist"],
 				func = function()
-					VanasKoS:AddEntryByName("HATELIST", entryValue.name, entryValue.realm)
+					VanasKoS:AddEntryByName("HATELIST", entryValue.name)
 				end
 			},
 			{
 				text = L["Add to Nicelist"],
 				func = function()
-					VanasKoS:AddEntryByName("NICELIST", entryValue.name, entryValue.realm)
+					VanasKoS:AddEntryByName("NICELIST", entryValue.name)
 				end
 			},
 			{
@@ -867,22 +867,20 @@ function VanasKoSPvPStats:OnEnable()
 	local CharacterChoicesOrder = {}
 
 	local twinks = {}
-	twinks[hashName(UnitName("player"), GetRealmName())] = {
+	twinks[UnitName("player")] = {
 		name = UnitName("player"),
-		realm = GetRealmName()
 	}
 
 	local pvpEventLog = VanasKoS:GetList("PVPLOG", 1) or {}
 	for _, event in pairs(pvpEventLog.event or {}) do
-		if(event.myname and event.myrealm) then
-			twinks[hashName(event.myname, event.myrealm)] = {
+		if event.myname then
+			twinks[event.myname] = {
 				name = event.myname,
-				realm = event.myrealm
 			}
 		end
 	end
 	for k, v in pairs(twinks) do
-		CharacterChoices[k] = v.name .. "-" .. v.realm
+		CharacterChoices[k] = v.name
 		tinsert(CharacterChoicesOrder, k)
 	end
 	tinsert(CharacterChoicesOrder, 1, "ALLCHARS")
@@ -931,10 +929,6 @@ function VanasKoSPvPStats:OnEnable()
 		self.statPie:Hide()
 	end
 
-	if(self.db.global.pvpstats) then
-		VanasKoS:Print(L["Old pvp statistics detected. You should import old data by going to importer under VanasKoS configuration"])
-	end
-
 	self:RegisterMessage("VanasKoS_PvPWin", "PvPWin")
 	self:RegisterMessage("VanasKoS_PvPLoss", "PvPLoss")
 end
@@ -981,13 +975,13 @@ function VanasKoSPvPStats:SetWinLossStatsPie(wins, losses)
 end
 
 -- Refresh list on Win
-function VanasKoSPvPStats:PvPWin(name, realm)
+function VanasKoSPvPStats:PvPWin(name)
 	self.needUpdate = true
 	self:SendMessage("VanasKoS_List_Entry_Added", "PVPLOG")
 end
 
 -- Refresh list on Loss
-function VanasKoSPvPStats:PvPLoss(name, realm)
+function VanasKoSPvPStats:PvPLoss(name)
 	self.needUpdate = true
 	self:SendMessage("VanasKoS_List_Entry_Added", "PVPLOG")
 end

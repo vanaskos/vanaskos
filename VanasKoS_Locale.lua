@@ -57,8 +57,8 @@ if L then
 	L["World PvP win"] = true
 	L["World PvP loss"] = true
 	L["World PvP encounter"] = true
-	L["Player: %s-%s (%s)"] = true
-	L["Enemy: %s-%s (%s)"] = true
+	L["Player: %s (%s)"] = true
+	L["Enemy: %s (%s)"] = true
 	L["_UNKNOWN_NAME_"] = "unknown"
 	L["_UNKNOWN_REALM_"] = "unknown"
 end

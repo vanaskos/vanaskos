@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       LastSeenList Module - Part of VanasKoS
 Keeps track of recently seen players
 ------------------------------------------------------------------------]]
@@ -18,7 +18,6 @@ local time = time
 local wipe = wipe
 local SecondsToTime = SecondsToTime
 local GetCursorPosition = GetCursorPosition
-local hashName = VanasKoS.hashName
 local VanasKoSLastSeenList = VanasKoSLastSeenList
 
 -- Constants
@@ -97,16 +96,15 @@ function VanasKoSLastSeenList:OnEnable()
 	end
 	if(VanasKoSDataGatherer) then
 		if(VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently == true) then
-			lastseenlist = VanasKoSDataGatherer.db.global.data.players or {}
+			lastseenlist = VanasKoSDataGatherer.db.realm.data.players or {}
 		else
 			-- Copy player data into the volatile lastseenlist
-			for key, data in pairs(VanasKoSDataGatherer.db.global.data.players) do
+			for key, data in pairs(VanasKoSDataGatherer.db.realm.data.players) do
 				lastseenlist[key] = {}
 				for k, v in pairs(data) do
 					lastseenlist[key][k] = v
 				end
 				assert(lastseenlist[key].name)
-				assert(lastseenlist[key].realm)
 			end
 		end
 	end
@@ -233,8 +231,7 @@ end
 local updateScheduled
 function VanasKoSLastSeenList:Player_Detected(message, data)
 	assert(data.name)
-	assert(data.realm)
-	local key = hashName(data.name, data.realm)
+	local key = data.name
 
 	if(not (VanasKoSDataGatherer and VanasKoSDataGatherer.db.profile.StorePlayerDataPermanently)) then
 		if(not lastseenlist[key]) then
@@ -289,21 +286,21 @@ local function ListButtonOnRightClickMenu()
 		{
 			text = L["Add to Player KoS"],
 			func = function()
-				VanasKoS:AddEntryByName("PLAYERKOS", entryValue.name, entryValue.realm)
+				VanasKoS:AddEntryByName("PLAYERKOS", entryValue.name)
 			end,
 			order = 2,
 		},
 		{
 			text = L["Add to Hatelist"],
 			func = function()
-				VanasKoS:AddEntryByName("HATELIST", entryValue.name, entryValue.realm)
+				VanasKoS:AddEntryByName("HATELIST", entryValue.name)
 			end,
 			order = 3,
 		},
 		{
 			text = L["Add to Nicelist"],
 			func = function()
-				VanasKoS:AddEntryByName("NICELIST", entryValue.name, entryValue.realm)
+				VanasKoS:AddEntryByName("NICELIST", entryValue.name)
 			end,
 			order = 4,
 		},

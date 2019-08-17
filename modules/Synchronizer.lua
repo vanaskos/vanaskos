@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
 	Synchronizer Module - Part of VanasKoS
 Handles list sychronization through chat (whisper, guild, party)
 ------------------------------------------------------------------------]]
@@ -24,10 +24,8 @@ local tinsert = tinsert
 local tremove = tremove
 local strmatch = strmatch
 local strsplit = strsplit
-local GetRealmName = GetRealmName
 local UnitName = UnitName
 local IsInGuild = IsInGuild
-local hashName = VanasKoS.hashName
 
 -- constants
 local POLICY_ACCEPT = 1
@@ -41,7 +39,6 @@ local DENY_REQUEST = "dr"
 -- Local Variables
 local startupGuildTimer = nil
 local startupRequestTimer = nil
-local myRealm = nil
 
 -- sorts by index
 local function SortByIndex(val1, val2)
@@ -251,7 +248,7 @@ end
 
 function VanasKoSSynchronizer:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("Synchronizer", {
-		faction = {
+		factionrealm = {
 			synchronizer = {
 				mainchar = nil,
 				otherchars = {
@@ -290,11 +287,11 @@ function VanasKoSSynchronizer:OnInitialize()
 	})
 
 	local charName = UnitName("player")
-	if(self.db.faction.synchronizer.mainchar == nil) then
-		self.db.faction.synchronizer.mainchar = charName
+	if(self.db.factionrealm.synchronizer.mainchar == nil) then
+		self.db.factionrealm.synchronizer.mainchar = charName
 	end
-	if(self.db.faction.synchronizer.mainchar ~= charName) then
-		self.db.faction.synchronizer.otherchars[charName] = true
+	if(self.db.factionrealm.synchronizer.mainchar ~= charName) then
+		self.db.factionrealm.synchronizer.otherchars[charName] = true
 	end
 
 	RegisterConfiguration()
@@ -325,7 +322,6 @@ function VanasKoSSynchronizer:OnInitialize()
 	})
 
 	self:SetEnabledState(self.db.profile.Enabled)
-	myRealm = GetRealmName()
 end
 
 function VanasKoSSynchronizer:OnEnable()
@@ -460,7 +456,7 @@ end
 
 local requestSharePlayer = nil
 function VanasKoSSynchronizer:RequestNextLists()
-	requestSharePlayer = next(self.db.faction.synchronizer.share, requestSharePlayer)
+	requestSharePlayer = next(self.db.factionrealm.synchronizer.share, requestSharePlayer)
 	if (requestSharePlayer == nil) then
 		return
 	end
@@ -525,7 +521,6 @@ function VanasKoSSynchronizer:GetListToShare(listName, key)
 			if (not v.owner or v.owner == "") then
 				sendList[k] = {
 					name = v.name,
-					realm = v.realm,
 					reason = v.reason,
 					creator = v.creator
 				}
@@ -535,7 +530,6 @@ function VanasKoSSynchronizer:GetListToShare(listName, key)
 		if (list[key]) then
 			sendList[key] = {
 				name = list[key].name,
-				realm = list[key].realm,
 				reason = list[key].reason,
 				creator = list[key].creator
 			}
@@ -610,10 +604,8 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 			sender, vanasKoSVersion, protocolVersion, command))
 	end
 
-	local senderName, senderRealm = strsplit("-", sender)
-
 	-- Ignore messages from self
-	if(not senderName or senderName == UnitName("player")) then
+	if(not sender or sender == UnitName("player")) then
 		return
 	end
 
@@ -624,10 +616,10 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 		end
 	end
 
-	local senderKey = hashName(senderName, senderRealm)
+	local senderKey = sender
 	if(command == SHARE_LIST) then
 		if (distribution == "GUILD") then
-			self:ProcessList(senderName, senderRealm, data.owner, data.ownerRealm, data.listName, data.list)
+			self:ProcessList(sender, data.owner, data.listName, data.list)
 		elseif (distribution == "WHISPER") then
 			if (requestedLists[data.listName] == nil) then
 				if(VANASKOS.DEBUG == 1) then
@@ -639,9 +631,9 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 				if(VANASKOS.DEBUG == 1) then
 					VanasKoS:Print(format("Processing requested results from %s", sender))
 				end
-				self:ProcessList(sender, senderRealm, data.owner, data.ownerRealm, data.listName, data.list)
+				self:ProcessList(sender, data.owner, data.listName, data.list)
 				requestedLists[data.listName][senderKey] = nil
-				self.db.faction.synchronizer.share[senderKey].lastsync = time()
+				self.db.factionrealm.synchronizer.share[senderKey].lastsync = time()
 			else
 				if(VANASKOS.DEBUG == 1) then
 					VanasKoS:Print(format("Unsolicited %s list from %s", data.listName, sender))
@@ -650,7 +642,6 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 					sharedLists[senderKey] = {list = {}}
 				end
 				sharedLists[senderKey].ownerName = data.ownerName
-				sharedLists[senderKey].ownerRealm = data.ownerRealm
 				sharedLists[senderKey].list[data.listName] = data.list
 				local count = 0
 				for _ in pairs(data.list) do
@@ -659,14 +650,12 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 				if(not Dialog:ActiveDialog("VanasKoSQuestionAdd")) then
 					Dialog:Spawn("VanasKoSQuestionAdd", {
 						prompt = format(L["Accept %d entries for list %s from %s?"], count, VanasKoSGUI:GetListName(data.listName), sender),
-						senderName = senderName,
-						senderRealm = senderRealm,
+						sender = sender,
 						listName = data.listName,
 					})
 				else
 					tinsert(sharedListQueue, {
-						senderName = senderName,
-						senderRealm = senderRealm,
+						sender = sender,
 						count = count,
 						listName = data.listName
 					})
@@ -680,7 +669,6 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 				sharedLists[senderKey] = {list = {}}
 			end
 			sharedLists[senderKey].ownerName = data.owner
-			sharedLists[senderKey].ownerRealm = data.ownerRealm
 			sharedLists[senderKey].list[data.listName] = data.list
 			local count = 0
 			for _ in pairs(data.list) do
@@ -695,8 +683,7 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 				})
 			else
 				tinsert(sharedListQueue, {
-					senderName = senderName,
-					senderRealm = senderName,
+					sender = sender,
 					count = count,
 					listName = data.listName
 				})
@@ -704,8 +691,8 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 		end
 	elseif(command == REQUEST_LIST) then
 		if (self.db.profile.SharePolicy == POLICY_ACCEPT_ALL
-			or (self.db.profile.SharePolicy == POLICY_ACCEPT and not self.db.faction.synchronizer.reject[sender])
-			or (self.db.profile.SharePolicy == POLICY_REJECT and self.db.faction.synchronizer.accept[sender])) then
+			or (self.db.profile.SharePolicy == POLICY_ACCEPT and not self.db.factionrealm.synchronizer.reject[sender])
+			or (self.db.profile.SharePolicy == POLICY_REJECT and self.db.factionrealm.synchronizer.accept[sender])) then
 			if(VANASKOS.DEBUG == 1) then
 				VanasKoS:Print(format("Granting request from %s for %s", sender, data.listName))
 			end
@@ -724,7 +711,7 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 	end
 end
 
-function VanasKoSSynchronizer:ProcessList(senderName, senderRealm, ownerName, ownerRealm, listName, receivedList)
+function VanasKoSSynchronizer:ProcessList(senderName, ownerName, listName, receivedList)
 	local synctime = time()
 	if(VANASKOS.DEBUG == 1) then
 		VanasKoS:Print(format("Processing list %s from %s (%s)", listName, senderName, ownerName))
@@ -754,11 +741,9 @@ function VanasKoSSynchronizer:ProcessList(senderName, senderRealm, ownerName, ow
 			end
 			if(v.ownerName == nil or v.ownerName == "") then
 				v.ownerName = senderName
-				v.ownerRealm = senderRealm
 			end
 			if(v.creator == nil or v.creator == "") then
 				v.creatorname = senderName
-				v.creatorrealm = senderRealm
 			end
 
 			if(destList[k]) then
@@ -766,14 +751,10 @@ function VanasKoSSynchronizer:ProcessList(senderName, senderRealm, ownerName, ow
 					VanasKoS:Print("      	Updating")
 				end
 				destList[k].name = v.name
-				destList[k].realm = v.realm
 				destList[k].reason = v.reason
 				destList[k].senderName = senderName
-				destList[k].senderRealm = senderRealm
 				destList[k].creatorname = v.creatorname
-				destList[k].creatorrealm = v.creatorrealm
 				destList[k].ownerName = ownerName
-				destList[k].ownerRealm = ownerRealm
 				destList[k].lastupdated = synctime
 			else
 				if(VANASKOS.DEBUG == 1) then
@@ -781,14 +762,10 @@ function VanasKoSSynchronizer:ProcessList(senderName, senderRealm, ownerName, ow
 				end
 				destList[k] = {
 					name = v.name,
-					realm = v.realm,
 					reason = v.reason,
 					senderName = senderName,
-					senderRealm = senderRealm,
 					creatorname = v.creatorname,
-					creatorrealm = v.creatorrealm,
 					ownerName = ownerName,
-					ownerRealm = ownerRealm,
 					lastupdated = synctime
 				}
 			end
@@ -798,9 +775,9 @@ function VanasKoSSynchronizer:ProcessList(senderName, senderRealm, ownerName, ow
 		end
 	end
 
-	-- delete old entries from this owner that weren't just synced
+	-- delete old entries from this owner that werent just synced
 	for k, v in pairs(destList) do
-		if(v.ownerName == ownerName and v.ownerRealm == ownerRealm and v.lastupdated ~= synctime) then
+		if(v.ownerName == ownerName and v.lastupdated ~= synctime) then
 			if(VANASKOS.DEBUG == 1) then
 				VanasKoS:Print("    Removing old entry")
 			end
@@ -811,8 +788,8 @@ function VanasKoSSynchronizer:ProcessList(senderName, senderRealm, ownerName, ow
 	VanasKoSGUI:Update()
 end
 
-function VanasKoSSynchronizer:ProcessQueuedPlayerList(senderName, senderRealm, listName)
-	local senderKey = hashName(senderName, senderRealm)
+function VanasKoSSynchronizer:ProcessQueuedPlayerList(senderName, listName)
+	local senderKey = senderName
 	if (sharedLists[senderKey] == nil) then
 		return
 	end
@@ -822,12 +799,11 @@ function VanasKoSSynchronizer:ProcessQueuedPlayerList(senderName, senderRealm, l
 	end
 
 	local ownerName = sharedLists[senderKey].ownerName
-	local ownerRealm = sharedLists[senderKey].ownerRealm
-	self:ProcessList(senderName, senderKey, ownerName, ownerRealm, listName, sharedLists[senderKey].list[listName])
+	self:ProcessList(senderName, senderKey, ownerName, listName, sharedLists[senderKey].list[listName])
 end
 
-function VanasKoSSynchronizer:ClearQueuedPlayerList(senderName, senderRealm, listName)
-	local senderKey = hashName(senderName, senderRealm)
+function VanasKoSSynchronizer:ClearQueuedPlayerList(senderName, listName)
+	local senderKey = senderName
 	if (sharedLists[senderKey] == nil) then
 		return
 	end
@@ -839,15 +815,13 @@ function VanasKoSSynchronizer:ClearQueuedPlayerList(senderName, senderRealm, lis
 
 	if(#sharedListQueue > 0) then
 		local senderName = sharedListQueue[1].senderName
-		local senderRealm = sharedListQueue[1].senderRealm
 		local listName = sharedListQueue[1].listName
 		local count = sharedListQueue[1].count
 		tremove(sharedListQueue, 1)
 		Dialog:Spawn("VanasKoSQuestionAdd", {
 			prompt = format(L["Accept %d entries for list %s from %s?"],
-				count, VanasKoSGUI:GetListName(listName), senderRealm),
+				count, VanasKoSGUI:GetListName(listName), senderName),
 			senderName = senderName,
-			senderRealm = senderRealm,
 			listName = listName,
 		})
 	end
@@ -920,24 +894,24 @@ end
 
 function VanasKoSSynchronizer:GetList(list)
 	if (list == "PLAYERSYNC") then
-		return self.db.faction.synchronizer.share
+		return self.db.factionrealm.synchronizer.share
 	elseif (list == "ACCEPTSYNC") then
-		return self.db.faction.synchronizer.accept
+		return self.db.factionrealm.synchronizer.accept
 	elseif (list == "REJECTSYNC") then
-		return self.db.faction.synchronizer.reject
+		return self.db.factionrealm.synchronizer.reject
 	end
 	return nil
 end
 
 function VanasKoSSynchronizer:AddEntry(list, key, data)
 	if (list == "PLAYERSYNC") then
-		if (self.db.faction.synchronizer.share[key] == nil) then
-			self.db.faction.synchronizer.share[key] = {}
+		if (self.db.factionrealm.synchronizer.share[key] == nil) then
+			self.db.factionrealm.synchronizer.share[key] = {}
 		end
 	elseif (list == "ACCEPTSYNC") then
-		self.db.faction.synchronizer.accept[key] = true
+		self.db.factionrealm.synchronizer.accept[key] = true
 	elseif (list == "REJECTSYNC") then
-		self.db.faction.synchronizer.reject[key] = true
+		self.db.factionrealm.synchronizer.reject[key] = true
 	end
 	self:SendMessage("VanasKoS_List_Entry_Added", list, key, data)
 end

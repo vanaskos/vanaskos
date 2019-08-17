@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
 	TargetPortraitContextMenu Module - Part of VanasKoS
 modifies the TargetPortrait to add context menu options for adding targets to lists
 ------------------------------------------------------------------------]]
@@ -12,16 +12,11 @@ local format = format
 local strgsub = string.gsub
 local assert = assert
 local UnitName = UnitName
-local GetRealmName = GetRealmName
-local splitNameRealm = VanasKoS.splitNameRealm
-local hashName = VanasKoS.hashName
-local hashGuild = VanasKoS.hashGuild
 
 -- Local Variables
 local VanasKoSTargetPopupButtons = {}
 local VanasKoSTargetPopupMenu = {}
 local defaultLists = {"PLAYERKOS", "GUILDKOS", "HATELIST", "NICELIST"}
-local myRealm
 
 function VanasKoSPortraitContextMenu:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("PortraitContextMenu", {
@@ -32,7 +27,6 @@ function VanasKoSPortraitContextMenu:OnInitialize()
 
 	VanasKoSGUI:AddModuleToggle("PortraitContextMenu", L["Context Menu"])
 	self:SetEnabledState(self.db.profile.Enabled)
-	myRealm = GetRealmName()
 end
 
 function VanasKoSPortraitContextMenu:OnEnable()
@@ -55,7 +49,7 @@ function VanasKoSPortraitContextMenu:OnDisable()
 	self:Unhook("UnitPopup_ShowMenu")
 end
 
-function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, unit, fullName, userData)
+function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, unit, name, userData)
 	-- hack from fyrye to enable context menu for Pitbull4
 	which = strgsub(which, "PB4_", "")
 
@@ -70,14 +64,10 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 
 	local info = UIDropDownMenu_CreateInfo()
 
-	local name, realm = splitNameRealm(fullName)
 	local guild
 	if(unit) then
-		name, realm = UnitName(unit)
+		name = UnitName(unit)
 		guild = GetGuildInfo(unit)
-	end
-	if(realm == nil or realm == "") then
-		realm = myRealm
 	end
 	UIDropDownMenu_AddSeparator(1)
 	info.text = L["Vanas|cffff0000KoS|r"]
@@ -97,7 +87,6 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 		info.arg1 = {
 			button = value,
 			name = name,
-			realm = realm,
 			guild = guild
 		}
 		UIDropDownMenu_AddButton(info)
@@ -108,20 +97,19 @@ function VanasKoSPortraitContextMenu_UnitPopup_OnClick(self, info)
 	assert(info)
 	assert(info.button)
 	assert(info.name)
-	assert(info.realm)
 
 	if(info.button == "VANASKOS_ADD_PLAYERKOS") then
-		VanasKoS:AddEntryByName("PLAYERKOS", info.name, info.realm)
+		VanasKoS:AddEntryByName("PLAYERKOS", info.name)
 	elseif(info.button == "VANASKOS_ADD_GUILDKOS") then
-		VanasKoS:AddEntryByName("GUILDKOS", info.guild, info.realm)
+		VanasKoS:AddEntryByName("GUILDKOS", info.guild)
 	elseif(info.button == "VANASKOS_ADD_HATELIST") then
-		VanasKoS:AddEntryByName("HATELIST", info.name, info.realm)
+		VanasKoS:AddEntryByName("HATELIST", info.name)
 	elseif(info.button == "VANASKOS_ADD_NICELIST") then
-		VanasKoS:AddEntryByName("NICELIST", info.name, info.realm)
+		VanasKoS:AddEntryByName("NICELIST", info.name)
 	elseif(info.button == "VANASKOS_LOOKUP") then
-		local data, list = VanasKoS:IsOnList(nil, hashName(info.name, info.realm))
+		local data, list = VanasKoS:IsOnList(nil, info.name)
 		if not data and info.guild then
-			data, list = VanasKoS:IsOnList(nil, hashGuild(info.guild, info.realm))
+			data, list = VanasKoS:IsOnList(nil, info.guild)
 		end
 		if list then
 			VanasKoS:Print(format(L["Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r"],

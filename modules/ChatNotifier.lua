@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
 	ChatNotifier Module - Part of VanasKoS
 modifies the ChatMessage if a player speaks whom is on your hatelist
 ------------------------------------------------------------------------]]
@@ -12,8 +12,6 @@ local select = select
 local assert = assert
 local getglobal = getglobal
 local setglobal = setglobal
-local hashName = VanasKoS.hashName
-local splitNameRealm = VanasKoS.splitNameRealm
 local UIDropDownMenu_CreateInfo = UIDropDownMenu_CreateInfo
 local UIDropDownMenu_AddButton = UIDropDownMenu_AddButton
 
@@ -140,8 +138,8 @@ function VanasKoSChatNotifier:ChatFrame_OnEvent(frame, event, ...)
 
 	-- tnx to tastethenaimbow for the idea on how to do it
 	if(channelWatchList[event] and arg2 ~= nil and arg2 ~= "") then
-		local name, realm = splitNameRealm(arg2)
-		local key = hashName(name, realm)
+		local name = arg2
+		local key = name
 
 		local listColor
 		local listName

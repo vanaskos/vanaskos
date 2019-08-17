@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       CommandLineHandler Module - Part of VanasKoS
 		Handles the CommandLine
 ------------------------------------------------------------------------]]
@@ -21,7 +21,6 @@ local function kaddRetrieveArgs(args)
 	local cmd
 	local fullname
 	local name = nil
-	local realm = nil
 	local reason = nil
 	local guild
 	local isGuild = nil
@@ -42,9 +41,9 @@ local function kaddRetrieveArgs(args)
 		reason = strsub(args, next_pos)
 	end
 
-	name, realm = strmatch(fullname, "^([^<>-]+)%-*(.*)$")
+	name = strmatch(fullname, "^([^<>-]+)")
 	if not name then
-		guild, realm = strmatch(fullname, "^<([^>]+)>%-*(.*)$")
+		guild = strmatch(fullname, "^<([^>]+)>")
 	end
 
 	if (guild) then
@@ -52,7 +51,7 @@ local function kaddRetrieveArgs(args)
 		isGuild = true
 	end
 
-	return cmd, name, realm, reason, isGuild
+	return cmd, name, reason, isGuild
 end
 
 local function printKaddUsage(name)
@@ -65,7 +64,7 @@ end
 function VanasKoSCommandLineHandler:KoSAdd(arg0, args)
 	local listName
 
-	local cmd, name, realm, reason, isGuild = kaddRetrieveArgs(args)
+	local cmd, name, reason, isGuild = kaddRetrieveArgs(args)
 
 	if (cmd == "help" or cmd == "?") then
 		VanasKoS:Print(L["KADD_DESC"])
@@ -94,7 +93,7 @@ function VanasKoSCommandLineHandler:KoSAdd(arg0, args)
 	if(not name) then
 		VanasKoS:AddEntryFromTarget(listName, nil)
 	else
-		VanasKoS:AddEntryByName(listName, name, realm, reason)
+		VanasKoS:AddEntryByName(listName, name, reason)
 	end
 end
 

@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       WarnFrame Module - Part of VanasKoS
 Creates the WarnFrame to alert of nearby KoS, Hostile and Friendly
 ------------------------------------------------------------------------]]
@@ -20,7 +20,6 @@ local time = time
 local tonumber = tonumber
 local tostring = tostring
 local GetZoneText = GetZoneText
-local hashName = VanasKoS.hashName
 
 -- Constants
 local WARN_BUTTONS_MAX = 40
@@ -149,9 +148,9 @@ local function ShowTooltip(self, buttonNr)
 	for k,v in pairs(listsToCheck) do
 		local key
 		if(k == "GUILDKOS") then
-			key = data.guild and hashGuild(data.guild, data.realm) or nil
+			key = data.guild or nil
 		else
-			key = hashName(data.name, data.realm)
+			key = data.name
 		end
 		local listData = key and VanasKoS:IsOnList(k, key) or nil
 		if(listData) then
@@ -1230,8 +1229,6 @@ function VanasKoSWarnFrame:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_DEAD")
 	self:RegisterEvent("UNIT_FACTION")
-	self:RegisterEvent("HONOR_LEVEL_UPDATE")
-	self:RegisterEvent("WAR_MODE_STATUS_UPDATE")
 
 	self:ZoneChanged()
 end
@@ -1279,14 +1276,6 @@ function VanasKoSWarnFrame:UNIT_FACTION(...)
 	if unit == "player" then
 		self:Update()
 	end
-end
-
-function VanasKoSWarnFrame:HONOR_LEVEL_UPDATE()
-	self:Update()
-end
-
-function VanasKoSWarnFrame:WAR_MODE_STATUS_UPDATE()
-	self:Update()
 end
 
 local function RemovePlayer(key)
@@ -1345,7 +1334,7 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 
 	assert(data.name ~= nil)
 
-	local key = hashName(data.name, data.realm)
+	local key = data.name
 	local faction = data.faction
 	if data.list == "PLAYERKOS" or data.list == "GUILDKOS" then
 		faction = "kos"
@@ -1379,7 +1368,6 @@ function VanasKoSWarnFrame:Player_Detected(message, data)
 		dataCache[key] = {}
 	end
 	dataCache[key].name = data.name
-	dataCache[key].realm = data.realm
 	dataCache[key].guild = data.guild
 	dataCache[key].guildrank = data.guildrank
 	dataCache[key].class = data.class
@@ -1430,7 +1418,6 @@ end
 
 local function GetButtonText(key, data)
 	assert(data.name)
-	assert(data.realm)
 	local result = data.name
 
 	if(VanasKoSWarnFrame.db.profile.ShowTargetLevel) then
@@ -1514,11 +1501,9 @@ local function SetButton(buttonNr, key, faction, data)
 			macroText = macroText:gsub("${guildRank}", (data and data.guildRank) or "")
 			macroText = macroText:gsub("${level}", (data and data.level) or "")
 			macroText = macroText:gsub("${shortname}", data.name)
-			macroText = macroText:gsub("${realm}", data.realm)
 			macroText = macroText:gsub("${name}", key)
 			macroText = macroText:gsub("${gender}", (data and data.gender) or "")
 			macroText = macroText:gsub("${genderText}", data and (data.gender == 2 and L["male"]) or (data.gender == 3 and L["female"]) or "")
-			macroText = macroText:gsub("${realm}", (data and data.realm) or "")
 			macroText = macroText:gsub("${zoneX}", zx and floor(zx * 100 + 0.5) or "")
 			macroText = macroText:gsub("${zoneY}", zy and floor(zy * 100 + 0.5) or "")
 			macroText = macroText:gsub("${zone}", GetZoneText())

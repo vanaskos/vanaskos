@@ -8,7 +8,6 @@ ${level} => level (*)
 ${name} => name
 ${gender} => gender (this is a number, check the wow api) (*)
 ${genderText} => localized gender string (*)
-${realm} => realm (*)
 ${zoneX} => player coordinate at time of detection
 ${zoneY} => player coordinate at time of detection
 ${zone} => player zone at time of detection
@@ -24,7 +23,7 @@ Right-click: if hostile casts the spell "Hunter's Mark"
 
 Macro Text:
 /targetexact [button:1] ${name}
-/run if SecureCmdOptionParse("[mod:ctrl, harm]") then SendChatMessage(format("Detected %s%s%s%s%s%s%s in %s at (%d,%d)", "${name}", ("${realm}" ~= "") and "- ${realm}" or "", ("${guild}" ~= "") and " <${guild}>" or "", ("${level}" ~= "") and " Level ${level}" or "", ("${genderText}" ~= "") and " ${genderText}" or "", ("${race}" ~= "") and " ${race}" or "", ("${class}" ~= "") and " ${class}" or "", "${zone}", ${zoneX}, ${zoneY}), "WHISPER", nil, GetUnitName("player")) end
+/run if SecureCmdOptionParse("[mod:ctrl, harm]") then SendChatMessage(format("Detected %s%s%s%s%s%s%s in %s at (%d,%d)", "${name}", ("${guild}" ~= "") and " <${guild}>" or "", ("${level}" ~= "") and " Level ${level}" or "", ("${genderText}" ~= "") and " ${genderText}" or "", ("${race}" ~= "") and " ${race}" or "", ("${class}" ~= "") and " ${class}" or "", "${zone}", ${zoneX}, ${zoneY}), "WHISPER", nil, GetUnitName("player")) end
 /run if SecureCmdOptionParse("[mod:ctrl, help]") then SendWho("${name}") end
 /targetlasttarget [help]
 /cast [harm,button:2] Hunter's Mark

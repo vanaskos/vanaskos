@@ -1,9 +1,10 @@
 Release Changelog for VanasKoS
 
-latest:
+5.03:
 - Update toc, and libraries for 8.2
 - Fix for last attackers being cleared on death
 - Fix pvp stats not updating on win/loss
+- Some small bug fixes
 
 5.00:
 - Fix importer error for unknown areas

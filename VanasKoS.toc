@@ -2,7 +2,7 @@
 ## Title: Vanas|cffff0000KoS|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS
-## Version: 5.00-@project-revision@
+## Version: 5.03-@project-revision@
 ## Notes: KoS-Management Tool
 ## Notes-deDE: KoS-Management
 ## Notes-esES: Herramienta de gestión de KoS (Matar al Ver)

@@ -149,7 +149,7 @@ local function ShowTooltip(self, buttonNr)
 	for k,v in pairs(listsToCheck) do
 		local key
 		if(k == "GUILDKOS") then
-			key = data.guild or nil
+			key = data.guild and hashGuild(data.guild, data.realm) or nil
 		else
 			key = hashName(data.name, data.realm)
 		end

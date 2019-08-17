@@ -627,7 +627,7 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 	local senderKey = hashName(senderName, senderRealm)
 	if(command == SHARE_LIST) then
 		if (distribution == "GUILD") then
-			self:ProcessList(senderName, senderRealm, data.owner, data.owenRelam, data.listName, data.list)
+			self:ProcessList(senderName, senderRealm, data.owner, data.ownerRealm, data.listName, data.list)
 		elseif (distribution == "WHISPER") then
 			if (requestedLists[data.listName] == nil) then
 				if(VANASKOS.DEBUG == 1) then
@@ -798,7 +798,7 @@ function VanasKoSSynchronizer:ProcessList(senderName, senderRealm, ownerName, ow
 		end
 	end
 
-	-- delete old entries from this owner that werent just synced
+	-- delete old entries from this owner that weren't just synced
 	for k, v in pairs(destList) do
 		if(v.ownerName == ownerName and v.ownerRealm == ownerRealm and v.lastupdated ~= synctime) then
 			if(VANASKOS.DEBUG == 1) then

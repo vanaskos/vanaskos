@@ -21,6 +21,7 @@ local tonumber = tonumber
 local tostring = tostring
 local GetZoneText = GetZoneText
 local hashName = VanasKoS.hashName
+local hashGuild = VanasKoS.hashGuild
 
 -- Constants
 local WARN_BUTTONS_MAX = 40
@@ -48,7 +49,6 @@ local buttonData = nil
 
 local timer = nil
 local currentButtonCount = 0
-local CursorPosition = CursorPosition
 local InCombatLockdown = InCombatLockdown
 local playerDetectEventEnabled = false
 

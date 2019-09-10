@@ -1,3 +1,5 @@
+local hashName = VanasKoS.hashName
+
 -- /script VanasKoSAddOldTestData()
 -- For testing importer
 function VanasKoSAddOldTestData()

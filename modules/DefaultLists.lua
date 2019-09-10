@@ -355,6 +355,7 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 		end
 	elseif(list == "GUILDKOS") then
 		local displayname = "<" .. value.name .. ">"
+		local owner = ""
 		if(value.owner ~= nil and value.owner ~= "") then
 			owner = value.owner
 			displayname = "|cffff7700" .. displayname .. "|r"

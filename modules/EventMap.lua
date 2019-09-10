@@ -58,7 +58,7 @@ function VanasKoSEventMap:RemoveAllData()
 	wipe(self.PinGrid)
 	self.PinUsed = 0
 	self:CancelAllTimers()
-	self.lastMapID = mapID
+	self.lastMapID = nil
 end
 
 function VanasKoSEventMap:RefreshAllData(fromOnShow)

@@ -187,7 +187,6 @@ function VanasKoS:OnEnable()
 end
 
 function VanasKoS:OnDisable()
-	VanasKoS_WarnFrame:Hide()
 	self:UnregisterAllMessages()
 	self:UnregisterAllEvents()
 end

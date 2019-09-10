@@ -678,7 +678,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, realm, guid, faction, spellI
 		level = level .. "+"
 	end
 	gatheredData.guild = playerDataList[key] and playerDataList[key].guild
-	local guildkey = gatheredData.guild and hashGuild(gatheredData.guild, gatheredData.realm) or nil
+	local guildKey = gatheredData.guild and hashGuild(gatheredData.guild, gatheredData.realm) or nil
 	gatheredData.list = select(2, VanasKoS:IsOnList(nil, key)) or (guildKey and select(2, VanasKoS:IsOnList(nil, guildKey)))
 	gatheredData.level = level
 	-- print("spellid", spellId, "level", gatheredData.level, "english", classEnglish)

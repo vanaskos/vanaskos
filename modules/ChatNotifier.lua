@@ -174,7 +174,7 @@ function VanasKoSChatNotifier:ChatFrame_OnEvent(frame, event, ...)
 
 			local originalText = getglobal(channelWatchList[event])
 			setglobal(channelWatchList[event], originalText:gsub("%%s", "%%s|cff" .. listColor .. "(" .. listName .. ")|r"))
-			ret = self.hooks["ChatFrame_OnEvent"](frame, event, ...)
+			local ret = self.hooks["ChatFrame_OnEvent"](frame, event, ...)
 			setglobal(channelWatchList[event], originalText)
 			return ret
 		end

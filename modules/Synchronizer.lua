@@ -364,7 +364,7 @@ end
 local function GetSerializedString(command, listName, list)
 	if (command == SHARE_LIST) then
 		local data = {
-			["owner"] = VanasKoSSynchronizer.db.faction.synchronizer.mainchar,
+			["owner"] = VanasKoSSynchronizer.db.factionrealm.synchronizer.mainchar,
 			["listName"] = listName,
 			["list"] = list,
 			["version"] = 1,

@@ -4,7 +4,9 @@ Displays PvP Events on World Map
 ------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/EventMap", false)
-VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 Mixin(VanasKoSEventMap, MapCanvasDataProviderMixin)
 
 -- Global wow strings
@@ -58,7 +60,7 @@ function VanasKoSEventMap:RemoveAllData()
 	wipe(self.PinGrid)
 	self.PinUsed = 0
 	self:CancelAllTimers()
-	self.lastMapID = nil
+	self.lastMapID = -1
 end
 
 function VanasKoSEventMap:RefreshAllData(fromOnShow)

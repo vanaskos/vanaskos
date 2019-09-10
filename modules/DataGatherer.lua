@@ -5,6 +5,8 @@ Handles all external Player Data from Chat and Target Changes/Mouseovers
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DataGatherer", false)
 local LevelGuess = LibStub("LibLevelGuess-1.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
 VanasKoSDataGatherer = VanasKoS:NewModule("DataGatherer", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Declare some common global functions local
@@ -34,7 +36,6 @@ local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local splitNameRealm = VanasKoS.splitNameRealm
 local hashName = VanasKoS.hashName
 local hashGuild = VanasKoS.hashGuild
-local VanasKoSDataGatherer = VanasKoSDataGatherer
 
 -- Local Variables
 local myName = nil

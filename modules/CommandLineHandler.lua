@@ -4,7 +4,9 @@
 ------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/CommandLineHandler", false)
-VanasKoSCommandLineHandler = VanasKoS:NewModule("CommandLineHandler")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSCommandLineHandler = VanasKoS:NewModule("CommandLineHandler")
 
 -- declare common globals local
 local strmatch = strmatch

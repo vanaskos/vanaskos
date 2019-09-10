@@ -3,8 +3,10 @@
 Handles import of other AddOns KoS Data
 ------------------------------------------------------------------------]]
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/Importer", false);
-
-VanasKoSImporter = VanasKoS:NewModule("Importer", "AceEvent-3.0");
+local VanasKoSDB = VanasKoSDB
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSImporter = VanasKoS:NewModule("Importer", "AceEvent-3.0");
 
 local hashName = VanasKoS.hashName
 local hashGuild = VanasKoS.hashGuild

@@ -5,7 +5,9 @@ Creates the WarnFrame to alert of nearby KoS, Hostile and Friendly
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/WarnFrame", false)
 local SML = LibStub("LibSharedMedia-3.0")
-VanasKoSWarnFrame = VanasKoS:NewModule("WarnFrame", "AceEvent-3.0", "AceTimer-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSWarnFrame = VanasKoS:NewModule("WarnFrame", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Global wow strings
 local LEVEL = LEVEL
@@ -221,7 +223,7 @@ local function SetProperties(self, profile)
 	self:SetHeight(profile.WARN_BUTTONS * profile.WARN_BUTTON_HEIGHT +
 			    profile.WARN_FRAME_HEIGHT_PADDING * 2 + 1)
 	if(profile.WARN_FRAME_POINT) then
-		VanasKoS_WarnFrame:ClearAllPoints()
+		warnFrame:ClearAllPoints()
 		self:SetPoint(profile.WARN_FRAME_POINT,
 					"UIParent",
 					profile.WARN_FRAME_ANCHOR,
@@ -232,14 +234,14 @@ local function SetProperties(self, profile)
 	end
 
 	if(profile.WarnFrameBorder) then
-		VanasKoS_WarnFrame:SetBackdrop( {
+		warnFrame:SetBackdrop( {
 			bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
 					insets = { left = 5, right = 4, top = 5, bottom = 5 },
 		})
 		self:EnableMouse(true)
 	else
-		VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil})
+		warnFrame:SetBackdrop({bgfile = nil, edgeFile = nil})
 		self:EnableMouse(false)
 	end
 
@@ -276,6 +278,7 @@ local function CreateWarnFrame()
 		VanasKoSWarnFrame.db.profile.WARN_FRAME_XOFF = xOff
 		VanasKoSWarnFrame.db.profile.WARN_FRAME_YOFF = yOff
 	end)
+	VanasKoSWarnFrame.frame = warnFrame
 end
 
 local classIconNameToCoords = CLASS_ICON_TCOORDS
@@ -536,14 +539,14 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 				set = function(frame, v)
 					VanasKoSWarnFrame.db.profile.WarnFrameBorder = v
 					if (v == true) then
-						VanasKoS_WarnFrame:SetBackdrop( {
+						warnFrame:SetBackdrop( {
 							bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
 							edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16,
 							insets = { left = 5, right = 4, top = 5, bottom = 5 },
 						})
 						warnFrame:EnableMouse(true)
 					else
-						VanasKoS_WarnFrame:SetBackdrop({bgfile = nil, edgeFile = nil})
+						warnFrame:SetBackdrop({bgfile = nil, edgeFile = nil})
 						warnFrame:EnableMouse(false)
 					end
 					VanasKoSWarnFrame:Update()
@@ -571,8 +574,8 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 				desc= L["Reset Position"],
 				order = 7,
 				func = function()
-					VanasKoS_WarnFrame:ClearAllPoints()
-					VanasKoS_WarnFrame:SetPoint("CENTER")
+					warnFrame:ClearAllPoints()
+					warnFrame:SetPoint("CENTER")
 					VanasKoSWarnFrame.db.profile.WARN_FRAME_POINT = nil
 					VanasKoSWarnFrame.db.profile.WARN_FRAME_ANCHOR = nil
 					VanasKoSWarnFrame.db.profile.WARN_FRAME_XOFF = nil

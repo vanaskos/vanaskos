@@ -5,7 +5,9 @@ Handles list sychronization through chat (whisper, guild, party)
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/Synchronizer", false)
 local Dialog = LibStub("LibDialog-1.0")
-VanasKoSSynchronizer = VanasKoS:NewModule("Synchronizer", "AceComm-3.0", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceSerializer-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSSynchronizer = VanasKoS:NewModule("Synchronizer", "AceComm-3.0", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceSerializer-3.0")
 
 -- Global wow strings
 local NAME, GUILD, ERR_CHAT_PLAYER_NOT_FOUND_S = NAME, GUILD, ERR_CHAT_PLAYER_NOT_FOUND_S
@@ -898,15 +900,15 @@ end
 
 function VanasKoSSynchronizer:ShowList(list)
 	if (list == "PLAYERSYNC" or list == "ACCEPTSYNC" or list == "REJECTSYNC") then
-		VanasKoSListFrameChangeButton:Disable()
-		VanasKoSListFrameAddButton:Enable()
-		VanasKoSListFrameRemoveButton:Enable()
+		VanasKoSGUI.listFrame.changeButton:Disable()
+		VanasKoSGUI.listFrame.addButton:Enable()
+		VanasKoSGUI.listFrame.removeButton:Enable()
 	end
 end
 
 function VanasKoSSynchronizer:HideList(list)
 	if (list == "PLAYERSYNC" or list == "ACCEPTSYNC" or list == "REJECTSYNC") then
-		VanasKoSListFrameChangeButton:Enable()
+		VanasKoSGUI.listFrame.changeButton:Enable()
 	end
 end
 

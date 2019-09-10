@@ -4,7 +4,9 @@ modifies the ChatMessage if a player speaks whom is on your hatelist
 ------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/ChatNotifier", false)
-VanasKoSChatNotifier = VanasKoS:NewModule("ChatNotifier", "AceHook-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSChatNotifier = VanasKoS:NewModule("ChatNotifier", "AceHook-3.0")
 
 -- declare common globals local
 local format = format

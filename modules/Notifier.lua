@@ -5,7 +5,9 @@ Notifies the user via Tooltip, Chat and Upper Area of a KoS/other List Target
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/Notifier", false)
 local SML = LibStub("LibSharedMedia-3.0")
-VanasKoSNotifier = VanasKoS:NewModule("Notifier", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSNotifier = VanasKoS:NewModule("Notifier", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 
 -- Declare some common global functions local
 local pairs = pairs

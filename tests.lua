@@ -1,8 +1,10 @@
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSDB = VanasKoSDB
 local hashName = VanasKoS.hashName
 
--- /script VanasKoSAddOldTestData()
+-- /script VanasKoS:AddOldTestData()
 -- For testing importer
-function VanasKoSAddOldTestData()
+function VanasKoS:AddOldTestData()
 	if not VanasKoSDB then
 		VanasKoSDB = {}
 	end
@@ -355,9 +357,9 @@ function VanasKoSAddOldTestData()
 	end
 end
 
--- /script VanasKoSPvPDataGatherer:AddTestData(100)
+-- /script VanasKoS:AddPvPTestData(100)
 -- For testing data gathering
-function VanasKoSAddPvPTestData(cnt)
+function VanasKoS:AddPvPTestData(cnt)
 	for i=1,cnt do
 		local name = "test" .. i
 		local realm = "some random realm"

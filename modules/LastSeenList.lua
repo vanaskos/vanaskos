@@ -4,7 +4,10 @@ Keeps track of recently seen players
 ------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/LastSeenList", false)
-VanasKoSLastSeenList = VanasKoS:NewModule("LastSeenList", "AceEvent-3.0", "AceTimer-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSDataGatherer = VanasKoS:GetModule("DataGatherer", false)
+local VanasKoSLastSeenList = VanasKoS:NewModule("LastSeenList", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Global wow strings
 local NAME = NAME
@@ -18,7 +21,6 @@ local time = time
 local wipe = wipe
 local SecondsToTime = SecondsToTime
 local GetCursorPosition = GetCursorPosition
-local VanasKoSLastSeenList = VanasKoSLastSeenList
 
 -- Constants
 local TXT_MAGENTA = "|cffff00ff"
@@ -258,18 +260,18 @@ end
 function VanasKoSLastSeenList:ShowList(list)
 	if(list == "LASTSEEN") then
 		--VanasKoSListFrameSyncButton:Disable()
-		VanasKoSListFrameChangeButton:Disable()
-		VanasKoSListFrameAddButton:Disable()
-		VanasKoSListFrameRemoveButton:Disable()
+		VanasKoSGUI.listFrame.changeButton:Disable()
+		VanasKoSGUI.listFrame.addButton:Disable()
+		VanasKoSGUI.listFrame.removeButton:Disable()
 	end
 end
 
 function VanasKoSLastSeenList:HideList(list)
 	if(list == "LASTSEEN") then
 		--VanasKoSListFrameSyncButton:Enable()
-		VanasKoSListFrameChangeButton:Enable()
-		VanasKoSListFrameAddButton:Enable()
-		VanasKoSListFrameRemoveButton:Enable()
+		VanasKoSGUI.listFrame.changeButton:Enable()
+		VanasKoSGUI.listFrame.addButton:Enable()
+		VanasKoSGUI.listFrame.removeButton:Enable()
 	end
 end
 

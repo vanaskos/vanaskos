@@ -6,7 +6,10 @@ Creates a MinimapButton with a menu for VanasKoS
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/MinimapButton", false)
 local icon = LibStub("LibDBIcon-1.0")
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
-VanasKoSMinimapButton = VanasKoS:NewModule("MinimapButton", "AceEvent-3.0", "AceTimer-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSPvPDataGatherer = VanasKoS:GetModule("PvPDataGatherer", false)
+local VanasKoSMinimapButton = VanasKoS:NewModule("MinimapButton", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Declare some common global functions local
 local pairs = pairs
@@ -274,14 +277,15 @@ function VanasKoSMinimapButton:Player_Detected(message, data)
 		return
 	end
 
+	if data.list == "PLAYERKOS" or data.list == "GUILDKOS" then
+		data.faction = "kos"
+	end
+
 	local unitData = {
 		name = data.name,
 		faction = data.faction,
 		time = time()
 	}
-	if data.list == "PLAYERKOS" or data.list == "GUILDKOS" then
-		faction = "kos"
-	end
 
 	local key = data.name
 

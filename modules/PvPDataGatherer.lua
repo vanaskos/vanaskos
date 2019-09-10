@@ -4,7 +4,9 @@ Gathers PvP Wins and Losses
 ---------------------------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/PvPDataGatherer", false)
-VanasKoSPvPDataGatherer = VanasKoS:NewModule("PvPDataGatherer", "AceEvent-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSPvPDataGatherer = VanasKoS:NewModule("PvPDataGatherer", "AceEvent-3.0")
 
 -- Declare some common global functions local
 local time = time
@@ -16,7 +18,6 @@ local UnitLevel = UnitLevel
 local SetMapToCurrentZone = SetMapToCurrentZone
 local GetPlayerMapPosition = GetPlayerMapPosition
 local GetCurrentMapAreaID = GetCurrentMapAreaID
-local VanasKoSPvPDataGatherer = VanasKoSPvPDataGatherer
 
 -- Constants
 local EVENT_LIST = 1
@@ -395,17 +396,17 @@ end
 
 function VanasKoSPvPDataGatherer:ShowList(list, group)
 	if(list == "PVPLOG") then
-		VanasKoSListFrameChangeButton:Disable()
-		VanasKoSListFrameAddButton:Disable()
-		VanasKoSListFrameRemoveButton:Enable()
+		VanasKoSGUI.listFrame.changeButton:Disable()
+		VanasKoSGUI.listFrame.addButton:Disable()
+		VanasKoSGUI.listFrame.removeButton:Enable()
 	end
 end
 
 function VanasKoSPvPDataGatherer:HideList(list)
 	if(list == "PVPLOG") then
-		VanasKoSListFrameChangeButton:Enable()
-		VanasKoSListFrameAddButton:Enable()
-		VanasKoSListFrameRemoveButton:Enable()
+		VanasKoSGUI.listFrame.changeButton:Enable()
+		VanasKoSGUI.listFrame.addButton:Enable()
+		VanasKoSGUI.listFrame.removeButton:Enable()
 	end
 end
 

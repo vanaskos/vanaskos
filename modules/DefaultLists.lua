@@ -4,7 +4,9 @@ Handles the Default lists (KOS, GUILDKOS, HATE, NICE)
 ------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DefaultLists", false)
-VanasKoSDefaultLists = VanasKoS:NewModule("DefaultLists", "AceEvent-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSDefaultLists = VanasKoS:NewModule("DefaultLists", "AceEvent-3.0")
 
 -- Global wow strings and variables
 local NAME, GUILD, LEVEL_ABBR, CLASS, ZONE = NAME, GUILD, LEVEL_ABBR, CLASS, ZONE
@@ -353,11 +355,10 @@ function VanasKoSDefaultLists:RenderButton(list, buttonIndex, button, key, value
 	elseif(list == "GUILDKOS") then
 		local displayname = "<" .. value.name .. ">"
 		if(value.owner ~= nil and value.owner ~= "") then
-			owner = value.owner
 			displayname = "|cffff7700" .. displayname .. "|r"
 		end
 		buttonText1:SetText(displayname)
-		if(self.group == 1) then
+		if(not self.group or self.group == 1) then
 			buttonText2:SetText(value and value.reason or L["_Reason Unknown_"])
 			buttonText3:SetText("")
 			buttonText4:SetText(value.owner and value.owner or "")

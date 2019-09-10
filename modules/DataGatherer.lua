@@ -5,6 +5,8 @@ Handles all external Player Data from Chat and Target Changes/Mouseovers
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DataGatherer", false)
 local LevelGuess = LibStub("LibLevelGuess-1.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
 VanasKoSDataGatherer = VanasKoS:NewModule("DataGatherer", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Declare some common global functions local
@@ -30,7 +32,6 @@ local UnitLevel = UnitLevel
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local GetGuildInfo = GetGuildInfo
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
-local VanasKoSDataGatherer = VanasKoSDataGatherer
 
 -- Local Variables
 local myName = nil
@@ -583,7 +584,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, guid, faction, spellId)
 		level = level .. "+"
 	end
 	gatheredData.guild = playerDataList and playerDataList[key] and playerDataList[key].guild
-	local guildkey = gatheredData.guild
+	local guildKey = gatheredData.guild
 	gatheredData.list = select(2, VanasKoS:IsOnList(nil, key)) or (guildKey and select(2, VanasKoS:IsOnList(nil, guildKey)))
 	gatheredData.level = level
 	-- print("spellid", spellId, "level", gatheredData.level, "english", classEnglish)

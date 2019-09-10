@@ -6,7 +6,9 @@ Displays Stats about PvP in a window
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/PvPStats", false)
 local GUI = LibStub("AceGUI-3.0")
 local Graph = LibStub("LibGraph-2.0", true)
-VanasKoSPvPStats = VanasKoS:NewModule("PvPStats", "AceEvent-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSPvPStats = VanasKoS:NewModule("PvPStats", "AceEvent-3.0")
 
 -- Global wow strings
 local MALE, FEMALE, NAME, WIN, PVP, GUILD, CLASS, RACE, ZONE, CATEGORY, GENERAL = MALE, FEMALE, NAME, WIN, PVP, GUILD, CLASS, RACE, ZONE, CATEGORY, GENERAL
@@ -25,7 +27,6 @@ local time = time
 local format = format
 local GetMapNameByID = GetMapNameByID
 local GetCursorPosition = GetCursorPosition
-local VanasKoSPvPStats = VanasKoSPvPStats
 
 -- Constants
 local PLAYERS_LIST = 1
@@ -271,15 +272,15 @@ function VanasKoSPvPStats:ShowList(list, group)
 		if not group then
 			group = self.group
 		end
-		VanasKoSListFrameChangeButton:Disable()
-		VanasKoSListFrameAddButton:Disable()
+		VanasKoSGUI.listFrame.changeButton:Disable()
+		VanasKoSGUI.listFrame.addButton:Disable()
 		if (group == PLAYERS_LIST or group == DATE_LIST) then
-			VanasKoSListFrameRemoveButton:Enable()
+			VanasKoSGUI.listFrame.removeButton:Enable()
 		else
-			VanasKoSListFrameRemoveButton:Disable()
+			VanasKoSGUI.listFrame.removeButton:Disable()
 		end
-		VanasKoSPvPStatsCharacterDropDown.frame:Show()
-		VanasKoSPvPStatsTimeSpanDropDown.frame:Show()
+		VanasKoSPvPStats.characterDropDown.frame:Show()
+		VanasKoSPvPStats.timeSpanDropDown.frame:Show()
 		if Graph then
 			self.statPie:Show()
 		end
@@ -288,11 +289,12 @@ end
 
 function VanasKoSPvPStats:HideList(list)
 	if(list == "PVPSTATS") then
-		VanasKoSListFrameChangeButton:Enable()
-		VanasKoSListFrameAddButton:Enable()
-		VanasKoSListFrameRemoveButton:Enable()
-		VanasKoSPvPStatsCharacterDropDown.frame:Hide()
-		VanasKoSPvPStatsTimeSpanDropDown.frame:Hide()
+		VanasKoSGUI.listFrame.changeButton:Enable()
+		VanasKoSGUI.listFrame.addButton:Enable()
+		VanasKoSGUI.listFrame.removeButton:Enable()
+		VanasKoSPvPStats.characterDropDown.frame:Hide()
+		VanasKoSPvPStats.timeSpanDropDown.frame:Hide()
+		self.statPie:Hide()
 		if Graph then
 			self.statPie:Hide()
 		end
@@ -741,9 +743,9 @@ function VanasKoSPvPStats:ToggleLeftButtonOnClick(button, frame)
 		self.group = 1
 	end
 	if (self.group == PLAYERS_LIST or self.group == DATE_LIST or self.group == MAP_LIST) then
-		VanasKoSListFrameRemoveButton:Enable()
+		VanasKoSGUI.listFrame.removeButton:Enable()
 	else
-		VanasKoSListFrameRemoveButton:Disable()
+		VanasKoSGUI.listFrame.removeButton:Disable()
 	end
 	self:BuildList(self.group)
 	self:SetupColumns(list, self.group)
@@ -758,9 +760,9 @@ function VanasKoSPvPStats:ToggleRightButtonOnClick(button, frame)
 		self.group = MAX_LIST
 	end
 	if (self.group == PLAYERS_LIST or self.group == DATE_LIST or self.group == MAP_LIST) then
-		VanasKoSListFrameRemoveButton:Enable()
+		VanasKoSGUI.listFrame.removeButton:Enable()
 	else
-		VanasKoSListFrameRemoveButton:Disable()
+		VanasKoSGUI.listFrame.removeButton:Disable()
 	end
 	self:BuildList(self.group)
 	self:SetupColumns(list, self.group)
@@ -857,11 +859,11 @@ function VanasKoSPvPStats:OnEnable()
 	VanasKoSGUI:RegisterList("PVPSTATS", self)
 
 	local characterDropdown = GUI:Create("Dropdown")
-	VanasKoSPvPStatsCharacterDropDown = characterDropdown
-	characterDropdown.frame:SetParent(VanasKoSListFrame)
+	VanasKoSPvPStats.characterDropDown = characterDropdown
+	characterDropdown.frame:SetParent(VanasKoSGUI.listFrame)
 	characterDropdown:SetWidth(80)
 	characterDropdown:SetPulloutWidth(200)
-	characterDropdown:SetPoint("RIGHT", VanasKoSListFrameToggleLeftButton, "LEFT", -5, 0)
+	characterDropdown:SetPoint("RIGHT", VanasKoSGUI.listFrame.toggleLButton, "LEFT", -5, 0)
 
 	local CharacterChoices = {["ALLCHARS"] = L["All Characters"]}
 	local CharacterChoicesOrder = {}
@@ -891,9 +893,9 @@ function VanasKoSPvPStats:OnEnable()
 	characterDropdown:SetValue("ALLCHARS")
 
 	local timespanDropdown = GUI:Create("Dropdown")
-	VanasKoSPvPStatsTimeSpanDropDown = timespanDropdown
-	timespanDropdown.frame:SetParent(VanasKoSListFrame)
-	timespanDropdown:SetPoint("RIGHT", VanasKoSPvPStatsCharacterDropDown.frame, "LEFT", 0, 0)
+	VanasKoSPvPStats.timeSpanDropDown = timespanDropdown
+	timespanDropdown.frame:SetParent(VanasKoSGUI.listFrame)
+	timespanDropdown:SetPoint("RIGHT", VanasKoSPvPStats.characterDropDown.frame, "LEFT", 0, 0)
 	timespanDropdown:SetWidth(80)
 	timespanDropdown:SetPulloutWidth(200)
 	timespanDropdown:SetList({
@@ -912,7 +914,7 @@ function VanasKoSPvPStats:OnEnable()
 	timespanDropdown.frame:Hide()
 
 	if Graph then
-		self.statPie = Graph:CreateGraphPieChart("VanasKoS_PvP_StatPie", VanasKoSFrame, "LEFT", "RIGHT", 0, 0, 150, 150)
+		self.statPie = Graph:CreateGraphPieChart("VanasKoS_PvP_StatPie", VanasKoSGUI.frame, "LEFT", "RIGHT", 0, 0, 150, 150)
 
 		PieText1 = self.statPie:CreateFontString(nil, "ARTWORK")
 		PieText1:SetFontObject("GameFontNormal")

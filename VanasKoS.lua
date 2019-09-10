@@ -4,7 +4,8 @@ Main Object with database and basic list functionality, handles also Configurati
 ------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS", false)
-VanasKoS = LibStub("AceAddon-3.0"):NewAddon("VanasKoS", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):NewAddon("VanasKoS", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
+local VanasKoSGUI = nil -- loaded after initialization
 
 -- declare common globals local
 local pairs = pairs
@@ -24,7 +25,6 @@ local GetGuildInfo = GetGuildInfo
 local UnitName = UnitName
 local UnitFactionGroup = UnitFactionGroup
 local UnitIsPlayer = UnitIsPlayer
-local VanasKoS = VanasKoS
 
 -- Constants
 local CityMapIDs = {
@@ -88,6 +88,7 @@ function VanasKoS:OnInitialize()
 	local minusPos = strfind(versionString, "-") - 1
 	VANASKOS.VERSION = strsub(versionString, 0, minusPos)
 	self.db = LibStub("AceDB-3.0"):New("VanasKoSDB")
+	VanasKoSGUI = self:GetModule("GUI")
 end
 
 function VanasKoS:OnEnable()
@@ -100,7 +101,6 @@ function VanasKoS:OnEnable()
 end
 
 function VanasKoS:OnDisable()
-	VanasKoS_WarnFrame:Hide()
 	self:UnregisterAllMessages()
 	self:UnregisterAllEvents()
 end

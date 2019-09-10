@@ -5,7 +5,9 @@ Notifies the user via Tooltip, Chat and Upper Area of a KoS/other List Target
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/Notifier", false)
 local SML = LibStub("LibSharedMedia-3.0")
-VanasKoSNotifier = VanasKoS:NewModule("Notifier", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUI = VanasKoS:GetModule("GUI")
+local VanasKoSNotifier = VanasKoS:NewModule("Notifier", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 
 -- Declare some common global functions local
 local pairs = pairs
@@ -994,9 +996,9 @@ function VanasKoSNotifier:GetKoSString(name, guild, list_str, reason, creator, o
 	else
 		if(creator ~= nil and owner ~= nil) then
 			if(name == nil) then
-				msg = format("%s%s: %s", creator, lst_str, "")
+				msg = format("%s%s: %s", creator, list_str, "")
 			else
-				msg = format("%s%s: %s", creator, lst_str, name)
+				msg = format("%s%s: %s", creator, list_str, name)
 			end
 		else
 			if(name == nil) then
@@ -1170,10 +1172,9 @@ function VanasKoSNotifier:HatedPlayer_Detected(data)
 
 	local msg = self:GetKoSString(data.name, data and data.guild,
 		L["Hatelist"], pdata and pdata.reason, pdata and pdata.creator,
-		pdata and pdata.owner, gdata and gdata.reason,
-		gdata and gdata.creator, gdata and gdata.owner)
+		pdata and pdata.owner, nil, nil, nil)
 
-	if(self.db.profile.notifyOnlyMyTargets and ((pdata and pdata.owner ~= nil) or (gdata and gdata.owner ~= nil))) then
+	if(self.db.profile.notifyOnlyMyTargets and pdata and pdata.owner ~= nil) then
 		return
 	end
 
@@ -1211,10 +1212,9 @@ function VanasKoSNotifier:NicePlayer_Detected(data)
 
 	local msg = self:GetKoSString(data.name, data and data.guild,
 		L["Nicelist"], pdata and pdata.reason, pdata and pdata.creator,
-		pdata and pdata.owner, gdata and gdata.reason,
-		gdata and gdata.creator, gdata and gdata.owner)
+		pdata and pdata.owner, nil, nil, nil)
 
-	if(self.db.profile.notifyOnlyMyTargets and ((pdata and pdata.owner ~= nil) or (gdata and gdata.owner ~= nil))) then
+	if(self.db.profile.notifyOnlyMyTargets and pdata and pdata.owner ~= nil) then
 		return
 	end
 

@@ -1,6 +1,9 @@
--- /script VanasKoSPvPDataGatherer:AddTestData(100)
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSDB = VanasKoSDB
+
+-- /script VanasKoS:AddPvPTestData(100)
 -- For testing data gathering
-function VanasKoSAddPvPTestData(cnt)
+function VanasKoS:AddPvPTestData(cnt)
 	for i=1,cnt do
 		local name = "test" .. i
 		VanasKoS:SendMessage("VanasKoS_Player_Detected", {

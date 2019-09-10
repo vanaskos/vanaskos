@@ -5,10 +5,13 @@ GUI Creation code
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS")
 local GUI = LibStub("AceGUI-3.0")
-VanasKoSGUICreate = VanasKoS:NewModule("GUICreate")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
+local VanasKoSGUICreate = VanasKoS:NewModule("GUICreate")
+local VanasKoSGUI = nil -- loaded after initialization
 
 function VanasKoSGUICreate:OnInitialize()
-	self:CreateFrames();
+	VanasKoSGUI = VanasKoS:GetModule("GUI")
+	self:CreateFrames()
 end
 
 function VanasKoSGUICreate:OnEnable()
@@ -23,38 +26,38 @@ function VanasKoSGUICreate:CreateFrames()
 	self:CreateListFrame()
 	self:CreateAboutFrame()
 
-	VanasKoSFrame:Hide()
+	VanasKoSGUI.frame:Hide()
 end
 
 
 function VanasKoSGUICreate:CreateTabButtons()
-	local tabButton1 = CreateFrame("Button", "VanasKoSFrameTab1", VanasKoSFrame, "CharacterFrameTabButtonTemplate")
+	local tabButton1 = CreateFrame("Button", "VanasKoSFrameTab1", VanasKoSGUI.frame, "CharacterFrameTabButtonTemplate")
 	tabButton1:SetID(1)
-	tabButton1:SetPoint("BOTTOMLEFT", VanasKoSFrame, "BOTTOMLEFT", 11, 45)
+	tabButton1:SetPoint("BOTTOMLEFT", VanasKoSGUI.frame, "BOTTOMLEFT", 11, 45)
 	tabButton1:SetText(L["Lists"])
 	tabButton1:SetScript("OnClick", function(frame)
-		PanelTemplates_Tab_OnClick(frame, VanasKoSFrame)
+		PanelTemplates_Tab_OnClick(frame, VanasKoSGUI.frame)
 		VanasKoSGUI:Update()
 	end)
 
 
-	local tabButton2 = CreateFrame("Button", "VanasKoSFrameTab2", VanasKoSFrame, "CharacterFrameTabButtonTemplate")
+	local tabButton2 = CreateFrame("Button", "VanasKoSFrameTab2", VanasKoSGUI.frame, "CharacterFrameTabButtonTemplate")
 	tabButton2:SetID(2)
 	tabButton2:SetPoint("LEFT", tabButton1, "RIGHT", -14, 0)
 	tabButton2:SetText(L["About"])
 	tabButton2:SetScript("OnClick", function(frame)
-		PanelTemplates_Tab_OnClick(frame, VanasKoSFrame)
+		PanelTemplates_Tab_OnClick(frame, VanasKoSGUI.frame)
 		VanasKoSGUI:Update()
 	end)
 
-	PanelTemplates_SetNumTabs(VanasKoSFrame, 2)
-	VanasKoSFrame.selectedTab = 1
-	PanelTemplates_UpdateTabs(VanasKoSFrame);
+	PanelTemplates_SetNumTabs(VanasKoSGUI.frame, 2)
+	VanasKoSGUI.frame.selectedTab = 1
+	PanelTemplates_UpdateTabs(VanasKoSGUI.frame)
 end
 
 function VanasKoSGUICreate:CreateAboutFrame()
-	local aboutFrame = CreateFrame("Frame", "VanasKoSAboutFrame", VanasKoSFrame)
-	aboutFrame:SetAllPoints(VanasKoSFrame)
+	local aboutFrame = CreateFrame("Frame", "VanasKoSAboutFrame", VanasKoSGUI.frame)
+	aboutFrame:SetAllPoints(VanasKoSGUI.frame)
 
 	local htmlFrame = CreateFrame("SimpleHTML", "VanasKoSAboutFrameText", aboutFrame)
 	htmlFrame:SetPoint("TOPLEFT", aboutFrame, 26, -77)
@@ -64,7 +67,7 @@ function VanasKoSGUICreate:CreateAboutFrame()
 	htmlFrame:SetFontObject("h2", "GameFontNormal")
 	htmlFrame:SetFontObject("h3", "GameFontNormalSmall")
 
-	htmlFrame:SetScript("OnShow", function() VanasKoSGUICreate:UpdateAboutText(); end)
+	htmlFrame:SetScript("OnShow", function() VanasKoSGUICreate:UpdateAboutText() end)
 
 	self:UpdateAboutText()
 end
@@ -111,19 +114,20 @@ function VanasKoSGUICreate:UpdateAboutText()
 end
 
 function VanasKoSGUICreate:CreateListFrame()
-	local listFrame = CreateFrame("Frame", "VanasKoSListFrame", VanasKoSFrame)
-	listFrame:SetAllPoints(VanasKoSFrame)
+	local listFrame = CreateFrame("Frame", "VanasKoSListFrame", VanasKoSGUI.frame)
+	listFrame:SetAllPoints(VanasKoSGUI.frame)
+	VanasKoSGUI.listFrame = listFrame
 
 	local dropdown = GUI:Create("Dropdown")
-	dropdown.frame:SetParent(VanasKoSListFrame)
-	dropdown:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPLEFT", 72, -38)
+	dropdown.frame:SetParent(listFrame)
+	dropdown:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 72, -38)
 	dropdown:SetWidth(120)
 	dropdown:SetCallback("OnValueChanged", function(self)
 		VanasKoSGUI:ShowList(self:GetValue())
 	end)
-	VanasKoSFrameChooseListDropDown = dropdown
+	listFrame.chooseList = dropdown
 
-	local checkButton = CreateFrame("CheckButton", "VanasKoSListFrameCheckBox", VanasKoSListFrame, "UICheckButtonTemplate")
+	local checkButton = CreateFrame("CheckButton", "VanasKoSListFrameCheckBox", listFrame, "UICheckButtonTemplate")
 	local checkButtonText = checkButton:CreateFontString(checkButton:GetName() .. "Text", "BORDER")
 	checkButtonText:SetPoint("LEFT", checkButton, "RIGHT", 0, 0)
 	checkButton:SetFontString(checkButtonText)
@@ -132,16 +136,17 @@ function VanasKoSGUICreate:CreateListFrame()
 	checkButton:SetNormalFontObject("GameFontHighlightSmall")
 	checkButton:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 200, -44)
 
-	local addEntryButton = CreateFrame("Button", "VanasKoSListFrameAddButton", VanasKoSListFrame, "UIPanelButtonTemplate")
+	local addEntryButton = CreateFrame("Button", "VanasKoSListFrameAddButton", listFrame, "UIPanelButtonTemplate")
 	addEntryButton:SetWidth(110)
 	addEntryButton:SetHeight(22)
 	addEntryButton:SetText(L["Add Entry"])
-	addEntryButton:SetPoint("BOTTOMRIGHT", VanasKoSListFrame, "BOTTOMRIGHT", -40, 82)
+	addEntryButton:SetPoint("BOTTOMRIGHT", listFrame, "BOTTOMRIGHT", -40, 82)
 	addEntryButton:SetScript("OnClick", function()
-		VanasKoSGUI:AddEntry();
+		VanasKoSGUI:AddEntry()
 	end)
+	listFrame.addButton = addEntryButton
 
-	local removeEntryButton = CreateFrame("Button", "VanasKoSListFrameRemoveButton", VanasKoSListFrame, "UIPanelButtonTemplate")
+	local removeEntryButton = CreateFrame("Button", "VanasKoSListFrameRemoveButton", listFrame, "UIPanelButtonTemplate")
 	removeEntryButton:SetWidth(110)
 	removeEntryButton:SetHeight(22)
 	removeEntryButton:SetText(L["Remove Entry"])
@@ -149,8 +154,9 @@ function VanasKoSGUICreate:CreateListFrame()
 	removeEntryButton:SetScript("OnClick", function()
 		VanasKoSGUI:RemoveEntry()
 	end)
+	listFrame.removeButton = removeEntryButton
 
-	local changeEntryButton = CreateFrame("Button", "VanasKoSListFrameChangeButton", VanasKoSListFrame, "UIPanelButtonTemplate")
+	local changeEntryButton = CreateFrame("Button", "VanasKoSListFrameChangeButton", listFrame, "UIPanelButtonTemplate")
 	changeEntryButton:SetWidth(105)
 	changeEntryButton:SetHeight(22)
 	changeEntryButton:SetPoint("RIGHT", removeEntryButton, "LEFT", 0, 0)
@@ -158,17 +164,19 @@ function VanasKoSGUICreate:CreateListFrame()
 	changeEntryButton:SetScript("OnClick", function()
 		VanasKoSGUI:GUIShowChangeDialog()
 	end)
+	listFrame.changeButton = changeEntryButton
 
-	local configurationButton = CreateFrame("Button", "VanasKoSListFrameConfigurationButton", VanasKoSListFrame, "UIPanelButtonTemplate")
+	local configurationButton = CreateFrame("Button", "VanasKoSListFrameConfigurationButton", listFrame, "UIPanelButtonTemplate")
 	configurationButton:SetWidth(110)
 	configurationButton:SetHeight(22)
 	configurationButton:SetPoint("BOTTOM", addEntryButton, "TOP", 0, 0)
 	configurationButton:SetText(L["Configuration"])
+	listFrame.configurationButton = configurationButton
 
 	local colButton = {}
 	local colButtonName = "VanasKoSListFrameColButton"
 	for i=1,VANASKOS.MAX_LIST_COLS do
-		colButton[i] = CreateFrame("Button", colButtonName .. i, VanasKoSListFrame)
+		colButton[i] = CreateFrame("Button", colButtonName .. i, listFrame)
 		colButton[i]:SetWidth(10)
 		colButton[i]:SetHeight(24)
 		colButton[i]:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -211,7 +219,7 @@ function VanasKoSGUICreate:CreateListFrame()
 		colButton[i].revSortFunction = {}
 
 		if i == 1 then
-			colButton[i]:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPLEFT", 20, -70)
+			colButton[i]:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 20, -70)
 		else
 			colButton[i]:SetPoint("LEFT", colButton[i-1], "RIGHT", -2, 0)
 		end
@@ -220,7 +228,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	local listButton = {}
 	local listButtonName = "VanasKoSListFrameListButton"
 	for i=1,VANASKOS.MAX_LIST_BUTTONS do
-		listButton[i] = CreateFrame("Button", listButtonName .. i, VanasKoSListFrame)
+		listButton[i] = CreateFrame("Button", listButtonName .. i, listFrame)
 		listButton[i]:SetWidth(298)
 		listButton[i]:SetHeight(16)
 		listButton[i]:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -241,7 +249,7 @@ function VanasKoSGUICreate:CreateListFrame()
 		local listButtonText = CreateFrame("Frame", listButtonTextName, listButton[i])
 		listButtonText:SetAllPoints(listButton[i])
 		if i == 1 then
-			listButton[i]:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPLEFT", 15, -95)
+			listButton[i]:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 15, -95)
 		else
 			listButton[i]:SetPoint("TOPLEFT", listButton[i-1], "BOTTOMLEFT")
 		end
@@ -264,17 +272,18 @@ function VanasKoSGUICreate:CreateListFrame()
 	end
 
 --[[
-	VanasKoSListFrameSyncButton = CreateFrame("Button", "VanasKoSListFrameSyncButton", VanasKoSListFrame, "UIPanelButtonTemplate")
-	VanasKoSListFrameSyncButton:SetWidth(40)
-	VanasKoSListFrameSyncButton:SetHeight(17)
-	VanasKoSListFrameSyncButton:SetPoint("TOPRIGHT", listFrame, "TOPRIGHT", -44, -36)
-	VanasKoSListFrameSyncButton:SetText(L["sync"])
+	syncButton = CreateFrame("Button", "VanasKoSListFrameSyncButton", listFrame, "UIPanelButtonTemplate")
+	syncButton:SetWidth(40)
+	syncButton:SetHeight(17)
+	syncButton:SetPoint("TOPRIGHT", listFrame, "TOPRIGHT", -44, -36)
+	syncButton:SetText(L["sync"])
+	listFrame.syncButton = syncButton
 --]]
 
-	local toggleRButton = CreateFrame("Button", "VanasKoSListFrameToggleRightButton", VanasKoSListFrame)
+	local toggleRButton = CreateFrame("Button", "VanasKoSListFrameToggleRightButton", listFrame)
 	toggleRButton:SetWidth(20)
 	toggleRButton:SetHeight(20)
-	toggleRButton:SetPoint("BOTTOMRIGHT", VanasKoSListFrame, "BOTTOMRIGHT", -65, 126)
+	toggleRButton:SetPoint("BOTTOMRIGHT", listFrame, "BOTTOMRIGHT", -65, 126)
 	toggleRButton:SetScript("OnClick", function(self, button, down)
 		VanasKoSGUI:ToggleRightButton_OnClick(button, self)
 	end)
@@ -289,8 +298,9 @@ function VanasKoSGUICreate:CreateListFrame()
 	toggleRButtonText:SetJustifyH("MIDDLE")
 	toggleRButtonText:SetPoint("RIGHT", toggleRButton, "LEFT", 0, 0)
 	toggleRButton:SetFontString(toggleRButtonText)
+	listFrame.toggleRButton = toggleRButton
 
-	local toggleLButton = CreateFrame("Button", "VanasKoSListFrameToggleLeftButton", VanasKoSListFrame)
+	local toggleLButton = CreateFrame("Button", "VanasKoSListFrameToggleLeftButton", listFrame)
 	toggleLButton:SetWidth(20)
 	toggleLButton:SetHeight(20)
 	toggleLButton:SetPoint("RIGHT", toggleRButtonText, "LEFT", 0, 0)
@@ -301,8 +311,9 @@ function VanasKoSGUICreate:CreateListFrame()
 	toggleLButton:SetPushedTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Down")
 	toggleLButton:SetDisabledTexture("Interface\\Buttons\\UI-SpellbookIcon-PrevPage-Disabled")
 	toggleLButton:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
+	listFrame.toggleLButton = toggleLButton
 
-	local noToggleFrame = CreateFrame("Frame", "VanasKoSListFrameNoTogglePatch", VanasKoSListFrame)
+	local noToggleFrame = CreateFrame("Frame", "VanasKoSListFrameNoTogglePatch", listFrame)
 	noToggleFrame:SetWidth(256)
 	noToggleFrame:SetHeight(32)
 	noToggleFrame:SetPoint("BOTTOMLEFT", listFrame, "BOTTOMLEFT", 150, 117)
@@ -312,17 +323,19 @@ function VanasKoSGUICreate:CreateListFrame()
 	noToggleTexture:SetHeight(32)
 	noToggleTexture:SetPoint("TOPLEFT", noToggleFrame)
 	noToggleFrame:Hide()
+	listFrame.noToggle = noToggleFrame
 
-	local scrollFrame = CreateFrame("ScrollFrame", "VanasKoSListScrollFrame", VanasKoSListFrame, "FauxScrollFrameTemplate")
+	local scrollFrame = CreateFrame("ScrollFrame", "VanasKoSListScrollFrame", listFrame, "FauxScrollFrameTemplate")
 	scrollFrame:SetWidth(296)
 	scrollFrame:SetHeight(287)
 	scrollFrame:SetPoint("TOPRIGHT", listFrame, "TOPRIGHT", -67, -96)
 
-	local searchBox = CreateFrame("EditBox", "VanasKoSListFrameSearchBox", VanasKoSListFrame, "InputBoxTemplate")
+	local searchBox = CreateFrame("EditBox", "VanasKoSListFrameSearchBox", listFrame, "InputBoxTemplate")
 	searchBox:SetWidth(191)
 	searchBox:SetHeight(32)
 	searchBox:SetAutoFocus(false)
 	searchBox:SetPoint("BOTTOMLEFT", listFrame, "BOTTOMLEFT", 42, 100)
+	listFrame.searchBox = searchBox
 
 	local scrollBarTexture1 = scrollFrame:CreateTexture(nil, "ARTWORK")
 	scrollBarTexture1:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-ScrollBar")
@@ -344,8 +357,8 @@ function VanasKoSGUICreate:CreateListFrame()
 end
 
 function VanasKoSGUICreate:CreateMainFrameButtons()
-	local closeButton = CreateFrame("Button", "VanasKosFrameCloseButton", VanasKoSFrame, "UIPanelCloseButton")
-	closeButton:SetPoint("TOPRIGHT", VanasKoSFrame, -30, -8)
+	local closeButton = CreateFrame("Button", "VanasKoSFrameCloseButton", VanasKoSGUI.frame, "UIPanelCloseButton")
+	closeButton:SetPoint("TOPRIGHT", VanasKoSGUI.frame, -30, -8)
 end
 
 function VanasKoSGUICreate:CreateMainFrame()
@@ -360,6 +373,7 @@ function VanasKoSGUICreate:CreateMainFrame()
 	kosFrame:SetScript("OnShow", function()
 		VanasKoSGUI:Update()
 	end)
+	VanasKoSGUI.frame = kosFrame
 
 	local backgroundIconTexture = kosFrame:CreateTexture("VanasKoSFrame_BackgroundIcon", "BACKGROUND")
 	backgroundIconTexture:SetTexture("Interface\\FriendsFrame\\FriendsFrameScrollIcon")
@@ -372,29 +386,34 @@ function VanasKoSGUICreate:CreateMainFrame()
 	kosFrameTextureTopLeft:SetWidth(256)
 	kosFrameTextureTopLeft:SetHeight(256)
 	kosFrameTextureTopLeft:SetPoint("TOPLEFT")
+	kosFrame.texTL = kosFrameTextureTopLeft
 
 	local kosFrameTextureTopRight = kosFrame:CreateTexture("VanasKoSFrameTopRight", "ARTWORK")
 	kosFrameTextureTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight")
 	kosFrameTextureTopRight:SetWidth(128)
 	kosFrameTextureTopRight:SetHeight(256)
 	kosFrameTextureTopRight:SetPoint("TOPRIGHT")
+	kosFrame.texTR = kosFrameTextureTopRight
 
 	local kosFrameTextureBottomLeft = kosFrame:CreateTexture("VanasKoSFrameBottomLeft", "ARTWORK")
 	kosFrameTextureBottomLeft:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotLeft")
 	kosFrameTextureBottomLeft:SetWidth(256)
 	kosFrameTextureBottomLeft:SetHeight(256)
 	kosFrameTextureBottomLeft:SetPoint("BOTTOMLEFT")
+	kosFrame.texBL = kosFrameTextureBottomLeft
 
 	local kosFrameTextureBottomRight = kosFrame:CreateTexture("VanasKoSFrameBottomRight", "ARTWORK")
 	kosFrameTextureBottomRight:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotRight")
 	kosFrameTextureBottomRight:SetWidth(128)
 	kosFrameTextureBottomRight:SetHeight(256)
 	kosFrameTextureBottomRight:SetPoint("BOTTOMRIGHT")
+	kosFrame.texBR = kosFrameTextureBottomRight
 
 	local kosFrameTitleText = kosFrame:CreateFontString("VanasKoSFrameTitleText", "OVERLAY")
 	kosFrameTitleText:SetPoint("TOP", kosFrame, 0, -18)
 	kosFrameTitleText:SetFontObject("GameFontNormal")
 	kosFrameTitleText:SetText(VANASKOS.NAME .. " " .. VANASKOS.VERSION)
+	kosFrame.title = kosFrameTitleText
 
 	self:CreateMainFrameButtons()
 end

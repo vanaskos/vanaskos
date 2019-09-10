@@ -7,8 +7,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
 local Dialog = LibStub("LibDialog-1.0")
+local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 
-VanasKoSGUI = VanasKoS:NewModule("GUI", "AceEvent-3.0")
+local VanasKoSGUI = VanasKoS:NewModule("GUI", "AceEvent-3.0")
 
 -- Global wow strings
 local NAME, ACCEPT, CANCEL = NAME, ACCEPT, CANCEL
@@ -19,7 +20,6 @@ local tinsert = tinsert
 local tsort = table.sort
 local format = format
 local date = date
-local VanasKosGUI = VanasKoSGUI
 
 -- Local Variables
 local tooltip = nil
@@ -142,7 +142,7 @@ function VanasKoSGUI:OnInitialize()
 
 	self:AddConfigOption("VanasKoS-Profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(VanasKoS.db))
 
-	VanasKoSListFrameConfigurationButton:SetScript("OnClick", function()
+	VanasKoSGUI.listFrame.configurationButton:SetScript("OnClick", function()
 		VanasKoSGUI:OpenConfigWindow()
 	end)
 
@@ -172,27 +172,27 @@ function VanasKoSGUI:OnInitialize()
 					order = 2,
 					func = function()
 						VanasKoSGUI.db.profile.GUIMoved = false
-						HideUIPanel(VanasKoSFrame)
-						ShowUIPanel(VanasKoSFrame)
+						HideUIPanel(VanasKoSGUI.frame)
+						ShowUIPanel(VanasKoSGUI.frame)
 					end,
 				},
 			},
 		},
 	})
 
-	VanasKoSListFrameSearchBox:SetScript("OnTextChanged", function(self, event, ...)
+	VanasKoSGUI.listFrame.searchBox:SetScript("OnTextChanged", function(self, event, ...)
 		VanasKoSGUI:SetFilterText(self:GetText())
 	end)
 
-	VanasKoSFrame:RegisterForDrag("LeftButton")
-	VanasKoSFrame:SetScript("OnDragStart", function()
+	VanasKoSGUI.frame:RegisterForDrag("LeftButton")
+	VanasKoSGUI.frame:SetScript("OnDragStart", function()
 		if(VanasKoSGUI.db.profile.GUILocked) then
 			return
 		end
-		VanasKoSFrame:StartMoving()
+		VanasKoSGUI.frame:StartMoving()
 	end)
-	VanasKoSFrame:SetScript("OnDragStop", function()
-		VanasKoSFrame:StopMovingOrSizing()
+	VanasKoSGUI.frame:SetScript("OnDragStop", function()
+		VanasKoSGUI.frame:StopMovingOrSizing()
 		VanasKoSGUI.db.profile.GUIMoved = true
 	end)
 	self.tooltipFrame = CreateFrame("GameTooltip", "VanasKoSListTooltip", UIParent, "GameTooltipTemplate")
@@ -336,8 +336,8 @@ function VanasKoSGUI:InitializeDropDowns()
 		list[v[1]] = v[2]
 		order[v[3]] = v[1]
 	end
-	VanasKoSFrameChooseListDropDown:SetList(list, order)
-	VanasKoSFrameChooseListDropDown:SetValue("PLAYERKOS")
+	VanasKoSGUI.listFrame.chooseList:SetList(list, order)
+	VanasKoSGUI.listFrame.chooseList:SetValue("PLAYERKOS")
 end
 
 function VanasKoSGUI:OnEnable()
@@ -387,7 +387,7 @@ end
 
 -- if the list itself changed
 function VanasKoSGUI:UpdateShownList()
-	if(not VanasKoSListFrame:IsVisible()) then
+	if(not VanasKoSGUI.listFrame:IsVisible()) then
 		return
 	end
 	displayedList = self:SortedList(shownList)
@@ -599,10 +599,10 @@ end
 function VanasKoSGUI:ShowTooltip(key, hoveredType)
 	if (hoveredType) then
 		tooltip:ClearLines()
-		tooltip:SetOwner(VanasKoSListFrame, "ANCHOR_CURSOR")
+		tooltip:SetOwner(VanasKoSGUI.listFrame, "ANCHOR_CURSOR")
 		tooltip:ClearAllPoints()
-		tooltip:SetPoint("TOPLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -30)
-		tooltip:SetPoint("BOTTOMLEFT", VanasKoSListFrame, "TOPRIGHT", -33, -390)
+		tooltip:SetPoint("TOPLEFT", VanasKoSGUI.listFrame, "TOPRIGHT", -33, -30)
+		tooltip:SetPoint("BOTTOMLEFT", VanasKoSGUI.listFrame, "TOPRIGHT", -33, -390)
 
 		self:UpdateMouseOverFrame(key, hoveredType)
 		tooltip:Show()
@@ -944,7 +944,7 @@ end
 
 -- call if only data from entries in the list changed
 function VanasKoSGUI:ScrollFrameUpdate()
-	if(not VanasKoSListFrame:IsVisible()) then
+	if(not VanasKoSGUI.listFrame:IsVisible()) then
 		return
 	end
 	local listOffset = FauxScrollFrame_GetOffset(VanasKoSListScrollFrame)
@@ -1039,27 +1039,27 @@ function VanasKoSGUI:AddEntry(list, name, reason)
 end
 
 function VanasKoSGUI:Update()
-	if(not VanasKoSFrame:IsVisible()) then
+	if(not VanasKoSGUI.frame:IsVisible()) then
 		return nil
 	end
-	if(VanasKoSFrame.selectedTab == 1) then
-		VanasKoSFrameTopLeft:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft")
-		VanasKoSFrameTopRight:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight")
-		VanasKoSFrameBottomLeft:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotLeft")
-		VanasKoSFrameBottomRight:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotRight")
+	if(VanasKoSGUI.frame.selectedTab == 1) then
+		VanasKoSGUI.frame.texTL:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopLeft")
+		VanasKoSGUI.frame.texTR:SetTexture("Interface\\ClassTrainerFrame\\UI-ClassTrainer-TopRight")
+		VanasKoSGUI.frame.texBL:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotLeft")
+		VanasKoSGUI.frame.texBR:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSListFrame-BotRight")
 
-		VanasKoSFrameTitleText:SetText(VANASKOS.NAME .. " - " .. L["Lists"])
+		VanasKoSGUI.frame.title:SetText(VANASKOS.NAME .. " - " .. L["Lists"])
 		self:GUIFrame_ShowSubFrame("VanasKoSListFrame")
 		self:ScrollFrameUpdate()
 	end
-	if(VanasKoSFrame.selectedTab == 2) then
-		VanasKoSFrameTopLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft")
-		VanasKoSFrameTopRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight")
-		VanasKoSFrameBottomLeft:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomLeft")
-		VanasKoSFrameBottomRight:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomRight")
+	if(VanasKoSGUI.frame.selectedTab == 2) then
+		VanasKoSGUI.frame.texTL:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopLeft")
+		VanasKoSGUI.frame.texTR:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-TopRight")
+		VanasKoSGUI.frame.texBL:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomLeft")
+		VanasKoSGUI.frame.texBR:SetTexture("Interface\\PaperDollInfoFrame\\UI-Character-General-BottomRight")
 
 		self:GUIFrame_ShowSubFrame("VanasKoSAboutFrame")
-		VanasKoSFrameTitleText:SetText(VANASKOS.NAME .. " - " .. L["About"])
+		VanasKoSGUI.frame.title:SetText(VANASKOS.NAME .. " - " .. L["About"])
 	end
 end
 
@@ -1067,20 +1067,20 @@ function VanasKoSGUI:Toggle()
 	-- show/hide the frame:
 	-- if not visible, show it via blizzard uipanel function if it wasn't moved,
 	-- if moved just do a Show()
-	if(VanasKoSFrame:IsVisible()) then
+	if(VanasKoSGUI.frame:IsVisible()) then
 		if(self.db.profile.GUIMoved) then
-			VanasKoSFrame:Hide()
+			VanasKoSGUI.frame:Hide()
 		else
-			HideUIPanel(VanasKoSFrame)
+			HideUIPanel(VanasKoSGUI.frame)
 		end
 	else
-		VanasKoSListFrame:SetParent("VanasKoSFrame")
-		VanasKoSListFrame:SetAllPoints()
+		VanasKoSGUI.listFrame:SetParent("VanasKoSFrame")
+		VanasKoSGUI.listFrame:SetAllPoints()
 
 		if(VanasKoSGUI.db.profile.GUIMoved) then
-			VanasKoSFrame:Show()
+			VanasKoSGUI.frame:Show()
 		else
-			ShowUIPanel(VanasKoSFrame)
+			ShowUIPanel(VanasKoSGUI.frame)
 		end
 	end
 end
@@ -1151,17 +1151,17 @@ function VanasKoSGUI:SetColumnSort(column, sortFunctionNew, sortFunctionRev)
 end
 
 function VanasKoSGUI:SetToggleButtonText(text)
-	VanasKoSListFrameToggleRightButton:SetText(text)
+	VanasKoSGUI.listFrame.toggleRButton:SetText(text)
 end
 
 function VanasKoSGUI:HideToggleButtons()
-	VanasKoSListFrameNoTogglePatch:Show()
-	VanasKoSListFrameToggleLeftButton:Hide()
-	VanasKoSListFrameToggleRightButton:Hide()
+	VanasKoSGUI.listFrame.noToggle:Show()
+	VanasKoSGUI.listFrame.toggleLButton:Hide()
+	VanasKoSGUI.listFrame.toggleRButton:Hide()
 end
 
 function VanasKoSGUI:ShowToggleButtons()
-	VanasKoSListFrameNoTogglePatch:Hide()
-	VanasKoSListFrameToggleLeftButton:Show()
-	VanasKoSListFrameToggleRightButton:Show()
+	VanasKoSGUI.listFrame.noToggle:Hide()
+	VanasKoSGUI.listFrame.toggleLButton:Show()
+	VanasKoSGUI.listFrame.toggleRButton:Show()
 end

@@ -7,7 +7,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DataGatherer", false)
 local LevelGuess = LibStub("LibLevelGuess-1.0")
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
-VanasKoSDataGatherer = VanasKoS:NewModule("DataGatherer", "AceEvent-3.0", "AceTimer-3.0")
+local VanasKoSDataGatherer = VanasKoS:NewModule("DataGatherer", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Declare some common global functions local
 local assert = assert

@@ -245,9 +245,9 @@ function VanasKoSDefaultLists:OnInitialize()
 	-- show the PLAYERKOS list after startup
 	VanasKoSGUI:ShowList("PLAYERKOS")
 
-	VanasKoSListFrameCheckBox:SetText(L["Only my entries"])
-	VanasKoSListFrameCheckBox:SetChecked(VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries)
-	VanasKoSListFrameCheckBox:SetScript("OnClick", function(frame)
+	VanasKoSGUI.listFrame.checkBox:SetText(L["Only my entries"])
+	VanasKoSGUI.listFrame.checkBox:SetChecked(VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries)
+	VanasKoSGUI.listFrame.checkBox:SetScript("OnClick", function(frame)
 		VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries = not VanasKoSDefaultLists.db.profile.ShowOnlyMyEntries
 		VanasKoSGUI:UpdateShownList()
 	end)
@@ -260,11 +260,11 @@ function VanasKoSDefaultLists:OnDisable()
 end
 
 function VanasKoSDefaultLists:ShowList()
-	VanasKoSListFrameCheckBox:Show()
+	VanasKoSGUI.listFrame.checkBox:Show()
 end
 
 function VanasKoSDefaultLists:HideList()
-	VanasKoSListFrameCheckBox:Hide()
+	VanasKoSGUI.listFrame.checkBox:Hide()
 end
 
 function VanasKoSDefaultLists:HoverType()

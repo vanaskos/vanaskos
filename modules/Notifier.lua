@@ -892,15 +892,15 @@ function VanasKoSNotifier:UpdateReasonFrame(name, guild)
 		if(UnitIsPlayer("target")) then
 			local key = name
 			local guildKey = guild
-			if(not VanasKoS_Notifier_ReasonFrame_Text) then
+			if(not reasonFrame.text) then
 				return
 			end
 			local data = VanasKoS:IsOnList("PLAYERKOS", key)
 			local gdata = guildKey and VanasKoS:IsOnList("GUILDKOS", guildKey) or nil
 
 			if(data) then
-				VanasKoS_Notifier_ReasonFrame_Text:SetTextColor(1.0, 0.81, 0.0, 1.0)
-				VanasKoS_Notifier_ReasonFrame_Text:SetText(self:GetKoSString(name, guild, data.reason, data.creator, data.owner,
+				reasonFrame.text:SetTextColor(1.0, 0.81, 0.0, 1.0)
+				reasonFrame.text:SetText(self:GetKoSString(name, guild, data.reason, data.creator, data.owner,
 					gdata and gdata.reason or "",
 					gdata and gdata.creator or "",
 					gdata and gdata.owner or ""))
@@ -909,29 +909,29 @@ function VanasKoSNotifier:UpdateReasonFrame(name, guild)
 
 			local hdata = VanasKoS:IsOnList("HATELIST", key)
 			if(hdata and hdata.reason ~= nil) then
-				VanasKoS_Notifier_ReasonFrame_Text:SetTextColor(1.0, 0.0, 0.0, 1.0)
+				reasonFrame.text:SetTextColor(1.0, 0.0, 0.0, 1.0)
 				if(hdata.creator ~= nil and hdata.owner ~= nil)  then
-					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["%sHatelist: %s"], hdata.creator, hdata.reason))
+					reasonFrame.text:SetText(format(L["%sHatelist: %s"], hdata.creator, hdata.reason))
 				else
-					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["Hatelist: %s"], hdata.reason))
+					reasonFrame.text:SetText(format(L["Hatelist: %s"], hdata.reason))
 				end
 				return
 			end
 
 			local ndata = VanasKoS:IsOnList("NICELIST", key)
 			if(ndata and ndata.reason ~= nil) then
-				VanasKoS_Notifier_ReasonFrame_Text:SetTextColor(0.0, 1.0, 0.0, 1.0)
+				reasonFrame.text:SetTextColor(0.0, 1.0, 0.0, 1.0)
 				if(ndata.creator ~= nil and ndata.owner ~= nil)  then
-					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["%sNicelist: %s"], ndata.creator, ndata.reason))
+					reasonFrame.text:SetText(format(L["%sNicelist: %s"], ndata.creator, ndata.reason))
 				else
-					VanasKoS_Notifier_ReasonFrame_Text:SetText(format(L["Nicelist: %s"], ndata.reason))
+					reasonFrame.text:SetText(format(L["Nicelist: %s"], ndata.reason))
 				end
 				return
 			end
 
-			VanasKoS_Notifier_ReasonFrame_Text:SetText("")
+			reasonFrame.text:SetText("")
 		else
-			VanasKoS_Notifier_ReasonFrame_Text:SetText("")
+			reasonFrame.text:SetText("")
 		end
 	end
 end

@@ -34,7 +34,7 @@ local buttonList = {}
 VanasKoSGUI.numConfigOptions = 8
 VanasKoSGUI.dropDownFrame = nil
 
-VanasKoSConfigOptions = {
+local VanasKoSConfigOptions = {
 	name = "VanasKoS",
 	type = "group",
 	childGroups = 'tab',
@@ -947,7 +947,7 @@ function VanasKoSGUI:ScrollFrameUpdate()
 	if(not VanasKoSGUI.listFrame:IsVisible()) then
 		return
 	end
-	local listOffset = FauxScrollFrame_GetOffset(VanasKoSListScrollFrame)
+	local listOffset = FauxScrollFrame_GetOffset(VanasKoSGUI.listFrame.scrollFrame)
 	local listVar = self:GetCurrentShownListIterator()
 	local showList = VANASKOS.showList
 	local showListHandler = listHandler[showList]
@@ -1012,7 +1012,7 @@ function VanasKoSGUI:ScrollFrameUpdate()
 
 	-- 34 = Hoehe VanasKoSListFrameListButtonTemplate
 	-- scrollframe, maxnum, to_display, height
-	FauxScrollFrame_Update(VanasKoSListScrollFrame, listIndex-1, VANASKOS.MAX_LIST_BUTTONS, 16)
+	FauxScrollFrame_Update(VanasKoSGUI.listFrame.scrollFrame, listIndex-1, VANASKOS.MAX_LIST_BUTTONS, 16)
 
 	oldlist = showList
 end

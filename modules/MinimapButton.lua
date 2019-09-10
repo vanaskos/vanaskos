@@ -8,8 +8,11 @@ local icon = LibStub("LibDBIcon-1.0")
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
-local VanasKoSPvPDataGatherer = VanasKoS:GetModule("PvPDataGatherer", false)
 local VanasKoSMinimapButton = VanasKoS:NewModule("MinimapButton", "AceEvent-3.0", "AceTimer-3.0")
+
+-- Initialized later
+local PvPDataGatherer = nil
+local warnFrame = nil
 
 -- Declare some common global functions local
 local pairs = pairs
@@ -58,20 +61,20 @@ local minimapOptions = {
 			VanasKoS:ToggleMenu()
 		end,
 		checked = function()
-			return VanasKoSFrame:IsVisible()
+			return VanasKoSGUI.frame:IsVisible()
 		end,
 		isNotRadio = true,
 	},
 	{
 		text = L["Warning Window"],
 		func = function()
-			if (VanasKoSWarnFrame) then
+			if warnFrame then
 				VanasKoS:ToggleModuleActive("WarnFrame")
-				VanasKoSWarnFrame:Update()
+				warnFrame:Update()
 			end
 		end,
 		checked = function()
-			return VanasKoSWarnFrame and VanasKoS:GetModule("WarnFrame").enabledState
+			return warnFrame.enabledState
 		end,
 		isNotRadio = true,
 	},
@@ -175,6 +178,8 @@ function VanasKoSMinimapButton:OnInitialize()
 		},
 	}
 
+	PvPDataGatherer = VanasKoS:GetModule("PvPDataGatherer", false)
+	warnFrame = VanasKoS:GetModule("WarnFrame", false)
 	VanasKoSGUI:AddModuleToggle("MinimapButton", L["Minimap Button"])
 	VanasKoSGUI:AddConfigOption("MinimapButton", self.configOptions)
 	minimapOptions[1].text = VANASKOS.NAME .. " " .. VANASKOS.VERSION
@@ -190,8 +195,8 @@ function VanasKoSMinimapButton:Toggle()
 end
 
 function VanasKoSMinimapButton:UpdateOptions()
-	if (VanasKoSPvPDataGatherer) then
-		local list = VanasKoSPvPDataGatherer:GetDamageFromArray()
+	if PvPDataGatherer then
+		local list = PvPDataGatherer:GetDamageFromArray()
 
 		wipe(attackerMenu)
 		if(not list) then
@@ -336,8 +341,8 @@ end
 function VanasKoSMinimapButton:OnTooltipShow(tt)
 	tt:AddLine(VANASKOS.NAME)
 
-	if (VanasKoSPvPDataGatherer) then
-		local list = VanasKoSPvPDataGatherer:GetDamageFromArray()
+	if PvPDataGatherer then
+		local list = PvPDataGatherer:GetDamageFromArray()
 		if (#list > 0) then
 			tt:AddLine(L["Last Attackers"] .. ":", 1.0, 1.0, 1.0)
 

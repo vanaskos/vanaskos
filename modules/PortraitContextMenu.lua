@@ -94,7 +94,34 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 		info.text = VanasKoSTargetPopupButtons[value].text
 		info.value = value
 		info.owner = which
-		info.func = VanasKoSPortraitContextMenu_UnitPopup_OnClick
+		info.func = function(self, info)
+			assert(info)
+			assert(info.button)
+			assert(info.name)
+			assert(info.realm)
+
+			if(info.button == "VANASKOS_ADD_PLAYERKOS") then
+				VanasKoS:AddEntryByName("PLAYERKOS", info.name, info.realm)
+			elseif(info.button == "VANASKOS_ADD_GUILDKOS") then
+				VanasKoS:AddEntryByName("GUILDKOS", info.guild, info.realm)
+			elseif(info.button == "VANASKOS_ADD_HATELIST") then
+				VanasKoS:AddEntryByName("HATELIST", info.name, info.realm)
+			elseif(info.button == "VANASKOS_ADD_NICELIST") then
+				VanasKoS:AddEntryByName("NICELIST", info.name, info.realm)
+			elseif(info.button == "VANASKOS_LOOKUP") then
+				local data, list = VanasKoS:IsOnList(nil, hashName(info.name, info.realm))
+				if not data and info.guild then
+					data, list = VanasKoS:IsOnList(nil, hashGuild(info.guild, info.realm))
+				end
+				if list then
+					VanasKoS:Print(format(L["Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r"],
+						info.name, VanasKoS:GetListNameByShortName(list), (data.reason or "")))
+				else
+					VanasKoS:Print(format(L["No entry for |cff00ff00%s|r"], info.name))
+				end
+			end
+		end
+
 		info.notCheckable = 1
 		info.arg1 = {
 			button = value,
@@ -103,33 +130,5 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 			guild = guild
 		}
 		UIDropDownMenu_AddButton(info)
-	end
-end
-
-function VanasKoSPortraitContextMenu_UnitPopup_OnClick(self, info)
-	assert(info)
-	assert(info.button)
-	assert(info.name)
-	assert(info.realm)
-
-	if(info.button == "VANASKOS_ADD_PLAYERKOS") then
-		VanasKoS:AddEntryByName("PLAYERKOS", info.name, info.realm)
-	elseif(info.button == "VANASKOS_ADD_GUILDKOS") then
-		VanasKoS:AddEntryByName("GUILDKOS", info.guild, info.realm)
-	elseif(info.button == "VANASKOS_ADD_HATELIST") then
-		VanasKoS:AddEntryByName("HATELIST", info.name, info.realm)
-	elseif(info.button == "VANASKOS_ADD_NICELIST") then
-		VanasKoS:AddEntryByName("NICELIST", info.name, info.realm)
-	elseif(info.button == "VANASKOS_LOOKUP") then
-		local data, list = VanasKoS:IsOnList(nil, hashName(info.name, info.realm))
-		if not data and info.guild then
-			data, list = VanasKoS:IsOnList(nil, hashGuild(info.guild, info.realm))
-		end
-		if list then
-			VanasKoS:Print(format(L["Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r"],
-				info.name, VanasKoS:GetListNameByShortName(list), (data.reason or "")))
-		else
-			VanasKoS:Print(format(L["No entry for |cff00ff00%s|r"], info.name))
-		end
 	end
 end

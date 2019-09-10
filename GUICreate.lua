@@ -135,6 +135,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	checkButton:SetHeight(20)
 	checkButton:SetNormalFontObject("GameFontHighlightSmall")
 	checkButton:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 200, -44)
+	listFrame.checkBox = checkButton
 
 	local addEntryButton = CreateFrame("Button", "VanasKoSListFrameAddButton", listFrame, "UIPanelButtonTemplate")
 	addEntryButton:SetWidth(110)
@@ -329,6 +330,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	scrollFrame:SetWidth(296)
 	scrollFrame:SetHeight(287)
 	scrollFrame:SetPoint("TOPRIGHT", listFrame, "TOPRIGHT", -67, -96)
+	listFrame.scrollFrame = scrollFrame
 
 	local searchBox = CreateFrame("EditBox", "VanasKoSListFrameSearchBox", listFrame, "InputBoxTemplate")
 	searchBox:SetWidth(191)

@@ -1,6 +1,13 @@
 Release Changelog for VanasKoS Classic
 
-1.00-alpha:
+latest:
+- Fix initial pvp players log setup
+- Fix not logging pvp losses correctly #115
+- Fix bug in synchronizer #114
+- Remove a war mode reference in the warning frame setup
+- Refactor most globals to be locals instead
+
+1.00:
 - Port code from retail 5.03
 - Changed some databases back to per-realm instead of global
 - Remove reference to realm in player and guild lists

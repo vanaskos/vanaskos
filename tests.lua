@@ -1,9 +1,9 @@
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSDB = VanasKoSDB
 
--- /script VanasKoS:PvPDataGathererDamageTest()
+-- /script LibStub("AceAddon-3.0"):GetAddon("VanasKoS"):PvPDataGathererDamageTest()
 function VanasKoS:PvPDataGathererDamageTest()
-    local VanasKoSPvPDataGatherer = VanasKoS:GetModule("PvpDataGatherer")
+    local VanasKoSPvPDataGatherer = VanasKoS:GetModule("PvPDataGatherer")
     VanasKoSPvPDataGatherer:DamageDoneFrom("test0", 1500)
     VanasKoSPvPDataGatherer:DamageDoneFrom("test1", 1000)
     VanasKoSPvPDataGatherer:DamageDoneFrom("test2", 500)

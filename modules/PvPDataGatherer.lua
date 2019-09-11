@@ -236,7 +236,7 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 		realm = {
 			pvplog = {
 				event = {},
-				player = {},
+				players = {},
 				map = {},
 			},
 		}

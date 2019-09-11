@@ -658,7 +658,7 @@ function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, dstName, amount)
 	end
 end
 
--- /script VanasKoSPvPDataGatherer:PvPDeath("DEATH", UnitName("player"))
+-- /script LibStub("AceAddon-3.0"):GetAddon("VanasKoS"):PvPDeath("DEATH", UnitName("player"))
 function VanasKoSPvPDataGatherer:PvPDeath(message, name)
 	if (lastDamageTo and not (name == myName)) then
 		for i=1,#lastDamageTo do
@@ -670,7 +670,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name)
 		end
 	elseif lastDamageFrom then
 		if self.db.profile.deathOption == KILLING_BLOW then
-			if (lastDamageFrom[1] and (lastDamageFrom[1].deaths or 0) > 0 and (time() - lastDamageFrom[1].time) < KILLING_BLOW_TIMEOUT) then
+			if (lastDamageFrom[1] and (lastDamageFrom[1].deaths or 0) == 0 and (time() - lastDamageFrom[1].time) < KILLING_BLOW_TIMEOUT) then
 				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[1].name)
 				self:LogPvPEvent(lastDamageFrom[1].name, false)
 			end
@@ -678,7 +678,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name)
 			local mostDamageIdx = nil
 			local mostDamage = 0
 			for i=1,#lastDamageFrom do
-				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) > 0 and lastDamageFrom[i].amount > mostDamage
+				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) == 0 and lastDamageFrom[i].amount > mostDamage
 				    and (time() - lastDamageFrom[i].time) < MOST_DAMAGE_TIMEOUT) then
 					mostDamageIdx = i
 					mostDamage = lastDamageFrom[i].amount
@@ -690,7 +690,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name)
 			end
 		elseif self.db.profile.deathOption == ALL_ATTACKERS then
 			for i=1,#lastDamageFrom do
-				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) > 0 and (time() - lastDamageFrom[i].time) < ALL_ATTACKERS_TIMEOUT) then
+				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) == 0 and (time() - lastDamageFrom[i].time) < ALL_ATTACKERS_TIMEOUT) then
 					self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[i].name)
 					self:LogPvPEvent(lastDamageFrom[i].name, false)
 				end
@@ -699,13 +699,12 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name)
 		wipe(lastDamageTo)
 		for i=1,#lastDamageFrom do
 			if lastDamageFrom[i] then
-				lastDamageFrom[i].deaths = lastDamageFrom[i].deaths or 0 + 1
+				lastDamageFrom[i].deaths = (lastDamageFrom[i].deaths or 0) + 1
 			end
 		end
 	end
 end
 
--- /script local f=VanasKoSPvPDataGatherer.DamageDoneFrom; f(v, "test0", 1500); f(v, "test1", 1000); f(v, "test2", 500); VanasKoS:SendMessage("VanasKoS_PvPDeath", UnitName("player"))
 function VanasKoSPvPDataGatherer:DamageDoneFrom(name, amount)
 	if(name) then
 		tinsert(lastDamageFrom, 1, {
@@ -757,7 +756,7 @@ function VanasKoSPvPDataGatherer:DamageDoneTo(name, amount)
 	end
 end
 
--- /script VanasKoSPvPDataGatherer:LogPvPEvent("test", "test", true)
+-- /script LibStub("AceAddon-3.0"):GetAddon("VanasKoS"):GetModule("PvPDataGatherer"):LogPvPEvent("test", true)
 function VanasKoSPvPDataGatherer:LogPvPEvent(name, isWin)
 	assert(name)
 

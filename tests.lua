@@ -1,6 +1,16 @@
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSDB = VanasKoSDB
 
+-- /script VanasKoS:PvPDataGathererDamageTest()
+function VanasKoS:PvPDataGathererDamageTest()
+    local VanasKoSPvPDataGatherer = VanasKoS:GetModule("PvpDataGatherer")
+    VanasKoSPvPDataGatherer:DamageDoneFrom("test0", 1500)
+    VanasKoSPvPDataGatherer:DamageDoneFrom("test1", 1000)
+    VanasKoSPvPDataGatherer:DamageDoneFrom("test2", 500)
+    VanasKoS:SendMessage("VanasKoS_PvPDeath", UnitName("player"))
+    VanasKoS:SendMessage("VanasKoS_PvPDeath", UnitName("player"))
+end
+
 -- /script VanasKoS:AddPvPTestData(100)
 -- For testing data gathering
 function VanasKoS:AddPvPTestData(cnt)

@@ -1,5 +1,10 @@
 Release Changelog for VanasKoS
 
+latest:
+- Refactor most globals to be local instead
+- Fix initial setup of pvp players log
+- Fix error not logging pvp losses #115
+
 5.03:
 - Update toc, and libraries for 8.2
 - Fix for last attackers being cleared on death

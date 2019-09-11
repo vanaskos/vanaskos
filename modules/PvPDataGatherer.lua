@@ -239,7 +239,7 @@ function VanasKoSPvPDataGatherer:OnInitialize()
 		global = {
 			pvplog = {
 				event = {},
-				player = {},
+				players = {},
 				map = {},
 			},
 		}

@@ -84,9 +84,7 @@ end
   ACE Functions
 ------------------------------------------------------------------------]]
 function VanasKoS:OnInitialize()
-	local versionString = GetAddOnMetadata("VanasKoS", "Version")
-	local minusPos = strfind(versionString, "-") - 1
-	VANASKOS.VERSION = strsub(versionString, 0, minusPos)
+	VANASKOS.VERSION = GetAddOnMetadata("VanasKoS", "Version")
 	self.db = LibStub("AceDB-3.0"):New("VanasKoSDB")
 	VanasKoSGUI = self:GetModule("GUI")
 end

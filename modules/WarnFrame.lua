@@ -516,19 +516,6 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 					return VanasKoSWarnFrame.db.profile.HideIfPvPOff
 				end,
 			},
-			hideifwarmodeoff = {
-				type = 'toggle',
-				name = L["Hide if War Mode off"],
-				desc = L["Hide if War Mode off"],
-				order = 4,
-				set = function(frame, v)
-					VanasKoSWarnFrame.db.profile.HideIfNotWar = v
-					VanasKoSWarnFrame:Update()
-				end,
-				get = function()
-					return VanasKoSWarnFrame.db.profile.HideIfNotWar
-				end,
-			},
 			showBorder = {
 				type = 'toggle',
 				name = L["Show border"],
@@ -1126,7 +1113,6 @@ function VanasKoSWarnFrame:OnInitialize()
 			Enabled = true,
 			HideIfInactive = false,
 			HideIfPvPOff = true,
-			HideIfNotWar = false,
 			Locked = false,
 			WarnFrameBorder = true,
 
@@ -1630,8 +1616,6 @@ function VanasKoSWarnFrame:Update()
 		elseif(self.db.profile.hideInInstance and VanasKoS:IsInDungeon()) then
 			HideWarnFrame()
 		elseif(self.db.profile.HideIfPvPOff and not UnitIsPVP("player")) then
-			HideWarnFrame()
-		elseif(self.db.profile.HideIfNotWar and not C_PvP.IsWarModeDesired()) then
 			HideWarnFrame()
 		elseif(self.db.profile.HideIfInactive) then
 			if((counter > 0 and self.db.profile.GrowUp == false) or (counter < (currentButtonCount - 1) and self.db.profile.GrowUp == true)) then

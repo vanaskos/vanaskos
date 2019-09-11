@@ -662,7 +662,7 @@ function VanasKoSPvPDataGatherer:PvPDamage(message, srcName, srcRealm, dstName, 
 	end
 end
 
--- /script VanasKoSPvPDataGatherer:PvPDeath("DEATH", UnitName("player"), GetRealmName())
+-- /script LibStub("AceAddon-3.0"):GetAddon("VanasKoS"):PvPDeath("DEATH", UnitName("player"), GetRealmName())
 function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 	if (lastDamageTo and not (name == myName and realm == myRealm)) then
 		for i=1,#lastDamageTo do
@@ -674,7 +674,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 		end
 	elseif lastDamageFrom then
 		if self.db.profile.deathOption == KILLING_BLOW then
-			if (lastDamageFrom[1] and (lastDamageFrom[1].deaths or 0) > 0 and (time() - lastDamageFrom[1].time) < KILLING_BLOW_TIMEOUT) then
+			if (lastDamageFrom[1] and (lastDamageFrom[1].deaths or 0) == 0 and (time() - lastDamageFrom[1].time) < KILLING_BLOW_TIMEOUT) then
 				self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[1].name, lastDamageFrom[1].realm)
 				self:LogPvPEvent(lastDamageFrom[1].name, lastDamageFrom[1].realm, false)
 			end
@@ -682,7 +682,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 			local mostDamageIdx = nil
 			local mostDamage = 0
 			for i=1,#lastDamageFrom do
-				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) > 0 and lastDamageFrom[i].amount > mostDamage
+				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) == 0 and lastDamageFrom[i].amount > mostDamage
 				    and (time() - lastDamageFrom[i].time) < MOST_DAMAGE_TIMEOUT) then
 					mostDamageIdx = i
 					mostDamage = lastDamageFrom[i].amount
@@ -694,7 +694,7 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 			end
 		elseif self.db.profile.deathOption == ALL_ATTACKERS then
 			for i=1,#lastDamageFrom do
-				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) > 0 and (time() - lastDamageFrom[i].time) < ALL_ATTACKERS_TIMEOUT) then
+				if (lastDamageFrom[i] and (lastDamageFrom[i].deaths or 0) == 0 and (time() - lastDamageFrom[i].time) < ALL_ATTACKERS_TIMEOUT) then
 					self:SendMessage("VanasKoS_PvPLoss", lastDamageFrom[i].name, lastDamageFrom[i].realm)
 					self:LogPvPEvent(lastDamageFrom[i].name, lastDamageFrom[i].realm, false)
 				end
@@ -703,13 +703,12 @@ function VanasKoSPvPDataGatherer:PvPDeath(message, name, realm)
 		wipe(lastDamageTo)
 		for i=1,#lastDamageFrom do
 			if lastDamageFrom[i] then
-				lastDamageFrom[i].deaths = lastDamageFrom[i].deaths or 0 + 1
+				lastDamageFrom[i].deaths = (lastDamageFrom[i].deaths or 0) + 1
 			end
 		end
 	end
 end
 
--- /script local f=VanasKoSPvPDataGatherer.DamageDoneFrom; f(v, "test0", "realm0", 1500); f(v, "test1", "realm1", 1000); f(v, "test2", "realm2", 500); VanasKoS:SendMessage("VanasKoS_PvPDeath", UnitName("player"), GetRealmName())
 function VanasKoSPvPDataGatherer:DamageDoneFrom(name, realm, amount)
 	if(name and realm) then
 		tinsert(lastDamageFrom, 1, {
@@ -763,7 +762,7 @@ function VanasKoSPvPDataGatherer:DamageDoneTo(name, realm, amount)
 	end
 end
 
--- /script VanasKoSPvPDataGatherer:LogPvPEvent("test", "test", true)
+-- /script LibStub("AceAddon-3.0"):GetAddon("VanasKoS"):GetModule("PvPDataGatherer"):LogPvPEvent("test", "test", true)
 function VanasKoSPvPDataGatherer:LogPvPEvent(name, realm, isWin)
 	assert(name)
 	assert(realm)

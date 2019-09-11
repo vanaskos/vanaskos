@@ -2,6 +2,16 @@ local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSDB = VanasKoSDB
 local hashName = VanasKoS.hashName
 
+-- /script VanasKoS:PvPDataGathererDamageTest()
+function VanasKoS:PvPDataGathererDamageTest()
+    local VanasKoSPvPDataGatherer = VanasKoS:GetModule("PvpDataGatherer")
+    VanasKoSPvPDataGatherer:DamageDoneFrom("test0", "realm0", 1500)
+    VanasKoSPvPDataGatherer:DamageDoneFrom("test1", "realm1", 1000)
+    VanasKoSPvPDataGatherer:DamageDoneFrom("test2", "realm2", 500)
+    VanasKoS:SendMessage("VanasKoS_PvPDeath", UnitName("player"), GetRealmName())
+    VanasKoS:SendMessage("VanasKoS_PvPDeath", UnitName("player"), GetRealmName())
+end
+
 -- /script VanasKoS:AddOldTestData()
 -- For testing importer
 function VanasKoS:AddOldTestData()

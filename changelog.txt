@@ -1,6 +1,9 @@
 Release Changelog for VanasKoS Classic
 
-latest:
+1.13.2.2:
+- Strip realm when adding from chat right-click popup menu
+
+1.13.2.1:
 - Fix initial pvp players log setup
 - Fix not logging pvp losses correctly #115
 - Fix bug in synchronizer #114

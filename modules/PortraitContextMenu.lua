@@ -71,6 +71,7 @@ function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, uni
 		name = UnitName(unit)
 		guild = GetGuildInfo(unit)
 	end
+	name = strgsub(name, "-%w*", "")
 	UIDropDownMenu_AddSeparator(1)
 	info.text = L["Vanas|cffff0000KoS|r"]
 	info.owner = which

@@ -610,6 +610,7 @@ function VanasKoSNotifier:OnEnable()
 	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged")
 
 	self:SecureHook("FriendsFrame_UpdateFriendButton")
+	--[[
 	self:SecureHook("FriendsFrameTooltip_Show")
 	self:SecureHook("IgnoreList_Update")
 	for i=1, FRIENDS_TO_DISPLAY do
@@ -622,6 +623,7 @@ function VanasKoSNotifier:OnEnable()
 		reasonFont:SetFontObject("GameFontNormalSmall")
 		reasonFont:SetPoint("RIGHT")
 	end
+	--]]
 
 	self:HookScript(GameTooltip, "OnTooltipSetUnit")
 end

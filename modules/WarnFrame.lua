@@ -257,7 +257,7 @@ local function CreateWarnFrame()
 		return
 	end
 	-- Create the Main Window
-	warnFrame = CreateFrame("Button", "VanasKoS_WarnFrame", UIParent)
+	warnFrame = CreateFrame("Button", "VanasKoS_WarnFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
 	warnFrame:SetToplevel(true)
 	warnFrame:SetMovable(true)
 	warnFrame:SetFrameStrata("LOW")

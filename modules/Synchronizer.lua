@@ -4,7 +4,7 @@ Handles list sychronization through chat (whisper, guild, party)
 ------------------------------------------------------------------------]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/Synchronizer", false)
-local Dialog = LibStub("LibDialog-1.0")
+local Dialog = LibStub("LibVKosDialog-1.0")
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
 local VanasKoSSynchronizer = VanasKoS:NewModule("Synchronizer", "AceComm-3.0", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceSerializer-3.0")

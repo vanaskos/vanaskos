@@ -19,7 +19,9 @@ externals:
 	Libs/AceConfig-3.0: https://repos.wowace.com/wow/ace3/tags/Release-r1241/AceConfig-3.0
 	Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
 	Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/tags/v8.2.0/LibDBIcon-1.0
-	Libs/LibLevelGuess-1.0: https://repos.wowace.com/wow/liblevelguess-1-0/tags/1.2.3/LibLevelGuess-1.0
+	Libs/LibLevelGuess-1.0:
+		url: https://github.com/vanaskos/liblevelguess-1-0
+		tag: 1.2.4
 	Libs/LibGraph-2.0: https://repos.wowace.com/wow/libgraph-2-0/trunk/LibGraph-2.0
 
 ignore:

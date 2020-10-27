@@ -1,6 +1,11 @@
 Release Changelog for VanasKoS
 
 latest:
+- Update toc, and libraries for 9.0.1
+- Disable broken friends list hook broken in update
+- Fix broken backdrop broken by latest WoW update
+
+8.2.0.1:
 - Refactor most globals to be local instead
 - Fix initial setup of pvp players log
 - Fix error not logging pvp losses #115

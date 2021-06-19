@@ -421,10 +421,13 @@ function VanasKoSEventMap:OnInitialize()
 
 	PINGRIDALIGN = ICONSIZE
 
-	for _, overlayFrame in next, WorldMapFrame.overlayFrames do
-		if(overlayFrame.Border and overlayFrame.Border:GetTexture() == 'Interface\\Minimap\\MiniMap-TrackingBorder') then
-			hooksecurefunc(overlayFrame, 'InitializeDropDown', VanasKoSEventMap.InitializeTrackingDropDown)
-			break
+	-- WorldMapFrame.overlayFrames seems to be nil in TBC
+	if WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+		for _, overlayFrame in next, WorldMapFrame.overlayFrames do
+			if(overlayFrame.Border and overlayFrame.Border:GetTexture() == 'Interface\\Minimap\\MiniMap-TrackingBorder') then
+				hooksecurefunc(overlayFrame, 'InitializeDropDown', VanasKoSEventMap.InitializeTrackingDropDown)
+				break
+			end
 		end
 	end
 end

@@ -557,18 +557,21 @@ function VanasKoSDataGatherer:Update()
 		self:EnableDataGathering(true)
 	end
 
-	if (C_PvP.IsWarModeDesired() and not self.db.profile.EnableInWarMode) then
-		self:EnableTargetEvents(false)
-		self:EnableCombatEvents(false)
-	elseif (not C_PvP.IsWarModeDesired() and not self.db.profile.EnableInNormalMode) then
-		self:EnableTargetEvents(false)
-		self:EnableCombatEvents(false)
-	end
+	-- War mode doesn't exist in TBC
+	if WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+		if (C_PvP.IsWarModeDesired() and not self.db.profile.EnableInWarMode) then
+			self:EnableTargetEvents(false)
+			self:EnableCombatEvents(false)
+		elseif (not C_PvP.IsWarModeDesired() and not self.db.profile.EnableInNormalMode) then
+			self:EnableTargetEvents(false)
+			self:EnableCombatEvents(false)
+		end
 
-	if (C_PvP.IsWarModeDesired() and not self.db.profile.GatherInWarMode) then
-		self:EnableDataGathering(false)
-	elseif (not C_PvP.IsWarModeDesired() and not self.db.profile.GatherInNormalMode) then
-		self:EnableDataGathering(false)
+		if (C_PvP.IsWarModeDesired() and not self.db.profile.GatherInWarMode) then
+			self:EnableDataGathering(false)
+		elseif (not C_PvP.IsWarModeDesired() and not self.db.profile.GatherInNormalMode) then
+			self:EnableDataGathering(false)
+		end
 	end
 end
 

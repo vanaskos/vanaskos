@@ -94,7 +94,10 @@ local mapID = -1
 
 function VanasKoS.hashName(name, realm)
 	assert(name)
-	assert(realm)
+	-- realm appears to be nil on TBC; skip check
+	if WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC then
+		assert(realm)
+	end
 	if strmatch(name, " ") or strmatch(name, "-") then
 		print("ignoring illegal name " .. name)
 		return nil

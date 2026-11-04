@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       Notifier Module - Part of VanasKoS
 Notifies the user via Tooltip, Chat and Upper Area of a KoS/other List Target
 ------------------------------------------------------------------------]]
@@ -8,6 +8,7 @@ local SML = LibStub("LibSharedMedia-3.0")
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
 local VanasKoSNotifier = VanasKoS:NewModule("Notifier", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local Compat = VANASKOS.Compat
 
 -- Declare some common global functions local
 local pairs = pairs
@@ -16,12 +17,10 @@ local tonumber = tonumber
 local min = min
 local format = format
 local wipe = wipe
-local getglobal = getglobal
 local GetRealmName = GetRealmName
-local GetPartyMember = GetPartyMember
 local GetGuildInfo = GetGuildInfo
-local GetRaidRosterInfo = GetRaidRosterInfo
-local UnitName = UnitName
+local UnitName = Compat.UnitName
+local Clean = Compat.Clean
 local UnitInRaid = UnitInRaid
 local UnitIsPlayer = UnitIsPlayer
 local PlaySoundFile = PlaySoundFile
@@ -79,7 +78,7 @@ local function SetProperties(self, profile)
 	if(profile.WARN_FRAME_POINT) then
 		self:ClearAllPoints()
 		self:SetPoint(profile.REASON_FRAME_POINT,
-					"UIParent",
+					UIParent,
 					profile.REASON_FRAME_ANCHOR,
 					profile.REASON_FRAME_XOFF,
 					profile.REASON_FRAME_XOFF)
@@ -111,7 +110,7 @@ function VanasKoSNotifier:CreateReasonFrame()
 
 	reasonFrame.background = reasonFrame:CreateTexture("VanasKoS_Notifier_ReasonFrame_Background", "BACKGROUND")
 	reasonFrame.background:SetAllPoints()
-	reasonFrame.background:SetTexture(1.0, 1.0, 1.0, 0.5)
+	reasonFrame.background:SetColorTexture(1.0, 1.0, 1.0, 0.5)
 
 	reasonFrame.text = reasonFrame:CreateFontString("VanasKoS_Notifier_ReasonFrame_Text", "OVERLAY")
 	-- only set the left point, so texts longer than reasonFrame:GetWidth() will show
@@ -254,8 +253,8 @@ function VanasKoSNotifier:OnInitialize()
 
 	local fade2 = flasher:CreateAnimation("Alpha")
 	fade2:SetDuration(0.5)
-	fade1:SetFromAlpha(1)
-	fade1:SetToAlpha(0)
+	fade2:SetFromAlpha(1)
+	fade2:SetToAlpha(0)
 	fade2:SetOrder(2)
 
 	self:CreateReasonFrame()
@@ -609,7 +608,10 @@ function VanasKoSNotifier:OnEnable()
 	self:RegisterMessage("VanasKoS_Mob_Target_Changed", "Player_Target_Changed")
 	self:RegisterMessage("VanasKoS_Zone_Changed", "ZoneChanged")
 
-	self:SecureHook("FriendsFrame_UpdateFriendButton")
+	if _G.FriendsFrame_UpdateFriendButton and not self:IsHooked("FriendsFrame_UpdateFriendButton") then
+		self:SecureHook("FriendsFrame_UpdateFriendButton")
+	end
+	--[[
 	self:SecureHook("FriendsFrameTooltip_Show")
 	self:SecureHook("IgnoreList_Update")
 	for i=1, FRIENDS_TO_DISPLAY do
@@ -622,8 +624,17 @@ function VanasKoSNotifier:OnEnable()
 		reasonFont:SetFontObject("GameFontNormalSmall")
 		reasonFont:SetPoint("RIGHT")
 	end
+	--]]
 
-	self:HookScript(GameTooltip, "OnTooltipSetUnit")
+	if not self.tooltipHooked then
+		-- the tooltip hook cannot be removed again; OnTooltipSetUnit checks enabledState
+		Compat.HookUnitTooltip(function(tooltip, unit)
+			if VanasKoSNotifier.enabledState then
+				VanasKoSNotifier:OnTooltipSetUnit(tooltip, unit)
+			end
+		end)
+		self.tooltipHooked = true
+	end
 end
 
 function VanasKoSNotifier:RefreshConfig()
@@ -640,6 +651,9 @@ function VanasKoSNotifier:FriendsFrame_UpdateFriendButton(button)
 	if (button.buttonType == FRIENDS_BUTTON_TYPE_WOW) then
 		local friendInfo = C_FriendList.GetFriendInfoByIndex(button.id)
 		local nameText = button.name
+		if not friendInfo or not friendInfo.name or not nameText then
+			return
+		end
 		local name, realm = splitNameRealm(friendInfo.name)
 		if not realm then
 			realm = GetRealmName()
@@ -718,7 +732,7 @@ function VanasKoSNotifier:IgnoreList_Update()
 		if ((ignoreButton.type == SQUELCH_TYPE_IGNORE or ignoreButton.type == SQUELCH_TYPE_MUTE)
 		    and ignoreButton.index) then
 			local nameText = ignoreButton.name
-			local noteText = getglobal("VanasKoSIgnoreButton"..i.."ReasonText")
+			local noteText = _G["VanasKoSIgnoreButton"..i.."ReasonText"]
 			local fullName = C_FriendList.GetIgnoreName(ignoreButton.index)
 			local name, realm = splitNameRealm(fullName)
 			if not realm then
@@ -747,9 +761,11 @@ function VanasKoSNotifier:EnablePartyEvents(enable)
 	if(enable and (not partyEventsEnabled)) then
 		self:RegisterEvent("GROUP_ROSTER_UPDATE")
 		self:RegisterEvent("RAID_ROSTER_UPDATE")
+		partyEventsEnabled = true
 	elseif((not enable) and partyEventsEnabled) then
 		self:UnregisterEvent("GROUP_ROSTER_UPDATE")
 		self:UnregisterEvent("RAID_ROSTER_UPDATE")
+		partyEventsEnabled = false
 	end
 end
 
@@ -761,20 +777,24 @@ function VanasKoSNotifier:GROUP_ROSTER_UPDATE()
 	local newParty = {}
 	for i = 1, GetNumSubgroupMembers() do
 		-- Certain missions places you in a party with an NPC
-		if UnitIsPlayer("party" .. i) then
+		if Clean(UnitIsPlayer("party" .. i)) then
 			local name, realm = UnitName("party" .. i)
-			if not realm then
+			if not realm or realm == "" then
 				realm = myRealm
 			end
-			local key = hashName(name, realm)
-			newParty[key] = i
-			local hate = VanasKoS:IsOnList("HATELIST", key)
-			local nice = VanasKoS:IsOnList("NICELIST", key)
+			local key = name and hashName(name, realm)
+			if key then
+				newParty[key] = i
+			end
+			local hate = key and VanasKoS:IsOnList("HATELIST", key)
+			local nice = key and VanasKoS:IsOnList("NICELIST", key)
 			if(hate) then
 				if(self.db.profile.notifyTargetFrame) then
-					local texture = getglobal("PartyMemberFrame"..i.."Texture")
-					texture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSPartyFrame")
-					texture:SetVertexColor(1.0, 0.0, 0.0, texture:GetAlpha())
+					local texture = Compat.GetPartyMemberFrameTexture(i)
+					if texture then
+						texture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSPartyFrame")
+						texture:SetVertexColor(1.0, 0.0, 0.0, texture:GetAlpha())
+					end
 				end
 				if(not lastPartyUpdate[key]) then
 					local msg = format(L["Hated player \"%s\" (%s) is in your party"], name, hate.reason or "")
@@ -792,9 +812,11 @@ function VanasKoSNotifier:GROUP_ROSTER_UPDATE()
 				end
 			elseif(nice) then
 				if(self.db.profile.notifyTargetFrame) then
-					local texture = getglobal("PartyMemberFrame"..i.."Texture")
-					texture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSPartyFrame")
-					texture:SetVertexColor(0.0, 1.0, 0.0, texture:GetAlpha())
+					local texture = Compat.GetPartyMemberFrameTexture(i)
+					if texture then
+						texture:SetTexture("Interface\\Addons\\VanasKoS\\Artwork\\KoSPartyFrame")
+						texture:SetVertexColor(0.0, 1.0, 0.0, texture:GetAlpha())
+					end
 				end
 				if(not lastPartyUpdate[key]) then
 					local msg = format(L["Nice player \"%s\" (%s) is in your party"], name, nice.reason or "")
@@ -822,12 +844,14 @@ function VanasKoSNotifier:RAID_ROSTER_UPDATE()
 	local newParty = {}
 	for i = 1, GetNumGroupMembers() do
 		local name, realm = UnitName("raid" .. i)
-		if not realm then
+		if not realm or realm == "" then
 			realm = myRealm
 		end
-		local key = hashName(name, realm)
-		newParty[key] = i
-		if(not lastPartyUpdate[key]) then
+		local key = name and hashName(name, realm)
+		if key then
+			newParty[key] = i
+		end
+		if(key and not lastPartyUpdate[key]) then
 			local hate = VanasKoS:IsOnList("HATELIST", key)
 			local nice = VanasKoS:IsOnList("NICELIST", key)
 			if(hate) then
@@ -869,19 +893,27 @@ function VanasKoSNotifier:OnDisable()
 	self:UnregisterAllMessages()
 	reenableTimer = nil
 	playerDetectEventEnabled = false
+	partyEventsEnabled = false
 end
 
-function VanasKoSNotifier:OnTooltipSetUnit(tooltip, ...)
-	if(not UnitIsPlayer("mouseover")) then
+function VanasKoSNotifier:OnTooltipSetUnit(tooltip, unit)
+	unit = unit or "mouseover"
+	if(not Clean(UnitIsPlayer(unit))) then
 		return
 	end
 
-	local name, realm = UnitName("mouseover")
-	local guild = GetGuildInfo("mouseover")
-	if not realm then
+	local name, realm = UnitName(unit)
+	if not name or name == "" then
+		return
+	end
+	local guild = Clean(GetGuildInfo(unit))
+	if not realm or realm == "" then
 		realm = myRealm
 	end
 	local key = hashName(name, realm)
+	if not key then
+		return
+	end
 	local guildKey = guild and hashGuild(guild, realm) or nil
 
 	-- add the KoS: <text> and KoS (Guild): <text> messages
@@ -964,30 +996,28 @@ end
 
 function VanasKoSNotifier:Player_Target_Changed(message, data)
 	if not data or not data.name or not data.realm then
+		if self.db.profile.notifyTargetFrame then
+			Compat.SetTargetFrameHighlight(nil)
+		end
 		return
 	end
 	if(self.db.profile.notifyTargetFrame) then
-		if(UnitIsPlayer("target")) then
+		if(Clean(UnitIsPlayer("target"))) then
 			local key = hashName(data.name, data.realm)
 			local guildKey = data.guild and hashGuild(data.guild, data.realm) or nil
 			if(VanasKoS:BooleanIsOnList("PLAYERKOS", key)) then
-				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Elite")
-				TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha())
+				Compat.SetTargetFrameHighlight("kos")
 			elseif(guildKey and VanasKoS:BooleanIsOnList("GUILDKOS", guildKey)) then
-				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare")
-				TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha())
+				Compat.SetTargetFrameHighlight("guildkos")
 			elseif(VanasKoS:BooleanIsOnList("HATELIST", key)) then
-				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare")
-				TargetFrameTextureFrameTexture:SetVertexColor(1.0, 0.0, 0.0, TargetFrameTextureFrameTexture:GetAlpha())
+				Compat.SetTargetFrameHighlight("hate")
 			elseif(VanasKoS:BooleanIsOnList("NICELIST", key)) then
-				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Rare")
-				TargetFrameTextureFrameTexture:SetVertexColor(0.0, 1.0, 0.0, TargetFrameTextureFrameTexture:GetAlpha())
+				Compat.SetTargetFrameHighlight("nice")
 			else
-				TargetFrameTextureFrameTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame")
-				TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha())
+				Compat.SetTargetFrameHighlight(nil)
 			end
 		else
-			TargetFrameTextureFrameTexture:SetVertexColor(1.0, 1.0, 1.0, TargetFrameTextureFrameTexture:GetAlpha())
+			Compat.SetTargetFrameHighlight(nil)
 		end
 	end
 	self:UpdateReasonFrame(data and data.name or nil, data and data.realm or nil, data and data.guild or nil)
@@ -1277,6 +1307,8 @@ function VanasKoSNotifier:FlashNotify()
 end
 
 function VanasKoSNotifier:PlaySound(value)
-	local soundFileName = SML:Fetch("sound", value)
-	PlaySoundFile(soundFileName)
+	local soundFileName = value and SML:Fetch("sound", value)
+	if soundFileName then
+		PlaySoundFile(soundFileName)
+	end
 end

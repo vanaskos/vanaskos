@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
 	Synchronizer Module - Part of VanasKoS
 Handles list sychronization through chat (whisper, guild, party)
 ------------------------------------------------------------------------]]
@@ -338,8 +338,12 @@ function VanasKoSSynchronizer:OnEnable()
 	if(self.db.profile.AutoSharingEnabled) then
 		startupRequestTimer = self:ScheduleTimer("StartRequestSync", 90, true)
 	end
-	local hookSecure = true
-	self:RawHook("ChatFrame_MessageEventHandler", hookSecure)
+	-- hide "player not found" spam caused by sync whispers
+	local addFilter = (ChatFrameUtil and ChatFrameUtil.AddMessageEventFilter) or ChatFrame_AddMessageEventFilter
+	if addFilter and not self.systemFilterAdded then
+		addFilter("CHAT_MSG_SYSTEM", self.SystemMessageFilter)
+		self.systemFilterAdded = true
+	end
 
 	if(self.db.profile.AutoSharingEnabled) then
 		VanasKoS:RegisterList(7, "PLAYERSYNC", L["Sharing"], self)
@@ -356,7 +360,11 @@ function VanasKoSSynchronizer:OnEnable()
 end
 
 function VanasKoSSynchronizer:OnDisable()
-	self:Unhook("ChatFrame_MessageEventHandler")
+	local removeFilter = (ChatFrameUtil and ChatFrameUtil.RemoveMessageEventFilter) or ChatFrame_RemoveMessageEventFilter
+	if removeFilter and self.systemFilterAdded then
+		removeFilter("CHAT_MSG_SYSTEM", self.SystemMessageFilter)
+		self.systemFilterAdded = nil
+	end
 	self:UnregisterAllComm()
 
 	VanasKoS:UnregisterList("PLAYERSYNC")
@@ -612,7 +620,13 @@ function VanasKoSSynchronizer:OnCommReceived(prefix, text, distribution, sender)
 			sender, vanasKoSVersion, protocolVersion, command))
 	end
 
+	if(not sender or VANASKOS.Compat.IsSecret(sender)) then
+		return
+	end
 	local senderName, senderRealm = strsplit("-", sender)
+	if(not senderRealm or senderRealm == "") then
+		senderRealm = myRealm
+	end
 
 	-- Ignore messages from self
 	if(not senderName or senderName == UnitName("player")) then
@@ -953,14 +967,11 @@ function VanasKoSSynchronizer:RemoveEntry(listname, key)
 end
 
 -- hide offline player spam
-function VanasKoSSynchronizer:ChatFrame_MessageEventHandler(frame, event, msg, ...)
-	if(LastWhispered and event == "CHAT_MSG_SYSTEM") then
-		local match = strmatch(msg, format(ERR_CHAT_PLAYER_NOT_FOUND_S, LastWhispered))
-
-		if (not match) then
-			self.hooks.ChatFrame_MessageEventHandler(frame, event, msg, ...)
+function VanasKoSSynchronizer.SystemMessageFilter(chatFrame, event, msg, ...)
+	if(LastWhispered and type(msg) == "string" and not VANASKOS.Compat.IsSecret(msg)) then
+		if msg == format(ERR_CHAT_PLAYER_NOT_FOUND_S, LastWhispered) then
+			return true
 		end
-	else
-		self.hooks.ChatFrame_MessageEventHandler(frame, event, msg, ...)
 	end
+	return false, msg, ...
 end

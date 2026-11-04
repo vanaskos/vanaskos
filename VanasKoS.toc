@@ -1,20 +1,20 @@
-﻿## Interface: 80200
+## Interface: 120105, 50504, 20506, 16001, 11509
 ## Title: Vanas|cffff0000KoS|r
 ## Author: Vane of EU-Aegwynn et al.
 ## Name: Vanas KoS
-## Version: 8.2.0.1
+## Version: 12.1.5.1
 ## Notes: KoS-Management Tool
 ## Notes-deDE: KoS-Management
 ## Notes-esES: Herramienta de gestión de KoS (Matar al Ver)
 ## Notes-zhCN: 仇敌管理工具
+## IconTexture: Interface\Icons\Ability_Parry
+## Category: PvP
 ## DefaultState: Enabled
 ## SavedVariables: VanasKoSDB
 ## SavedVariablesPerCharacter: VanasKoSDBPC
 ## OptionalDeps: Ace3, LibDialog-1.0, LibSharedMedia-3.0, LibDBIcon-1.0, LibLevelGuess-1.0, LibGraph-2.0
 ## X-eMail: boredvana@gmail.com
-## X-Date: 2011-11-29
 ## X-Category: Battlegrounds/PvP
-## X-AceForum: http://www.wowace.com/forums/index.php?topic=3938.0
 ## X-License: CreativeCommons-Attribution-NonCommercial-ShareAlike-2.5
 
 #@no-lib-strip@
@@ -34,16 +34,17 @@ Libs\AceSerializer-3.0\AceSerializer-3.0.xml
 Libs\AceTimer-3.0\AceTimer-3.0.xml
 Libs\LibSharedMedia-3.0\lib.xml
 Libs\LibLevelGuess-1.0\lib.xml
-Libs\LibDialog-1.0\lib.xml
 Libs\LibGraph-2.0\LibGraph-2.0.lua
+Libs\LibDialog-1.0\lib.xml
 #@end-no-lib-strip@
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 #@no-lib-strip@
-Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+Libs\LibDBIcon-1.0\lib.xml
 #@end-no-lib-strip@
 
 VanasKoS_Locale.lua
 VanasKoSLocals.lua
+Compat.lua
 VanasKoS.lua
 
 GUICreate.lua
@@ -81,6 +82,4 @@ modules\PvPStats_Locale.lua
 modules\PvPStats.lua
 modules\EventMap_Locale.lua
 modules\EventMap.lua
-#@do-not-package@
-tests.lua
-#@end-do-not-package@
+modules\EventMap.xml

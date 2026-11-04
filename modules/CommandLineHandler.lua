@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       CommandLineHandler Module - Part of VanasKoS
 		Handles the CommandLine
 ------------------------------------------------------------------------]]
@@ -35,7 +35,7 @@ local function kaddRetrieveArgs(args)
 		return cmd
 	elseif cmd == "help" or cmd == "?" then
 		return cmd
-	elseif cmd ~= "hate" or cmd ~= "nice" or cmd ~= "kos" then
+	elseif cmd ~= "hate" and cmd ~= "nice" and cmd ~= "kos" then
 		fullname = cmd
 		cmd = "kos"
 		reason = strsub(args, next_pos)
@@ -44,6 +44,10 @@ local function kaddRetrieveArgs(args)
 		reason = strsub(args, next_pos)
 	end
 
+	if not fullname then
+		-- "/kadd hate" with no name: use the current target
+		return cmd
+	end
 	name, realm = strmatch(fullname, "^([^<>-]+)%-*(.*)$")
 	if not name then
 		guild, realm = strmatch(fullname, "^<([^>]+)>%-*(.*)$")

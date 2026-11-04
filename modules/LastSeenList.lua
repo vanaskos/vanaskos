@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       LastSeenList Module - Part of VanasKoS
 Keeps track of recently seen players
 ------------------------------------------------------------------------]]
@@ -8,6 +8,7 @@ local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
 local VanasKoSDataGatherer = VanasKoS:GetModule("DataGatherer", false)
 local VanasKoSLastSeenList = VanasKoS:NewModule("LastSeenList", "AceEvent-3.0", "AceTimer-3.0")
+local Compat = VANASKOS.Compat
 
 -- Global wow strings
 local NAME = NAME
@@ -310,7 +311,7 @@ local function ListButtonOnRightClickMenu()
 			order = 4,
 		},
 	}
-	EasyMenu(lastseenOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU")
+	Compat.ShowMenu(lastseenOptions)
 end
 
 function VanasKoSLastSeenList:ListButtonOnClick(button, frame)

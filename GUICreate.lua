@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       GUICreate - Part of VanasKoS
 GUI Creation code
 ------------------------------------------------------------------------]]
@@ -30,8 +30,15 @@ function VanasKoSGUICreate:CreateFrames()
 end
 
 
+-- Classic clients still have the character-frame tab template; Retail and
+-- Forever only have the generic panel tab.
+local TAB_TEMPLATE = "PanelTabButtonTemplate"
+if C_XMLUtil and C_XMLUtil.GetTemplateInfo and C_XMLUtil.GetTemplateInfo("CharacterFrameTabButtonTemplate") then
+	TAB_TEMPLATE = "CharacterFrameTabButtonTemplate"
+end
+
 function VanasKoSGUICreate:CreateTabButtons()
-	local tabButton1 = CreateFrame("Button", "VanasKoSFrameTab1", VanasKoSGUI.frame, "CharacterFrameTabButtonTemplate")
+	local tabButton1 = CreateFrame("Button", "VanasKoSFrameTab1", VanasKoSGUI.frame, TAB_TEMPLATE)
 	tabButton1:SetID(1)
 	tabButton1:SetPoint("BOTTOMLEFT", VanasKoSGUI.frame, "BOTTOMLEFT", 11, 45)
 	tabButton1:SetText(L["Lists"])
@@ -41,7 +48,7 @@ function VanasKoSGUICreate:CreateTabButtons()
 	end)
 
 
-	local tabButton2 = CreateFrame("Button", "VanasKoSFrameTab2", VanasKoSGUI.frame, "CharacterFrameTabButtonTemplate")
+	local tabButton2 = CreateFrame("Button", "VanasKoSFrameTab2", VanasKoSGUI.frame, TAB_TEMPLATE)
 	tabButton2:SetID(2)
 	tabButton2:SetPoint("LEFT", tabButton1, "RIGHT", -14, 0)
 	tabButton2:SetText(L["About"])
@@ -94,7 +101,7 @@ function VanasKoSGUICreate:UpdateAboutText()
 		i = i + 1
 	end
 
-	getglobal("VanasKoSAboutFrameText"):SetText("<html><body>"
+	_G["VanasKoSAboutFrameText"]:SetText("<html><body>"
 		.. "<h1 align=\"center\">|cFFFFFFFF" .. VANASKOS.NAME .. "|r - " .. VANASKOS.VERSION .. "</h1><br />"
 		.. "<h2 align=\"center\">Created by: |cFFFFFFFFVane (|cFF7777FFEU-Aegwynn|r)|r</h2><br />"
 		.. "<h2><br />|cFF00FF00Authors:|r</h2><br />"
@@ -296,7 +303,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	toggleRButton:SetPushedTextOffset(0, 0)
 	local toggleRButtonText = toggleRButton:CreateFontString(toggleRButton:GetName() .. "Text", "BORDER")
 	toggleRButtonText:SetWidth(100)
-	toggleRButtonText:SetJustifyH("MIDDLE")
+	toggleRButtonText:SetJustifyH("CENTER")
 	toggleRButtonText:SetPoint("RIGHT", toggleRButton, "LEFT", 0, 0)
 	toggleRButton:SetFontString(toggleRButtonText)
 	listFrame.toggleRButton = toggleRButton
@@ -370,7 +377,7 @@ function VanasKoSGUICreate:CreateMainFrame()
 	kosFrame:SetToplevel(1)
 	kosFrame:SetMovable(1)
 	kosFrame:EnableMouse(1)
-	kosFrame:SetPoint("TOPLEFT", "UIParent", 0, -104)
+	kosFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, -104)
 	kosFrame:SetHitRectInsets(0, 30, 0, 45)
 	kosFrame:SetScript("OnShow", function()
 		VanasKoSGUI:Update()

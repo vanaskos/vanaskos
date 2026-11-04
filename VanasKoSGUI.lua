@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       VanasKoSGUI - Part of VanasKoS
 Handles the main gui frame
 ------------------------------------------------------------------------]]
@@ -10,6 +10,7 @@ local Dialog = LibStub("LibDialog-1.0")
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 
 local VanasKoSGUI = VanasKoS:NewModule("GUI", "AceEvent-3.0")
+local Compat = VANASKOS.Compat
 
 -- Global wow strings
 local NAME, ACCEPT, CANCEL = NAME, ACCEPT, CANCEL
@@ -45,7 +46,7 @@ local VanasKoSConfigOptions = {
 		help = {
 			type = "description",
 			order = 1,
-			name = GetAddOnMetadata("VanasKoS", "Notes"),
+			name = Compat.GetAddOnMetadata("VanasKoS", "Notes") or "",
 		},
 		version = {
 			type = "description",
@@ -88,7 +89,8 @@ function VanasKoSGUI:AddConfigOption(name, option)
 
 	self.ConfigurationOptions.args[name] = option
 	AceConfig:RegisterOptionsTable("VanasKoS/" .. name, self.ConfigurationOptions.args[name])
-	configFrameInner = AceConfigDialog:AddToBlizOptions("VanasKoS/" .. name, option.name, "VanasKoS")
+	local _, categoryID = AceConfigDialog:AddToBlizOptions("VanasKoS/" .. name, option.name, VanasKoSGUI.configCategoryID or "VanasKoS")
+	VanasKoSGUI.innerConfigCategoryID = categoryID
 end
 
 function VanasKoSGUI:AddMainMenuConfigOptions(optionTable)
@@ -121,7 +123,8 @@ local function verifyNameRealm(list, name, realm)
 		if not realm == nil or realm == "" then
 			return false
 		end
-		if name:find(' ') or strmatch(name, '%d') or strmatch(name, '%-') then
+		-- a single space is allowed: WoW Forever names can carry a surname
+		if name:find('  ') or strmatch(name, '%d') or strmatch(name, '%-') then
 			return false
 		end
 	end
@@ -144,7 +147,7 @@ function VanasKoSGUI:OnInitialize()
 
 	AceConfig:RegisterOptionsTable("VanasKoS", VanasKoSConfigOptions)
 
-	self.configFrame = AceConfigDialog:AddToBlizOptions("VanasKoS", "VanasKoS")
+	self.configFrame, self.configCategoryID = AceConfigDialog:AddToBlizOptions("VanasKoS", "VanasKoS")
 
 	self:AddConfigOption("VanasKoS-Profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(VanasKoS.db))
 
@@ -372,9 +375,7 @@ function VanasKoSGUI:OnInitialize()
 end
 
 function VanasKoSGUI:OpenConfigWindow()
-	-- open any inner config frame first (causes list to expand)
-	InterfaceOptionsFrame_OpenToCategory(configFrameInner)
-	InterfaceOptionsFrame_OpenToCategory(VanasKoSGUI.configFrame)
+	Compat.OpenSettings(VanasKoSGUI.configCategoryID)
 end
 
 function VanasKoSGUI:InitializeDropDowns()
@@ -661,7 +662,9 @@ function VanasKoSGUI:ShowTooltip(key, hoveredType)
 end
 
 function VanasKoSGUI:HideTooltip()
-	tooltip:Hide()
+	if tooltip then
+		tooltip:Hide()
+	end
 end
 
 function VanasKoSGUI:UpdateMouseOverFrame(key, hoveredType)
@@ -1131,7 +1134,7 @@ function VanasKoSGUI:Toggle()
 			HideUIPanel(VanasKoSGUI.frame)
 		end
 	else
-		VanasKoSGUI.listFrame:SetParent("VanasKoSFrame")
+		VanasKoSGUI.listFrame:SetParent(VanasKoSGUI.frame)
 		VanasKoSGUI.listFrame:SetAllPoints()
 
 		if(VanasKoSGUI.db.profile.GUIMoved) then

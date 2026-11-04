@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
 	VanasKoS - Kill on Sight Management
 Main Object with database and basic list functionality, handles also Configuration
 ------------------------------------------------------------------------]]
@@ -19,7 +19,8 @@ local tsort = table.sort
 local format = format
 local tonumber = tonumber
 local IsInInstance = IsInInstance
-local GetZonePVPInfo = GetZonePVPInfo
+local Compat = VANASKOS.Compat
+local GetZonePVPInfo = Compat.GetZonePVPInfo
 local GetRealmName = GetRealmName
 local GetGuildInfo = GetGuildInfo
 local UnitName = UnitName
@@ -95,8 +96,9 @@ local mapID = -1
 function VanasKoS.hashName(name, realm)
 	assert(name)
 	assert(realm)
-	if strmatch(name, " ") or strmatch(name, "-") then
-		print("ignoring illegal name " .. name)
+	-- WoW Forever characters can have a surname separated by a space
+	-- ("Name Surname"), so only the realm separator is illegal here.
+	if strmatch(name, "-") then
 		return nil
 	end
 
@@ -171,7 +173,7 @@ end
   ACE Functions
 ------------------------------------------------------------------------]]
 function VanasKoS:OnInitialize()
-	VANASKOS.VERSION = GetAddOnMetadata("VanasKoS", "Version")
+	VANASKOS.VERSION = Compat.GetAddOnMetadata("VanasKoS", "Version") or VANASKOS.VERSION
 	self.db = LibStub("AceDB-3.0"):New("VanasKoSDB")
 	VanasKoSGUI = self:GetModule("GUI")
 end
@@ -367,7 +369,7 @@ end
 
 function VanasKoS:AddEntryByName(list, name, realm, reason)
 	if name and name ~= "" and (list == "GUILDKOS" or (realm and realm ~= "")) and reason and reason ~= "" then
-		local key = hashName(name, realm)
+		local key = (list == "GUILDKOS") and hashGuild(name, realm) or hashName(name, realm)
 		VanasKoS:AddEntry(list, key, {
 			name = name,
 			realm = realm,

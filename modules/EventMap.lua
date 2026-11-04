@@ -7,6 +7,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/EventMap", false)
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
 local VanasKoSEventMap = VanasKoS:NewModule("EventMap", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
+local Compat = VANASKOS.Compat
 Mixin(VanasKoSEventMap, MapCanvasDataProviderMixin)
 
 -- Global wow strings
@@ -29,31 +30,13 @@ local trackedPlayers = {}
 VanasKoSEventMap.lastzoom = 20
 VanasKoSEventMap.lastMapID = -1
 
--- Storage for worldmap pins
-VanasKoSEventMap.PinsPool = VanasKoSEventMap.PinsPool or CreateFramePool("BUTTON")
-VanasKoSEventMap.ProviderPin = VanasKoSEventMap.ProviderPin or CreateFromMixins(MapCanvasPinMixin)
+-- World map pins use the "VanasKoSEventMapPinsTemplate" template from
+-- EventMap.xml; the map canvas creates and pools them itself.
+VanasKoSEventMapPinMixin = CreateFromMixins(MapCanvasPinMixin)
+VanasKoSEventMap.ProviderPin = VanasKoSEventMapPinMixin
 
 -- upvalue data tables
-local mapPinsPool = VanasKoSEventMap.PinsPool
 local mapProviderPin = VanasKoSEventMap.ProviderPin
-
--- Setup pin pool
-mapPinsPool.parent = WorldMapFrame:GetCanvas()
-mapPinsPool.creationFunc = function(framePool)
-	local frame = CreateFrame(framePool.frameType, nil, framePool.parent)
-	frame:SetSize(ICONSIZE, ICONSIZE)
-	return Mixin(frame, mapProviderPin)
-end
-mapPinsPool.resetterFunc = function(pinPool, pin)
-	FramePool_HideAndClearAnchors(pinPool, pin)
-	pin:OnReleased()
-
-	pin.pinTemplate = nil
-	pin.owningMap = nil
-end
-
--- register pin pool with the world map
-WorldMapFrame.pinPools[pinTemplate] = mapPinsPool
 
 function VanasKoSEventMap:RemoveAllData()
 	self:GetMap():RemoveAllPinsByTemplate(pinTemplate)
@@ -100,6 +83,7 @@ function VanasKoSEventMap:GetPin(x, y)
 end
 
 function mapProviderPin:OnLoad()
+	self:SetSize(ICONSIZE, ICONSIZE)
 	self:UseFrameLevelType("PIN_FRAME_LEVEL_AREA_POI")
 	self:SetScalingLimits(1, 1.0, 1.2)
 end
@@ -112,9 +96,12 @@ function mapProviderPin:OnAcquired(x, y)
 end
 
 function mapProviderPin:OnReleased()
-	self:Hide()
-	self:SetParent(UIParent)
-	self:ClearAllPoints()
+	self.trackedPlayer = nil
+	self.playerName = nil
+	self.score = 0
+	if self.event then
+		wipe(self.event)
+	end
 end
 
 function mapProviderPin:OnMouseEnter()
@@ -150,7 +137,7 @@ function VanasKoSEventMap:Pin_OnClick(frame, button, down)
 			}
 		}
 
-		EasyMenu(menuItems, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU")
+		Compat.ShowMenu(menuItems)
 	end
 end
 
@@ -206,7 +193,7 @@ function VanasKoSEventMap:Pin_OnEnter(frame, motion)
 	--	anchor = "ANCHOR_LEFT"
 	--end
 
-	local tooltip = WorldMapTooltip
+	local tooltip = GameTooltip
 	tooltip:ClearLines()
 	tooltip:SetOwner(frame, anchor)
 	if(frame.trackedPlayer) then
@@ -260,7 +247,7 @@ function VanasKoSEventMap:Pin_OnEnter(frame, motion)
 end
 
 function VanasKoSEventMap:Pin_OnLeave(frame)
-	WorldMapTooltip:Hide()
+	GameTooltip:Hide()
 	--WorldMapPinFrame.allowBlobTooltip = true
 end
 
@@ -279,8 +266,6 @@ function VanasKoSEventMap:drawPin(Pin)
 		Pin:Show()
 		return
 	end
-
-	Pin:SetNormalTexture(nil)
 
 	if (Pin.score < 0) then
 		Pin:SetNormalTexture("Interface\\Addons\\VanasKoS\\Artwork\\loss")
@@ -421,11 +406,9 @@ function VanasKoSEventMap:OnInitialize()
 
 	PINGRIDALIGN = ICONSIZE
 
-	for _, overlayFrame in next, WorldMapFrame.overlayFrames do
-		if(overlayFrame.Border and overlayFrame.Border:GetTexture() == 'Interface\\Minimap\\MiniMap-TrackingBorder') then
-			hooksecurefunc(overlayFrame, 'InitializeDropDown', VanasKoSEventMap.InitializeTrackingDropDown)
-			break
-		end
+	-- add a toggle to the world map's tracking (magnifying glass) menu
+	if Menu and Menu.ModifyMenu then
+		Menu.ModifyMenu("MENU_WORLD_MAP_TRACKING", VanasKoSEventMap.InitializeTrackingDropDown)
 	end
 end
 
@@ -440,16 +423,16 @@ function VanasKoSEventMap:OnDisable()
 	self:RemoveAllData()
 end
 
-function VanasKoSEventMap.InitializeTrackingDropDown()
-	if VanasKoSEventMap:IsEnabled() then
-		local info = UIDropDownMenu_CreateInfo()
-		info.text = L["Show PvP Encounters"]
-		info.value = "PVPencounter"
-		info.notCheckable = nil
-		info.isNotRadio = true
-		info.checked = VanasKoSEventMap.showEncounters
-		info.keepShownOnClick = true
-		info.func = function(button)
+function VanasKoSEventMap.InitializeTrackingDropDown(owner, rootDescription)
+	if not VanasKoSEventMap:IsEnabled() then
+		return
+	end
+	rootDescription:CreateDivider()
+	rootDescription:CreateCheckbox(L["Show PvP Encounters"],
+		function()
+			return VanasKoSEventMap.showEncounters and true or false
+		end,
+		function()
 			if not VanasKoSEventMap.showEncounters then
 				VanasKoSEventMap.showEncounters = true
 				VanasKoSEventMap:RefreshAllData()
@@ -457,9 +440,8 @@ function VanasKoSEventMap.InitializeTrackingDropDown()
 				VanasKoSEventMap.showEncounters = nil
 				VanasKoSEventMap:RemoveAllData()
 			end
-		end
-		UIDropDownMenu_AddButton(info)
-	end
+			return MenuResponse and MenuResponse.Refresh
+		end)
 end
 
 function VanasKoSEventMap:PvPDeath(message, name)

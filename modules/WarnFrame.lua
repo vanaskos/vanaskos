@@ -8,6 +8,7 @@ local SML = LibStub("LibSharedMedia-3.0")
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
 local VanasKoSWarnFrame = VanasKoS:NewModule("WarnFrame", "AceEvent-3.0", "AceTimer-3.0")
+local Compat = VANASKOS.Compat
 
 -- Global wow strings
 local LEVEL = LEVEL
@@ -69,14 +70,14 @@ end
 
 local function CreateWarnFrameFonts(size)
 	if (testFontFrame == nil) then
-		testFontFrame = CreateFrame("Button", nil, UIParent, BackdropTemplateMixin and "BackdropTemplate")
+		testFontFrame = CreateFrame("Button", nil, UIParent)
 		testFontFrame:SetText("XXXXXXXXXXXX [00+]")
 		testFontFrame:Hide()
 	end
 
 	if (kosFont == nil) then
 		kosFont = CreateFont("VanasKoS_FontKos")
-		kosFont:SetFont(SML:Fetch("font"), size)
+		kosFont:SetFont(SML:Fetch("font"), size or 12, "")
 	end
 	kosFont:SetTextColor(VanasKoSWarnFrame.db.profile.KoSTextColorR,
 				VanasKoSWarnFrame.db.profile.KoSTextColorG,
@@ -84,7 +85,7 @@ local function CreateWarnFrameFonts(size)
 
 	if (enemyFont == nil) then
 		enemyFont = CreateFont("VanasKoS_FontEnemy")
-		enemyFont:SetFont(SML:Fetch("font"), size)
+		enemyFont:SetFont(SML:Fetch("font"), size or 12, "")
 	end
 	enemyFont:SetTextColor(VanasKoSWarnFrame.db.profile.EnemyTextColorR,
 				VanasKoSWarnFrame.db.profile.EnemyTextColorG,
@@ -92,7 +93,7 @@ local function CreateWarnFrameFonts(size)
 
 	if (friendlyFont == nil) then
 		friendlyFont = CreateFont("VanasKoS_FontFriendly")
-		friendlyFont:SetFont(SML:Fetch("font"), size)
+		friendlyFont:SetFont(SML:Fetch("font"), size or 12, "")
 	end
 	friendlyFont:SetTextColor(VanasKoSWarnFrame.db.profile.FriendlyTextColorR,
 				VanasKoSWarnFrame.db.profile.FriendlyTextColorG,
@@ -100,7 +101,7 @@ local function CreateWarnFrameFonts(size)
 
 	if (normalFont == nil) then
 		normalFont = CreateFont("VanasKoS_FontNormal")
-		normalFont:SetFont(SML:Fetch("font"), size)
+		normalFont:SetFont(SML:Fetch("font"), size or 12, "")
 	end
 	normalFont:SetTextColor(VanasKoSWarnFrame.db.profile.NormalTextColorR,
 				VanasKoSWarnFrame.db.profile.NormalTextColorG,
@@ -225,7 +226,7 @@ local function SetProperties(self, profile)
 	if(profile.WARN_FRAME_POINT) then
 		warnFrame:ClearAllPoints()
 		self:SetPoint(profile.WARN_FRAME_POINT,
-					"UIParent",
+					UIParent,
 					profile.WARN_FRAME_ANCHOR,
 					profile.WARN_FRAME_XOFF,
 					profile.WARN_FRAME_YOFF)
@@ -241,7 +242,7 @@ local function SetProperties(self, profile)
 		})
 		self:EnableMouse(true)
 	else
-		warnFrame:SetBackdrop({bgfile = nil, edgeFile = nil})
+		warnFrame:SetBackdrop(nil)
 		self:EnableMouse(false)
 	end
 
@@ -257,7 +258,7 @@ local function CreateWarnFrame()
 		return
 	end
 	-- Create the Main Window
-	warnFrame = CreateFrame("Button", "VanasKoS_WarnFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
+	warnFrame = CreateFrame("Button", "VanasKoS_WarnFrame", UIParent, "BackdropTemplate")
 	warnFrame:SetToplevel(true)
 	warnFrame:SetMovable(true)
 	warnFrame:SetFrameStrata("LOW")
@@ -341,6 +342,8 @@ local function CreateOOCButtons()
 		warnButton:SetText("")
 		warnButton:RegisterForClicks("AnyUp")
 		warnButton:SetAttribute("type", "macro")
+		-- act on mouse-up regardless of the ActionButtonUseKeyDown setting
+		warnButton:SetAttribute("useOnKeyDown", false)
 		warnButton:SetAttribute("macrotext", "/wave")
 
 		warnButton:SetScript("OnEnter", function()
@@ -443,19 +446,19 @@ local function UpdateWarnSize()
 	if(VanasKoSWarnFrame.db.profile.GrowUp) then
 		if (point == "TOPRIGHT" or point == "TOP" or point == "TOPLEFT") then
 			warnFrame:ClearAllPoints()
-			warnFrame:SetPoint(point, "UIParent", anchor, xOff, yOff + h - oldH)
+			warnFrame:SetPoint(point, UIParent, anchor, xOff, yOff + h - oldH)
 
 		elseif (point == "RIGHT" or point == "CENTER" or point == "LEFT") then
 			warnFrame:ClearAllPoints()
-			warnFrame:SetPoint(point, "UIParent", anchor, xOff, yOff + (h - oldH) / 2)
+			warnFrame:SetPoint(point, UIParent, anchor, xOff, yOff + (h - oldH) / 2)
 		end
 	else
 		if (point == "BOTTOMRIGHT" or point == "BOTTOM" or point == "BOTTOMLEFT") then
 			warnFrame:ClearAllPoints()
-			warnFrame:SetPoint(point, "UIParent", anchor, xOff, yOff - h + oldH)
+			warnFrame:SetPoint(point, UIParent, anchor, xOff, yOff - h + oldH)
 		elseif (point == "RIGHT" or point == "CENTER" or point == "LEFT") then
 			warnFrame:ClearAllPoints()
-			warnFrame:SetPoint(point, "UIParent", anchor, xOff, yOff - (h - oldH) / 2)
+			warnFrame:SetPoint(point, UIParent, anchor, xOff, yOff - (h - oldH) / 2)
 		end
 	end
 
@@ -546,7 +549,7 @@ function VanasKoSWarnFrame:RegisterConfiguration()
 						})
 						warnFrame:EnableMouse(true)
 					else
-						warnFrame:SetBackdrop({bgfile = nil, edgeFile = nil})
+						warnFrame:SetBackdrop(nil)
 						warnFrame:EnableMouse(false)
 					end
 					VanasKoSWarnFrame:Update()
@@ -1233,8 +1236,12 @@ function VanasKoSWarnFrame:OnEnable()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_DEAD")
 	self:RegisterEvent("UNIT_FACTION")
-	self:RegisterEvent("HONOR_LEVEL_UPDATE")
-	self:RegisterEvent("WAR_MODE_STATUS_UPDATE")
+	if Compat.IsEventValid("HONOR_LEVEL_UPDATE") then
+		self:RegisterEvent("HONOR_LEVEL_UPDATE")
+	end
+	if Compat.IsEventValid("WAR_MODE_STATUS_UPDATE") then
+		self:RegisterEvent("WAR_MODE_STATUS_UPDATE")
+	end
 
 	self:ZoneChanged()
 end
@@ -1647,7 +1654,7 @@ function VanasKoSWarnFrame:Update()
 			HideWarnFrame()
 		elseif(self.db.profile.HideIfPvPOff and not UnitIsPVP("player")) then
 			HideWarnFrame()
-		elseif(self.db.profile.HideIfNotWar and not C_PvP.IsWarModeDesired()) then
+		elseif(self.db.profile.HideIfNotWar and Compat.hasWarMode and not Compat.IsWarModeDesired()) then
 			HideWarnFrame()
 		elseif(self.db.profile.HideIfInactive) then
 			if((counter > 0 and self.db.profile.GrowUp == false) or (counter < (currentButtonCount - 1) and self.db.profile.GrowUp == true)) then

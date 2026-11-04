@@ -30,8 +30,15 @@ function VanasKoSGUICreate:CreateFrames()
 end
 
 
+-- Classic clients still have the character-frame tab template; Retail and
+-- Forever only have the generic panel tab.
+local TAB_TEMPLATE = "PanelTabButtonTemplate"
+if C_XMLUtil and C_XMLUtil.GetTemplateInfo and C_XMLUtil.GetTemplateInfo("CharacterFrameTabButtonTemplate") then
+	TAB_TEMPLATE = "CharacterFrameTabButtonTemplate"
+end
+
 function VanasKoSGUICreate:CreateTabButtons()
-	local tabButton1 = CreateFrame("Button", "VanasKoSFrameTab1", VanasKoSGUI.frame, "CharacterFrameTabButtonTemplate")
+	local tabButton1 = CreateFrame("Button", "VanasKoSFrameTab1", VanasKoSGUI.frame, TAB_TEMPLATE)
 	tabButton1:SetID(1)
 	tabButton1:SetPoint("BOTTOMLEFT", VanasKoSGUI.frame, "BOTTOMLEFT", 11, 45)
 	tabButton1:SetText(L["Lists"])
@@ -41,7 +48,7 @@ function VanasKoSGUICreate:CreateTabButtons()
 	end)
 
 
-	local tabButton2 = CreateFrame("Button", "VanasKoSFrameTab2", VanasKoSGUI.frame, "CharacterFrameTabButtonTemplate")
+	local tabButton2 = CreateFrame("Button", "VanasKoSFrameTab2", VanasKoSGUI.frame, TAB_TEMPLATE)
 	tabButton2:SetID(2)
 	tabButton2:SetPoint("LEFT", tabButton1, "RIGHT", -14, 0)
 	tabButton2:SetText(L["About"])
@@ -56,10 +63,10 @@ function VanasKoSGUICreate:CreateTabButtons()
 end
 
 function VanasKoSGUICreate:CreateAboutFrame()
-	local aboutFrame = CreateFrame("Frame", "VanasKoSAboutFrame", VanasKoSGUI.frame, BackdropTemplateMixin and "BackdropTemplate")
+	local aboutFrame = CreateFrame("Frame", "VanasKoSAboutFrame", VanasKoSGUI.frame)
 	aboutFrame:SetAllPoints(VanasKoSGUI.frame)
 
-	local htmlFrame = CreateFrame("SimpleHTML", "VanasKoSAboutFrameText", aboutFrame, BackdropTemplateMixin and "BackdropTemplate")
+	local htmlFrame = CreateFrame("SimpleHTML", "VanasKoSAboutFrameText", aboutFrame)
 	htmlFrame:SetPoint("TOPLEFT", aboutFrame, 26, -77)
 	htmlFrame:SetWidth(312)
 	htmlFrame:SetHeight(512)
@@ -94,7 +101,7 @@ function VanasKoSGUICreate:UpdateAboutText()
 		i = i + 1
 	end
 
-	getglobal("VanasKoSAboutFrameText"):SetText("<html><body>"
+	_G["VanasKoSAboutFrameText"]:SetText("<html><body>"
 		.. "<h1 align=\"center\">|cFFFFFFFF" .. VANASKOS.NAME .. "|r - " .. VANASKOS.VERSION .. "</h1><br />"
 		.. "<h2 align=\"center\">Created by: |cFFFFFFFFVane (|cFF7777FFEU-Aegwynn|r)|r</h2><br />"
 		.. "<h2><br />|cFF00FF00Authors:|r</h2><br />"
@@ -114,7 +121,7 @@ function VanasKoSGUICreate:UpdateAboutText()
 end
 
 function VanasKoSGUICreate:CreateListFrame()
-	local listFrame = CreateFrame("Frame", "VanasKoSListFrame", VanasKoSGUI.frame, BackdropTemplateMixin and "BackdropTemplate")
+	local listFrame = CreateFrame("Frame", "VanasKoSListFrame", VanasKoSGUI.frame)
 	listFrame:SetAllPoints(VanasKoSGUI.frame)
 	VanasKoSGUI.listFrame = listFrame
 
@@ -127,7 +134,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	end)
 	listFrame.chooseList = dropdown
 
-	local checkButton = CreateFrame("CheckButton", "VanasKoSListFrameCheckBox", listFrame, "UICheckButtonTemplate", BackdropTemplateMixin and "BackdropTemplate")
+	local checkButton = CreateFrame("CheckButton", "VanasKoSListFrameCheckBox", listFrame, "UICheckButtonTemplate")
 	local checkButtonText = checkButton:CreateFontString(checkButton:GetName() .. "Text", "BORDER")
 	checkButtonText:SetPoint("LEFT", checkButton, "RIGHT", 0, 0)
 	checkButton:SetFontString(checkButtonText)
@@ -137,7 +144,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	checkButton:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 200, -44)
 	listFrame.checkBox = checkButton
 
-	local addEntryButton = CreateFrame("Button", "VanasKoSListFrameAddButton", listFrame, "UIPanelButtonTemplate", BackdropTemplateMixin and "BackdropTemplate")
+	local addEntryButton = CreateFrame("Button", "VanasKoSListFrameAddButton", listFrame, "UIPanelButtonTemplate")
 	addEntryButton:SetWidth(110)
 	addEntryButton:SetHeight(22)
 	addEntryButton:SetText(L["Add Entry"])
@@ -147,7 +154,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	end)
 	listFrame.addButton = addEntryButton
 
-	local removeEntryButton = CreateFrame("Button", "VanasKoSListFrameRemoveButton", listFrame, "UIPanelButtonTemplate", BackdropTemplateMixin and "BackdropTemplate")
+	local removeEntryButton = CreateFrame("Button", "VanasKoSListFrameRemoveButton", listFrame, "UIPanelButtonTemplate")
 	removeEntryButton:SetWidth(110)
 	removeEntryButton:SetHeight(22)
 	removeEntryButton:SetText(L["Remove Entry"])
@@ -157,7 +164,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	end)
 	listFrame.removeButton = removeEntryButton
 
-	local changeEntryButton = CreateFrame("Button", "VanasKoSListFrameChangeButton", listFrame, "UIPanelButtonTemplate", BackdropTemplateMixin and "BackdropTemplate")
+	local changeEntryButton = CreateFrame("Button", "VanasKoSListFrameChangeButton", listFrame, "UIPanelButtonTemplate")
 	changeEntryButton:SetWidth(105)
 	changeEntryButton:SetHeight(22)
 	changeEntryButton:SetPoint("RIGHT", removeEntryButton, "LEFT", 0, 0)
@@ -167,7 +174,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	end)
 	listFrame.changeButton = changeEntryButton
 
-	local configurationButton = CreateFrame("Button", "VanasKoSListFrameConfigurationButton", listFrame, "UIPanelButtonTemplate", BackdropTemplateMixin and "BackdropTemplate")
+	local configurationButton = CreateFrame("Button", "VanasKoSListFrameConfigurationButton", listFrame, "UIPanelButtonTemplate")
 	configurationButton:SetWidth(110)
 	configurationButton:SetHeight(22)
 	configurationButton:SetPoint("BOTTOM", addEntryButton, "TOP", 0, 0)
@@ -177,7 +184,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	local colButton = {}
 	local colButtonName = "VanasKoSListFrameColButton"
 	for i=1,VANASKOS.MAX_LIST_COLS do
-		colButton[i] = CreateFrame("Button", colButtonName .. i, listFrame, BackdropTemplateMixin and "BackdropTemplate")
+		colButton[i] = CreateFrame("Button", colButtonName .. i, listFrame)
 		colButton[i]:SetWidth(10)
 		colButton[i]:SetHeight(24)
 		colButton[i]:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -229,7 +236,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	local listButton = {}
 	local listButtonName = "VanasKoSListFrameListButton"
 	for i=1,VANASKOS.MAX_LIST_BUTTONS do
-		listButton[i] = CreateFrame("Button", listButtonName .. i, listFrame, BackdropTemplateMixin and "BackdropTemplate")
+		listButton[i] = CreateFrame("Button", listButtonName .. i, listFrame)
 		listButton[i]:SetWidth(298)
 		listButton[i]:SetHeight(16)
 		listButton[i]:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -247,7 +254,7 @@ function VanasKoSGUICreate:CreateListFrame()
 		listButton[i]:SetID(i)
 
 		local listButtonTextName = listButton[i]:GetName() .. "Text"
-		local listButtonText = CreateFrame("Frame", listButtonTextName, listButton[i], BackdropTemplateMixin and "BackdropTemplate")
+		local listButtonText = CreateFrame("Frame", listButtonTextName, listButton[i])
 		listButtonText:SetAllPoints(listButton[i])
 		if i == 1 then
 			listButton[i]:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 15, -95)
@@ -273,7 +280,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	end
 
 --[[
-	syncButton = CreateFrame("Button", "VanasKoSListFrameSyncButton", listFrame, "UIPanelButtonTemplate", BackdropTemplateMixin and "BackdropTemplate")
+	syncButton = CreateFrame("Button", "VanasKoSListFrameSyncButton", listFrame, "UIPanelButtonTemplate")
 	syncButton:SetWidth(40)
 	syncButton:SetHeight(17)
 	syncButton:SetPoint("TOPRIGHT", listFrame, "TOPRIGHT", -44, -36)
@@ -281,7 +288,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	listFrame.syncButton = syncButton
 --]]
 
-	local toggleRButton = CreateFrame("Button", "VanasKoSListFrameToggleRightButton", listFrame, BackdropTemplateMixin and "BackdropTemplate")
+	local toggleRButton = CreateFrame("Button", "VanasKoSListFrameToggleRightButton", listFrame)
 	toggleRButton:SetWidth(20)
 	toggleRButton:SetHeight(20)
 	toggleRButton:SetPoint("BOTTOMRIGHT", listFrame, "BOTTOMRIGHT", -65, 126)
@@ -296,12 +303,12 @@ function VanasKoSGUICreate:CreateListFrame()
 	toggleRButton:SetPushedTextOffset(0, 0)
 	local toggleRButtonText = toggleRButton:CreateFontString(toggleRButton:GetName() .. "Text", "BORDER")
 	toggleRButtonText:SetWidth(100)
-	toggleRButtonText:SetJustifyH("MIDDLE")
+	toggleRButtonText:SetJustifyH("CENTER")
 	toggleRButtonText:SetPoint("RIGHT", toggleRButton, "LEFT", 0, 0)
 	toggleRButton:SetFontString(toggleRButtonText)
 	listFrame.toggleRButton = toggleRButton
 
-	local toggleLButton = CreateFrame("Button", "VanasKoSListFrameToggleLeftButton", listFrame, BackdropTemplateMixin and "BackdropTemplate")
+	local toggleLButton = CreateFrame("Button", "VanasKoSListFrameToggleLeftButton", listFrame)
 	toggleLButton:SetWidth(20)
 	toggleLButton:SetHeight(20)
 	toggleLButton:SetPoint("RIGHT", toggleRButtonText, "LEFT", 0, 0)
@@ -314,7 +321,7 @@ function VanasKoSGUICreate:CreateListFrame()
 	toggleLButton:SetHighlightTexture("Interface\\Buttons\\UI-Common-MouseHilight", "ADD")
 	listFrame.toggleLButton = toggleLButton
 
-	local noToggleFrame = CreateFrame("Frame", "VanasKoSListFrameNoTogglePatch", listFrame, BackdropTemplateMixin and "BackdropTemplate")
+	local noToggleFrame = CreateFrame("Frame", "VanasKoSListFrameNoTogglePatch", listFrame)
 	noToggleFrame:SetWidth(256)
 	noToggleFrame:SetHeight(32)
 	noToggleFrame:SetPoint("BOTTOMLEFT", listFrame, "BOTTOMLEFT", 150, 117)
@@ -326,13 +333,13 @@ function VanasKoSGUICreate:CreateListFrame()
 	noToggleFrame:Hide()
 	listFrame.noToggle = noToggleFrame
 
-	local scrollFrame = CreateFrame("ScrollFrame", "VanasKoSListScrollFrame", listFrame, "FauxScrollFrameTemplate", BackdropTemplateMixin and "BackdropTemplate")
+	local scrollFrame = CreateFrame("ScrollFrame", "VanasKoSListScrollFrame", listFrame, "FauxScrollFrameTemplate")
 	scrollFrame:SetWidth(296)
 	scrollFrame:SetHeight(287)
 	scrollFrame:SetPoint("TOPRIGHT", listFrame, "TOPRIGHT", -67, -96)
 	listFrame.scrollFrame = scrollFrame
 
-	local searchBox = CreateFrame("EditBox", "VanasKoSListFrameSearchBox", listFrame, "InputBoxTemplate", BackdropTemplateMixin and "BackdropTemplate")
+	local searchBox = CreateFrame("EditBox", "VanasKoSListFrameSearchBox", listFrame, "InputBoxTemplate")
 	searchBox:SetWidth(191)
 	searchBox:SetHeight(32)
 	searchBox:SetAutoFocus(false)
@@ -359,18 +366,18 @@ function VanasKoSGUICreate:CreateListFrame()
 end
 
 function VanasKoSGUICreate:CreateMainFrameButtons()
-	local closeButton = CreateFrame("Button", "VanasKoSFrameCloseButton", VanasKoSGUI.frame, "UIPanelCloseButton", BackdropTemplateMixin and "BackdropTemplate")
+	local closeButton = CreateFrame("Button", "VanasKoSFrameCloseButton", VanasKoSGUI.frame, "UIPanelCloseButton")
 	closeButton:SetPoint("TOPRIGHT", VanasKoSGUI.frame, -30, -8)
 end
 
 function VanasKoSGUICreate:CreateMainFrame()
-	local kosFrame = CreateFrame("Frame", "VanasKoSFrame", UIParent, BackdropTemplateMixin and "BackdropTemplate")
+	local kosFrame = CreateFrame("Frame", "VanasKoSFrame", UIParent)
 	kosFrame:SetWidth(384)
 	kosFrame:SetHeight(512)
 	kosFrame:SetToplevel(1)
 	kosFrame:SetMovable(1)
 	kosFrame:EnableMouse(1)
-	kosFrame:SetPoint("TOPLEFT", "UIParent", 0, -104)
+	kosFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, -104)
 	kosFrame:SetHitRectInsets(0, 30, 0, 45)
 	kosFrame:SetScript("OnShow", function()
 		VanasKoSGUI:Update()

@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       VanasKoSLocals - Part of VanasKoS
 Global variables local to VanasKoS
 ------------------------------------------------------------------------]]
@@ -7,9 +7,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS", false)
 VANASKOS = {}
 
 VANASKOS.DEBUG = false
---@debug@
+--[===[@debug@
 VANASKOS.DEBUG = true
---@end-debug@
+--@end-debug@]===]
 
 VANASKOS.NAME = "VanasKoS"
 VANASKOS.COMMANDS = {"/kos"; "/vkos"; "/vanaskos"}
@@ -18,9 +18,8 @@ VANASKOS.AUTHOR = "Vane of EU-Aegwynn"
 VANASKOS.MAX_LIST_BUTTONS = 17
 VANASKOS.MAX_LIST_COLS = 9
 
---BINDING_HEADER_VANASKOS_HEADER = L["Vanas KoS"]
---BINDING_NAME_VANASKOS_TEXT_TOGGLE_MENU = L["Toggle Menu"]
---BINDING_NAME_VANASKOS_TEXT_ADD_PLAYER = L["Add KoS Player"]
+BINDING_HEADER_VANASKOS_HEADER = "VanasKoS"
+BINDING_NAME_VANASKOS_TEXT_TOGGLE_MENU = "Toggle VanasKoS window"
 
 VANASKOS.NewVersionNotice = nil
 VANASKOS.Lists = {}

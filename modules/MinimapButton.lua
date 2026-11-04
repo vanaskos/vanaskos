@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       MinimapButton Module - Part of VanasKoS
 Creates a MinimapButton with a menu for VanasKoS
 ------------------------------------------------------------------------]]
@@ -9,6 +9,7 @@ local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
 local VanasKoSMinimapButton = VanasKoS:NewModule("MinimapButton", "AceEvent-3.0", "AceTimer-3.0")
+local Compat = VANASKOS.Compat
 
 -- Initialized later
 local PvPDataGatherer = nil
@@ -187,7 +188,8 @@ function VanasKoSMinimapButton:OnInitialize()
 end
 
 function VanasKoSMinimapButton:Toggle()
-	if(icon:IsVisible()) then
+	local button = icon:GetMinimapButton(self.name)
+	if(button and button:IsShown()) then
 		icon:Hide(self.name)
 	else
 		icon:Show(self.name)
@@ -236,7 +238,7 @@ function VanasKoSMinimapButton:OnClick(button)
 		VanasKoSMinimapButton:UpdateOptions()
 		local x, y = GetCursorPosition()
 		local uiScale = UIParent:GetEffectiveScale()
-		EasyMenu(minimapOptions, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU")
+		Compat.ShowMenu(minimapOptions)
 	elseif(action == "addkos") then
 		VanasKoS:AddEntryFromTarget("PLAYERKOS")
 	end

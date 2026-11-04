@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
 	ChatNotifier Module - Part of VanasKoS
 modifies the ChatMessage if a player speaks whom is on your hatelist
 ------------------------------------------------------------------------]]
@@ -11,13 +11,14 @@ local VanasKoSChatNotifier = VanasKoS:NewModule("ChatNotifier", "AceHook-3.0")
 -- declare common globals local
 local format = format
 local select = select
+local pairs = pairs
+local type = type
 local assert = assert
-local getglobal = getglobal
-local setglobal = setglobal
 local hashName = VanasKoS.hashName
 local splitNameRealm = VanasKoS.splitNameRealm
-local UIDropDownMenu_CreateInfo = UIDropDownMenu_CreateInfo
-local UIDropDownMenu_AddButton = UIDropDownMenu_AddButton
+local Compat = VANASKOS.Compat
+local AddMessageEventFilter = (ChatFrameUtil and ChatFrameUtil.AddMessageEventFilter) or ChatFrame_AddMessageEventFilter
+local RemoveMessageEventFilter = (ChatFrameUtil and ChatFrameUtil.RemoveMessageEventFilter) or ChatFrame_RemoveMessageEventFilter
 
 -- Constants
 local HATELISTCOLOR = "ff0000"
@@ -104,13 +105,30 @@ function VanasKoSChatNotifier:OnInitialize()
 	self:SetEnabledState(self.db.profile.Enabled)
 end
 
+-- Chat message filter: adds a "(Hated)"/"(Liked)" tag in front of messages
+-- from players on the hate/nice list. (Older versions hooked
+-- ChatFrame_OnEvent, which modern clients no longer allow addons to do safely.)
+local function ChatFilter(chatFrame, event, msg, author, ...)
+	return VanasKoSChatNotifier:FilterMessage(event, msg, author, ...)
+end
+
 function VanasKoSChatNotifier:OnEnable()
 	self:Update()
-	self:RawHook("ChatFrame_OnEvent", true)
+	if AddMessageEventFilter and not self.filtersAdded then
+		for event in pairs(channelWatchList) do
+			AddMessageEventFilter(event, ChatFilter)
+		end
+		self.filtersAdded = true
+	end
 end
 
 function VanasKoSChatNotifier:OnDisable()
-	self:Unhook("ChatFrame_OnEvent")
+	if RemoveMessageEventFilter and self.filtersAdded then
+		for event in pairs(channelWatchList) do
+			RemoveMessageEventFilter(event, ChatFilter)
+		end
+		self.filtersAdded = nil
+	end
 end
 
 function VanasKoSChatNotifier:GetColor(w)
@@ -129,59 +147,58 @@ function VanasKoSChatNotifier:GetColorHex(which)
 	return format("%02x%02x%02x", r*255, g*255, b*255)
 end
 
-function VanasKoSChatNotifier:ChatFrame_OnEvent(frame, event, ...)
-	-- arg1 = message, arg2 = Who, arg3 = Language
-	local arg2 = select(2, ...)
-
-	-- if switched to disabled, remove hook on first intercept
-	if(not self.enabledState) then
-		local ret = self.hooks["ChatFrame_OnEvent"](frame, event, ...)
-		self:Unhook("ChatFrame_OnEvent")
-		return ret
+function VanasKoSChatNotifier:FilterMessage(event, msg, author, ...)
+	if(not self.enabledState or not channelWatchList[event]) then
+		return false, msg, author, ...
+	end
+	-- chat can carry secret values on newer clients (e.g. in instances); leave those alone
+	if(Compat.IsSecret(msg) or Compat.IsSecret(author) or type(msg) ~= "string" or type(author) ~= "string" or author == "") then
+		return false, msg, author, ...
 	end
 
-	-- tnx to tastethenaimbow for the idea on how to do it
-	if(channelWatchList[event] and arg2 ~= nil and arg2 ~= "") then
-		local name, realm = splitNameRealm(arg2)
-		local key = hashName(name, realm)
+	local name, realm = splitNameRealm(author)
+	if not realm or realm == "" then
+		realm = GetRealmName()
+	end
+	local key = name and hashName(name, realm)
+	if not key then
+		return false, msg, author, ...
+	end
 
-		local listColor
-		local listName
-		if VanasKoS:BooleanIsOnList("HATELIST", key) then
-			listColor = HATELISTCOLOR
-			listName = L["Hated"]
-		elseif VanasKoS:BooleanIsOnList("NICELIST", key) then
-			listColor = NICELISTCOLOR
-			listName = L["Liked"]
-		end
+	local listColor
+	local listName
+	if VanasKoS:BooleanIsOnList("HATELIST", key) then
+		listColor = HATELISTCOLOR
+		listName = L["Hated"]
+	elseif VanasKoS:BooleanIsOnList("NICELIST", key) then
+		listColor = NICELISTCOLOR
+		listName = L["Liked"]
+	end
 
-		if(listColor) then
-			if(self.db.profile.OnlyMyEntries) then
-				local data1 = VanasKoS:IsOnList("HATELIST", key)
-				local data2 = VanasKoS:IsOnList("NICELIST", key)
+	if(listColor) then
+		if(self.db.profile.OnlyMyEntries) then
+			local data1 = VanasKoS:IsOnList("HATELIST", key)
+			local data2 = VanasKoS:IsOnList("NICELIST", key)
 
-				if( (data1 and data1.owner and not data2) or -- hatelist entry from someone else, no nicelist entry
-					(data2 and data2.owner and not data1) or -- nicelist entry from someone else, no hatelist entry
-					(data1 and data1.owner and data2 and data2.owner) -- hatelist and nicelist entry from someone else
-					) then
-					return self.hooks["ChatFrame_OnEvent"](frame, event, ...)
-				end
-
-				if(data1 and not data1.owner) then
-					listColor = HATELISTCOLOR
-				elseif(data2 and not data2.owner) then
-					listColor = NICELISTCOLOR
-				end
+			if( (data1 and data1.owner and not data2) or -- hatelist entry from someone else, no nicelist entry
+				(data2 and data2.owner and not data1) or -- nicelist entry from someone else, no hatelist entry
+				(data1 and data1.owner and data2 and data2.owner) -- hatelist and nicelist entry from someone else
+				) then
+				return false, msg, author, ...
 			end
 
-			local originalText = getglobal(channelWatchList[event])
-			setglobal(channelWatchList[event], originalText:gsub("%%s", "%%s|cff" .. listColor .. "(" .. listName .. ")|r"))
-			local ret = self.hooks["ChatFrame_OnEvent"](frame, event, ...)
-			setglobal(channelWatchList[event], originalText)
-			return ret
+			if(data1 and not data1.owner) then
+				listColor = HATELISTCOLOR
+				listName = L["Hated"]
+			elseif(data2 and not data2.owner) then
+				listColor = NICELISTCOLOR
+				listName = L["Liked"]
+			end
 		end
+
+		return false, "|cff" .. listColor .. "(" .. listName .. ")|r " .. msg, author, ...
 	end
-	return self.hooks["ChatFrame_OnEvent"](frame, event, ...)
+	return false, msg, author, ...
 end
 
 function VanasKoSChatNotifier:Update()

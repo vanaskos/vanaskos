@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       DataGatherer Module - Part of VanasKoS
 Handles all external Player Data from Chat and Target Changes/Mouseovers
 ------------------------------------------------------------------------]]
@@ -8,6 +8,7 @@ local LevelGuess = LibStub("LibLevelGuess-1.0")
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
 local VanasKoSDataGatherer = VanasKoS:NewModule("DataGatherer", "AceEvent-3.0", "AceTimer-3.0")
+local Compat = VANASKOS.Compat
 
 -- Declare some common global functions local
 local assert = assert
@@ -19,11 +20,17 @@ local band = bit.band
 local bor = bit.bor
 local time = time
 local wipe = wipe
+local ipairs = ipairs
 local strfind = string.find
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsEnemy = UnitIsEnemy
 local UnitExists = UnitExists
-local UnitName = UnitName
+local UnitName = Compat.UnitName
+local UnitIsUnit = UnitIsUnit
+local UnitCanAttack = UnitCanAttack
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitAffectingCombat = UnitAffectingCombat
+local Clean = Compat.Clean
 local UnitRace = UnitRace
 local UnitClass = UnitClass
 local UnitSex = UnitSex
@@ -32,7 +39,7 @@ local UnitLevel = UnitLevel
 local GetPlayerInfoByGUID = GetPlayerInfoByGUID
 local GetGuildInfo = GetGuildInfo
 local GetRealmName = GetRealmName
-local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
+local CombatLogGetCurrentEventInfo = Compat.CombatLogGetCurrentEventInfo
 local splitNameRealm = VanasKoS.splitNameRealm
 local hashName = VanasKoS.hashName
 local hashGuild = VanasKoS.hashGuild
@@ -45,6 +52,12 @@ local targetEventsEnabled = false
 local combatEventsEnabled = false
 local gatherEventEnabled = false
 local gatheredData = {}
+local maxPlayerLevel = 60
+
+-- state for clients without combat log access (Retail 12.x / Forever)
+local activeNameplates = {}
+local reportedDeaths = {}
+local DEATH_REPORT_TIMEOUT = 30
 
 function VanasKoSDataGatherer:OnInitialize()
 	self.db = VanasKoS.db:RegisterNamespace("DataGatherer", {
@@ -78,13 +91,14 @@ function VanasKoSDataGatherer:OnInitialize()
 				combatlog_header = {
 					order = 1,
 					type = "header",
-					name = L["Combat Log Monitoring"],
+					name = Compat.hasCombatLog and L["Combat Log Monitoring"] or L["Nameplate Monitoring"],
 				},
 				combatlog = {
 					type = "toggle",
 					order = 2,
-					name = L["Use Combat Log"],
-					desc = L["Toggles if the combatlog should be used to detect nearby player"],
+					name = Compat.hasCombatLog and L["Use Combat Log"] or L["Use Nameplates"],
+					desc = Compat.hasCombatLog and L["Toggles if the combatlog should be used to detect nearby player"]
+						or L["Toggles if enemy nameplates should be used to detect nearby players. This client does not give addons access to the combat log."],
 					get = function()
 						return VanasKoSDataGatherer.db.profile.UseCombatLog
 					end,
@@ -248,12 +262,13 @@ function VanasKoSDataGatherer:OnInitialize()
 	VanasKoS:RegisterList(nil, "GUILDDATA", nil, self)
 	myName = UnitName("player")
 	myRealm = GetRealmName()
+	maxPlayerLevel = Compat.GetMaxPlayerLevel()
 end
 
-local COMBATLOG_FILTER_PLAYER = bor(COMBATLOG_OBJECT_CONTROL_PLAYER, COMBATLOG_OBJECT_TYPE_PLAYER)
-local COMBATLOG_FILTER_HOSTILE_PLAYER = bor(COMBATLOG_OBJECT_REACTION_HOSTILE, COMBATLOG_FILTER_PLAYER)
-local COMBATLOG_FILTER_NEUTRAL_PLAYER = bor(COMBATLOG_OBJECT_REACTION_NEUTRAL, COMBATLOG_FILTER_PLAYER)
-local COMBATLOG_FILTER_FRIENDLY_PLAYER = bor(COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_FILTER_PLAYER)
+local COMBATLOG_FILTER_PLAYER = bor(Compat.COMBATLOG_OBJECT_CONTROL_PLAYER, Compat.COMBATLOG_OBJECT_TYPE_PLAYER)
+local COMBATLOG_FILTER_HOSTILE_PLAYER = bor(Compat.COMBATLOG_OBJECT_REACTION_HOSTILE, COMBATLOG_FILTER_PLAYER)
+local COMBATLOG_FILTER_NEUTRAL_PLAYER = bor(Compat.COMBATLOG_OBJECT_REACTION_NEUTRAL, COMBATLOG_FILTER_PLAYER)
+local COMBATLOG_FILTER_FRIENDLY_PLAYER = bor(Compat.COMBATLOG_OBJECT_REACTION_FRIENDLY, COMBATLOG_FILTER_PLAYER)
 
 local COMBATLOG_POWERTYPE_HEALTH = -2
 
@@ -369,6 +384,133 @@ end
 function VanasKoSDataGatherer:COMBAT_LOG_EVENT_UNFILTERED()
 	self:CombatEvent(CombatLogGetCurrentEventInfo())
 end
+
+--[[----------------------------------------------------------------------
+	Detection without the combat log (Retail 12.x and WoW Forever)
+
+	These clients no longer give addons the combat log, so nearby players
+	are picked up from nameplates instead, and PvP wins/losses are
+	approximated from unit events:
+	  - an enemy player whose target is you while you take damage counts
+	    as an attacker,
+	  - an enemy player you have targeted that takes damage while you are
+	    in combat counts as someone you attacked,
+	  - a tracked enemy player that dies is a potential win, your own
+	    death is a potential loss.
+	VanasKoS_PvPDamage / VanasKoS_PvPDeath are sent exactly like the
+	combat log path sends them, so the PvP log itself needs no changes.
+------------------------------------------------------------------------]]
+local function IsHostilePlayer(unit)
+	if not Clean(UnitIsPlayer(unit)) or Clean(UnitIsUnit(unit, "player")) then
+		return false
+	end
+	return Clean(UnitCanAttack("player", unit)) or Clean(UnitIsEnemy("player", unit)) or false
+end
+
+local function UnitNameRealm(unit)
+	local name, realm = UnitName(unit)
+	if not name or name == "" then
+		return nil, nil
+	end
+	if not realm or realm == "" then
+		realm = myRealm
+	end
+	return name, realm
+end
+
+function VanasKoSDataGatherer:NAME_PLATE_UNIT_ADDED(event, unit)
+	if not unit or not Clean(UnitIsPlayer(unit)) then
+		return
+	end
+	activeNameplates[unit] = true
+	if self:Get_Player_Data(unit) then
+		self:SendMessage("VanasKoS_Player_Detected", gatheredData)
+	end
+end
+
+function VanasKoSDataGatherer:NAME_PLATE_UNIT_REMOVED(event, unit)
+	if unit then
+		activeNameplates[unit] = nil
+	end
+end
+
+-- you took damage: every hostile player currently targeting you is a suspect
+function VanasKoSDataGatherer:RecordAttackersOfPlayer(amount)
+	local function check(unit)
+		if UnitExists(unit) and IsHostilePlayer(unit) and Clean(UnitIsUnit(unit .. "target", "player")) then
+			local name, realm = UnitNameRealm(unit)
+			if name then
+				self:SendMessage("VanasKoS_PvPDamage", name, realm, myName, myRealm, amount)
+			end
+			return true
+		end
+		return false
+	end
+	local targetCounted = check("target")
+	for unit in pairs(activeNameplates) do
+		-- don't count the same enemy twice if it is both target and nameplate
+		if not (targetCounted and Clean(UnitIsUnit(unit, "target"))) then
+			check(unit)
+		end
+	end
+end
+
+function VanasKoSDataGatherer:UNIT_COMBAT(event, unit, action, indicator, amount)
+	action = Clean(action)
+	if not action or action == "HEAL" or action == "ENERGIZE" then
+		return
+	end
+	amount = Clean(amount)
+	if type(amount) ~= "number" then
+		amount = 0
+	end
+
+	if unit == "player" then
+		self:RecordAttackersOfPlayer(amount)
+	elseif unit == "target" and IsHostilePlayer("target") and Clean(UnitAffectingCombat("player")) then
+		local name, realm = UnitNameRealm("target")
+		if name then
+			self:SendMessage("VanasKoS_PvPDamage", myName, myRealm, name, realm, amount)
+		end
+	end
+end
+
+function VanasKoSDataGatherer:UNIT_HEALTH(event, unit)
+	if unit ~= "target" and not activeNameplates[unit] then
+		return
+	end
+	if not IsHostilePlayer(unit) then
+		return
+	end
+	local guid = Clean(UnitGUID(unit))
+	if not guid then
+		return
+	end
+	if Clean(UnitIsDeadOrGhost(unit)) then
+		local now = time()
+		if not reportedDeaths[guid] or (now - reportedDeaths[guid]) > DEATH_REPORT_TIMEOUT then
+			reportedDeaths[guid] = now
+			local name, realm = UnitNameRealm(unit)
+			if name then
+				self:SendMessage("VanasKoS_PvPDeath", name, realm)
+			end
+		end
+	elseif reportedDeaths[guid] then
+		reportedDeaths[guid] = nil
+	end
+end
+
+function VanasKoSDataGatherer:PLAYER_DEAD()
+	self:SendMessage("VanasKoS_PvPDeath", myName, myRealm)
+end
+
+local fallbackEvents = {
+	"NAME_PLATE_UNIT_ADDED",
+	"NAME_PLATE_UNIT_REMOVED",
+	"UNIT_COMBAT",
+	"UNIT_HEALTH",
+	"PLAYER_DEAD",
+}
 
 function VanasKoSDataGatherer:OnEnable()
 	-- on areachange update area
@@ -506,10 +648,37 @@ end
 
 function VanasKoSDataGatherer:EnableCombatEvents(enable)
 	if(enable and (not combatEventsEnabled)) then
-		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		if Compat.hasCombatLog then
+			self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		else
+			for _, event in ipairs(fallbackEvents) do
+				if Compat.IsEventValid(event) then
+					self:RegisterEvent(event)
+				end
+			end
+			-- pick up player nameplates that were already visible
+			if C_NamePlate and C_NamePlate.GetNamePlates then
+				for _, plate in ipairs(C_NamePlate.GetNamePlates() or {}) do
+					local unit = plate.namePlateUnitToken or (plate.UnitFrame and plate.UnitFrame.unit)
+					if unit and Clean(UnitIsPlayer(unit)) then
+						activeNameplates[unit] = true
+					end
+				end
+			end
+		end
 		combatEventsEnabled = true
 	elseif ((not enable) and combatEventsEnabled) then
-		self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		if Compat.hasCombatLog then
+			self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		else
+			for _, event in ipairs(fallbackEvents) do
+				if Compat.IsEventValid(event) then
+					self:UnregisterEvent(event)
+				end
+			end
+			wipe(activeNameplates)
+			wipe(reportedDeaths)
+		end
 		combatEventsEnabled = false
 	end
 end
@@ -557,43 +726,51 @@ function VanasKoSDataGatherer:Update()
 		self:EnableDataGathering(true)
 	end
 
-	if (C_PvP.IsWarModeDesired() and not self.db.profile.EnableInWarMode) then
+	local warMode = Compat.IsWarModeDesired()
+	if (warMode and not self.db.profile.EnableInWarMode) then
 		self:EnableTargetEvents(false)
 		self:EnableCombatEvents(false)
-	elseif (not C_PvP.IsWarModeDesired() and not self.db.profile.EnableInNormalMode) then
+	elseif (not warMode and not self.db.profile.EnableInNormalMode) then
 		self:EnableTargetEvents(false)
 		self:EnableCombatEvents(false)
 	end
 
-	if (C_PvP.IsWarModeDesired() and not self.db.profile.GatherInWarMode) then
+	if (warMode and not self.db.profile.GatherInWarMode) then
 		self:EnableDataGathering(false)
-	elseif (not C_PvP.IsWarModeDesired() and not self.db.profile.GatherInNormalMode) then
+	elseif (not warMode and not self.db.profile.GatherInNormalMode) then
 		self:EnableDataGathering(false)
 	end
 end
 
 function VanasKoSDataGatherer:Get_Player_Data(unit)
-	if(UnitIsPlayer(unit) and UnitName(unit) ~= myName) then
+	if(Clean(UnitIsPlayer(unit)) and not Clean(UnitIsUnit(unit, "player"))) then
 		local name, realm = UnitName(unit)
-		assert(name)
-		if not realm then
+		if not name or name == "" then
+			return false
+		end
+		if not realm or realm == "" then
 			--print(name .. " ( " .. unit .. ") has no realm, assuming local")
 			realm = myRealm
 		end
 		wipe(gatheredData)
 		gatheredData.name = name
 		gatheredData.realm = realm
-		gatheredData.pvp = UnitIsPVP(unit)
-		gatheredData.guild, gatheredData.guildrank = GetGuildInfo(unit)
-		gatheredData.race = UnitRace(unit)
-		gatheredData.class, gatheredData.classEnglish = UnitClass(unit)
-		gatheredData.gender = UnitSex(unit)
+		gatheredData.pvp = Clean(UnitIsPVP(unit))
+		local guild, guildrank = GetGuildInfo(unit)
+		gatheredData.guild, gatheredData.guildrank = Clean(guild), Clean(guildrank)
+		gatheredData.race = Clean(UnitRace(unit))
+		local class, classEnglish = UnitClass(unit)
+		gatheredData.class, gatheredData.classEnglish = Clean(class), Clean(classEnglish)
+		gatheredData.gender = Clean(UnitSex(unit))
 		gatheredData.mapID = VanasKoS:MapID()
 		gatheredData.faction = nil
-		gatheredData.guid = UnitGUID(unit)
+		gatheredData.guid = Clean(UnitGUID(unit))
 
-		local lvl = UnitLevel(unit)
+		local lvl = Clean(UnitLevel(unit)) or -1
 		local key = hashName(name, realm)
+		if not key then
+			return false
+		end
 		local guildKey = gatheredData.guild and hashGuild(gatheredData.guild, gatheredData.realm) or nil
 		if(lvl == -1) then
 			lvl = (UnitLevel("player") or 1) + 10
@@ -604,15 +781,17 @@ function VanasKoSDataGatherer:Get_Player_Data(unit)
 			end
 			if(oldLevelNum > lvl) then
 				lvl = oldLevel
-			elseif(lvl < 120) then
+			elseif(lvl < maxPlayerLevel) then
 				lvl = lvl .. "+"
+			else
+				lvl = maxPlayerLevel
 			end
 		end
 		gatheredData.level = lvl
 
 		gatheredData.list = select(2, VanasKoS:IsOnList(nil, key)) or (guildKey and select(2, VanasKoS:IsOnList(nil, guildKey)))
 
-		if(UnitExists(unit) and UnitIsEnemy("player", unit)) then
+		if(UnitExists(unit) and Clean(UnitIsEnemy("player", unit))) then
 			gatheredData.faction = "enemy"
 		else
 			gatheredData.faction = "friendly"
@@ -663,8 +842,15 @@ function VanasKoSDataGatherer:SendDataMessage(name, realm, guid, faction, spellI
 	local level = -1
 	if(spellId and tonumber(spellId)) then
 		level = LevelGuess:GetEstimatedLevelAndClassFromSpellId(spellId) or -1
+		if level > maxPlayerLevel then
+			-- spell data predates the level squishes; never guess above the cap
+			level = -1
+		end
 	end
 	local key = hashName(gatheredData.name, gatheredData.realm)
+	if not key then
+		return
+	end
 	local oldLevel = (playerDataList[key] and playerDataList[key].level) or -1
 	local oldLevelNum = oldLevel
 	if (type(oldLevel) == "string") then
@@ -675,7 +861,7 @@ function VanasKoSDataGatherer:SendDataMessage(name, realm, guid, faction, spellI
 		level = oldLevel
 	elseif (level < 1) then
 		level = nil
-	elseif (level < 120) then
+	elseif (level < maxPlayerLevel) then
 		level = level .. "+"
 	end
 	gatheredData.guild = playerDataList[key] and playerDataList[key].guild

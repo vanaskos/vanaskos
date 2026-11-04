@@ -1,4 +1,4 @@
-﻿--[[---------------------------------------------------------------------------------------------
+--[[---------------------------------------------------------------------------------------------
       PvPDataGatherer Module - Part of VanasKoS
 Gathers PvP Wins and Losses
 ---------------------------------------------------------------------------------------------]]
@@ -15,10 +15,7 @@ local tremove = tremove
 local wipe = wipe
 local UnitName = UnitName
 local UnitLevel = UnitLevel
-local SetMapToCurrentZone = SetMapToCurrentZone
 local GetRealmName = GetRealmName
-local GetPlayerMapPosition = GetPlayerMapPosition
-local GetCurrentMapAreaID = GetCurrentMapAreaID
 local hashName = VanasKoS.hashName
 
 -- Constants
@@ -177,9 +174,14 @@ local function SortByTypeReverse(val1, val2)
 end
 
 -- sorts by map
+local function MapName(mapID)
+	local info = mapID and C_Map.GetMapInfo(mapID)
+	return info and info.name
+end
+
 local function SortByMap(val1, val2)
-	local cmp1 = C_Map.GetMapInfo(val1).name
-	local cmp2 = C_Map.GetMapInfo(val2).name
+	local cmp1 = MapName(val1)
+	local cmp2 = MapName(val2)
 	if cmp1 and cmp2 then
 		return (cmp1 < cmp2)
 	elseif cmp1 then
@@ -188,8 +190,8 @@ local function SortByMap(val1, val2)
 	return false
 end
 local function SortByMapReverse(val1, val2)
-	local cmp1 = C_Map.GetMapInfo(val1).name
-	local cmp2 = C_Map.GetMapInfo(val2).name
+	local cmp1 = MapName(val1)
+	local cmp2 = MapName(val2)
 	if cmp1 and cmp2 then
 		return (cmp1 > cmp2)
 	elseif cmp2 then
@@ -437,6 +439,14 @@ function VanasKoSPvPDataGatherer:AddEntry(list, key, data)
 		local pvpPlayersLog = VanasKoS:GetList("PVPLOG", PLAYERS_LIST)
 		local pvpMapLog = VanasKoS:GetList("PVPLOG", MAP_LIST)
 		local eventkey = key .. (data.time or time())
+		-- a win and a loss against the same player can land in the same second
+		local suffix = 1
+		while pvpEventLog[eventkey .. (suffix > 1 and ("#" .. suffix) or "")] do
+			suffix = suffix + 1
+		end
+		if suffix > 1 then
+			eventkey = eventkey .. "#" .. suffix
+		end
 		local playerkey = hashName(data.name, data.realm)
 		pvpEventLog[eventkey] = data
 		if (data.mapID) then

@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
 	TargetPortraitContextMenu Module - Part of VanasKoS
 modifies the TargetPortrait to add context menu options for adding targets to lists
 ------------------------------------------------------------------------]]
@@ -7,13 +7,15 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/PortraitContextMenu", fal
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
 local VanasKoSPortraitContextMenu = VanasKoS:NewModule("PortraitContextMenu", "AceHook-3.0")
+local Compat = VANASKOS.Compat
 
 -- Declare some common global functions local
 local ipairs = ipairs
 local format = format
 local strgsub = string.gsub
 local assert = assert
-local UnitName = UnitName
+local UnitIsPlayer = UnitIsPlayer
+local GetGuildInfo = GetGuildInfo
 local GetRealmName = GetRealmName
 local splitNameRealm = VanasKoS.splitNameRealm
 local hashName = VanasKoS.hashName
@@ -37,6 +39,73 @@ function VanasKoSPortraitContextMenu:OnInitialize()
 	myRealm = GetRealmName()
 end
 
+-- unit popup menus we extend (Menu tags are "MENU_UNIT_" .. which)
+local menuTypes = {"PLAYER", "ENEMY_PLAYER", "PARTY", "RAID_PLAYER", "RAID", "FRIEND", "TARGET", "FOCUS"}
+local menusRegistered = false
+
+local function OnMenuAction(button, name, realm, guild)
+	if(button == "VANASKOS_ADD_PLAYERKOS") then
+		VanasKoS:AddEntryByName("PLAYERKOS", name, realm)
+	elseif(button == "VANASKOS_ADD_GUILDKOS") then
+		VanasKoS:AddEntryByName("GUILDKOS", guild, realm)
+	elseif(button == "VANASKOS_ADD_HATELIST") then
+		VanasKoS:AddEntryByName("HATELIST", name, realm)
+	elseif(button == "VANASKOS_ADD_NICELIST") then
+		VanasKoS:AddEntryByName("NICELIST", name, realm)
+	elseif(button == "VANASKOS_LOOKUP") then
+		local data, list = VanasKoS:IsOnList(nil, hashName(name, realm))
+		if not data and guild then
+			data, list = VanasKoS:IsOnList(nil, hashGuild(guild, realm))
+		end
+		if list then
+			VanasKoS:Print(format(L["Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r"],
+				name, VanasKoS:GetListNameByShortName(list), (data.reason or "")))
+		else
+			VanasKoS:Print(format(L["No entry for |cff00ff00%s|r"], name))
+		end
+	end
+end
+
+local function ModifyUnitMenu(owner, rootDescription, contextData)
+	if not VanasKoSPortraitContextMenu:IsEnabled() or not contextData then
+		return
+	end
+
+	local unit = Compat.Clean(contextData.unit)
+	-- only players; NPC targets also use the TARGET/FOCUS menus
+	if unit and not Compat.Clean(UnitIsPlayer(unit)) then
+		return
+	end
+
+	local name, realm, guild
+	if unit then
+		name, realm = Compat.UnitName(unit)
+		guild = Compat.Clean(GetGuildInfo(unit))
+	else
+		name = Compat.Clean(contextData.name)
+		realm = Compat.Clean(contextData.server)
+		if name and not realm then
+			name, realm = splitNameRealm(name)
+		end
+	end
+	if not name or name == "" then
+		return
+	end
+	if(realm == nil or realm == "") then
+		realm = myRealm
+	end
+
+	rootDescription:CreateDivider()
+	rootDescription:CreateTitle(L["Vanas|cffff0000KoS|r"])
+	for _, value in ipairs(VanasKoSTargetPopupMenu) do
+		if value ~= "VANASKOS_ADD_GUILDKOS" or guild then
+			rootDescription:CreateButton(VanasKoSTargetPopupButtons[value].text, function()
+				OnMenuAction(value, name, realm, guild)
+			end)
+		end
+	end
+end
+
 function VanasKoSPortraitContextMenu:OnEnable()
 	for i, v in ipairs(defaultLists) do
 		local listname = VanasKoSGUI:GetListName(v)
@@ -50,85 +119,16 @@ function VanasKoSPortraitContextMenu:OnEnable()
 		text = L["Lookup in VanasKoS"]
 	}
 	VanasKoSTargetPopupMenu[#defaultLists + 1] = "VANASKOS_LOOKUP"
-	self:SecureHook("UnitPopup_ShowMenu")
+
+	-- Menu.ModifyMenu callbacks cannot be removed again, so register once and
+	-- check IsEnabled() inside the callback instead.
+	if not menusRegistered and Menu and Menu.ModifyMenu then
+		for _, which in ipairs(menuTypes) do
+			Menu.ModifyMenu("MENU_UNIT_" .. which, ModifyUnitMenu)
+		end
+		menusRegistered = true
+	end
 end
 
 function VanasKoSPortraitContextMenu:OnDisable()
-	self:Unhook("UnitPopup_ShowMenu")
-end
-
-function VanasKoSPortraitContextMenu:UnitPopup_ShowMenu(dropdownMenu, which, unit, fullName, userData)
-	-- hack from fyrye to enable context menu for Pitbull4
-	which = strgsub(which, "PB4_", "")
-
-	if(which ~= "PLAYER" and which ~= "PARTY" and which ~= "RAID_PLAYER" and which ~= "RAID" and which ~= "FRIEND") then
-		return
-	end
-
-	-- Only create menus for the top level
-	if (UIDROPDOWNMENU_MENU_LEVEL > 1) then
-		return
-	end
-
-	local info = UIDropDownMenu_CreateInfo()
-
-	local name, realm = splitNameRealm(fullName)
-	local guild
-	if(unit) then
-		name, realm = UnitName(unit)
-		guild = GetGuildInfo(unit)
-	end
-	if(realm == nil or realm == "") then
-		realm = myRealm
-	end
-	UIDropDownMenu_AddSeparator(1)
-	info.text = L["Vanas|cffff0000KoS|r"]
-	info.owner = which
-	info.isTitle = true
-	info.notCheckable = true
-	UIDropDownMenu_AddButton(info)
-
-	info.isTitle = nil
-	info.disabled = nil
-	for _, value in ipairs(VanasKoSTargetPopupMenu) do
-		info.text = VanasKoSTargetPopupButtons[value].text
-		info.value = value
-		info.owner = which
-		info.func = function(self, info)
-			assert(info)
-			assert(info.button)
-			assert(info.name)
-			assert(info.realm)
-
-			if(info.button == "VANASKOS_ADD_PLAYERKOS") then
-				VanasKoS:AddEntryByName("PLAYERKOS", info.name, info.realm)
-			elseif(info.button == "VANASKOS_ADD_GUILDKOS") then
-				VanasKoS:AddEntryByName("GUILDKOS", info.guild, info.realm)
-			elseif(info.button == "VANASKOS_ADD_HATELIST") then
-				VanasKoS:AddEntryByName("HATELIST", info.name, info.realm)
-			elseif(info.button == "VANASKOS_ADD_NICELIST") then
-				VanasKoS:AddEntryByName("NICELIST", info.name, info.realm)
-			elseif(info.button == "VANASKOS_LOOKUP") then
-				local data, list = VanasKoS:IsOnList(nil, hashName(info.name, info.realm))
-				if not data and info.guild then
-					data, list = VanasKoS:IsOnList(nil, hashGuild(info.guild, info.realm))
-				end
-				if list then
-					VanasKoS:Print(format(L["Player: |cff00ff00%s|r is on List: |cff00ff00%s|r - Reason: |cff00ff00%s|r"],
-						info.name, VanasKoS:GetListNameByShortName(list), (data.reason or "")))
-				else
-					VanasKoS:Print(format(L["No entry for |cff00ff00%s|r"], info.name))
-				end
-			end
-		end
-
-		info.notCheckable = 1
-		info.arg1 = {
-			button = value,
-			name = name,
-			realm = realm,
-			guild = guild
-		}
-		UIDropDownMenu_AddButton(info)
-	end
 end

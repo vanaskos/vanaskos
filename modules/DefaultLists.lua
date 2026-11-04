@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       DefaultLists Module - Part of VanasKoS
 Handles the Default lists (KOS, GUILDKOS, HATE, NICE)
 ------------------------------------------------------------------------]]
@@ -7,6 +7,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("VanasKoS/DefaultLists", false)
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
 local VanasKoSDefaultLists = VanasKoS:NewModule("DefaultLists", "AceEvent-3.0")
+local Compat = VANASKOS.Compat
 
 -- Global wow strings and variables
 local NAME, GUILD, LEVEL_ABBR, CLASS, ZONE = NAME, GUILD, LEVEL_ABBR, CLASS, ZONE
@@ -20,7 +21,10 @@ local strgsub = string.gsub
 local time = time
 local SecondsToTime = SecondsToTime
 local format = format
-local GetMapNameByID = GetMapNameByID
+local function GetMapNameByID(mapID)
+	local info = mapID and C_Map.GetMapInfo(mapID)
+	return info and info.name
+end
 local GetCursorPosition = GetCursorPosition
 local IsShiftKeyDown = IsShiftKeyDown
 local UnitName = UnitName
@@ -663,7 +667,7 @@ local function ListButtonOnRightClickMenu()
 		})
 	end
 
-	EasyMenu(menuItems, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU")
+	Compat.ShowMenu(menuItems)
 end
 
 function VanasKoSDefaultLists:ListButtonOnClick(button, frame)

@@ -1,6 +1,28 @@
 Release Changelog for VanasKoS
 
-latest:
+12.1.5.1:
+- One TOC for Retail (12.1.5), WoW Forever (1.60.1), Mists Classic (5.5.4),
+  Burning Crusade Anniversary (2.5.6) and Classic Era (1.15.9)
+- Update Ace3, LibDBIcon, LibSharedMedia and LibDialog; patch LibGraph for modern clients
+- New Compat.lua with feature-detected shims for API differences between clients
+- Retail/Forever: combat log is no longer available to addons; nearby players are
+  detected from nameplates, and PvP wins/losses are approximated from unit events
+- Context menus use the Menu API (unit popups, list right-click, minimap, world map)
+- Tooltips use TooltipDataProcessor where OnTooltipSetUnit no longer exists
+- Chat tagging and sync spam filter use chat message filters instead of hooks
+- Target frame highlight works with the modern target frame
+- World map PvP pins use a proper pin template
+- Settings open through the new Settings panel
+- Handle "secret" values returned by Midnight/Forever APIs
+- Allow WoW Forever surnames ("Name Surname") in player names
+- Fix key binding, minimap toggle, flash animation, same-realm sync senders
+
+9.0.1.1:
+- Update toc, and libraries for 9.0.1
+- Disable broken friends list hook broken in update
+- Fix broken backdrop broken by latest WoW update
+
+8.2.0.1:
 - Refactor most globals to be local instead
 - Fix initial setup of pvp players log
 - Fix error not logging pvp losses #115

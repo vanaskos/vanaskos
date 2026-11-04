@@ -1,4 +1,4 @@
-﻿--[[----------------------------------------------------------------------
+--[[----------------------------------------------------------------------
       PvPStats Module - Part of VanasKoS
 Displays Stats about PvP in a window
 ------------------------------------------------------------------------]]
@@ -9,6 +9,7 @@ local Graph = LibStub("LibGraph-2.0", true)
 local VanasKoS = LibStub("AceAddon-3.0"):GetAddon("VanasKoS")
 local VanasKoSGUI = VanasKoS:GetModule("GUI")
 local VanasKoSPvPStats = VanasKoS:NewModule("PvPStats", "AceEvent-3.0")
+local Compat = VANASKOS.Compat
 
 -- Global wow strings
 local MALE, FEMALE, NAME, WIN, PVP, GUILD, CLASS, RACE, ZONE, CATEGORY, GENERAL = MALE, FEMALE, NAME, WIN, PVP, GUILD, CLASS, RACE, ZONE, CATEGORY, GENERAL
@@ -25,7 +26,10 @@ local next = next
 local date = date
 local time = time
 local format = format
-local GetMapNameByID = GetMapNameByID
+local function GetMapNameByID(mapID)
+	local info = mapID and C_Map.GetMapInfo(mapID)
+	return info and info.name
+end
 local GetCursorPosition = GetCursorPosition
 local hashName = VanasKoS.hashName
 local hashGuild = VanasKoS.hashGuild
@@ -419,7 +423,8 @@ function VanasKoSPvPStats:BuildList(group)
 				end
 			elseif(group == MAP_LIST) then
 				if(event.mapID and event.mapID ~= -1) then
-					local mapName = C_Map.GetMapInfo(event.mapID).name
+					local mapInfo = C_Map.GetMapInfo(event.mapID)
+					local mapName = mapInfo and mapInfo.name or tostring(event.mapID)
 					if(not pvpStatsList[event.mapID]) then
 						pvpStatsList[event.mapID] = {
 							name = mapName,
@@ -808,7 +813,7 @@ function VanasKoSPvPStats:ListButtonOnClick(button, frame)
 			}
 		}
 
-		EasyMenu(menuItems, VanasKoSGUI.dropDownFrame, UIParent, x/uiScale, y/uiScale, "MENU")
+		Compat.ShowMenu(menuItems)
 	end
 end
 
